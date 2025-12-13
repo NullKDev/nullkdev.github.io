@@ -1,0 +1,299 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import PageHead from '@/components/PageHead.astro'
+import Link from '@/components/Link.astro'
+import Layout from '@/layouts/Layout.astro'
+import { cn } from '@/lib/utils'
+import { Icon } from 'astro-icon/components'
+import { AUTHOR, SITE } from '@/consts'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+
+// Enhanced Person Schema for About page
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Carlos Alarcon",
+  "alternateName": "NullKDev",
+  "url": SITE.href,
+  "image": new URL('/static/avatar.png', Astro.site).href,
+  "jobTitle": "Android Developer",
+  "worksFor": {
+    "@type": "Organization",
+    "name": "Overall Strategy S.A.C."
+  },
+  "knowsAbout": [
+    "Android Development",
+    "Kotlin",
+    "Flutter",
+    "KMM",
+    "Python",
+    "TypeScript",
+    "Clean Architecture",
+    "MVVM",
+    "MVI"
+  ],
+  "sameAs": [
+    "https://github.com/NullKDev",
+    "https://www.linkedin.com/in/jcarlos-dev/",
+    "https://nullkdev.github.io"
+  ],
+  "email": AUTHOR.social.email.mail,
+  "description": "Desarrollador móvil con 5 años de experiencia especializado en Android, Kotlin, Flutter y KMM. Apasionado por crear experiencias de usuario excepcionales."
+}
+
+const skills = [
+  { name: 'Kotlin', icon: 'lucide:code-2' },
+  { name: 'Android', icon: 'lucide:smartphone' },
+  { name: 'Flutter', icon: 'lucide:layers' },
+  { name: 'KMM', icon: 'lucide:blocks' },
+  { name: 'Python', icon: 'lucide:terminal' },
+  { name: 'TypeScript', icon: 'lucide:file-code' },
+]
+
+const architectures = [
+  'Clean Architecture',
+  'MVVM',
+  'MVI',
+  'MVP'
+]
+
+type ExperienceItem = {
+  role: string
+  company: string
+  period: string
+  current?: boolean
+  icon: string
+  key: string
+}
+
+const experience: ExperienceItem[] = [
+  {
+    role: 'HPC System Administrator',
+    company: 'Forvia',
+    period: '2022 - Present',
+    current: true,
+    icon: 'lucide:server',
+    key: 'Led end-to-end deployment of HPC cluster on Dell infrastructure with PBS scheduling • Cross-team coordination with network and firewall teams for infrastructure provisioning'
+  },
+  {
+    role: 'Founder',
+    company: 'Dolphost',
+    period: '2022 - 2024',
+    icon: 'lucide:rocket',
+    key: 'Built secure WordPress hosting platform • Managed VPS infrastructure and implemented WHMCS/cPanel solutions'
+  },
+  {
+    role: 'Cyber Security Engineer',
+    company: 'Atos IT Solutions',
+    period: '2020 - 2022',
+    icon: 'lucide:shield',
+    key: 'Conducted vulnerability assessments with NESSUS • Implemented firewall policies across Cisco, Fortinet, Palo Alto, and Juniper platforms'
+  },
+  {
+    role: 'System Administrator',
+    company: 'Netex Romania',
+    period: '2018 - 2020',
+    icon: 'lucide:server',
+    key: 'Migrated Puppet infrastructure to Kubernetes • Managed BAREOS backups for 200+ servers • Configured IPsec site-to-site VPN connections'
+  }
+]
+---
+
+<Layout class="max-w-4xl">
+  <PageHead slot="head" title="About" />
+
+  <!-- Person Schema for About page SEO -->
+  <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+
+  <Breadcrumbs items={[{ label: 'About', icon: 'lucide:user' }]} />
+
+  <section class="flex flex-col gap-12">
+    <!-- Hero Section -->
+    <div class="relative">
+      <div class="absolute inset-0 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-3xl blur-3xl -z-10"></div>
+      
+      <Card className="border-0 shadow-lg bg-card/50 backdrop-blur">
+        <CardContent className="p-8 md:p-12">
+          <div class="flex flex-col md:flex-row gap-8 items-start md:items-center">
+            <!-- Avatar with gradient border -->
+            <div class="relative group">
+              <div class="absolute -inset-1 bg-gradient-to-r from-primary to-primary/50 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-500"></div>
+              <img
+                src="/static/avatar.png"
+                alt="Carlos Alarcon"
+                width="400"
+                height="400"
+                class="relative rounded-2xl object-cover w-32 h-32 md:w-40 md:h-40 ring-4 ring-background"
+                loading="eager"
+                decoding="async"
+              />
+            </div>
+
+            <!-- Info -->
+            <div class="flex-1 space-y-4">
+              <div>
+                <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                  {personSchema.name}
+                </h1>
+                <p class="text-lg text-muted-foreground font-mono mt-2">
+                  <span class="text-primary/80">aka</span> <span class="text-primary font-semibold">{personSchema.alternateName}</span>
+                </p>
+              </div>
+              
+              <div class="flex flex-wrap gap-2">
+                <Badge variant="secondary" className="px-3 py-1">
+                  <Icon name="lucide:briefcase" class="size-3 mr-1.5" />
+                  Android Developer
+                </Badge>
+                <Badge variant="secondary" className="px-3 py-1">
+                  <Icon name="lucide:map-pin" class="size-3 mr-1.5" />
+                  Perú
+                </Badge>
+                <Badge variant="secondary" className="px-3 py-1">
+                  <Icon name="lucide:calendar" class="size-3 mr-1.5" />
+                  { (new Date()).getFullYear() - 2018 }+ años de experiencia
+                </Badge>
+              </div>
+
+              <Link
+                href={AUTHOR.social.email.href}
+                external
+                class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium shadow-lg shadow-primary/25"
+              >
+                <Icon name="lucide:mail" class="size-4" />
+                <span>Contáctame</span>
+              </Link>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+
+    <!-- About Content -->
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Main Bio -->
+      <Card className="md:col-span-2 border-border/50 shadow-sm hover:shadow-md transition-shadow">
+        <CardContent className="p-6 md:p-8 space-y-5">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="p-2 bg-primary/10 rounded-lg">
+              <Icon name="lucide:user-circle" class="size-5 text-primary" />
+            </div>
+            <h2 class="text-2xl font-bold">Sobre mí</h2>
+          </div>
+
+          <p class="text-muted-foreground leading-relaxed">
+            ¡Hola! Soy un <strong class="text-foreground">desarrollador móvil</strong> con 5 años de experiencia creando aplicaciones Android innovadoras. Actualmente trabajo en <strong class="text-foreground">Overall Strategy S.A.C.</strong>, donde impulso el crecimiento y desarrollo de iniciativas móviles.
+          </p>
+
+          <p class="text-muted-foreground leading-relaxed">
+            Me especializo en <strong class="text-foreground">desarrollo Android nativo</strong> utilizando tecnologías modernas como <strong class="text-foreground">Kotlin</strong>, <strong class="text-foreground">Flutter</strong> y <strong class="text-foreground">Kotlin Multiplatform</strong>. Tengo experiencia en todo el ciclo de vida de productos digitales, con énfasis en crear experiencias de usuario excepcionales.
+          </p>
+
+          <p class="text-muted-foreground leading-relaxed">
+            Trabajo con metodologías ágiles y arquitecturas modernas. También tengo habilidades en <strong class="text-foreground">Python</strong>, <strong class="text-foreground">TypeScript</strong>, administración de bases de datos y desarrollo backend.
+          </p>
+        </CardContent>
+      </Card>
+
+      <!-- Quick Stats -->
+      <div class="space-y-6">
+        <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="p-6 space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="p-2 bg-primary/10 rounded-lg">
+                <Icon name="lucide:rocket" class="size-5 text-primary" />
+              </div>
+              <h3 class="font-bold">Stack Principal</h3>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              {skills.map(skill => (
+                <div class="flex items-center gap-2 p-2 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors">
+                  <Icon name={skill.icon} class="size-4 text-primary" />
+                  <span class="text-sm font-medium">{skill.name}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="p-6 space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="p-2 bg-primary/10 rounded-lg">
+                <Icon name="lucide:boxes" class="size-5 text-primary" />
+              </div>
+              <h3 class="font-bold">Arquitecturas</h3>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              {architectures.map(arch => (
+                <Badge variant="outline" className="font-normal">
+                  {arch}
+                </Badge>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+
+      <!-- Experience Timeline -->
+  <section class="mt-8">
+    <div class="mb-6">
+      <h2 class="text-2xl font-semibold mb-2">Experience</h2>
+      <p class="text-sm text-muted-foreground">
+        9+ years in server infrastructure and enterprise environments, with additional experience in cybersecurity
+      </p>
+    </div>
+    
+    <div class="space-y-6">
+      {experience.map((exp, index) => (
+        <div class="relative">
+          {index < experience.length - 1 && (
+            <div class="absolute left-[11px] top-8 bottom-0 w-px bg-border" aria-hidden="true"></div>
+          )}
+          
+          <div class="flex gap-4">
+            <div class={cn(
+              "relative flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ring-4 ring-background z-10",
+              exp.current ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground"
+            )}>
+              <Icon name={exp.icon} class="size-3.5" />
+            </div>
+            
+            <div class="flex-1 pb-2 min-w-0">
+              <div class="mb-1">
+                <h3 class="font-semibold text-lg leading-tight">{exp.role}</h3>
+                <p class="text-sm text-muted-foreground">
+                  {exp.company} · {exp.period}
+                </p>
+              </div>
+              <p class="text-sm text-muted-foreground/90 leading-relaxed mt-2">
+                {exp.key}
+              </p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+    <!-- Fun Fact / Origin Story -->
+    <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent shadow-sm">
+      <CardContent className="p-6 md:p-8">
+        <div class="flex items-start gap-4">
+          <div class="p-3 bg-primary/10 rounded-xl shrink-0">
+            <Icon name="lucide:sparkles" class="size-6 text-primary" />
+          </div>
+          <div class="space-y-2">
+            <h3 class="text-lg font-bold">¿Por qué NullKDev?</h3>
+            <p class="text-muted-foreground leading-relaxed">
+              El nombre <strong class="text-foreground">NullKDev</strong> representa mi identidad como desarrollador: <strong class="text-foreground">Null</strong> por el concepto fundamental en programación, <strong class="text-foreground">K</strong> por <strong class="text-foreground">Kotlin</strong> (mi lenguaje favorito) y también por <strong class="text-foreground">Karl</strong>, y <strong class="text-foreground">Dev</strong> por desarrollador. Es mi forma de expresar mi pasión por el código limpio y las soluciones elegantes.
+            </p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+
+  </section>
+</Layout>

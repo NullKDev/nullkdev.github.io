@@ -1,0 +1,284 @@
+---
+title: "How to Set Up a K3S Cluster in 2025"
+description: "Follow my step-by-step journey as I rebuild my K3s cluster from scratch using Ansible. Learn how to automate deployments, optimize performance, and create a scalable Kubernetes homelab."
+date: 2025-02-11
+tags: ["infrastructure", "kubernetes", "k3s", "automation", "ansible", "proxmox"]
+image: './k3s.svg'
+---
+
+import Callout from '@/components/Callout.astro'
+
+
+It's already been a year since my first Kubernetes journey. My initial clusters—where I started learning and understanding more about Kubernetes—are now all taken down. This time, I want to build a **fully functional, highly available (HA) cluster**. 
+
+Over the past weeks, I've done more research in Kubernetes communities, as well as on subreddits like [kubernetes], [homelab], and [selfhosted]. I discovered that one of the best ways to deploy a cluster these days is by following guides and content from **Techno Tim**, so I decided to write this blog and share **my own approach**.
+
+<Callout variant="tip">
+**Tip:** If you're new to K3s, subreddits like [r/kubernetes](https://www.reddit.com/r/kubernetes/) and [r/homelab](https://www.reddit.com/r/homelab/) can be great resources to learn from fellow enthusiasts.
+</Callout>
+
+## What I Want to Achieve
+
+A fully organized HA cluster on my hardware, so if any of my machines go down, the cluster remains functional. Specifically:
+
+- **1 x DELL R720** → `k3s-master-1` and `k3s-worker-1`
+- **1 x DELL Optiplex Micro 3050** → `k3s-master-2` and `k3s-worker-2`
+- **1 x DELL Optiplex Micro 3050** → `k3s-master-3` and `k3s-worker-3`
+
+
+
+## How I Will Deploy
+
+I will create **six virtual machines (VMs)** on a **Proxmox cluster**:
+
+- **3 x Ubuntu 22.04 Master Nodes**  
+- **3 x Ubuntu 22.04 Worker Nodes**
+
+The goal is to run **K3s** on these VMs to set up a solid Kubernetes environment with redundancy.
+
+## Chapter 1: Preparing DNS and IP Addresses
+
+When setting up a Kubernetes cluster, **DNS and IP management** are crucial. Below is how I handle DHCP, static IP assignments, and DNS entries in my homelab environment.
+
+### DHCP Configuration
+
+There are two possible scenarios for assigning IP addresses to your VMs:
+
+1. **Use IP addresses outside of your DHCP range**  
+   This method is often preferred, as your machines will keep their manually configured network settings even if your DHCP server goes down.
+
+2. **DHCP Static Mappings**  
+   You can map `MAC -> IP` in your network services to allocate IP addresses to VMs based on their MAC addresses. 
+
+<Callout variant="tip">
+**Tip:** If you choose the second scenario, make sure you document your static leases carefully. Proper documentation avoids conflicts and confusion later.
+</Callout>
+
+### My Approach
+
+I chose the **first scenario**, where I use IPs outside the DHCP range. This ensures my network remains stable if the DHCP service is unavailable.
+
+- **IP Range**: `10.57.57.30/24` → `10.57.57.35/24` for my VMs
+
+### DNS Setup
+
+I also set up a DNS entry in my **Unbound** service on pfSense to easily manage and access my machines. For instance, you can create an `A` record or similar DNS record type pointing to your VM's IP address. Below is a simple example:
+
+![Unbound pfSense DNS Configuration](assets/k3s-unbound-pfsense.png)
+
+## Chapter 2: Automated VM Deployment on Proxmox with Cloud-Init
+
+To streamline the next steps, I've created a **bash script** that automates crucial parts of the process, including:
+
+- Creating a **Cloud-Init** template
+- Deploying multiple **VMs** with static IP addresses
+- Destroying the VMs if needed
+
+If you prefer an even more automated approach using tools like **Packer** or **Terraform**, I suggest checking out this related post: [Homelab as Code](https://nullkdev.github.io//blog/homelab-as-code/) and adapting it to your specific scenario. However, for this blog, I'll demonstrate a simpler, more direct approach using the script below.
+
+<Callout variant="warning">
+**Warning:** This script can create or destroy VMs. Use it carefully and always keep backups of critical data.
+</Callout>
+
+### Prerequisites
+
+- Make sure you have **Proxmox** up and running.
+- You'll need to place your **SSH public key** (e.g., `/root/.ssh/id_rsa.pub`) on the Proxmox server before running the script.  
+
+### Script Overview
+
+**Option 1: Create Cloud-Init Template**  
+- Downloads the **Ubuntu Cloud image** (currently Ubuntu 24.04, code-named "noble")  
+- Creates a VM based on the **cloud-init** image  
+- Configures **cloud-init ubuntu** settings for automated provisioning
+- Converts it into a template for rapid VM deployment
+
+**Option 2: Deploy VMs**  
+- Clones the **Cloud-Init** template to create the desired number of VMs  
+- Automatically configures **ubuntu cloud-init** settings including:
+  - IP addressing and network configuration
+  - Gateway and DNS settings
+  - Search domain configuration
+  - SSH key injection for secure access
+- Adjusts CPU, RAM, and disk size to fit your needs
+
+**Option 3: Destroy VMs**  
+- Stops and removes VMs created by this script
+
+During the VM creation process, you'll be prompted to enter the **VM name** for each instance (e.g., `k3s-master-1`, `k3s-master-2`, etc.).  
+
+<Callout variant="tip">
+**Tip:** To fully automate naming, you could edit the script to increment VM names automatically. However, prompting ensures you can organize VMs with custom naming.
+</Callout>
+
+### The Bash Script
+
+Below is the full script. Feel free to customize it based on your storage, networking, and naming preferences.
+```bash
+#!/bin/bash
+
+# Function to get user input with a default value
+get_input() {
+    local prompt=$1
+    local default=$2
+    local input
+    read -p "$prompt [$default]: " input
+    echo "${input:-$default}"
+}
+
+# Ask the user whether they want to create a template, deploy or destroy VMs
+echo "Select an option:"
+echo "1) Create Cloud-Init Template"
+echo "2) Deploy VMs"
+echo "3) Destroy VMs"
+read -p "Enter your choice (1, 2, or 3): " ACTION
+
+if [[ "$ACTION" != "1" && "$ACTION" != "2" && "$ACTION" != "3" ]]; then
+    echo "❌ Invalid choice. Please run the script again and select 1, 2, or 3."
+    exit 1
+fi
+
+# === OPTION 1: CREATE CLOUD-INIT TEMPLATE ===
+if [[ "$ACTION" == "1" ]]; then
+    TEMPLATE_ID=$(get_input "Enter the template VM ID" "300")
+    STORAGE=$(get_input "Enter the storage name" "local")
+    TEMPLATE_NAME=$(get_input "Enter the template name" "ubuntu-cloud")
+    IMG_URL="https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
+    IMG_FILE="/root/noble-server-cloudimg-amd64.img"
+
+    echo "📥 Downloading Ubuntu Cloud image for cloud-init setup..."
+    cd /root
+    wget -O $IMG_FILE $IMG_URL || { echo "❌ Failed to download the image"; exit 1; }
+
+    echo "🖥️ Creating VM $TEMPLATE_ID..."
+    qm create $TEMPLATE_ID --memory 2048 --cores 2 --name $TEMPLATE_NAME --net0 virtio,bridge=vmbr0
+
+    echo "💾 Importing disk to storage ($STORAGE)..."
+    qm disk import $TEMPLATE_ID $IMG_FILE $STORAGE || { echo "❌ Failed to import disk"; exit 1; }
+
+    echo "🔗 Attaching disk..."
+    qm set $TEMPLATE_ID --scsihw virtio-scsi-pci --scsi0 $STORAGE:vm-$TEMPLATE_ID-disk-0
+
+    echo "☁️ Adding Cloud-Init drive..."
+    qm set $TEMPLATE_ID --ide2 $STORAGE:cloudinit
+
+    echo "🛠️ Configuring boot settings..."
+    qm set $TEMPLATE_ID --boot c --bootdisk scsi0
+
+    echo "🖧 Adding serial console..."
+    qm set $TEMPLATE_ID --serial0 socket --vga serial0
+
+    echo "📌 Converting VM to template..."
+    qm template $TEMPLATE_ID
+
+    echo "✅ Cloud-Init Template created successfully!"
+    exit 0
+fi
+
+# === OPTION 2: DEPLOY VMs ===
+if [[ "$ACTION" == "2" ]]; then
+    TEMPLATE_ID=$(get_input "Enter the template VM ID" "300")
+    START_ID=$(get_input "Enter the starting VM ID" "301")
+    NUM_VMS=$(get_input "Enter the number of VMs to deploy" "6")
+    STORAGE=$(get_input "Enter the storage name" "dataz2")
+    IP_PREFIX=$(get_input "Enter the IP prefix (e.g., 10.57.57.)" "10.57.57.")
+    IP_START=$(get_input "Enter the starting IP last octet" "30")
+    GATEWAY=$(get_input "Enter the gateway IP" "10.57.57.1")
+    DNS_SERVERS=$(get_input "Enter the DNS servers (space-separated)" "8.8.8.8 1.1.1.1")
+    DOMAIN_SEARCH=$(get_input "Enter the search domain" "nullkdev.github.io")
+    DISK_SIZE=$(get_input "Enter the disk size (e.g., 100G)" "100G")
+    RAM_SIZE=$(get_input "Enter the RAM size in MB" "16384")
+    CPU_CORES=$(get_input "Enter the number of CPU cores" "4")
+    CPU_SOCKETS=$(get_input "Enter the number of CPU sockets" "4")
+    SSH_KEY_PATH=$(get_input "Enter the SSH public key file path" "/root/.ssh/id_rsa.pub")
+
+    if [[ ! -f "$SSH_KEY_PATH" ]]; then
+        echo "❌ Error: SSH key file not found at $SSH_KEY_PATH"
+        exit 1
+    fi
+
+    for i in $(seq 0 $((NUM_VMS - 1))); do
+        VM_ID=$((START_ID + i))
+        IP="$IP_PREFIX$((IP_START + i))/24"
+        VM_NAME=$(get_input "Enter the name for VM $VM_ID" "ubuntu-vm-$((i+1))")
+
+        echo "🔹 Creating VM: $VM_ID (Name: $VM_NAME, IP: $IP)"
+
+        if qm status $VM_ID &>/dev/null; then
+            echo "⚠️ VM $VM_ID already exists, removing..."
+            qm stop $VM_ID &>/dev/null
+            qm destroy $VM_ID
+        fi
+
+        if ! qm clone $TEMPLATE_ID $VM_ID --full --name $VM_NAME --storage $STORAGE; then
+            echo "❌ Failed to clone VM $VM_ID, skipping..."
+            continue
+        fi
+
+        qm set $VM_ID --memory $RAM_SIZE \
+                      --cores $CPU_CORES \
+                      --sockets $CPU_SOCKETS \
+                      --cpu host \
+                      --serial0 socket \
+                      --vga serial0 \
+                      --ipconfig0 ip=$IP,gw=$GATEWAY \
+                      --nameserver "$DNS_SERVERS" \
+                      --searchdomain "$DOMAIN_SEARCH" \
+                      --sshkey "$SSH_KEY_PATH"
+
+        qm set $VM_ID --delete ide2 || true
+        qm set $VM_ID --ide2 $STORAGE:cloudinit,media=cdrom
+        qm cloudinit update $VM_ID
+
+        echo "🔄 Resizing disk to $DISK_SIZE..."
+        qm resize $VM_ID scsi0 +$DISK_SIZE
+
+        qm start $VM_ID
+        echo "✅ VM $VM_ID ($VM_NAME) created and started!"
+    done
+    exit 0
+fi
+
+# === OPTION 3: DESTROY VMs ===
+if [[ "$ACTION" == "3" ]]; then
+    START_ID=$(get_input "Enter the starting VM ID to delete" "301")
+    NUM_VMS=$(get_input "Enter the number of VMs to delete" "6")
+
+    echo "⚠️ Destroying VMs from $START_ID to $((START_ID + NUM_VMS - 1))..."
+    for i in $(seq 0 $((NUM_VMS - 1))); do
+        VM_ID=$((START_ID + i))
+
+        if qm status $VM_ID &>/dev/null; then
+            echo "🛑 Stopping and destroying VM $VM_ID..."
+            qm stop $VM_ID &>/dev/null
+            qm destroy $VM_ID
+        else
+            echo "ℹ️ VM $VM_ID does not exist. Skipping..."
+        fi
+    done
+    echo "✅ Specified VMs have been destroyed."
+    exit 0
+fi
+```
+
+### Verifying Your Deployment
+
+After running the script under Option 2, you should see your new VMs listed in the Proxmox web interface. You can now log in via SSH from the machine that holds the corresponding private key:
+```bash
+ssh ubuntu@k3s-master-01
+```
+
+<Callout variant="note">
+**Note**: Adjust the hostname or IP as configured during the script prompts.
+</Callout>
+
+## Guide Structure
+
+This comprehensive guide is organized into focused sections for easier navigation:
+
+1. **K3s Installation with Ansible** - Automated cluster deployment using Ansible playbooks
+2. **Traefik Setup and SSL** - Configure ingress controller with Let's Encrypt certificates
+3. **Cluster Management Tools** - Deploy Rancher for cluster management and Longhorn for storage
+4. **Advanced Resources** - Additional tools including monitoring, NFS storage, and ArgoCD
+
+Each section builds upon the previous one, so it's recommended to follow them in order for the best experience.

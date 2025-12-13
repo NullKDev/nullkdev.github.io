@@ -1,0 +1,57 @@
+---
+title: "SSH Hardening - Securing Your Linux Servers"
+description: "Complete guide to hardening SSH on production Linux servers. Learn practical techniques I've implemented across enterprise environments to secure remote access, prevent brute-force attacks, and maintain compliance with security standards."
+date: 2025-10-06
+tags: ["infrastructure", "ssh", "linux", "cybersecurity"]
+image: './ssh.svg'
+---
+
+import Callout from '@/components/Callout.astro'
+
+
+After managing Linux infrastructure for several years, I've seen countless security incidents that could have been prevented with proper SSH configuration. The default SSH setup on most distributions is functional but far from secure for production environments. Today, I'm sharing the exact hardening steps I implement on every server I manage.
+
+## Securing SSH Is Important
+
+SSH is the primary entry point to your Linux servers. A poorly configured SSH service is like leaving your front door unlocked with a neon sign saying "Come on in." I've witnessed brute-force attacks hitting servers with thousands of login attempts per hour. Without proper hardening, it's only a matter of time before something gives.
+
+The reality is that automated bots constantly scan the internet for vulnerable SSH services. They try default credentials, exploit weak configurations, and look for any opening to compromise your systems. I learned this the hard way early in my career when I checked auth logs and found over 50,000 failed login attempts in a single day.
+
+
+
+## What This Guide Covers
+
+Unlike typical SSH tutorials that just tell you to "change the default port," this guide provides a comprehensive approach based on real production experience:
+
+- Key-based authentication implementation
+- SSH daemon configuration hardening
+- Two-factor authentication setup
+- Host-based authentication for trusted servers
+- Connection rate limiting and fail2ban
+- Monitoring and log analysis
+- Compliance considerations for enterprise environments
+
+## Prerequisites
+
+Before we start, you'll need:
+- Root or sudo access to your Linux server
+- Basic understanding of SSH connections
+- A backup way to access your server (console access, KVM, or recovery mode)
+- 30-45 minutes for implementation
+
+<Callout variant="warning">
+**Critical Warning:** Never lock yourself out. Always test each configuration change in a separate SSH session before closing your original connection.
+</Callout>
+
+## Guide Structure
+
+This comprehensive guide is organized into focused sections that build upon each other:
+
+1. **Key-Based Authentication** - Replace password authentication with cryptographic keys
+2. **SSH Daemon Hardening** - Lock down sshd_config with production-ready settings
+3. **Two-Factor Authentication** - Add an extra security layer with TOTP
+4. **Host-Based Authentication** - Configure automated server-to-server trust (Advanced)
+5. **Security Monitoring** - Implement fail2ban, connection management, and log analysis
+6. **Troubleshooting & Best Practices** - Common issues, compliance, and maintenance
+
+Each section can be implemented independently, though I recommend following them in order for maximum security benefit.

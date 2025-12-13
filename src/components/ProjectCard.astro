@@ -1,0 +1,127 @@
+---
+import { Badge } from '@/components/ui/badge'
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card"
+import { ContributorAvatar } from "@/components/react/ContributorAvatar"
+import { parseAuthors } from '@/lib/data-utils'
+import { Icon } from 'astro-icon/components'
+import { Image } from 'astro:assets'
+import type { CollectionEntry } from 'astro:content'
+import { ArrowUpRight } from 'lucide-react'
+
+interface Props {
+  project: CollectionEntry<'projects'>
+}
+const formatDateCompact = (date: Date) => { 
+  return new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(date); 
+}
+
+const { project } = Astro.props
+const contributors = await parseAuthors(project.data.contributors ?? [])
+const startDate = project.data.startDate ? formatDateCompact(project.data.startDate) : '';
+const endDate = project.data.endDate ? formatDateCompact(project.data.endDate) : 'Present';
+const dateDisplay = startDate === endDate ? startDate : `${startDate} → ${endDate}`;
+---
+
+<a 
+  href={`/${project.collection}/${project.id}`} 
+  class="block group outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl h-full"
+>
+  <Card className="flex flex-col sm:flex-row h-full overflow-hidden border border-border/40 bg-card hover:bg-muted/10 hover:border-border/80 hover:shadow-lg transition-all duration-300">
+    
+    {/* --- ZONA IMAGEN (35-40% del ancho) --- */}
+    {project.data.image && (
+      <div class="w-full sm:w-40 md:w-72 shrink-0 overflow-hidden relative border-b sm:border-b-0 sm:border-r border-border/40">
+        <Image
+          src={project.data.image}
+          alt={project.data.title}
+          width={400}
+          height={300}
+          class="h-56 sm:h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          transition:name={`project-transition-${project.id}`}
+        />
+        
+        {/* Overlay opcional para unificar contraste en dark mode */}
+        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
+      </div>
+    )}
+
+    {/* --- ZONA CONTENIDO --- */}
+    <div class="flex flex-col grow p-3 sm:p-5 gap-2">
+      
+      {/* HEADER: Título y Fecha/Icono */}
+      <div class="flex justify-between items-start gap-4 mb-3">
+        <div class="space-y-1">
+            <h3 class="text-xl font-bold tracking-tight text-foreground group-hover:text-primary transition-colors duration-200">
+              {project.data.title}
+            </h3>
+            
+            {/* Fecha movida aquí abajo del título para contexto inmediato */}
+            {project.data.startDate && (
+                <div class="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
+                    <Icon name="lucide:calendar" class="size-3" />
+                    <span>{ dateDisplay }</span>
+                </div>
+            )}
+        </div>
+
+        {/* ICONO DE ACCIÓN: Reemplaza al botón "View Project". 
+            Se mueve en diagonal al hacer hover. */}
+        <Icon 
+            name="lucide:arrow-up-right" 
+            class="size-5 text-muted-foreground/50 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" 
+        />
+      </div>
+
+      {/* BODY: Descripción */}
+      <div class="grow">
+          <p class="text-sm text-muted-foreground leading-relaxed line-clamp-3 mb-4">
+            {project.data.description}
+          </p>
+      </div>
+
+      {/* FOOTER: Tags y Avatares */}
+      <div class="mt-auto pt-3 border-t border-border/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+         
+         {/* Tags (Tech Stack) */}
+         {project.data.tags && (
+            <div class="flex flex-wrap gap-1.5">
+              {project.data.tags.slice(0, 3).map((tag: string) => (
+                <Badge variant="secondary" className="px-2 py-0 text-[10px] h-5 font-normal text-muted-foreground bg-secondary/40 border-transparent cursor-default">
+                  {tag}
+                </Badge>
+              ))}
+              {project.data.tags.length > 3 && (
+                  <span class="text-[10px] text-muted-foreground self-center px-1">+{project.data.tags.length - 3}</span>
+              )}
+            </div>
+          )}
+
+         {/* Contribuidores (Avatar Stack Limpio) */}
+         {contributors.length > 0 && (
+            <div class="flex items-center gap-2">
+                <div class="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale">
+                  {contributors.map((contributor) => (
+                    <ContributorAvatar 
+                      client:visible
+                      src={contributor.avatar}
+                      alt={contributor.name}
+                      fallback={contributor.name[0]}
+                      className="size-5 border-2 border-card"
+                    />
+                  ))}
+                </div>
+                <span class="text-sm text-foreground/80">
+                  {contributors[0].name}
+                  {contributors.length > 1 && <span class="text-muted-foreground/60"> & {contributors.length - 1} others</span>}
+                </span>
+            </div>
+         )}
+      </div>
+    </div>
+  </Card>
+</a>
