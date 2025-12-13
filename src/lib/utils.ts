@@ -42,7 +42,7 @@ export function getHeadingMargin(depth: number): string {
  * @returns Object with variant, className, and optional tooltip for styling
  */
 export function getTagVariant(tag: string): {
-  variant: 'default' | 'muted' | 'destructive' | 'outline'
+  variant: 'default' | 'secondary' | 'destructive' | 'outline'
   className?: string
   tooltip?: string
 } {
@@ -72,7 +72,7 @@ export function getTagVariant(tag: string): {
     //   }
     default:
       return {
-        variant: 'muted',
+        variant: 'secondary',
       }
   }
 }
