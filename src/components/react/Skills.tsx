@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { InfiniteScroll } from './InfiniteScroll'
 import { getIcon } from './SkillsIconLoader'
+import { ANIMATION } from '@/lib/constants'
 
 // Types for technologies
 type Category = {
@@ -86,15 +87,16 @@ const Skills: React.FC = () => {
   }, [])
 
   return (
-    <div className="z-30 mt-12 flex w-full flex-col max-w-[calc(100vw-5rem)] mx-auto lg:max-w-full">
+    <div className="z-30 mx-auto mt-12 flex w-full max-w-[calc(100vw-5rem)] flex-col lg:max-w-full">
       <div className="space-y-2">
         {categoryGroups.map((group, groupIndex) => (
           <InfiniteScroll
             key={groupIndex}
-            duration={50000}
+            duration={ANIMATION.SCROLL_DURATION_SKILLS}
             direction={groupIndex % 2 === 0 ? 'normal' : 'reverse'}
             showFade={true}
             className="flex flex-row justify-center"
+            ariaLabel={`Skills group ${groupIndex + 1}: ${group.join(', ')}`}
           >
             {group.flatMap((category) =>
               technologies[category as keyof Technologies].map(

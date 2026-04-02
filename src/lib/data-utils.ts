@@ -12,49 +12,49 @@ export async function getAllPhotos(): Promise<CollectionEntry<'photos'>[]> {
 
 export async function getAlbumImages(albumId: string) {
   const allImages = import.meta.glob<{ default: ImageMetadata }>(
-    "/src/content/photos/**/*.{jpeg,jpg,png,webp}"
-  );
+    '/src/content/photos/**/*.{jpeg,jpg,png,webp}',
+  )
   const albumImages = Object.entries(allImages).filter(([path]) => {
-    return path.includes(`/${albumId}/assets/`);
-  });
+    return path.includes(`/${albumId}/assets/`)
+  })
   const resolvedImages = await Promise.all(
     albumImages.map(async ([path, loader]) => {
-      const mod = await loader();
+      const mod = await loader()
       return {
         src: mod.default,
-        fileName: path.split('/').pop()
-      };
-    })
-  );
+        fileName: path.split('/').pop(),
+      }
+    }),
+  )
   //resolvedImages.sort(() => Math.random() - 0.5);
-  return resolvedImages;
+  return resolvedImages
 }
 
 export async function getAlbumCount() {
-  const allImages = import.meta.glob("/src/content/photos/**/assets/*.{jpeg,jpg,png,webp}");
-  const stats: Record<string, number> = {};
+  const allImages = import.meta.glob(
+    '/src/content/photos/**/assets/*.{jpeg,jpg,png,webp}',
+  )
+  const stats: Record<string, number> = {}
   Object.keys(allImages).forEach((path) => {
-    const match = path.match(/\/photos\/([^\/]+)\/assets\//);
+    const match = path.match(/\/photos\/([^\/]+)\/assets\//)
     if (match && match[1]) {
-      const albumId = match[1];
-      stats[albumId] = (stats[albumId] || 0) + 1;
+      const albumId = match[1]
+      stats[albumId] = (stats[albumId] || 0) + 1
     }
-  });
-  return stats;
+  })
+  return stats
 }
 
 export async function getAlbumsByTag(tag: string) {
-  const allPhotos = await getAllPhotos();
-  return allPhotos.filter(photo => 
-    photo.data.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase())
-  );
+  const allPhotos = await getAllPhotos()
+  return allPhotos.filter((photo) =>
+    photo.data.tags.map((t) => t.toLowerCase()).includes(tag.toLowerCase()),
+  )
 }
 
 export async function getAlbumsByAuthor(authorId: string) {
-  const allPhotos = await getAllPhotos();
-  return allPhotos.filter(photo => 
-    photo.data.authors.includes(authorId)
-  );
+  const allPhotos = await getAllPhotos()
+  return allPhotos.filter((photo) => photo.data.authors.includes(authorId))
 }
 
 export async function getAllAuthors(): Promise<CollectionEntry<'authors'>[]> {
@@ -304,7 +304,11 @@ export async function getRelatedPosts(
   const allPosts = await getAllPosts()
   const currentPost = allPosts.find((post) => post.id === currentPostId)
 
-  if (!currentPost || !currentPost.data.tags || currentPost.data.tags.length === 0) {
+  if (
+    !currentPost ||
+    !currentPost.data.tags ||
+    currentPost.data.tags.length === 0
+  ) {
     // If no tags, return recent posts excluding current
     return allPosts.filter((post) => post.id !== currentPostId).slice(0, limit)
   }
@@ -315,7 +319,7 @@ export async function getRelatedPosts(
     .map((post) => {
       const currentTags = new Set(currentPost.data.tags || [])
       const postTags = new Set(post.data.tags || [])
-      
+
       // Count matching tags
       let score = 0
       postTags.forEach((tag) => {
@@ -492,21 +496,6 @@ export async function parseAuthors(authorIds: string[] = []) {
       name: author?.data?.name || id,
       avatar: author?.data?.avatar || '/static/logo.png',
       isRegistered: author?.data?.isRegistered || false,
-    }
-  })
-}
-
-export async function parseAuthorsAndGetCollection(authorIds: string[] = []) {
-  if (!authorIds.length) return []
-
-  const allAuthors = await getAllAuthors()
-  const authorMap = new Map(allAuthors.map((author) => [author.id, author]))
-
-  return authorIds.map((id) => {
-    const author = authorMap.get(id)
-    return {
-      id,
-      author: author,
     }
   })
 }

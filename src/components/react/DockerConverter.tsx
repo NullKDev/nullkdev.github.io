@@ -20,7 +20,7 @@ interface DockerCompose {
       stdin_open?: boolean
       tty?: boolean
       read_only?: boolean
-      [key: string]: any
+      [key: string]: unknown
     }
   }
   networks?: {
@@ -28,9 +28,7 @@ interface DockerCompose {
       external?: boolean
     }
   }
-  volumes?: {
-    [key: string]: any
-  }
+  volumes?: Record<string, unknown>
 }
 
 function parseDockerRun(command: string): DockerCompose | null {
@@ -40,7 +38,10 @@ function parseDockerRun(command: string): DockerCompose | null {
   let cmd = command.trim().replace(/^docker\s+run\s+/, '')
 
   // Handle line continuations (backslashes)
-  cmd = cmd.replace(/\\\s*\n\s*/g, ' ').replace(/\s+/g, ' ').trim()
+  cmd = cmd
+    .replace(/\\\s*\n\s*/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
 
   const service: DockerCompose['services'][string] = {
     image: '',
@@ -109,12 +110,21 @@ function parseDockerRun(command: string): DockerCompose | null {
     // Handle long flags (--flag)
     if (token.startsWith('--')) {
       const flagName = token.substring(2)
-      const valueFlags = ['name', 'publish', 'volume', 'env', 'network', 'restart', 'workdir', 'user']
-      
+      const valueFlags = [
+        'name',
+        'publish',
+        'volume',
+        'env',
+        'network',
+        'restart',
+        'workdir',
+        'user',
+      ]
+
       if (valueFlags.includes(flagName)) {
         i++
         const value = i < tokens.length ? tokens[i] : ''
-        
+
         switch (flagName) {
           case 'name':
             service.container_name = value
@@ -177,16 +187,20 @@ function parseDockerRun(command: string): DockerCompose | null {
       }
     }
     // Handle short flags (-p, -v, -e, etc.)
-    else if (token.startsWith('-') && token.length > 1 && !token.startsWith('--')) {
+    else if (
+      token.startsWith('-') &&
+      token.length > 1 &&
+      !token.startsWith('--')
+    ) {
       // Handle combined flags like -it, -dt, etc.
       if (token.length === 2) {
         const flag = token[1]
         const needsValue = ['p', 'v', 'e', 'w', 'u', 'n'].includes(flag)
-        
+
         if (needsValue) {
           i++
           const value = i < tokens.length ? tokens[i] : ''
-          
+
           switch (flag) {
             case 'p':
               if (!service.ports) service.ports = []
@@ -275,9 +289,13 @@ function parseDockerRun(command: string): DockerCompose | null {
   }
 
   // Generate service name
-  const serviceName = service.container_name 
+  const serviceName = service.container_name
     ? service.container_name.replace(/[^a-z0-9]/gi, '-').toLowerCase()
-    : service.image.split('/').pop()?.split(':')[0]?.replace(/[^a-z0-9]/gi, '-') || 'app'
+    : service.image
+        .split('/')
+        .pop()
+        ?.split(':')[0]
+        ?.replace(/[^a-z0-9]/gi, '-') || 'app'
 
   const compose: DockerCompose = {
     services: {
@@ -288,7 +306,7 @@ function parseDockerRun(command: string): DockerCompose | null {
   // Add networks if specified
   if (service.networks && service.networks.length > 0) {
     compose.networks = {}
-    service.networks.forEach(net => {
+    service.networks.forEach((net) => {
       if (compose.networks) {
         compose.networks[net] = {}
       }
@@ -327,7 +345,9 @@ const DockerConverter: React.FC = () => {
         })
         setCompose(yamlStr)
       } else {
-        setError('Could not parse docker run command. Please ensure it contains a valid image name.')
+        setError(
+          'Could not parse docker run command. Please ensure it contains a valid image name.',
+        )
         setCompose('')
       }
     } catch (err) {
@@ -343,7 +363,7 @@ const DockerConverter: React.FC = () => {
       setCopied(type)
       setTimeout(() => setCopied(null), 2000)
     } catch (err) {
-      console.error('Failed to copy:', err)
+      if (import.meta.env.DEV) console.error('Failed to copy:', err)
     }
   }
 
@@ -386,8 +406,8 @@ const DockerConverter: React.FC = () => {
   return (
     <div className="w-full space-y-6">
       {/* Input Section */}
-      <div className="rounded-lg border bg-card p-6 space-y-4">
-        <div className="flex items-center justify-between flex-wrap gap-2">
+      <div className="bg-card space-y-4 rounded-lg border p-6">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <label htmlFor="docker-run-input" className="text-sm font-medium">
             Docker Run Command
           </label>
@@ -429,10 +449,10 @@ const DockerConverter: React.FC = () => {
           onChange={handleInputChange}
           placeholder="Enter docker run command...&#10;&#10;Example:&#10;docker run -d --name myapp -p 8080:80 -v /host:/container nginx:latest"
           rows={12}
-          className="w-full px-4 py-2 rounded-md border bg-background text-foreground font-mono text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 resize-y"
+          className="bg-background text-foreground focus:ring-ring w-full resize-y rounded-md border px-4 py-2 font-mono text-sm focus:ring-2 focus:ring-offset-2 focus:outline-none"
         />
         {stats && (
-          <div className="flex items-center gap-4 text-xs text-muted-foreground pt-2 border-t">
+          <div className="text-muted-foreground flex items-center gap-4 border-t pt-2 text-xs">
             <span>Lines: {stats.lines}</span>
             <span>Characters: {stats.chars.toLocaleString()}</span>
           </div>
@@ -441,14 +461,12 @@ const DockerConverter: React.FC = () => {
 
       {/* Error Display */}
       {error && (
-        <div className="rounded-lg border bg-destructive/10 border-destructive/20 p-4">
+        <div className="bg-destructive/10 border-destructive/20 rounded-lg border p-4">
           <div className="flex items-start gap-3">
-            <AlertCircle className="size-5 text-destructive shrink-0 mt-0.5" />
+            <AlertCircle className="text-destructive mt-0.5 size-5 shrink-0" />
             <div className="flex-1 space-y-1">
-              <p className="text-sm font-medium text-destructive">Error</p>
-              <p className="text-xs text-muted-foreground font-mono">
-                {error}
-              </p>
+              <p className="text-destructive text-sm font-medium">Error</p>
+              <p className="text-muted-foreground font-mono text-xs">{error}</p>
             </div>
           </div>
         </div>
@@ -456,9 +474,12 @@ const DockerConverter: React.FC = () => {
 
       {/* Output Section */}
       {compose && (
-        <div className="rounded-lg border bg-card p-6 space-y-4">
+        <div className="bg-card space-y-4 rounded-lg border p-6">
           <div className="flex items-center justify-between">
-            <label htmlFor="docker-compose-output" className="text-sm font-medium flex items-center gap-2">
+            <label
+              htmlFor="docker-compose-output"
+              className="flex items-center gap-2 text-sm font-medium"
+            >
               <FileCode className="size-4" />
               Docker Compose YAML
             </label>
@@ -482,22 +503,73 @@ const DockerConverter: React.FC = () => {
             readOnly
             placeholder="Docker Compose YAML will appear here..."
             rows={20}
-            className="w-full px-4 py-2 rounded-md border bg-muted/50 text-foreground font-mono text-sm resize-y"
+            className="bg-muted/50 text-foreground w-full resize-y rounded-md border px-4 py-2 font-mono text-sm"
           />
-          <div className="rounded-md bg-muted/30 p-3 text-xs text-muted-foreground">
-            <p className="font-medium mb-1">Supported flags:</p>
-            <ul className="list-disc list-inside space-y-0.5">
-              <li><code className="px-1 py-0.5 bg-background rounded">--name, -n</code> → container_name</li>
-              <li><code className="px-1 py-0.5 bg-background rounded">--publish, -p</code> → ports</li>
-              <li><code className="px-1 py-0.5 bg-background rounded">--volume, -v</code> → volumes</li>
-              <li><code className="px-1 py-0.5 bg-background rounded">--env, -e</code> → environment</li>
-              <li><code className="px-1 py-0.5 bg-background rounded">--restart</code> → restart</li>
-              <li><code className="px-1 py-0.5 bg-background rounded">--network</code> → networks</li>
-              <li><code className="px-1 py-0.5 bg-background rounded">--workdir, -w</code> → working_dir</li>
-              <li><code className="px-1 py-0.5 bg-background rounded">--user, -u</code> → user</li>
-              <li><code className="px-1 py-0.5 bg-background rounded">--privileged</code> → privileged</li>
-              <li><code className="px-1 py-0.5 bg-background rounded">-it</code> → stdin_open + tty</li>
-              <li><code className="px-1 py-0.5 bg-background rounded">-d</code> → detach (default in compose)</li>
+          <div className="bg-muted/30 text-muted-foreground rounded-md p-3 text-xs">
+            <p className="mb-1 font-medium">Supported flags:</p>
+            <ul className="list-inside list-disc space-y-0.5">
+              <li>
+                <code className="bg-background rounded px-1 py-0.5">
+                  --name, -n
+                </code>{' '}
+                → container_name
+              </li>
+              <li>
+                <code className="bg-background rounded px-1 py-0.5">
+                  --publish, -p
+                </code>{' '}
+                → ports
+              </li>
+              <li>
+                <code className="bg-background rounded px-1 py-0.5">
+                  --volume, -v
+                </code>{' '}
+                → volumes
+              </li>
+              <li>
+                <code className="bg-background rounded px-1 py-0.5">
+                  --env, -e
+                </code>{' '}
+                → environment
+              </li>
+              <li>
+                <code className="bg-background rounded px-1 py-0.5">
+                  --restart
+                </code>{' '}
+                → restart
+              </li>
+              <li>
+                <code className="bg-background rounded px-1 py-0.5">
+                  --network
+                </code>{' '}
+                → networks
+              </li>
+              <li>
+                <code className="bg-background rounded px-1 py-0.5">
+                  --workdir, -w
+                </code>{' '}
+                → working_dir
+              </li>
+              <li>
+                <code className="bg-background rounded px-1 py-0.5">
+                  --user, -u
+                </code>{' '}
+                → user
+              </li>
+              <li>
+                <code className="bg-background rounded px-1 py-0.5">
+                  --privileged
+                </code>{' '}
+                → privileged
+              </li>
+              <li>
+                <code className="bg-background rounded px-1 py-0.5">-it</code> →
+                stdin_open + tty
+              </li>
+              <li>
+                <code className="bg-background rounded px-1 py-0.5">-d</code> →
+                detach (default in compose)
+              </li>
             </ul>
           </div>
         </div>
@@ -505,9 +577,10 @@ const DockerConverter: React.FC = () => {
 
       {/* Info Section */}
       {!compose && !error && dockerRun.trim() && (
-        <div className="rounded-lg border bg-muted/30 p-4">
-          <p className="text-sm text-muted-foreground">
-            Enter a docker run command above to convert it to Docker Compose format.
+        <div className="bg-muted/30 rounded-lg border p-4">
+          <p className="text-muted-foreground text-sm">
+            Enter a docker run command above to convert it to Docker Compose
+            format.
           </p>
         </div>
       )}

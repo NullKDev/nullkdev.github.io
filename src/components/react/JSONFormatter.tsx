@@ -1,6 +1,14 @@
 import { useState, useCallback, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
-import { Copy, Check, RefreshCw, Minus, Plus, FileCheck, AlertCircle } from 'lucide-react'
+import {
+  Copy,
+  Check,
+  RefreshCw,
+  Minus,
+  Plus,
+  FileCheck,
+  AlertCircle,
+} from 'lucide-react'
 
 type FormatMode = 'format' | 'minify' | 'validate'
 
@@ -32,7 +40,7 @@ const JSONFormatter: React.FC = () => {
       // Try to extract line and column from error message
       const match = error.message.match(/position (\d+)/)
       const position = match ? parseInt(match[1], 10) : 0
-      
+
       // Calculate approximate line and column
       const lines = text.substring(0, position).split('\n')
       const line = lines.length
@@ -68,7 +76,7 @@ const JSONFormatter: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value
     setInput(value)
-    
+
     // Always validate
     const validationResult = validateJSON(value)
     setValidation(validationResult)
@@ -96,7 +104,7 @@ const JSONFormatter: React.FC = () => {
 
   const handleModeChange = (newMode: FormatMode) => {
     setMode(newMode)
-    
+
     if (!input.trim()) {
       setOutput('')
       return
@@ -121,7 +129,7 @@ const JSONFormatter: React.FC = () => {
   const handleIndentChange = (newIndent: number) => {
     if (newIndent < 0 || newIndent > 8) return
     setIndent(newIndent)
-    
+
     if (mode === 'format' && input.trim()) {
       const validationResult = validateJSON(input)
       if (validationResult.valid) {
@@ -137,7 +145,7 @@ const JSONFormatter: React.FC = () => {
       setCopied(type)
       setTimeout(() => setCopied(null), 2000)
     } catch (err) {
-      console.error('Failed to copy:', err)
+      if (import.meta.env.DEV) console.error('Failed to copy:', err)
     }
   }
 
@@ -168,14 +176,14 @@ const JSONFormatter: React.FC = () => {
     if (!input.trim()) return null
     const lines = input.split('\n').length
     const chars = input.length
-    const words = input.split(/\s+/).filter(w => w).length
+    const words = input.split(/\s+/).filter((w) => w).length
     return { lines, chars, words }
   }, [input])
 
   return (
     <div className="w-full space-y-6">
       {/* Mode Selector */}
-      <div className="rounded-lg border bg-card p-6 space-y-4">
+      <div className="bg-card space-y-4 rounded-lg border p-6">
         <div className="flex flex-wrap items-center gap-2">
           <Button
             variant={mode === 'format' ? 'default' : 'outline'}
@@ -204,7 +212,7 @@ const JSONFormatter: React.FC = () => {
         </div>
 
         {mode === 'format' && (
-          <div className="flex items-center gap-4 pt-2 border-t">
+          <div className="flex items-center gap-4 border-t pt-2">
             <label className="text-sm font-medium">Indentation:</label>
             <div className="flex items-center gap-2">
               <Button
@@ -216,7 +224,9 @@ const JSONFormatter: React.FC = () => {
               >
                 <Minus className="size-3" />
               </Button>
-              <span className="text-sm font-mono w-8 text-center">{indent}</span>
+              <span className="w-8 text-center font-mono text-sm">
+                {indent}
+              </span>
               <Button
                 variant="outline"
                 size="icon"
@@ -226,15 +236,15 @@ const JSONFormatter: React.FC = () => {
               >
                 <Plus className="size-3" />
               </Button>
-              <span className="text-xs text-muted-foreground">spaces</span>
+              <span className="text-muted-foreground text-xs">spaces</span>
             </div>
           </div>
         )}
       </div>
 
       {/* Input Section */}
-      <div className="rounded-lg border bg-card p-6 space-y-4">
-        <div className="flex items-center justify-between flex-wrap gap-2">
+      <div className="bg-card space-y-4 rounded-lg border p-6">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <label htmlFor="json-input" className="text-sm font-medium">
             JSON Input
           </label>
@@ -274,12 +284,12 @@ const JSONFormatter: React.FC = () => {
           id="json-input"
           value={input}
           onChange={handleInputChange}
-          placeholder='Enter JSON to format, minify, or validate...'
+          placeholder="Enter JSON to format, minify, or validate..."
           rows={12}
-          className="w-full px-4 py-2 rounded-md border bg-background text-foreground font-mono text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 resize-y"
+          className="bg-background text-foreground focus:ring-ring w-full resize-y rounded-md border px-4 py-2 font-mono text-sm focus:ring-2 focus:ring-offset-2 focus:outline-none"
         />
         {stats && (
-          <div className="flex items-center gap-4 text-xs text-muted-foreground pt-2 border-t">
+          <div className="text-muted-foreground flex items-center gap-4 border-t pt-2 text-xs">
             <span>Lines: {stats.lines}</span>
             <span>Characters: {stats.chars.toLocaleString()}</span>
             <span>Words: {stats.words}</span>
@@ -289,30 +299,36 @@ const JSONFormatter: React.FC = () => {
 
       {/* Validation Status */}
       {validation && (
-        <div className={`rounded-lg border p-4 ${
-          validation.valid 
-            ? 'bg-green-500/10 border-green-500/20' 
-            : 'bg-destructive/10 border-destructive/20'
-        }`}>
+        <div
+          className={`rounded-lg border p-4 ${
+            validation.valid
+              ? 'border-green-500/20 bg-green-500/10'
+              : 'bg-destructive/10 border-destructive/20'
+          }`}
+        >
           <div className="flex items-start gap-3">
             {validation.valid ? (
-              <FileCheck className="size-5 text-green-500 shrink-0 mt-0.5" />
+              <FileCheck className="mt-0.5 size-5 shrink-0 text-green-500" />
             ) : (
-              <AlertCircle className="size-5 text-destructive shrink-0 mt-0.5" />
+              <AlertCircle className="text-destructive mt-0.5 size-5 shrink-0" />
             )}
             <div className="flex-1 space-y-1">
-              <p className={`text-sm font-medium ${
-                validation.valid ? 'text-green-600 dark:text-green-400' : 'text-destructive'
-              }`}>
+              <p
+                className={`text-sm font-medium ${
+                  validation.valid
+                    ? 'text-green-600 dark:text-green-400'
+                    : 'text-destructive'
+                }`}
+              >
                 {validation.valid ? 'Valid JSON' : 'Invalid JSON'}
               </p>
               {validation.error && (
-                <p className="text-xs text-muted-foreground font-mono">
+                <p className="text-muted-foreground font-mono text-xs">
                   {validation.error}
                 </p>
               )}
               {validation.line && validation.column && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   Error at line {validation.line}, column {validation.column}
                 </p>
               )}
@@ -323,7 +339,7 @@ const JSONFormatter: React.FC = () => {
 
       {/* Output Section */}
       {(mode === 'format' || mode === 'minify') && (
-        <div className="rounded-lg border bg-card p-6 space-y-4">
+        <div className="bg-card space-y-4 rounded-lg border p-6">
           <div className="flex items-center justify-between">
             <label htmlFor="json-output" className="text-sm font-medium">
               {mode === 'format' ? 'Formatted JSON' : 'Minified JSON'}
@@ -346,16 +362,23 @@ const JSONFormatter: React.FC = () => {
             id="json-output"
             value={output}
             readOnly
-            placeholder={mode === 'format' ? 'Formatted JSON will appear here...' : 'Minified JSON will appear here...'}
+            placeholder={
+              mode === 'format'
+                ? 'Formatted JSON will appear here...'
+                : 'Minified JSON will appear here...'
+            }
             rows={12}
-            className="w-full px-4 py-2 rounded-md border bg-muted/50 text-foreground font-mono text-sm resize-y"
+            className="bg-muted/50 text-foreground w-full resize-y rounded-md border px-4 py-2 font-mono text-sm"
           />
           {output && (
-            <div className="flex items-center gap-4 text-xs text-muted-foreground pt-2 border-t">
-              <span>Output size: {output.length.toLocaleString()} characters</span>
+            <div className="text-muted-foreground flex items-center gap-4 border-t pt-2 text-xs">
+              <span>
+                Output size: {output.length.toLocaleString()} characters
+              </span>
               {mode === 'minify' && input && (
                 <span className="text-green-600 dark:text-green-400">
-                  Reduced by {((1 - output.length / input.length) * 100).toFixed(1)}%
+                  Reduced by{' '}
+                  {((1 - output.length / input.length) * 100).toFixed(1)}%
                 </span>
               )}
             </div>
@@ -367,4 +390,3 @@ const JSONFormatter: React.FC = () => {
 }
 
 export default JSONFormatter
-

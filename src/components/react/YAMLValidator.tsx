@@ -1,6 +1,13 @@
 import { useState, useCallback, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
-import { Copy, Check, RefreshCw, ArrowLeftRight, FileCheck, AlertCircle } from 'lucide-react'
+import {
+  Copy,
+  Check,
+  RefreshCw,
+  ArrowLeftRight,
+  FileCheck,
+  AlertCircle,
+} from 'lucide-react'
 
 type YAMLMode = 'validate' | 'format' | 'to-json' | 'from-json'
 
@@ -18,7 +25,7 @@ function yamlToJSON(yaml: string): { json: string; error?: string } {
     // This is a simplified converter - for full YAML support, use js-yaml
     // For now, we'll do basic conversion
     const lines = yaml.split('\n')
-    const result: any = {}
+    const result: Record<string, unknown> = {}
     let currentPath: string[] = []
     let indentLevel = 0
     const indentStack: number[] = [0]
@@ -26,13 +33,13 @@ function yamlToJSON(yaml: string): { json: string; error?: string } {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i]
       const trimmed = line.trim()
-      
+
       // Skip empty lines and comments
       if (!trimmed || trimmed.startsWith('#')) continue
 
       // Calculate indentation
       const indent = line.match(/^(\s*)/)?.[1].length || 0
-      
+
       // Handle list items
       if (trimmed.startsWith('-')) {
         const value = trimmed.substring(1).trim()
@@ -45,26 +52,32 @@ function yamlToJSON(yaml: string): { json: string; error?: string } {
       if (colonIndex > 0) {
         const key = trimmed.substring(0, colonIndex).trim()
         const value = trimmed.substring(colonIndex + 1).trim()
-        
+
         // Remove quotes if present
         const cleanKey = key.replace(/^["']|["']$/g, '')
         const cleanValue = value.replace(/^["']|["']$/g, '')
-        
+
         if (cleanValue === '' || cleanValue === 'null') {
           // Nested object
           continue
         } else {
           // Simple value
-          result[cleanKey] = cleanValue === 'true' ? true : cleanValue === 'false' ? false : cleanValue
+          result[cleanKey] =
+            cleanValue === 'true'
+              ? true
+              : cleanValue === 'false'
+                ? false
+                : cleanValue
         }
       }
     }
 
     return { json: JSON.stringify(result, null, 2) }
   } catch (err) {
-    return { 
-      json: '', 
-      error: err instanceof Error ? err.message : 'Failed to convert YAML to JSON' 
+    return {
+      json: '',
+      error:
+        err instanceof Error ? err.message : 'Failed to convert YAML to JSON',
     }
   }
 }
@@ -74,20 +87,20 @@ function jsonToYAML(json: string): { yaml: string; error?: string } {
     const obj = JSON.parse(json)
     return { yaml: jsonToYAMLString(obj, 0) }
   } catch (err) {
-    return { 
-      yaml: '', 
-      error: err instanceof Error ? err.message : 'Invalid JSON' 
+    return {
+      yaml: '',
+      error: err instanceof Error ? err.message : 'Invalid JSON',
     }
   }
 }
 
-function jsonToYAMLString(obj: any, indent: number): string {
+function jsonToYAMLString(obj: unknown, indent: number): string {
   const spaces = '  '.repeat(indent)
-  
+
   if (obj === null) {
     return 'null'
   }
-  
+
   if (typeof obj === 'string') {
     // Escape quotes and wrap if needed
     if (obj.includes('\n') || obj.includes(':') || obj.includes('#')) {
@@ -95,27 +108,32 @@ function jsonToYAMLString(obj: any, indent: number): string {
     }
     return obj
   }
-  
+
   if (typeof obj === 'number' || typeof obj === 'boolean') {
     return String(obj)
   }
-  
+
   if (Array.isArray(obj)) {
     if (obj.length === 0) return '[]'
-    return obj.map(item => `${spaces}- ${jsonToYAMLString(item, indent + 1)}`).join('\n')
+    return obj
+      .map((item) => `${spaces}- ${jsonToYAMLString(item, indent + 1)}`)
+      .join('\n')
   }
-  
+
   if (typeof obj === 'object') {
     const entries = Object.entries(obj)
     if (entries.length === 0) return '{}'
-    return entries.map(([key, value]) => {
-      const valueStr = typeof value === 'object' && value !== null && !Array.isArray(value)
-        ? `\n${jsonToYAMLString(value, indent + 1)}`
-        : ` ${jsonToYAMLString(value, indent)}`
-      return `${spaces}${key}:${valueStr}`
-    }).join('\n')
+    return entries
+      .map(([key, value]) => {
+        const valueStr =
+          typeof value === 'object' && value !== null && !Array.isArray(value)
+            ? `\n${jsonToYAMLString(value, indent + 1)}`
+            : ` ${jsonToYAMLString(value, indent)}`
+        return `${spaces}${key}:${valueStr}`
+      })
+      .join('\n')
   }
-  
+
   return String(obj)
 }
 
@@ -132,12 +150,12 @@ function validateYAML(yaml: string): ValidationResult {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]
     const trimmed = line.trim()
-    
+
     // Skip empty lines and comments
     if (!trimmed || trimmed.startsWith('#')) continue
 
     const indent = line.match(/^(\s*)/)?.[1].length || 0
-    
+
     // Check for common YAML syntax errors
     if (trimmed.includes(':') && !trimmed.match(/^[^:]+:\s*.+$/)) {
       // Key without value (might be nested, but check for common errors)
@@ -181,7 +199,7 @@ function formatYAML(yaml: string): string {
 
   for (const line of lines) {
     const trimmed = line.trim()
-    
+
     if (!trimmed || trimmed.startsWith('#')) {
       formatted.push(trimmed)
       continue
@@ -189,7 +207,7 @@ function formatYAML(yaml: string): string {
 
     const currentIndent = line.match(/^(\s*)/)?.[1].length || 0
     const normalizedIndent = indentLevel * indentSize
-    
+
     // Adjust indent level based on content
     if (trimmed.startsWith('-')) {
       formatted.push(' '.repeat(normalizedIndent) + trimmed)
@@ -197,7 +215,7 @@ function formatYAML(yaml: string): string {
       const colonIndex = trimmed.indexOf(':')
       const key = trimmed.substring(0, colonIndex).trim()
       const value = trimmed.substring(colonIndex + 1).trim()
-      
+
       if (value === '' || value === 'null' || value === '~') {
         // This might be a nested object
         formatted.push(' '.repeat(normalizedIndent) + `${key}:`)
@@ -223,7 +241,7 @@ const YAMLValidator: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value
     setInput(value)
-    
+
     if (!value.trim()) {
       setOutput('')
       setValidation(null)
@@ -280,7 +298,7 @@ const YAMLValidator: React.FC = () => {
 
   const handleModeChange = (newMode: YAMLMode) => {
     setMode(newMode)
-    
+
     if (!input.trim()) {
       setOutput('')
       setValidation(null)
@@ -288,7 +306,9 @@ const YAMLValidator: React.FC = () => {
     }
 
     // Recalculate based on new mode
-    handleInputChange({ target: { value: input } } as React.ChangeEvent<HTMLTextAreaElement>)
+    handleInputChange({
+      target: { value: input },
+    } as React.ChangeEvent<HTMLTextAreaElement>)
   }
 
   const copyToClipboard = async (text: string, type: 'input' | 'output') => {
@@ -298,7 +318,7 @@ const YAMLValidator: React.FC = () => {
       setCopied(type)
       setTimeout(() => setCopied(null), 2000)
     } catch (err) {
-      console.error('Failed to copy:', err)
+      if (import.meta.env.DEV) console.error('Failed to copy:', err)
     }
   }
 
@@ -333,15 +353,19 @@ tags:
   }
 
   const loadJSONExample = () => {
-    const example = JSON.stringify({
-      name: 'YAML Validator',
-      version: '1.0.0',
-      features: ['Validate', 'Format', 'Convert'],
-      settings: {
-        indent: 2,
-        validateOnInput: true,
+    const example = JSON.stringify(
+      {
+        name: 'YAML Validator',
+        version: '1.0.0',
+        features: ['Validate', 'Format', 'Convert'],
+        settings: {
+          indent: 2,
+          validateOnInput: true,
+        },
       },
-    }, null, 2)
+      null,
+      2,
+    )
     setInput(example)
     if (mode === 'from-json') {
       const conversion = jsonToYAML(example)
@@ -360,7 +384,7 @@ tags:
   return (
     <div className="w-full space-y-6">
       {/* Mode Selector */}
-      <div className="rounded-lg border bg-card p-6 space-y-4">
+      <div className="bg-card space-y-4 rounded-lg border p-6">
         <div className="flex flex-wrap items-center gap-2">
           <Button
             variant={mode === 'validate' ? 'default' : 'outline'}
@@ -397,8 +421,8 @@ tags:
       </div>
 
       {/* Input Section */}
-      <div className="rounded-lg border bg-card p-6 space-y-4">
-        <div className="flex items-center justify-between flex-wrap gap-2">
+      <div className="bg-card space-y-4 rounded-lg border p-6">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <label htmlFor="yaml-input" className="text-sm font-medium">
             {mode === 'from-json' ? 'JSON Input' : 'YAML Input'}
           </label>
@@ -438,12 +462,16 @@ tags:
           id="yaml-input"
           value={input}
           onChange={handleInputChange}
-          placeholder={mode === 'from-json' ? 'Enter JSON to convert to YAML...' : 'Enter YAML to validate, format, or convert...'}
+          placeholder={
+            mode === 'from-json'
+              ? 'Enter JSON to convert to YAML...'
+              : 'Enter YAML to validate, format, or convert...'
+          }
           rows={12}
-          className="w-full px-4 py-2 rounded-md border bg-background text-foreground font-mono text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 resize-y"
+          className="bg-background text-foreground focus:ring-ring w-full resize-y rounded-md border px-4 py-2 font-mono text-sm focus:ring-2 focus:ring-offset-2 focus:outline-none"
         />
         {stats && (
-          <div className="flex items-center gap-4 text-xs text-muted-foreground pt-2 border-t">
+          <div className="text-muted-foreground flex items-center gap-4 border-t pt-2 text-xs">
             <span>Lines: {stats.lines}</span>
             <span>Characters: {stats.chars.toLocaleString()}</span>
           </div>
@@ -452,33 +480,42 @@ tags:
 
       {/* Validation Status */}
       {validation && (
-        <div className={`rounded-lg border p-4 ${
-          validation.valid 
-            ? 'bg-green-500/10 border-green-500/20' 
-            : 'bg-destructive/10 border-destructive/20'
-        }`}>
+        <div
+          className={`rounded-lg border p-4 ${
+            validation.valid
+              ? 'border-green-500/20 bg-green-500/10'
+              : 'bg-destructive/10 border-destructive/20'
+          }`}
+        >
           <div className="flex items-start gap-3">
             {validation.valid ? (
-              <FileCheck className="size-5 text-green-500 shrink-0 mt-0.5" />
+              <FileCheck className="mt-0.5 size-5 shrink-0 text-green-500" />
             ) : (
-              <AlertCircle className="size-5 text-destructive shrink-0 mt-0.5" />
+              <AlertCircle className="text-destructive mt-0.5 size-5 shrink-0" />
             )}
             <div className="flex-1 space-y-1">
-              <p className={`text-sm font-medium ${
-                validation.valid ? 'text-green-600 dark:text-green-400' : 'text-destructive'
-              }`}>
-                {validation.valid 
-                  ? (mode === 'from-json' ? 'Valid JSON' : 'Valid YAML')
-                  : (mode === 'from-json' ? 'Invalid JSON' : 'Invalid YAML')
-                }
+              <p
+                className={`text-sm font-medium ${
+                  validation.valid
+                    ? 'text-green-600 dark:text-green-400'
+                    : 'text-destructive'
+                }`}
+              >
+                {validation.valid
+                  ? mode === 'from-json'
+                    ? 'Valid JSON'
+                    : 'Valid YAML'
+                  : mode === 'from-json'
+                    ? 'Invalid JSON'
+                    : 'Invalid YAML'}
               </p>
               {validation.error && (
-                <p className="text-xs text-muted-foreground font-mono">
+                <p className="text-muted-foreground font-mono text-xs">
                   {validation.error}
                 </p>
               )}
               {validation.line && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   Error at line {validation.line}
                   {validation.column && `, column ${validation.column}`}
                 </p>
@@ -490,10 +527,14 @@ tags:
 
       {/* Output Section */}
       {(mode === 'format' || mode === 'to-json' || mode === 'from-json') && (
-        <div className="rounded-lg border bg-card p-6 space-y-4">
+        <div className="bg-card space-y-4 rounded-lg border p-6">
           <div className="flex items-center justify-between">
             <label htmlFor="yaml-output" className="text-sm font-medium">
-              {mode === 'format' ? 'Formatted YAML' : mode === 'to-json' ? 'JSON Output' : 'YAML Output'}
+              {mode === 'format'
+                ? 'Formatted YAML'
+                : mode === 'to-json'
+                  ? 'JSON Output'
+                  : 'YAML Output'}
             </label>
             <Button
               variant="ghost"
@@ -514,12 +555,14 @@ tags:
             value={output}
             readOnly
             placeholder={
-              mode === 'format' ? 'Formatted YAML will appear here...' :
-              mode === 'to-json' ? 'JSON will appear here...' :
-              'YAML will appear here...'
+              mode === 'format'
+                ? 'Formatted YAML will appear here...'
+                : mode === 'to-json'
+                  ? 'JSON will appear here...'
+                  : 'YAML will appear here...'
             }
             rows={12}
-            className="w-full px-4 py-2 rounded-md border bg-muted/50 text-foreground font-mono text-sm resize-y"
+            className="bg-muted/50 text-foreground w-full resize-y rounded-md border px-4 py-2 font-mono text-sm"
           />
         </div>
       )}
@@ -528,4 +571,3 @@ tags:
 }
 
 export default YAMLValidator
-

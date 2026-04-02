@@ -37,7 +37,8 @@ export const GET: APIRoute = async () => {
       },
     })
   } catch (error) {
-    console.error('Error generating search index:', error)
+    if (import.meta.env.DEV)
+      console.error('Error generating search index:', error)
     // Return empty array on error instead of failing
     return new Response(JSON.stringify([]), {
       status: 200,
@@ -48,4 +49,3 @@ export const GET: APIRoute = async () => {
     })
   }
 }
-

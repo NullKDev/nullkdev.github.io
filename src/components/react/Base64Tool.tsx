@@ -36,7 +36,7 @@ const Base64Tool: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value
     setInput(value)
-    
+
     if (value.trim()) {
       if (mode === 'encode') {
         handleEncode()
@@ -52,15 +52,15 @@ const Base64Tool: React.FC = () => {
   const handleModeChange = (newMode: Mode) => {
     const currentInput = input
     const currentOutput = output
-    
+
     setMode(newMode)
     setError(null)
-    
+
     // Swap input and output when switching modes
     if (currentOutput.trim()) {
       // Use current output as new input
       setInput(currentOutput)
-      
+
       // Recalculate with swapped values
       if (newMode === 'encode') {
         try {
@@ -76,7 +76,9 @@ const Base64Tool: React.FC = () => {
       } else {
         try {
           const binaryString = atob(currentOutput)
-          const bytes = Uint8Array.from(binaryString, (char) => char.charCodeAt(0))
+          const bytes = Uint8Array.from(binaryString, (char) =>
+            char.charCodeAt(0),
+          )
           const decoder = new TextDecoder()
           const decoded = decoder.decode(bytes)
           setOutput(decoded)
@@ -99,7 +101,7 @@ const Base64Tool: React.FC = () => {
       setCopied(type)
       setTimeout(() => setCopied(null), 2000)
     } catch (err) {
-      console.error('Failed to copy:', err)
+      if (import.meta.env.DEV) console.error('Failed to copy:', err)
     }
   }
 
@@ -112,7 +114,7 @@ const Base64Tool: React.FC = () => {
   return (
     <div className="w-full space-y-6">
       {/* Mode Selector */}
-      <div className="rounded-lg border bg-card p-6 space-y-4">
+      <div className="bg-card space-y-4 rounded-lg border p-6">
         <div className="flex items-center gap-4">
           <Button
             variant={mode === 'encode' ? 'default' : 'outline'}
@@ -124,7 +126,9 @@ const Base64Tool: React.FC = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => handleModeChange(mode === 'encode' ? 'decode' : 'encode')}
+            onClick={() =>
+              handleModeChange(mode === 'encode' ? 'decode' : 'encode')
+            }
             title="Switch mode"
           >
             <ArrowUpDown className="size-4" />
@@ -140,7 +144,7 @@ const Base64Tool: React.FC = () => {
       </div>
 
       {/* Input Section */}
-      <div className="rounded-lg border bg-card p-6 space-y-4">
+      <div className="bg-card space-y-4 rounded-lg border p-6">
         <div className="flex items-center justify-between">
           <label htmlFor="base64-input" className="text-sm font-medium">
             {mode === 'encode' ? 'Text to Encode' : 'Base64 to Decode'}
@@ -163,14 +167,18 @@ const Base64Tool: React.FC = () => {
           id="base64-input"
           value={input}
           onChange={handleInputChange}
-          placeholder={mode === 'encode' ? 'Enter text to encode to Base64...' : 'Enter Base64 string to decode...'}
+          placeholder={
+            mode === 'encode'
+              ? 'Enter text to encode to Base64...'
+              : 'Enter Base64 string to decode...'
+          }
           rows={6}
-          className="w-full px-4 py-2 rounded-md border bg-background text-foreground font-mono text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 resize-y"
+          className="bg-background text-foreground focus:ring-ring w-full resize-y rounded-md border px-4 py-2 font-mono text-sm focus:ring-2 focus:ring-offset-2 focus:outline-none"
         />
       </div>
 
       {/* Output Section */}
-      <div className="rounded-lg border bg-card p-6 space-y-4">
+      <div className="bg-card space-y-4 rounded-lg border p-6">
         <div className="flex items-center justify-between">
           <label htmlFor="base64-output" className="text-sm font-medium">
             {mode === 'encode' ? 'Base64 Encoded' : 'Decoded Text'}
@@ -203,20 +211,22 @@ const Base64Tool: React.FC = () => {
           id="base64-output"
           value={output}
           readOnly
-          placeholder={mode === 'encode' ? 'Encoded Base64 will appear here...' : 'Decoded text will appear here...'}
+          placeholder={
+            mode === 'encode'
+              ? 'Encoded Base64 will appear here...'
+              : 'Decoded text will appear here...'
+          }
           rows={6}
-          className="w-full px-4 py-2 rounded-md border bg-muted/50 text-foreground font-mono text-sm resize-y"
+          className="bg-muted/50 text-foreground w-full resize-y rounded-md border px-4 py-2 font-mono text-sm"
         />
         {error && (
-          <div className="rounded-md bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive">
+          <div className="bg-destructive/10 border-destructive/20 text-destructive rounded-md border p-3 text-sm">
             {error}
           </div>
         )}
       </div>
-
     </div>
   )
 }
 
 export default Base64Tool
-

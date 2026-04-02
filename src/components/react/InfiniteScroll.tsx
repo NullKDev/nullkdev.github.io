@@ -12,6 +12,7 @@ interface InfiniteScrollProps {
   showFade?: boolean
   children: React.ReactNode
   pauseOnHover?: boolean
+  ariaLabel?: string
 }
 
 export function InfiniteScroll({
@@ -22,6 +23,7 @@ export function InfiniteScroll({
   showFade = true,
   children,
   pauseOnHover = true,
+  ariaLabel,
 }: InfiniteScrollProps) {
   const [contentWidth, setContentWidth] = useState<number>(0)
   const [isPaused, setIsPaused] = useState(false)
@@ -95,11 +97,13 @@ export function InfiniteScroll({
   return (
     <div
       className={cn(
-        'relative flex shrink-0 flex-col gap-4 overflow-hidden py-3 sm:py-2 sm:gap-2',
+        'relative flex shrink-0 flex-col gap-4 overflow-hidden py-3 sm:gap-2 sm:py-2',
         className,
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      aria-label={ariaLabel}
+      aria-live="polite"
     >
       <div className="flex">
         <motion.div

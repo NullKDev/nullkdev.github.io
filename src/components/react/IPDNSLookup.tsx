@@ -25,6 +25,47 @@ interface DNSRecord {
 
 type LookupType = 'ip' | 'dns'
 
+interface IpapiResponse {
+  error?: boolean
+  ip?: string
+  city?: string
+  region?: string
+  country_name?: string
+  country_code?: string
+  timezone?: string
+  org?: string
+  asn?: string
+  latitude?: number
+  longitude?: number
+}
+
+interface IpApiComResponse {
+  status: 'success' | 'fail'
+  message?: string
+  country?: string
+  countryCode?: string
+  regionName?: string
+  city?: string
+  timezone?: string
+  isp?: string
+  org?: string
+  as?: string
+  lat?: number
+  lon?: number
+  query?: string
+}
+
+interface GoogleDnsAnswer {
+  name?: string
+  type?: number
+  TTL?: number
+  data: string
+}
+
+interface GoogleDnsResponse {
+  Answer?: GoogleDnsAnswer[]
+}
+
 const IPDNSLookup: React.FC = () => {
   const [input, setInput] = useState('')
   const [lookupType, setLookupType] = useState<LookupType>('ip')
@@ -45,7 +86,7 @@ const IPDNSLookup: React.FC = () => {
       {
         name: 'ipapi.co',
         url: `https://ipapi.co/${ip}/json/`,
-        parser: (data: any) => {
+        parser: (data: IpapiResponse) => {
           if (data.error) return null
           return {
             ip: data.ip || ip,
@@ -60,12 +101,12 @@ const IPDNSLookup: React.FC = () => {
             lat: data.latitude,
             lon: data.longitude,
           }
-        }
+        },
       },
       {
         name: 'ip-api.com',
         url: `http://ip-api.com/json/${ip}?fields=status,message,country,countryCode,regionName,city,timezone,isp,org,as,lat,lon,query`,
-        parser: (data: any) => {
+        parser: (data: IpApiComResponse) => {
           if (data.status === 'fail') return null
           return {
             ip: data.query || ip,
@@ -80,8 +121,8 @@ const IPDNSLookup: React.FC = () => {
             lat: data.lat,
             lon: data.lon,
           }
-        }
-      }
+        },
+      },
     ]
 
     // Try each API in order until one succeeds
@@ -89,21 +130,22 @@ const IPDNSLookup: React.FC = () => {
       for (const api of apis) {
         try {
           const response = await fetch(api.url, {
-            signal: AbortSignal.timeout(5000) // 5 second timeout
+            signal: AbortSignal.timeout(5000), // 5 second timeout
           })
-          
+
           if (!response.ok) continue
-          
+
           const data = await response.json()
           const parsed = api.parser(data)
-          
+
           if (parsed) {
             setIpInfo(parsed)
             return
           }
         } catch (err) {
           // Continue to next API if this one fails
-          console.warn(`${api.name} failed, trying fallback...`, err)
+          if (import.meta.env.DEV)
+            console.warn(`${api.name} failed, trying fallback...`, err)
           continue
         }
       }
@@ -112,7 +154,7 @@ const IPDNSLookup: React.FC = () => {
       setError('Failed to lookup IP address. Please try again later.')
     } catch (err) {
       setError('An unexpected error occurred. Please try again later.')
-      console.error('IP lookup error:', err)
+      if (import.meta.env.DEV) console.error('IP lookup error:', err)
     } finally {
       setLoading(false)
     }
@@ -130,14 +172,16 @@ const IPDNSLookup: React.FC = () => {
 
       for (const type of types) {
         try {
-          const response = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=${type}`)
-          const data = await response.json()
+          const response = await fetch(
+            `https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=${type}`,
+          )
+          const data = (await response.json()) as GoogleDnsResponse
 
           if (data.Answer) {
-            data.Answer.forEach((answer: any) => {
+            data.Answer.forEach((answer) => {
               records.push({
-                type: answer.type || type,
-                name: answer.name || domain,
+                type: String(answer.type ?? type),
+                name: answer.name ?? domain,
                 value: answer.data,
                 ttl: answer.TTL,
               })
@@ -145,7 +189,8 @@ const IPDNSLookup: React.FC = () => {
           }
         } catch (err) {
           // Continue with other record types
-          console.error(`Error fetching ${type} records:`, err)
+          if (import.meta.env.DEV)
+            console.error(`Error fetching ${type} records:`, err)
         }
       }
 
@@ -158,8 +203,10 @@ const IPDNSLookup: React.FC = () => {
       setDnsRecords(records)
       setLoading(false)
     } catch (err) {
-      setError('Failed to lookup DNS records. Please check the domain name and try again.')
-      console.error('DNS lookup error:', err)
+      setError(
+        'Failed to lookup DNS records. Please check the domain name and try again.',
+      )
+      if (import.meta.env.DEV) console.error('DNS lookup error:', err)
     } finally {
       setLoading(false)
     }
@@ -173,7 +220,8 @@ const IPDNSLookup: React.FC = () => {
 
     if (lookupType === 'ip') {
       // Basic IP validation
-      const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
+      const ipRegex =
+        /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
       if (!ipRegex.test(input.trim())) {
         setError('Please enter a valid IPv4 address')
         return
@@ -202,7 +250,7 @@ const IPDNSLookup: React.FC = () => {
       setCopied(field)
       setTimeout(() => setCopied(null), 2000)
     } catch (err) {
-      console.error('Failed to copy:', err)
+      if (import.meta.env.DEV) console.error('Failed to copy:', err)
     }
   }
 
@@ -211,7 +259,11 @@ const IPDNSLookup: React.FC = () => {
     setError(null)
     try {
       const response = await fetch('https://api.ipify.org?format=json')
-      const data = await response.json()
+      if (!response.ok) throw new Error('Network response was not ok')
+      const data = (await response.json()) as { ip?: unknown }
+      if (typeof data.ip !== 'string' || !data.ip) {
+        throw new Error('Invalid response format')
+      }
       setInput(data.ip)
       setLookupType('ip')
       await lookupIP(data.ip)
@@ -224,7 +276,7 @@ const IPDNSLookup: React.FC = () => {
   return (
     <div className="w-full space-y-6">
       {/* Input Section */}
-      <div className="rounded-lg border bg-card p-6 space-y-4">
+      <div className="bg-card space-y-4 rounded-lg border p-6">
         <div className="flex items-center gap-4">
           <Button
             variant={lookupType === 'ip' ? 'default' : 'outline'}
@@ -259,8 +311,12 @@ const IPDNSLookup: React.FC = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={lookupType === 'ip' ? 'Enter IP address (e.g., 8.8.8.8)' : 'Enter domain name (e.g., google.com)'}
-              className="flex-1 px-4 py-2 rounded-md border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              placeholder={
+                lookupType === 'ip'
+                  ? 'Enter IP address (e.g., 8.8.8.8)'
+                  : 'Enter domain name (e.g., google.com)'
+              }
+              className="bg-background text-foreground focus:ring-ring flex-1 rounded-md border px-4 py-2 focus:ring-2 focus:ring-offset-2 focus:outline-none"
             />
             <Button onClick={handleLookup} disabled={loading || !input.trim()}>
               {loading ? (
@@ -290,7 +346,7 @@ const IPDNSLookup: React.FC = () => {
         </div>
 
         {error && (
-          <div className="rounded-md bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive">
+          <div className="bg-destructive/10 border-destructive/20 text-destructive rounded-md border p-3 text-sm">
             {error}
           </div>
         )}
@@ -300,81 +356,110 @@ const IPDNSLookup: React.FC = () => {
       {ipInfo && (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">IP Address Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="rounded-lg border bg-card p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-muted-foreground">IP Address</span>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="bg-card rounded-lg border p-4">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-muted-foreground text-sm font-medium">
+                  IP Address
+                </span>
                 <button
                   onClick={() => copyToClipboard(ipInfo.ip, 'ip')}
-                  className="text-xs text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
+                  className="text-primary hover:text-primary/80 flex items-center gap-1 text-xs transition-colors"
                 >
-                  {copied === 'ip' ? <Check className="size-3" /> : <Copy className="size-3" />}
+                  {copied === 'ip' ? (
+                    <Check className="size-3" />
+                  ) : (
+                    <Copy className="size-3" />
+                  )}
                 </button>
               </div>
-              <p className="text-base font-mono font-semibold">{ipInfo.ip}</p>
+              <p className="font-mono text-base font-semibold">{ipInfo.ip}</p>
             </div>
 
             {ipInfo.country && (
-              <div className="rounded-lg border bg-card p-4">
-                <span className="text-sm font-medium text-muted-foreground">Country</span>
-                <p className="text-base font-semibold mt-1">{ipInfo.country} {ipInfo.countryCode && `(${ipInfo.countryCode})`}</p>
+              <div className="bg-card rounded-lg border p-4">
+                <span className="text-muted-foreground text-sm font-medium">
+                  Country
+                </span>
+                <p className="mt-1 text-base font-semibold">
+                  {ipInfo.country}{' '}
+                  {ipInfo.countryCode && `(${ipInfo.countryCode})`}
+                </p>
               </div>
             )}
 
             {ipInfo.region && (
-              <div className="rounded-lg border bg-card p-4">
-                <span className="text-sm font-medium text-muted-foreground">Region</span>
-                <p className="text-base font-semibold mt-1">{ipInfo.region}</p>
+              <div className="bg-card rounded-lg border p-4">
+                <span className="text-muted-foreground text-sm font-medium">
+                  Region
+                </span>
+                <p className="mt-1 text-base font-semibold">{ipInfo.region}</p>
               </div>
             )}
 
             {ipInfo.city && (
-              <div className="rounded-lg border bg-card p-4">
-                <span className="text-sm font-medium text-muted-foreground">City</span>
-                <p className="text-base font-semibold mt-1">{ipInfo.city}</p>
+              <div className="bg-card rounded-lg border p-4">
+                <span className="text-muted-foreground text-sm font-medium">
+                  City
+                </span>
+                <p className="mt-1 text-base font-semibold">{ipInfo.city}</p>
               </div>
             )}
 
             {ipInfo.timezone && (
-              <div className="rounded-lg border bg-card p-4">
-                <span className="text-sm font-medium text-muted-foreground">Timezone</span>
-                <p className="text-base font-semibold mt-1">{ipInfo.timezone}</p>
+              <div className="bg-card rounded-lg border p-4">
+                <span className="text-muted-foreground text-sm font-medium">
+                  Timezone
+                </span>
+                <p className="mt-1 text-base font-semibold">
+                  {ipInfo.timezone}
+                </p>
               </div>
             )}
 
             {ipInfo.isp && (
-              <div className="rounded-lg border bg-card p-4">
-                <span className="text-sm font-medium text-muted-foreground">ISP</span>
-                <p className="text-base font-semibold mt-1">{ipInfo.isp}</p>
+              <div className="bg-card rounded-lg border p-4">
+                <span className="text-muted-foreground text-sm font-medium">
+                  ISP
+                </span>
+                <p className="mt-1 text-base font-semibold">{ipInfo.isp}</p>
               </div>
             )}
 
             {ipInfo.org && (
-              <div className="rounded-lg border bg-card p-4">
-                <span className="text-sm font-medium text-muted-foreground">Organization</span>
-                <p className="text-base font-semibold mt-1">{ipInfo.org}</p>
+              <div className="bg-card rounded-lg border p-4">
+                <span className="text-muted-foreground text-sm font-medium">
+                  Organization
+                </span>
+                <p className="mt-1 text-base font-semibold">{ipInfo.org}</p>
               </div>
             )}
 
             {ipInfo.as && (
-              <div className="rounded-lg border bg-card p-4">
-                <span className="text-sm font-medium text-muted-foreground">AS Number</span>
-                <p className="text-base font-mono font-semibold mt-1">{ipInfo.as}</p>
+              <div className="bg-card rounded-lg border p-4">
+                <span className="text-muted-foreground text-sm font-medium">
+                  AS Number
+                </span>
+                <p className="mt-1 font-mono text-base font-semibold">
+                  {ipInfo.as}
+                </p>
               </div>
             )}
 
             {ipInfo.lat !== undefined && ipInfo.lon !== undefined && (
-              <div className="rounded-lg border bg-card p-4 md:col-span-2">
-                <span className="text-sm font-medium text-muted-foreground">Coordinates</span>
-                <div className="flex items-center gap-2 mt-1">
-                  <p className="text-base font-mono font-semibold">
+              <div className="bg-card rounded-lg border p-4 md:col-span-2">
+                <span className="text-muted-foreground text-sm font-medium">
+                  Coordinates
+                </span>
+                <div className="mt-1 flex items-center gap-2">
+                  <p className="font-mono text-base font-semibold">
                     {ipInfo.lat.toFixed(4)}, {ipInfo.lon.toFixed(4)}
                   </p>
                   <a
                     href={`https://www.google.com/maps?q=${ipInfo.lat},${ipInfo.lon}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-primary hover:underline"
+                    className="text-primary text-xs hover:underline"
                   >
                     View on Maps
                   </a>
@@ -389,24 +474,40 @@ const IPDNSLookup: React.FC = () => {
       {dnsRecords.length > 0 && (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">DNS Records</h3>
-          <div className="rounded-lg border bg-card overflow-hidden">
+          <div className="bg-card overflow-hidden rounded-lg border">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-muted/50">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Type</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Name</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Value</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium">TTL</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium">
+                      Type
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium">
+                      Name
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium">
+                      Value
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium">
+                      TTL
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {dnsRecords.map((record, index) => (
                     <tr key={index} className="hover:bg-muted/30">
-                      <td className="px-4 py-3 text-sm font-mono font-semibold">{record.type}</td>
-                      <td className="px-4 py-3 text-sm font-mono">{record.name}</td>
-                      <td className="px-4 py-3 text-sm font-mono break-all">{record.value}</td>
-                      <td className="px-4 py-3 text-sm text-muted-foreground">{record.ttl ? `${record.ttl}s` : '-'}</td>
+                      <td className="px-4 py-3 font-mono text-sm font-semibold">
+                        {record.type}
+                      </td>
+                      <td className="px-4 py-3 font-mono text-sm">
+                        {record.name}
+                      </td>
+                      <td className="px-4 py-3 font-mono text-sm break-all">
+                        {record.value}
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3 text-sm">
+                        {record.ttl ? `${record.ttl}s` : '-'}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -415,10 +516,8 @@ const IPDNSLookup: React.FC = () => {
           </div>
         </div>
       )}
-
     </div>
   )
 }
 
 export default IPDNSLookup
-

@@ -2,6 +2,7 @@
 import { SITE, ANALYTICS } from '@/consts'
 import { ClientRouter } from 'astro:transitions'
 import Favicons from './Favicons.astro'
+import { truncateDescription } from '@/lib/utils'
 
 interface Props {
   title?: string
@@ -16,6 +17,7 @@ const {
 } = Astro.props
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).href
+const truncatedDescription = truncateDescription(description)
 const cleanPathname = Astro.url.pathname.replace(/\/$/, '')
 const ogImage = image || (cleanPathname ? new URL(`/og${cleanPathname}.png`, Astro.site).href : new URL('/og-default.png', Astro.site).href)
 ---
@@ -42,20 +44,14 @@ const ogImage = image || (cleanPathname ? new URL(`/og${cleanPathname}.png`, Ast
 
   <!-- Primary Meta Tags (deduplicated) -->
   <meta name="title" content={title} />
-  {(() => {
-    const desc = description && description.length > 160 ? `${description.slice(0, 157)}…` : description
-    return <meta name="description" content={desc} />
-  })()}
+  <meta name="description" content={truncatedDescription} />
   <link rel="canonical" href={canonicalURL} />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content={canonicalURL} />
   <meta property="og:title" content={title} />
-  {(() => {
-    const desc = description && description.length > 160 ? `${description.slice(0, 157)}…` : description
-    return <meta property="og:description" content={desc} />
-  })()}
+  <meta property="og:description" content={truncatedDescription} />
   <meta property="og:image" content={ogImage} />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -64,10 +60,7 @@ const ogImage = image || (cleanPathname ? new URL(`/og${cleanPathname}.png`, Ast
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:url" content={canonicalURL} />
   <meta name="twitter:title" content={title} />
-  {(() => {
-    const desc = description && description.length > 160 ? `${description.slice(0, 157)}…` : description
-    return <meta name="twitter:description" content={desc} />
-  })()}
+  <meta name="twitter:description" content={truncatedDescription} />
   <meta name="twitter:image" content={ogImage} />
 
   <meta name="HandheldFriendly" content="True" />

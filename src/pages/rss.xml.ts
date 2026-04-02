@@ -19,7 +19,7 @@ export async function GET(context: APIContext) {
       })),
     })
   } catch (error) {
-    console.error('Error generating RSS feed:', error)
+    if (import.meta.env.DEV) console.error('Error generating RSS feed:', error)
     return new Response('Error generating RSS feed', { status: 500 })
   }
 }
