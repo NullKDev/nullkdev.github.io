@@ -28,10 +28,10 @@ const isSubpost = !!parentPost
       class="mr-2 size-4 transition-transform group-hover:-translate-x-1"
     />
     <div class="flex flex-col items-start overflow-hidden text-wrap">
-      <span class="text-muted-foreground text-left text-xs">
+      <span class="text-muted-foreground text-left text-xs" data-i18n={isSubpost ? 'post.prev_sub' : 'post.prev'}>
         {isSubpost ? 'Previous Subpost' : 'Previous Post'}
       </span>
-      <span class="w-full text-left text-sm text-balance text-ellipsis">
+      <span class="w-full text-left text-sm text-balance text-ellipsis" data-i18n={!olderPost ? (isSubpost ? 'post.no_older_sub' : 'post.oldest') : undefined}>
         {
           olderPost?.data.title ||
             (isSubpost ? 'No older subpost' : "You're at the oldest post!")
@@ -55,10 +55,10 @@ const isSubpost = !!parentPost
           class="mr-2 size-4 transition-transform group-hover:-translate-y-1"
         />
         <div class="flex flex-col items-center overflow-hidden text-wrap">
-          <span class="text-muted-foreground text-center text-xs">
+          <span class="text-muted-foreground text-center text-xs" data-i18n="post.parent">
             Parent Post
           </span>
-          <span class="w-full text-center text-sm text-balance text-ellipsis">
+          <span class="w-full text-center text-sm text-balance text-ellipsis" data-i18n={!parentPost?.data.title && !parentPost?.data.name ? 'post.no_parent' : undefined}>
             {parentPost?.data.title ||
               parentPost?.data.name ||
               'No parent post'}
@@ -78,10 +78,10 @@ const isSubpost = !!parentPost
     aria-disabled={!newerPost}
   >
     <div class="flex flex-col items-end overflow-hidden text-wrap">
-      <span class="text-muted-foreground text-right text-xs">
+      <span class="text-muted-foreground text-right text-xs" data-i18n={isSubpost ? 'post.next_sub' : 'post.next'}>
         {isSubpost ? 'Next Subpost' : 'Next Post'}
       </span>
-      <span class="w-full text-right text-sm text-balance text-ellipsis">
+      <span class="w-full text-right text-sm text-balance text-ellipsis" data-i18n={!newerPost ? (isSubpost ? 'post.no_newer_sub' : 'post.newest') : undefined}>
         {
           newerPost?.data.title ||
             (isSubpost ? 'No newer subpost' : "You're at the newest post!")

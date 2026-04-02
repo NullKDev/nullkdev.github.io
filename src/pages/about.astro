@@ -144,15 +144,15 @@ const experience: ExperienceItem[] = [
               <div class="flex flex-wrap gap-2">
                 <Badge variant="secondary" className="px-3 py-1">
                   <Icon name="lucide:briefcase" class="size-3 mr-1.5" />
-                  Android Developer
+                  <span data-i18n="about.job_badge">Android Developer</span>
                 </Badge>
                 <Badge variant="secondary" className="px-3 py-1">
                   <Icon name="lucide:map-pin" class="size-3 mr-1.5" />
-                  Perú
+                  <span data-i18n="about.country_badge">Perú</span>
                 </Badge>
                 <Badge variant="secondary" className="px-3 py-1">
                   <Icon name="lucide:calendar" class="size-3 mr-1.5" />
-                  { (new Date()).getFullYear() - 2018 }+ años de experiencia
+                  { (new Date()).getFullYear() - 2018 }+ <span data-i18n="about.years_exp">años de experiencia</span>
                 </Badge>
               </div>
 
@@ -162,7 +162,7 @@ const experience: ExperienceItem[] = [
                 class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium shadow-lg shadow-primary/25"
               >
                 <Icon name="lucide:mail" class="size-4" />
-                <span>Contáctame</span>
+                <span data-i18n="about.contact_btn">Contáctame</span>
               </Link>
             </div>
           </div>
@@ -179,18 +179,18 @@ const experience: ExperienceItem[] = [
             <div class="p-2 bg-primary/10 rounded-lg">
               <Icon name="lucide:user-circle" class="size-5 text-primary" />
             </div>
-            <h2 class="text-2xl font-bold">Sobre mí</h2>
+            <h2 class="text-2xl font-bold" data-i18n="about.about_heading">Sobre mí</h2>
           </div>
 
-          <p class="text-muted-foreground leading-relaxed">
+          <p class="text-muted-foreground leading-relaxed" data-i18n-html="about.bio_p1">
             ¡Hola! Soy un <strong class="text-foreground">desarrollador móvil</strong> con 5 años de experiencia creando aplicaciones Android innovadoras. Actualmente trabajo en <strong class="text-foreground">Overall Strategy S.A.C.</strong>, donde impulso el crecimiento y desarrollo de iniciativas móviles.
           </p>
 
-          <p class="text-muted-foreground leading-relaxed">
+          <p class="text-muted-foreground leading-relaxed" data-i18n-html="about.bio_p2">
             Me especializo en <strong class="text-foreground">desarrollo Android nativo</strong> utilizando tecnologías modernas como <strong class="text-foreground">Kotlin</strong>, <strong class="text-foreground">Flutter</strong> y <strong class="text-foreground">Kotlin Multiplatform</strong>. Tengo experiencia en todo el ciclo de vida de productos digitales, con énfasis en crear experiencias de usuario excepcionales.
           </p>
 
-          <p class="text-muted-foreground leading-relaxed">
+          <p class="text-muted-foreground leading-relaxed" data-i18n-html="about.bio_p3">
             Trabajo con metodologías ágiles y arquitecturas modernas. También tengo habilidades en <strong class="text-foreground">Python</strong>, <strong class="text-foreground">TypeScript</strong>, administración de bases de datos y desarrollo backend.
           </p>
         </CardContent>
@@ -204,7 +204,7 @@ const experience: ExperienceItem[] = [
               <div class="p-2 bg-primary/10 rounded-lg">
                 <Icon name="lucide:rocket" class="size-5 text-primary" />
               </div>
-              <h3 class="font-bold">Stack Principal</h3>
+              <h3 class="font-bold" data-i18n="about.stack_title">Stack Principal</h3>
             </div>
             <div class="grid grid-cols-2 gap-2">
               {skills.map(skill => (
@@ -223,7 +223,7 @@ const experience: ExperienceItem[] = [
               <div class="p-2 bg-primary/10 rounded-lg">
                 <Icon name="lucide:boxes" class="size-5 text-primary" />
               </div>
-              <h3 class="font-bold">Arquitecturas</h3>
+              <h3 class="font-bold" data-i18n="about.arch_title">Arquitecturas</h3>
             </div>
             <div class="flex flex-wrap gap-2">
               {architectures.map(arch => (
@@ -240,8 +240,8 @@ const experience: ExperienceItem[] = [
       <!-- Experience Timeline -->
   <section class="mt-8">
     <div class="mb-6">
-      <h2 class="text-2xl font-semibold mb-2">Experience</h2>
-      <p class="text-sm text-muted-foreground">
+      <h2 class="text-2xl font-semibold mb-2" data-i18n="about.exp_heading">Experience</h2>
+      <p class="text-sm text-muted-foreground" data-i18n="about.exp_desc">
         9+ years in server infrastructure and enterprise environments, with additional experience in cybersecurity
       </p>
     </div>
@@ -286,8 +286,8 @@ const experience: ExperienceItem[] = [
             <Icon name="lucide:sparkles" class="size-6 text-primary" />
           </div>
           <div class="space-y-2">
-            <h3 class="text-lg font-bold">¿Por qué NullKDev?</h3>
-            <p class="text-muted-foreground leading-relaxed">
+            <h3 class="text-lg font-bold" data-i18n="about.origin_title">¿Por qué NullKDev?</h3>
+            <p class="text-muted-foreground leading-relaxed" data-i18n-html="about.origin_desc">
               El nombre <strong class="text-foreground">NullKDev</strong> representa mi identidad como desarrollador: <strong class="text-foreground">Null</strong> por el concepto fundamental en programación, <strong class="text-foreground">K</strong> por <strong class="text-foreground">Kotlin</strong> (mi lenguaje favorito) y también por <strong class="text-foreground">Karl</strong>, y <strong class="text-foreground">Dev</strong> por desarrollador. Es mi forma de expresar mi pasión por el código limpio y las soluciones elegantes.
             </p>
           </div>

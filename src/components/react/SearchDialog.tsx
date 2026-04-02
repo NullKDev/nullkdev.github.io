@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
 import { PERFORMANCE } from '@/lib/constants'
+import { useTranslation } from '@/i18n/use-locale'
 
 interface SearchResult {
   id: string
@@ -198,6 +199,7 @@ function extractSnippet(
 }
 
 const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
+  const { t } = useTranslation()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -292,7 +294,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
         if (!cancelled) {
           if (import.meta.env.DEV)
             console.error('Error loading search index:', error)
-          setError('Failed to load search index. Please try again later.')
+          setError(t('search.error'))
         }
       } finally {
         if (!cancelled) {
@@ -373,7 +375,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
         setDisplayedResults(10) // Reset to first 10
       } catch (error) {
         if (import.meta.env.DEV) console.error('Search error:', error)
-        setError('An error occurred while searching. Please try again.')
+        setError(t('search.error'))
         setResults([])
       } finally {
         setIsLoading(false)
@@ -523,7 +525,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="data-[state=open]:slide-in-from-top-0 data-[state=closed]:slide-out-to-top-0 top-0 flex h-[100dvh] max-w-full translate-y-0 flex-col gap-0 overflow-hidden rounded-none p-0 sm:top-[10%] sm:h-auto sm:max-h-[85vh] sm:max-w-lg sm:rounded-lg md:max-w-2xl">
         <DialogDescription className="sr-only">
-          Search blog posts by title, description, tags, or content
+          {t('search.description')}
         </DialogDescription>
         {/* Live region for screen readers */}
         <div
@@ -532,8 +534,8 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
           aria-atomic="true"
           className="sr-only"
         >
-          {isLoadingIndex && 'Loading search index...'}
-          {isLoading && 'Searching...'}
+          {isLoadingIndex && t('search.loading_index')}
+          {isLoading && t('search.loading')}
           {!isLoading &&
             !isLoadingIndex &&
             query.trim() &&
@@ -543,7 +545,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
             !isLoadingIndex &&
             query.trim() &&
             results.length === 0 &&
-            'No results found'}
+            t('search.no_results_aria')}
           {selectedIndex >= 0 &&
             results[selectedIndex] &&
             `Selected: ${results[selectedIndex].title}`}
@@ -553,7 +555,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
           <input
             ref={inputRef}
             type="text"
-            placeholder="Search posts..."
+            placeholder={t('search.placeholder')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="placeholder:text-muted-foreground flex h-16 w-full appearance-none border-0 bg-transparent py-4 pr-12 text-base shadow-none outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 sm:h-14 sm:py-3 sm:pr-0 sm:text-sm"
@@ -564,7 +566,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
               outline: 'none',
               boxShadow: 'none',
             }}
-            aria-label="Search blog posts"
+            aria-label={t('common.search_aria')}
             aria-expanded={results.length > 0}
             aria-controls={listboxId}
             aria-activedescendant={
@@ -582,7 +584,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
           <button
             onClick={() => onOpenChange(false)}
             className="focus:ring-ring absolute top-1/2 right-4 -translate-y-1/2 rounded-lg p-2 opacity-70 transition-opacity focus:ring-2 focus:ring-offset-2 focus:outline-none active:opacity-100 sm:hidden"
-            aria-label="Close search"
+            aria-label={t('search.close_label')}
           >
             <X className="h-5 w-5" />
           </button>
@@ -624,7 +626,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
               {recentPosts.length > 0 && (
                 <div className="mb-6">
                   <h3 className="text-muted-foreground mb-3 px-2 text-xs font-semibold tracking-wider uppercase">
-                    Recent Posts
+                    {t('search.recent_posts')}
                   </h3>
                   <ul className="space-y-2 sm:space-y-1">
                     {recentPosts.map((post) => (
@@ -661,7 +663,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
               {searchHistory.length > 0 && (
                 <div>
                   <h3 className="text-muted-foreground mb-3 px-2 text-xs font-semibold tracking-wider uppercase">
-                    Recent Searches
+                    {t('search.recent_searches')}
                   </h3>
                   <div className="flex flex-wrap gap-2 px-2">
                     {searchHistory.slice(0, 5).map((term, idx) => (
@@ -683,10 +685,10 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
                 <div className="flex flex-col items-center justify-center py-8 text-center">
                   <Search className="text-muted-foreground mb-2 h-8 w-8" />
                   <p className="text-muted-foreground text-sm">
-                    Start typing to search posts...
+                    {t('search.start_typing')}
                   </p>
                   <p className="text-muted-foreground mt-1 text-xs">
-                    Search by title, description, tags, or content
+                    {t('search.search_hint')}
                   </p>
                 </div>
               )}
@@ -701,10 +703,10 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
               <div className="flex flex-col items-center justify-center py-8 text-center">
                 <FileText className="text-muted-foreground mb-2 h-8 w-8" />
                 <p className="text-muted-foreground text-sm">
-                  No results found for &quot;{query}&quot;
+                  {t('search.no_results_prefix')} &quot;{query}&quot;
                 </p>
                 <p className="text-muted-foreground mt-1 text-xs">
-                  Try different keywords or check your spelling
+                  {t('search.try_keywords')}
                 </p>
               </div>
             )}
@@ -715,7 +717,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
               ref={resultsRef}
               id={listboxId}
               role="listbox"
-              aria-label="Search results"
+              aria-label={t('search.results_label')}
               className="space-y-1"
             >
               {visibleResults.map((result, idx) => (
@@ -799,7 +801,8 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
                 className="border-border bg-background text-foreground active:bg-muted focus:ring-ring flex items-center gap-2 rounded-lg border px-6 py-3 text-base shadow-sm transition-colors focus:ring-2 focus:outline-none sm:rounded-md sm:px-4 sm:py-2 sm:text-sm"
               >
                 <ChevronDown className="h-5 w-5 sm:h-4 sm:w-4" />
-                Load more ({results.length - displayedResults} remaining)
+                {t('search.load_more')} ({results.length - displayedResults}{' '}
+                remaining)
               </button>
             </div>
           )}
@@ -815,19 +818,19 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
                 <kbd className="bg-muted pointer-events-none inline-flex h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 select-none">
                   ↑↓
                 </kbd>{' '}
-                navigate
+                {t('search.navigate')}
               </span>
               <span>
                 <kbd className="bg-muted pointer-events-none inline-flex h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 select-none">
                   ↵
                 </kbd>{' '}
-                select
+                {t('search.select')}
               </span>
               <span>
                 <kbd className="bg-muted pointer-events-none inline-flex h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 select-none">
                   esc
                 </kbd>{' '}
-                close
+                {t('search.close')}
               </span>
             </div>
           </div>

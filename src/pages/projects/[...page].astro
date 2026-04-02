@@ -35,8 +35,8 @@ const years = Object.keys(projectsByYear).sort((a, b) => {
   <div class="py-6">
     <Breadcrumbs
         items={[
-        { label: 'Projects', href: '/projects', icon: 'lucide:folder-git-2' },
-        { label: `Page ${page.currentPage}`, icon: 'lucide:git-merge' },
+        { label: 'Projects', href: '/projects', icon: 'lucide:folder-git-2', i18nKey: 'nav.projects' },
+        { label: 'Page', icon: 'lucide:git-merge', i18nKey: 'common.page', labelSuffix: ` ${page.currentPage}` },
         ]}
     />
   </div>

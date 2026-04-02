@@ -8,6 +8,10 @@ import Head from '@/components/Head.astro'
 import Header from '@/components/Header.astro'
 import { SITE } from '@/consts'
 import { cn } from '@/lib/utils'
+import { en } from '@/i18n/en'
+import { es } from '@/i18n/es'
+
+const i18nData = JSON.stringify({ en, es })
 
 interface Props {
   class?: string
@@ -20,7 +24,7 @@ const { class: className, hideFloatingSidebar = false } = Astro.props
 <!doctype html>
 <html
   class="bg-background text-foreground scheme-light-dark"
-  lang={SITE.locale}
+  lang="en"
 >
   <Head>
     <slot name="head" />
@@ -31,8 +35,9 @@ const { class: className, hideFloatingSidebar = false } = Astro.props
       href="#main-content"
       class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
       aria-label="Skip to main content"
+      data-i18n-aria="common.skip_content"
     >
-      Skip to main content
+      <span data-i18n="common.skip_content">Skip to main content</span>
     </a>
     
     <!-- Prevent same-page navigation to avoid unnecessary transitions -->
@@ -103,5 +108,66 @@ const { class: className, hideFloatingSidebar = false } = Astro.props
     </main>
     {false && !hideFloatingSidebar && <FloatingSidebar />}
     <Footer />
+
+    <!-- i18n: translations data (single source of truth from en.ts / es.ts) -->
+    <script id="i18n-data" type="application/json" set:html={i18nData} />
+
+    <!-- i18n: language detection and translation engine -->
+    <script is:inline data-astro-rerun>
+      (function () {
+        var T = JSON.parse(document.getElementById('i18n-data').textContent || '{}')
+
+        function applyI18n(lang) {
+          var dict = T[lang] || T.en
+          document.documentElement.lang = lang
+
+          // Text content
+          document.querySelectorAll('[data-i18n]').forEach(function (el) {
+            var key = el.getAttribute('data-i18n')
+            if (dict[key] !== undefined) el.textContent = dict[key]
+          })
+
+          // Inner HTML (for paragraphs with <strong>)
+          document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
+            var key = el.getAttribute('data-i18n-html')
+            if (dict[key] !== undefined) el.innerHTML = dict[key]
+          })
+
+          // title attribute
+          document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
+            var key = el.getAttribute('data-i18n-title')
+            if (dict[key] !== undefined) el.setAttribute('title', dict[key])
+          })
+
+          // aria-label attribute
+          document.querySelectorAll('[data-i18n-aria]').forEach(function (el) {
+            var key = el.getAttribute('data-i18n-aria')
+            if (dict[key] !== undefined) el.setAttribute('aria-label', dict[key])
+          })
+
+          // placeholder attribute
+          document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+            var key = el.getAttribute('data-i18n-placeholder')
+            if (dict[key] !== undefined) el.setAttribute('placeholder', dict[key])
+          })
+        }
+
+        // Detect language
+        var stored = localStorage.getItem('lang')
+        var lang = stored || (navigator.language && navigator.language.startsWith('es') ? 'es' : 'en')
+        if (!stored) localStorage.setItem('lang', lang)
+
+        // Make globally available for toggle
+        window.__applyI18n = applyI18n
+        window.__locale = lang
+
+        applyI18n(lang)
+
+        document.addEventListener('astro:after-swap', function () {
+          var current = localStorage.getItem('lang') || 'en'
+          applyI18n(current)
+        })
+      })()
+    </script>
   </body>
 </html>

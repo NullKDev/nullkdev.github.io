@@ -23,12 +23,12 @@ const albumStats = await getAlbumCount()
 
 <Layout class="max-w-3xl">
   <PageHead slot="head" title="AI & Photo Gallery" description="Curated collection of AI generations and photography." />  
-  <Breadcrumbs items={[{ label: 'Gallery', href: '/photos', icon: 'lucide:camera' }]} />
+  <Breadcrumbs items={[{ label: 'Gallery', href: '/photos', icon: 'lucide:camera', i18nKey: 'gallery.breadcrumb' }]} />
 
   <div class="mb-12">
     <div class="flex flex-col gap-2 mb-8">
-      <h1 class="text-3xl font-bold tracking-tight text-foreground">Galería & Colecciones</h1>
-      <p class="text-muted-foreground text-lg">Explora colecciones de fotografía y generaciones de IA.</p>
+      <h1 class="text-3xl font-bold tracking-tight text-foreground" data-i18n="gallery.heading">AI &amp; Photo Gallery</h1>
+      <p class="text-muted-foreground text-lg" data-i18n="gallery.desc">Explore curated collections of AI generations and photography.</p>
     </div>
 
     {/* GRID: grid-auto-rows asegura altura consistente */}
@@ -107,7 +107,7 @@ const albumStats = await getAlbumCount()
                 </div>
                 <div class="flex items-center gap-1.5 text-foreground/80">
                     <ImageIcon className="w-3.5 h-3.5 opacity-70" />
-                    <span class="font-medium">{imageCount} fotos</span>
+                    <span class="font-medium">{imageCount} <span data-i18n="gallery.photos_count">photos</span></span>
                 </div>
               </CardFooter>
 

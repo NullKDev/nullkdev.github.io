@@ -77,7 +77,7 @@ const websiteSchema = {
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
               </span>
-              <span class="text-xs font-medium text-foreground">Available for opportunities</span>
+              <span class="text-xs font-medium text-foreground" data-i18n="common.available">Available for opportunities</span>
             </div>
 
             <!-- Heading principal -->
@@ -85,7 +85,7 @@ const websiteSchema = {
               <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-none">
                 {SITE.title}
               </h1>
-              <p class="text-lg sm:text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-2xl">
+              <p class="text-lg sm:text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-2xl" data-i18n="home.subtitle">
                 Software Developer .
               </p>
             </div>
@@ -97,14 +97,14 @@ const websiteSchema = {
                 class={cn(buttonVariants({ size: 'lg' }), 'group shadow-lg shadow-primary/20')}
               >
                 <Icon name="lucide:book-open" class="size-4" />
-                <span>Read guides</span>
+                <span data-i18n="home.cta_blog">Read guides</span>
                 <Icon name="lucide:arrow-right" class="size-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link 
                 href="/about" 
                 class={buttonVariants({ variant: 'outline', size: 'lg' })}
               >
-                <span>Learn more</span>
+                <span data-i18n="home.cta_about">Learn more</span>
               </Link>
             </div>
           </div>
@@ -128,7 +128,7 @@ const websiteSchema = {
 
         <!-- Stack tecnológico - Visual badges -->
         <div class="mt-12 pt-8 border-t border-border/50">
-          <p class="text-sm text-muted-foreground uppercase tracking-wide mb-4">Core Stack</p>
+          <p class="text-sm text-muted-foreground uppercase tracking-wide mb-4" data-i18n="home.core_stack">Core Stack</p>
           <div class="flex flex-wrap gap-2">
             {['Linux', 'Kubernetes', 'HPC', 'Security', 'Python', 'Automation'].map((tech) => (
               <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted/50 border border-border/50 text-sm font-medium hover:border-primary/30 hover:bg-muted transition-all">
@@ -147,14 +147,14 @@ const websiteSchema = {
     <section class="mb-16">
       <div class="flex items-end justify-between mb-6">
         <div>
-          <h2 class="text-2xl font-bold">Latest Posts</h2>
-          <p class="text-sm text-muted-foreground mt-1">Recent guides and tutorials</p>
+          <h2 class="text-2xl font-bold" data-i18n="home.latest_posts">Latest Posts</h2>
+          <p class="text-sm text-muted-foreground mt-1" data-i18n="home.latest_posts_desc">Recent guides and tutorials</p>
         </div>
         <Link 
           href="/blog" 
           class="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
         >
-          <span>View all</span>
+          <span data-i18n="home.view_all">View all</span>
           <Icon name="lucide:arrow-right" class="size-3.5" />
         </Link>
       </div>
@@ -172,7 +172,7 @@ const websiteSchema = {
           href="/blog" 
           class="flex items-center justify-center gap-2 py-3 px-4 rounded-lg border border-border/50 bg-muted/20 hover:bg-muted/40 hover:border-primary/30 text-sm font-medium transition-all"
         >
-          <span>View all posts</span>
+          <span data-i18n="home.view_all_posts">View all posts</span>
           <Icon name="lucide:arrow-right" class="size-4" />
         </Link>
       </div>
@@ -181,7 +181,7 @@ const websiteSchema = {
 
   <!-- Featured Content Grid -->
   <section class="mb-16">
-    <h2 class="text-2xl font-bold mb-6">Explore</h2>
+    <h2 class="text-2xl font-bold mb-6" data-i18n="home.explore">Explore</h2>
     
     <div class="grid sm:grid-cols-2 gap-4">
       <!-- About Card -->
@@ -195,12 +195,12 @@ const websiteSchema = {
           <div class="inline-flex p-2 rounded-lg bg-primary/10 text-primary">
             <Icon name="lucide:user" class="size-5" />
           </div>
-          <h3 class="text-lg font-semibold">About</h3>
-          <p class="text-sm text-muted-foreground leading-relaxed">
+          <h3 class="text-lg font-semibold" data-i18n="home.about_title">About</h3>
+          <p class="text-sm text-muted-foreground leading-relaxed" data-i18n="home.about_desc">
             Experience, skills, and background in system administration and security
           </p>
           <div class="flex items-center gap-1.5 text-sm font-medium text-primary pt-1">
-            <span>Learn more</span>
+            <span data-i18n="home.about_cta">Learn more</span>
             <Icon name="lucide:arrow-right" class="size-4 group-hover:translate-x-1 transition-transform" />
           </div>
         </div>
@@ -217,12 +217,12 @@ const websiteSchema = {
           <div class="inline-flex p-2 rounded-lg bg-purple-500/10 text-purple-500">
             <Icon name="lucide:layers" class="size-5" />
           </div>
-          <h3 class="text-lg font-semibold">Projects</h3>
-          <p class="text-sm text-muted-foreground leading-relaxed">
+          <h3 class="text-lg font-semibold" data-i18n="home.projects_title">Projects</h3>
+          <p class="text-sm text-muted-foreground leading-relaxed" data-i18n="home.projects_desc">
             Infrastructure setups, homelab experiments, and technical write-ups
           </p>
           <div class="flex items-center gap-1.5 text-sm font-medium text-primary pt-1">
-            <span>Explore</span>
+            <span data-i18n="home.projects_cta">Explore</span>
             <Icon name="lucide:arrow-right" class="size-4 group-hover:translate-x-1 transition-transform" />
           </div>
         </div>
@@ -238,10 +238,10 @@ const websiteSchema = {
       <div class="absolute bottom-0 right-1/3 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl"></div>
       
       <div class="relative max-w-2xl space-y-5">
-        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight">
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight" data-i18n="home.connect_title">
           Let's connect
         </h2>
-        <p class="text-lg text-muted-foreground leading-relaxed">
+        <p class="text-lg text-muted-foreground leading-relaxed" data-i18n="home.connect_desc">
           Open to discussing infrastructure projects, security challenges, or sharing homelab experiences.
         </p>
         
@@ -251,14 +251,14 @@ const websiteSchema = {
             class={cn(buttonVariants({ size: 'lg' }), 'group')}
           >
             <Icon name="lucide:mail" class="size-4" />
-            <span>Send email</span>
+            <span data-i18n="home.send_email">Send email</span>
             <Icon name="lucide:arrow-right" class="size-4 group-hover:translate-x-1 transition-transform" />
           </Link>
           <Link 
             href="/about" 
             class={buttonVariants({ variant: 'outline', size: 'lg' })}
           >
-            <span>View experience</span>
+            <span data-i18n="home.view_experience">View experience</span>
           </Link>
         </div>
       </div>
