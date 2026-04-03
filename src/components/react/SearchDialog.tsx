@@ -3,6 +3,7 @@ import {
   Search,
   Loader2,
   FileText,
+  FolderCode,
   Calendar,
   Hash,
   Clock,
@@ -22,6 +23,7 @@ import { useTranslation } from '@/i18n/use-locale'
 
 interface SearchResult {
   id: string
+  type?: 'blog' | 'project'
   title: string
   description: string
   date: string
@@ -44,7 +46,7 @@ const STORAGE_KEYS = {
 } as const
 
 // Cache version - increment when index structure changes
-const INDEX_VERSION = '1.0'
+const INDEX_VERSION = '2.0'
 
 // Calculate relevance score
 function calculateRelevanceScore(
@@ -626,7 +628,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
               {recentPosts.length > 0 && (
                 <div className="mb-6">
                   <h3 className="text-muted-foreground mb-3 px-2 text-xs font-semibold tracking-wider uppercase">
-                    {t('search.recent_posts')}
+                    {t('search.recent_posts')} & projects
                   </h3>
                   <ul className="space-y-2 sm:space-y-1">
                     {recentPosts.map((post) => (
@@ -738,9 +740,22 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
                     aria-label={`Go to ${result.title}`}
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="flex-1 text-base leading-snug font-medium sm:text-sm">
-                        {highlightText(result.title, query)}
-                      </h3>
+                      <div className="flex flex-1 flex-wrap items-center gap-1.5">
+                        <h3 className="text-base leading-snug font-medium sm:text-sm">
+                          {highlightText(result.title, query)}
+                        </h3>
+                        {result.type === 'project' ? (
+                          <span className="inline-flex items-center gap-1 rounded bg-violet-500/10 px-1.5 py-0.5 text-[10px] font-medium text-violet-600 dark:text-violet-400">
+                            <FolderCode className="h-2.5 w-2.5" />
+                            project
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 rounded bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-medium text-blue-600 dark:text-blue-400">
+                            <FileText className="h-2.5 w-2.5" />
+                            post
+                          </span>
+                        )}
+                      </div>
                       <div className="text-muted-foreground flex shrink-0 items-center gap-1 text-xs">
                         <Calendar className="h-3 w-3" />
                         <span className="hidden sm:inline">

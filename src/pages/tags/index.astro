@@ -1,34 +1,40 @@
 ---
 export const prerender = true;
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
-import Link from '@/components/Link.astro'
 import PageHead from '@/components/PageHead.astro'
-import { badgeVariants } from '@/components/ui/badge'
 import Layout from '@/layouts/Layout.astro'
 import { getSortedTags } from '@/lib/data-utils'
 import { Icon } from 'astro-icon/components'
 
 const sortedTags = await getSortedTags()
+const total = sortedTags.reduce((sum, { count }) => sum + count, 0)
 ---
 
 <Layout class="max-w-3xl">
-  <PageHead slot="head" title="Tags" />
+  <PageHead slot="head" title="Tags" description="Browse all topics covered in blog posts and projects." />
   <Breadcrumbs items={[{ label: 'Tags', icon: 'lucide:tags' }]} />
 
-  <div class="flex flex-col gap-4">
-    <div class="flex flex-wrap gap-2">
-      {
-        sortedTags.map(({ tag, count }) => (
-          <Link
-            href={`/tags/${tag}`}
-            class={badgeVariants({ variant: 'secondary' })}
-          >
-            <Icon name="lucide:hash" class="size-3" />
-            {tag}
-            <span class="text-muted-foreground ml-1.5">({count})</span>
-          </Link>
-        ))
-      }
-    </div>
+  <div class="mb-10 flex flex-col gap-1.5">
+    <h1 class="text-2xl font-bold tracking-tight">Tags</h1>
+    <p class="text-muted-foreground text-sm">
+      {sortedTags.length} topics · {total} entries
+    </p>
+  </div>
+
+  <div class="flex flex-wrap gap-2.5">
+    {
+      sortedTags.map(({ tag, count }) => (
+        <a
+          href={`/tags/${tag}`}
+          class="group relative flex items-center gap-2 rounded-full border border-border/60 bg-muted/40 px-3.5 py-1.5 text-sm font-medium transition-all hover:border-foreground/30 hover:bg-muted hover:shadow-sm"
+        >
+          <Icon name="lucide:hash" class="size-3 shrink-0 text-muted-foreground group-hover:text-foreground transition-colors" />
+          <span class="text-foreground/80 group-hover:text-foreground transition-colors">{tag}</span>
+          <span class="ml-0.5 min-w-[1.25rem] rounded-full bg-secondary px-1.5 py-px text-center text-[10px] font-medium text-muted-foreground tabular-nums">
+            {count}
+          </span>
+        </a>
+      ))
+    }
   </div>
 </Layout>

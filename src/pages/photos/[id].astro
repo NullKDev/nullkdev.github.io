@@ -1,9 +1,8 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import PageHead from '@/components/PageHead.astro';
-//import GalleryLayout from '@/layouts/Gallery.astro'
-//import PhotoSwipe from "../../components/PhotoSwipe.astro";
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import PhotoProtection from '@/components/PhotoProtection.astro'
 import { getAllPhotos, getAlbumImages, hasPhotoTranslation, parseAuthors } from '@/lib/data-utils'
 import { Image } from "astro:assets";
 import { GalleryViewer } from "@/components/react/GalleryViewer";
@@ -29,6 +28,7 @@ const viewerImages = albumImages.map((img) => ({
 }));
 const authors = await parseAuthors(album.data.authors ?? []);
 const hasEsTranslation = await hasPhotoTranslation(album.id, 'es');
+const coverSrc = typeof album.data.image === 'object' ? (album.data.image as { src: string }).src : String(album.data.image);
 ---
 
 <Layout class="max-w-3xl">
@@ -146,15 +146,23 @@ const hasEsTranslation = await hasPhotoTranslation(album.id, 'es');
             <div class="flex items-center gap-4 mb-8">
                 <h3 class="text-2xl font-bold tracking-tight">Gallery Assets</h3>
                 <Separator className="flex-1" />
-                <span class="text-xs text-muted-foreground font-medium uppercase tracking-widest">
-                    {albumImages.length} images
-                </span>
+                {!album.data.protected && (
+                  <span class="text-xs text-muted-foreground font-medium uppercase tracking-widest">
+                      {albumImages.length} images
+                  </span>
+                )}
             </div>
-            
-            {/* 3. REEMPLAZA TU GRID HTML POR EL COMPONENTE REACT */}
-            {/* 'client:load' es obligatorio para que funcione el click */}
-            <GalleryViewer client:load images={viewerImages} />
 
+            <PhotoProtection
+              isProtected={!!album.data.protected}
+              password={album.data.password}
+              albumId={album.id}
+              coverSrc={coverSrc}
+              images={viewerImages}
+              protectionMessage={album.data.protectionMessage}
+            >
+              <GalleryViewer client:load images={viewerImages} />
+            </PhotoProtection>
         </section>
     )}
   </article>

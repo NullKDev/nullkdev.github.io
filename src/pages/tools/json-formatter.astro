@@ -2,6 +2,7 @@
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import PageHead from '@/components/PageHead.astro'
 import Layout from '@/layouts/Layout.astro'
+import ToolProtection from '@/components/ToolProtection.astro'
 import JSONFormatterComponent from '@/components/react/JSONFormatter'
 import { ErrorBoundary } from '@/components/react/ErrorBoundary'
 
@@ -86,11 +87,19 @@ const structuredData = {
     
 
     <!-- Tool Component -->
-    <div class="rounded-lg border bg-card">
-      <ErrorBoundary client:load>
-        <JSONFormatterComponent client:load />
-      </ErrorBoundary>
-    </div>
+    <ToolProtection
+      isProtected={true}
+      password="test123"
+      toolId="json-formatter"
+      toolName="JSON Formatter"
+      protectionMessage="This tool is restricted to authorized users. Enter the access key to continue."
+    >
+      <div class="rounded-lg border bg-card">
+        <ErrorBoundary client:load>
+          <JSONFormatterComponent client:load />
+        </ErrorBoundary>
+      </div>
+    </ToolProtection>
 
     <!-- Ad -->
     

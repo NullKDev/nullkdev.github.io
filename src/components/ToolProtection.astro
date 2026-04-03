@@ -1,0 +1,157 @@
+---
+/**
+ * ToolProtection gates an interactive tool page with a password overlay.
+ *
+ * Modes:
+ *   isProtected=false          → render tool normally (slot)
+ *   isProtected=true, password → overlay access gate, tool revealed on unlock
+ *   isProtected=true, no pw   → static "not available" screen replacing slot
+ *
+ * The slot content (the tool) is rendered in the DOM but visually hidden
+ * behind the overlay. On unlock the overlay removes itself via sessionStorage.
+ */
+interface Props {
+  isProtected: boolean
+  password?: string
+  toolId: string
+  toolName?: string
+  protectionMessage?: string
+}
+
+const { isProtected, password, toolId, toolName, protectionMessage } = Astro.props
+---
+
+{!isProtected ? (
+  <slot />
+) : password ? (
+  <div class="relative">
+    <!-- Tool content hidden initially, revealed on unlock -->
+    <div id={`tool-content-${toolId}`} class="invisible" aria-hidden="true">
+      <slot />
+    </div>
+
+    <!-- Overlay -->
+    <div
+      id={`tool-gate-${toolId}`}
+      class="absolute inset-0 z-10 min-h-64 flex items-center justify-center p-4"
+    >
+      <div class="w-full max-w-sm rounded-2xl border border-border/60 bg-card shadow-xl p-6 flex flex-col items-center gap-5">
+
+        <!-- Icon -->
+        <div class="flex items-center justify-center size-14 rounded-2xl bg-primary/8 border border-primary/20">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary/70">
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+          </svg>
+        </div>
+
+        <div class="text-center space-y-1">
+          {toolName && <p class="text-xs text-muted-foreground uppercase tracking-widest font-medium">{toolName}</p>}
+          <h3 class="text-base font-semibold">Access Required</h3>
+          <p class="text-sm text-muted-foreground leading-relaxed">
+            {protectionMessage ?? 'This tool requires an access key to use.'}
+          </p>
+        </div>
+
+        <form id={`tool-form-${toolId}`} class="w-full space-y-2.5">
+          <div class="relative">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50">
+              <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+            </svg>
+            <input
+              id={`tool-input-${toolId}`}
+              type="password"
+              placeholder="Enter access key"
+              autocomplete="off"
+              class="w-full h-10 rounded-lg border border-border/60 bg-background pl-9 pr-3 text-sm outline-none transition-all focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+          <p id={`tool-error-${toolId}`} class="text-xs text-destructive hidden text-center">
+            Incorrect access key. Try again.
+          </p>
+          <button
+            type="submit"
+            class="w-full h-10 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
+          >
+            Unlock Tool
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script define:vars={{ toolId, password }}>
+    (function () {
+      const HASH_KEY = `tool-pw-${toolId}`
+
+      function sha256(str) {
+        // Use SubtleCrypto for hashing (async, but we can do it on load)
+        return crypto.subtle
+          .digest('SHA-256', new TextEncoder().encode(str))
+          .then((buf) =>
+            Array.from(new Uint8Array(buf))
+              .map((b) => b.toString(16).padStart(2, '0'))
+              .join('')
+          )
+      }
+
+      function reveal() {
+        const gate = document.getElementById(`tool-gate-${toolId}`)
+        const content = document.getElementById(`tool-content-${toolId}`)
+        if (gate) gate.remove()
+        if (content) {
+          content.classList.remove('invisible')
+          content.removeAttribute('aria-hidden')
+        }
+      }
+
+      // Check session on load
+      const stored = sessionStorage.getItem(HASH_KEY)
+      if (stored) {
+        sha256(password).then((hash) => {
+          if (stored === hash) reveal()
+        })
+      }
+
+      // Handle form submit
+      const form = document.getElementById(`tool-form-${toolId}`)
+      const input = document.getElementById(`tool-input-${toolId}`)
+      const errorEl = document.getElementById(`tool-error-${toolId}`)
+
+      if (form && input) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault()
+          const val = input.value
+          if (!val) return
+          const hash = await sha256(val)
+          const expectedHash = await sha256(password)
+          if (hash === expectedHash) {
+            sessionStorage.setItem(HASH_KEY, hash)
+            reveal()
+          } else {
+            if (errorEl) errorEl.classList.remove('hidden')
+            input.value = ''
+            input.focus()
+            setTimeout(() => errorEl?.classList.add('hidden'), 3000)
+          }
+        })
+      }
+    })()
+  </script>
+) : (
+  <!-- Private tool — no password recovery possible -->
+  <div class="flex flex-col items-center justify-center gap-5 rounded-2xl border border-border/60 bg-card/60 p-10 text-center shadow-sm my-4">
+    <div class="flex items-center justify-center size-14 rounded-2xl bg-muted border border-border/40">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+      </svg>
+    </div>
+    <div class="space-y-1.5">
+      {toolName && <p class="text-xs text-muted-foreground uppercase tracking-widest font-medium">{toolName}</p>}
+      <h3 class="text-lg font-semibold">Tool Not Available</h3>
+      <p class="text-sm text-muted-foreground max-w-sm leading-relaxed">
+        {protectionMessage ?? 'This tool is not publicly available.'}
+      </p>
+    </div>
+  </div>
+)}

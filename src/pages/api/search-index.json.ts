@@ -1,15 +1,16 @@
 import type { APIRoute } from 'astro'
-import { getAllPosts } from '@/lib/data-utils'
+import { getAllPosts, getAllProjects } from '@/lib/data-utils'
 
 export const prerender = true
 
 export const GET: APIRoute = async () => {
   try {
-    const posts = await getAllPosts()
+    const [posts, projects] = await Promise.all([
+      getAllPosts(),
+      getAllProjects(),
+    ])
 
-    const searchIndex = posts.map((post) => {
-      // Extract text content from HTML body (remove tags)
-      // The body property contains the raw HTML content
+    const postItems = posts.map((post) => {
       const htmlContent = (post as { body?: string }).body || ''
       const textContent = htmlContent
         .replace(/<[^>]+>/g, ' ')
@@ -18,16 +19,38 @@ export const GET: APIRoute = async () => {
 
       return {
         id: post.id || '',
+        type: 'blog' as const,
         title: post.data.title || '',
         description: post.data.description || '',
         date: post.data.date?.toISOString() || new Date().toISOString(),
         tags: post.data.tags || [],
         authors: post.data.authors || [],
         url: `/blog/${post.id}`,
-        // Include full content for better search results
-        content: textContent, // Full content for indexing
+        content: textContent,
       }
     })
+
+    const projectItems = projects.map((project) => {
+      const htmlContent = (project as { body?: string }).body || ''
+      const textContent = htmlContent
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+
+      return {
+        id: project.id || '',
+        type: 'project' as const,
+        title: project.data.title || '',
+        description: project.data.description || '',
+        date: project.data.startDate?.toISOString() || new Date().toISOString(),
+        tags: project.data.tags || [],
+        authors: [] as string[],
+        url: `/projects/${project.id}`,
+        content: textContent,
+      }
+    })
+
+    const searchIndex = [...postItems, ...projectItems]
 
     return new Response(JSON.stringify(searchIndex), {
       status: 200,

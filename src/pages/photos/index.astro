@@ -50,7 +50,18 @@ const albumStats = await getAlbumCount()
                   class="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
                 />
                 
-                {/* BADGE */}
+                {/* Lock badge */}
+                {album.data.protected && (
+                  <div class="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 rounded-lg bg-background/85 backdrop-blur-sm border border-border/40 shadow-sm z-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <span class="text-[10px] font-medium text-muted-foreground">{album.data.password ? 'Protected' : 'Private'}</span>
+                  </div>
+                )}
+
+                {/* Camera badge */}
                 {album.data.model && (
                   <div class="absolute top-3 right-3">
                     <Badge variant="secondary" className="bg-black/60 text-white hover:bg-black/70 backdrop-blur-md border-0 shadow-sm font-medium gap-1.5 px-2.5 py-1">

@@ -6,6 +6,7 @@ import PageHead from '@/components/PageHead.astro'
 import ProjectCard from '@/components/ProjectCard.astro'
 import Layout from '@/layouts/Layout.astro'
 import { getAllTags, getPostsByTag, getProjectsByTag } from '@/lib/data-utils'
+import { Icon } from 'astro-icon/components'
 
 export async function getStaticPaths() {
   const tagMap = await getAllTags()
@@ -28,13 +29,14 @@ export async function getStaticPaths() {
 }
 
 const { tag, posts, projects } = Astro.props
+const total = posts.length + projects.length
 ---
 
 <Layout class="max-w-3xl">
   <PageHead
     slot="head"
-    title={`Posts and Projects tagged with "${tag}"`}
-    description={`A collection of posts and projects tagged with ${tag}.`}
+    title={`#${tag}`}
+    description={`${total} entries tagged with "${tag}" — posts and projects.`}
     noindex
   />
   <Breadcrumbs
@@ -43,37 +45,68 @@ const { tag, posts, projects } = Astro.props
       { label: tag, icon: 'lucide:tag' },
     ]}
   />
-  <h2 class="mt-8 text-xl font-bold">Related Projects</h2>
-  <ul class="flex flex-col gap-y-4">
-    {
-      projects.length === 0 ? (
-        <li class="text-muted-foreground italic">
-          No projects found for this tag.
-        </li>
-      ) : (
-        projects.map((project) => (
+
+  {/* Tag heading */}
+  <div class="mb-8 flex flex-col gap-1">
+    <div class="flex items-center gap-2">
+      <Icon name="lucide:hash" class="size-6 text-muted-foreground" />
+      <h1 class="text-2xl font-bold tracking-tight">{tag}</h1>
+    </div>
+    <p class="text-muted-foreground text-sm pl-8">
+      {total} {total === 1 ? 'entry' : 'entries'}
+      {projects.length > 0 && posts.length > 0 && ` · ${projects.length} project${projects.length !== 1 ? 's' : ''}, ${posts.length} post${posts.length !== 1 ? 's' : ''}`}
+    </p>
+  </div>
+
+  {/* Projects section */}
+  {projects.length > 0 && (
+    <section class="mb-10">
+      <div class="mb-4 flex items-center gap-2">
+        <Icon name="lucide:folder-code" class="size-4 text-muted-foreground" />
+        <h2 class="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+          Projects
+        </h2>
+        <span class="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-muted-foreground tabular-nums">
+          {projects.length}
+        </span>
+      </div>
+      <ul class="flex flex-col gap-y-4">
+        {projects.map((project) => (
           <li>
             <ProjectCard project={project} />
           </li>
-        ))
-      )
-    }
-  </ul>
+        ))}
+      </ul>
+    </section>
+  )}
 
-  <h2 class="mt-8 text-xl font-bold">Related Posts</h2>
-  <ul class="flex flex-col gap-y-4">
-    {
-      posts.length === 0 ? (
-        <li class="text-muted-foreground italic">
-          No posts found for this tag.
-        </li>
-      ) : (
-        posts.map((post) => (
+  {/* Posts section */}
+  {posts.length > 0 && (
+    <section class="mb-10">
+      <div class="mb-4 flex items-center gap-2">
+        <Icon name="lucide:file-text" class="size-4 text-muted-foreground" />
+        <h2 class="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+          Posts
+        </h2>
+        <span class="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-muted-foreground tabular-nums">
+          {posts.length}
+        </span>
+      </div>
+      <ul class="flex flex-col gap-y-4">
+        {posts.map((post) => (
           <li>
             <BlogCard entry={post} />
           </li>
-        ))
-      )
-    }
-  </ul>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {/* Empty state */}
+  {total === 0 && (
+    <div class="flex flex-col items-center justify-center py-20 text-center">
+      <Icon name="lucide:tag" class="size-10 text-muted-foreground/40 mb-3" />
+      <p class="text-muted-foreground text-sm">No entries found for this tag.</p>
+    </div>
+  )}
 </Layout>

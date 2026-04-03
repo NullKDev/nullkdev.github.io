@@ -3,7 +3,7 @@ export const prerender = true
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import Link from '@/components/Link.astro'
 import LinkButton from '@/components/LinkButton.astro'
-import PostProtection from '@/components/PostProtection.astro'
+import ProjectProtection from '@/components/ProjectProtection.astro'
 import PostNavigation from '@/components/PostNavigation.astro'
 import ProjectHead from '@/components/ProjectHead.astro'
 import SubprojectsHeader from '@/components/SubprojectsHeader.astro'
@@ -249,7 +249,7 @@ const hasEsTranslation = await hasProjectTranslation(
       )
     }
 
-    <PostProtection
+    <ProjectProtection
       isProtected={!!project.data.protected}
       password={project.data.password}
       postId={currentProjectId}
@@ -258,7 +258,7 @@ const hasEsTranslation = await hasProjectTranslation(
       <article class="prose max-w-none">
         <Content />
       </article>
-    </PostProtection>
+    </ProjectProtection>
 
     {
       (hasChildProjects || isCurrentSubproject) && (

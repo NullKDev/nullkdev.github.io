@@ -1,0 +1,81 @@
+---
+/**
+ * PhotoProtection gates a photo album's gallery.
+ *
+ * Modes:
+ *   isProtected=false          → render gallery normally (slot)
+ *   isProtected=true, password → frosted mosaic + password form
+ *   isProtected=true, no pw   → static "private album" screen
+ */
+import PhotoPasswordProtection from '@/components/PhotoPasswordProtection'
+import { hashPassword } from '@/lib/encryption'
+
+interface ImageAsset {
+  src: string
+  fileName?: string
+  width?: number
+  height?: number
+}
+
+interface Props {
+  isProtected: boolean
+  password?: string
+  albumId: string
+  coverSrc: string
+  images: ImageAsset[]
+  protectionMessage?: string
+}
+
+const { isProtected, password, albumId, coverSrc, images, protectionMessage } = Astro.props
+
+const hashedPassword = password ? hashPassword(password) : undefined
+---
+
+{!isProtected ? (
+  <slot />
+) : password && hashedPassword ? (
+  <PhotoPasswordProtection
+    albumId={albumId}
+    hashedPassword={hashedPassword}
+    images={images}
+    coverSrc={coverSrc}
+    protectionMessage={protectionMessage}
+    client:load
+  />
+) : (
+  <!-- Static private album screen -->
+  <div class="relative overflow-hidden rounded-xl select-none" style="min-height: 420px;">
+    <!-- Mosaic background fills container -->
+    <div class="absolute inset-0 grid grid-cols-4 sm:grid-cols-6 gap-0.5 pointer-events-none">
+      {Array.from({ length: 24 }).map(() => (
+        <div
+          class="overflow-hidden relative"
+          style={`background-image: url(${coverSrc}); background-size: cover; background-position: center;`}
+        >
+          <div class="absolute inset-0 backdrop-blur-xl bg-background/50 saturate-0" />
+        </div>
+      ))}
+    </div>
+
+    <!-- Frosted overlay -->
+    <div class="absolute inset-0 backdrop-blur-sm bg-background/65" />
+
+    <!-- Lock card -->
+    <div class="absolute inset-0 flex items-center justify-center p-6">
+      <div class="w-full max-w-xs rounded-2xl border border-border/50 bg-card/90 backdrop-blur-xl shadow-2xl p-8 flex flex-col items-center gap-4 text-center">
+        <div class="size-14 rounded-full bg-muted border border-border/40 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <div class="space-y-1">
+          <h3 class="text-base font-semibold">Private Album</h3>
+          <p class="text-sm text-muted-foreground leading-relaxed">
+            {protectionMessage ?? 'This album is private and not publicly available.'}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
