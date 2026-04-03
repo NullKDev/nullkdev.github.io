@@ -1,6 +1,7 @@
 ---
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import Link from '@/components/Link.astro'
+import PostProtection from '@/components/PostProtection.astro'
 import PostHead from '@/components/PostHead.astro'
 import PostNavigation from '@/components/PostNavigation.astro'
 import RelatedPosts from '@/components/RelatedPosts.astro'
@@ -281,9 +282,16 @@ const hasEsTranslation = await hasTranslation(
       )
     }
 
-    <article class="prose col-start-2 max-w-none">
-      <Content />
-    </article>
+    <PostProtection
+      isProtected={!!post.data.protected}
+      password={post.data.password}
+      postId={currentPostId}
+      protectionMessage={post.data.protectionMessage}
+    >
+      <article class="prose max-w-none">
+        <Content />
+      </article>
+    </PostProtection>
 
     {
       (hasChildPosts || isCurrentSubpost) && (

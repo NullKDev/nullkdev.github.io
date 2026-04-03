@@ -53,6 +53,14 @@ const dateDisplay = !startDate ? '' : startDate === endDate ? startDate : `${sta
       <!-- Dim overlay on hover -->
       <div class="absolute inset-0 bg-black/0 group-hover:bg-black/8 transition-colors duration-300" />
 
+      <!-- Lock badge -->
+      {project.data.protected && (
+        <div class="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 rounded-lg bg-background/85 backdrop-blur-sm border border-border/40 shadow-sm">
+          <Icon name="lucide:lock" class="size-3 text-muted-foreground" />
+          <span class="text-[10px] font-medium text-muted-foreground">{project.data.password ? 'Protected' : 'Private'}</span>
+        </div>
+      )}
+
       <!-- Open indicator (appears on hover) -->
       <div class="absolute top-3 right-3 translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-200">
         <div class="flex items-center gap-1 px-2 py-1 rounded-lg bg-background/90 backdrop-blur-sm shadow-md border border-border/30">

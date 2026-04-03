@@ -14,6 +14,9 @@ const blog = defineCollection({
       authors: z.array(z.string()).optional().default(['me']),
       draft: z.boolean().optional(),
       lang: z.enum(['en', 'es']).optional().default('en'),
+      protected: z.boolean().optional().default(false),
+      password: z.string().optional(),
+      protectionMessage: z.string().optional(),
     }),
 })
 
@@ -48,6 +51,9 @@ const projects = defineCollection({
       order: z.number().optional(),
       contributors: z.array(z.string()).optional().default(['me']),
       lang: z.enum(['en', 'es']).optional().default('en'),
+      protected: z.boolean().optional().default(false),
+      password: z.string().optional(),
+      protectionMessage: z.string().optional(),
     }),
 })
 
@@ -70,6 +76,9 @@ const photos = defineCollection({
       model: z.string().optional(),
       preset: z.string().optional(),
       lang: z.enum(['en', 'es']).optional().default('en'),
+      protected: z.boolean().optional().default(false),
+      password: z.string().optional(),
+      protectionMessage: z.string().optional(),
     }),
 })
 
