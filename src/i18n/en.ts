@@ -56,7 +56,7 @@ export const en = {
   'about.arch_title': 'Architectures',
   'about.exp_heading': 'Experience',
   'about.exp_desc':
-    '7+ years in mobile development across Android, Flutter and multiplatform technologies',
+    '{yearsExp}+ years in mobile development across Android, Flutter and multiplatform technologies',
   'about.origin_title': 'Why NullKDev?',
   'about.origin_desc':
     "The name <strong>NullKDev</strong> represents my identity as a developer: <strong>Null</strong> for the fundamental concept in programming, <strong>K</strong> for <strong>Kotlin</strong> (my favorite language) and also for <strong>Karl</strong>, and <strong>Dev</strong> for developer. It's my way of expressing my passion for clean code and elegant solutions.",

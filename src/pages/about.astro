@@ -9,6 +9,11 @@ import { AUTHOR, SITE } from '@/consts'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 
+// Dynamic experience years (career started Jun 2018)
+const yearsExp = new Date().getFullYear() - 2018
+// Agrosmart duration: Jun 2018 – Sep 2023 (fixed past job)
+const agrosmarYears = 2023 - 2018
+
 // Enhanced Person Schema for About page
 const personSchema = {
   "@context": "https://schema.org",
@@ -44,7 +49,7 @@ const personSchema = {
     "https://nullkdev.github.io"
   ],
   "email": AUTHOR.social.email.mail,
-  "description": "Mobile developer with 7+ years of experience specialized in Android, Kotlin, Java, Flutter and KMM. Passionate about creating exceptional user experiences."
+  "description": `Mobile developer with ${yearsExp}+ years of experience specialized in Android, Kotlin, Java, Flutter and KMM. Passionate about creating exceptional user experiences.`
 }
 
 const skills = [
@@ -93,8 +98,8 @@ const experience: ExperienceItem[] = [
     period: 'Jun 2018 - Sep 2023',
     location: 'Ica, Peru · On-site',
     icon: 'lucide:smartphone',
-    desc: '5+ years building Android and multiplatform applications for the agricultural tech sector using Java, Kotlin, and Flutter.',
-    descEs: 'Más de 5 años desarrollando aplicaciones Android y multiplataforma para el sector agrotecnológico con Java, Kotlin y Flutter.',
+    desc: `${agrosmarYears}+ years building Android and multiplatform applications for the agricultural tech sector using Java, Kotlin, and Flutter.`,
+    descEs: `Más de ${agrosmarYears} años desarrollando aplicaciones Android y multiplataforma para el sector agrotecnológico con Java, Kotlin y Flutter.`,
   },
 ]
 ---
@@ -299,6 +304,11 @@ const experience: ExperienceItem[] = [
 
   </section>
 </Layout>
+
+<script is:inline define:vars={{ yearsExp }}>
+  window.__i18nVars = window.__i18nVars || {}
+  window.__i18nVars.yearsExp = yearsExp
+</script>
 
 <script is:inline data-astro-rerun>
   (function () {

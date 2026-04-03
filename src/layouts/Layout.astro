@@ -117,20 +117,27 @@ const { class: className, hideFloatingSidebar = false } = Astro.props
       (function () {
         var T = JSON.parse(document.getElementById('i18n-data').textContent || '{}')
 
+        function interpolate(str, vars) {
+          return str.replace(/\{(\w+)\}/g, function (_, k) {
+            return vars[k] !== undefined ? vars[k] : '{' + k + '}'
+          })
+        }
+
         function applyI18n(lang) {
           var dict = T[lang] || T.en
+          var vars = window.__i18nVars || {}
           document.documentElement.lang = lang
 
           // Text content
           document.querySelectorAll('[data-i18n]').forEach(function (el) {
             var key = el.getAttribute('data-i18n')
-            if (dict[key] !== undefined) el.textContent = dict[key]
+            if (dict[key] !== undefined) el.textContent = interpolate(dict[key], vars)
           })
 
           // Inner HTML (for paragraphs with <strong>)
           document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
             var key = el.getAttribute('data-i18n-html')
-            if (dict[key] !== undefined) el.innerHTML = dict[key]
+            if (dict[key] !== undefined) el.innerHTML = interpolate(dict[key], vars)
           })
 
           // title attribute

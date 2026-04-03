@@ -47,7 +47,7 @@ export const es = {
   'about.contact_btn': 'Contáctame',
   'about.about_heading': 'Sobre mí',
   'about.bio_p1':
-    '¡Hola! Soy un <strong>desarrollador móvil</strong> con más de 7 años de experiencia creando aplicaciones innovadoras. Actualmente trabajo en <strong>Corporativo Overall</strong>, donde impulso el crecimiento y desarrollo de iniciativas móviles.',
+    '¡Hola! Soy un <strong>desarrollador móvil</strong> con más de {yearsExp} años de experiencia creando aplicaciones innovadoras. Actualmente trabajo en <strong>Corporativo Overall</strong>, donde impulso el crecimiento y desarrollo de iniciativas móviles.',
   'about.bio_p2':
     'Me especializo en <strong>desarrollo Android nativo</strong> utilizando tecnologías modernas como <strong>Kotlin</strong>, <strong>Java</strong>, <strong>Flutter</strong> y <strong>Kotlin Multiplatform</strong>. Mi facilidad para aprender nuevas tecnologías me permite mantenerme al día con las tendencias del mercado y garantizar el éxito en el desarrollo móvil.',
   'about.bio_p3':
@@ -56,7 +56,7 @@ export const es = {
   'about.arch_title': 'Arquitecturas',
   'about.exp_heading': 'Experiencia',
   'about.exp_desc':
-    '7+ años en desarrollo móvil con Android, Flutter y tecnologías multiplataforma',
+    '{yearsExp}+ años en desarrollo móvil con Android, Flutter y tecnologías multiplataforma',
   'about.origin_title': '¿Por qué NullKDev?',
   'about.origin_desc':
     'El nombre <strong>NullKDev</strong> representa mi identidad como desarrollador: <strong>Null</strong> por el concepto fundamental en programación, <strong>K</strong> por <strong>Kotlin</strong> (mi lenguaje favorito) y también por <strong>Karl</strong>, y <strong>Dev</strong> por desarrollador. Es mi forma de expresar mi pasión por el código limpio y las soluciones elegantes.',
