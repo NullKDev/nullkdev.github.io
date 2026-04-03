@@ -50,6 +50,28 @@
           }
         }
 
+        // Redirect listing pages between EN and ES
+        var path = window.location.pathname
+        var listingSections = ['blog', 'projects', 'photos']
+        for (var i = 0; i < listingSections.length; i++) {
+          var sec = listingSections[i]
+          if (next === 'es') {
+            // EN listing → ES listing (e.g. /blog → /es/blog, /blog/2 → /es/blog/2)
+            var enPattern = new RegExp('^/' + sec + '(/|$)')
+            if (enPattern.test(path)) {
+              window.location.href = '/es' + path
+              return
+            }
+          } else {
+            // ES listing → EN listing (e.g. /es/blog → /blog)
+            var esPattern = new RegExp('^/es/' + sec + '(/|$)')
+            if (esPattern.test(path)) {
+              window.location.href = path.replace(/^\/es/, '')
+              return
+            }
+          }
+        }
+
         document.documentElement.lang = next
         window.dispatchEvent(new CustomEvent('locale-changed', { detail: { locale: next } }))
         if (typeof window.__applyI18n === 'function') window.__applyI18n(next)

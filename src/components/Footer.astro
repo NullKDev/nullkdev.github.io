@@ -4,9 +4,8 @@ import SocialIcons from './SocialIcons.astro'
 import Link from '@/components/Link.astro'
 import { Icon } from 'astro-icon/components'
 
-const isExternalLink = (href: string) => {
-  return href.startsWith('http')
-}
+const isExternalLink = (href: string) => href.startsWith('http')
+const TRANSLATABLE = new Set(['blog', 'projects', 'photos'])
 ---
 
 <footer class="bg-background/80 border-t border-border/50 backdrop-blur-md">
@@ -21,9 +20,12 @@ const isExternalLink = (href: string) => {
             {NAV_LINKS.map((item) => {
               const isExternal = isExternalLink(item.href)
               const isInsideLink = item.label.toLowerCase() === 'inside'
+              const section = item.href.replace(/^\//, '')
+              const isTranslatable = TRANSLATABLE.has(section)
               return (
                 <Link
                   href={item.href}
+                  {...(isTranslatable ? { 'data-nav-section': section } : {})}
                   class={isInsideLink
                     ? "text-sm text-primary hover:text-primary/80 capitalize transition-colors flex items-center gap-1.5 group font-medium"
                     : "text-sm text-muted-foreground hover:text-primary capitalize transition-colors flex items-center gap-1.5 group"}

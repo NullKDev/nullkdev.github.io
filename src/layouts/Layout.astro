@@ -159,6 +159,14 @@ const { class: className, hideFloatingSidebar = false } = Astro.props
           })
         }
 
+        function updateNavLinks() {
+          var isEs = window.location.pathname === '/es' || window.location.pathname.startsWith('/es/')
+          document.querySelectorAll('a[data-nav-section]').forEach(function (a) {
+            var sec = a.getAttribute('data-nav-section')
+            a.setAttribute('href', isEs ? '/es/' + sec : '/' + sec)
+          })
+        }
+
         // Default language is always 'en' unless the user has explicitly changed it
         var stored = localStorage.getItem('lang')
         var lang = stored || 'en'
@@ -169,10 +177,12 @@ const { class: className, hideFloatingSidebar = false } = Astro.props
         window.__locale = lang
 
         applyI18n(lang)
+        updateNavLinks()
 
         document.addEventListener('astro:after-swap', function () {
           var current = localStorage.getItem('lang') || 'en'
           applyI18n(current)
+          updateNavLinks()
         })
       })()
     </script>

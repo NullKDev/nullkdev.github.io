@@ -1,0 +1,49 @@
+---
+title: 'Keyboard Simple'
+description: 'Librería Android de teclado ligera, distribuida via JitPack para integración sencilla en cualquier proyecto Android.'
+tags: ['Android', 'Java', 'Kotlin', 'Library']
+link: 'https://github.com/NullKDev/Keyboard-Simple'
+startDate: '2023-05-23'
+contributors: ['me']
+lang: 'es'
+---
+
+import Callout from '@/components/Callout.astro'
+
+**Keyboard Simple** es una librería Android de teclado construida con Java y Kotlin,
+diseñada para integrarse en cualquier proyecto Android con configuración mínima.
+Se distribuye via [JitPack](https://jitpack.io) y cubre las necesidades más comunes
+de personalización de teclado sin dependencias pesadas.
+
+## Integración
+
+### 1. Agrega JitPack a tus repositorios
+
+```kotlin
+// settings.gradle.kts (o build.gradle)
+dependencyResolutionManagement {
+    repositories {
+        maven { url = uri("https://jitpack.io") }
+    }
+}
+```
+
+### 2. Agrega la dependencia
+
+```kotlin
+// build.gradle.kts (módulo app)
+dependencies {
+    implementation("com.github.NearApps:Keyboard-Simple:1.0.5")
+}
+```
+
+<Callout title="Último release" variant="note">
+  El último release publicado es **v1.0.5**. Puedes encontrar todos los releases en la
+  [página de releases de GitHub](https://github.com/NullKDev/Keyboard-Simple/releases).
+</Callout>
+
+## Stack tecnológico
+
+- **Java** — implementación principal de la librería (70%)
+- **Kotlin** — helpers modernos y extensiones (30%)
+- **Apache 2.0** — código abierto, libre para uso en proyectos comerciales

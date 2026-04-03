@@ -17,26 +17,28 @@ export const es = {
   'common.page': 'Página',
 
   // Homepage
-  'home.subtitle': 'Desarrollador de Software.',
-  'home.cta_blog': 'Leer guías',
-  'home.cta_about': 'Saber más',
+  'home.subtitle': 'Desarrollador Móvil · Android · Flutter · KMM',
+  'home.bio':
+    '7+ años construyendo apps móviles. Kotlin y Flutter son mis herramientas del día a día.',
+  'home.cta_projects': 'Ver proyectos',
+  'home.cta_about': 'Sobre mí',
   'home.core_stack': 'Stack Principal',
+  'home.do_mobile_title': 'Apps Móviles',
+  'home.do_mobile_desc':
+    'Apps Android nativas con Kotlin & Java. Rendimiento primero, arquitectura limpia.',
+  'home.do_cross_title': 'Multiplataforma',
+  'home.do_cross_desc':
+    'Flutter & Kotlin Multiplatform — un solo código, iOS y Android.',
+  'home.do_other_title': 'Backend & Herramientas',
+  'home.do_other_desc':
+    'Scripts Python, APIs con Laravel y tooling cuando el proyecto lo requiere.',
   'home.latest_posts': 'Últimas publicaciones',
-  'home.latest_posts_desc': 'Guías y tutoriales recientes',
   'home.view_all': 'Ver todo',
-  'home.view_all_posts': 'Ver todas las publicaciones',
-  'home.explore': 'Explorar',
-  'home.about_title': 'Sobre mí',
-  'home.about_desc':
-    'Experiencia, habilidades y trayectoria en administración de sistemas y seguridad',
-  'home.about_cta': 'Saber más',
-  'home.projects_title': 'Proyectos',
-  'home.projects_desc':
-    'Configuraciones de infraestructura, experimentos de homelab y documentación técnica',
-  'home.projects_cta': 'Explorar',
+  'home.featured_projects': 'Proyectos destacados',
+  'home.view_all_projects': 'Ver todos los proyectos',
   'home.connect_title': 'Conectemos',
   'home.connect_desc':
-    'Abierto a discutir proyectos de infraestructura, desafíos de seguridad o compartir experiencias de homelab.',
+    'Abierto a proyectos de desarrollo móvil, consultoría Android, o simplemente hablar de código.',
   'home.send_email': 'Enviar correo',
   'home.view_experience': 'Ver experiencia',
 

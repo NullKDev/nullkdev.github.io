@@ -14,16 +14,16 @@ import { Button } from '@/components/ui/button'
 import Layout from '@/layouts/Layout.astro'
 import { SITE } from '@/consts'
 import {
-  getAdjacentPosts,
-  getAllPostsAndSubposts,
+  getAdjacentPostsByLocale,
+  getPostsAndSubpostsByLocale,
   getCombinedReadingTime,
+  getBaseSlug,
   getParentId,
   getParentPost,
   getPostReadingTime,
   getSubpostCount,
   getTOCSections,
   hasSubposts,
-  hasTranslation,
   isSubpost,
   parseAuthors,
 } from '@/lib/data-utils'
@@ -33,17 +33,18 @@ import { Image } from 'astro:assets'
 import { render } from 'astro:content'
 
 export async function getStaticPaths() {
-  const posts = await getAllPostsAndSubposts()
-  return posts.map((post) => ({
-    params: { id: post.id },
+  const esPosts = await getPostsAndSubpostsByLocale('es')
+  return esPosts.map((post) => ({
+    params: { locale: 'es', id: getBaseSlug(post.id, 'es') },
     props: post,
   }))
 }
 
 const post = Astro.props
-const currentPostId = Astro.params.id
+const locale = Astro.params.locale as string
+const postLocaleId = post.id
+const currentPostId = Astro.params.id as string
 
-// Error handling for content rendering
 let Content: Awaited<ReturnType<typeof render>>['Content']
 let headings: Awaited<ReturnType<typeof render>>['headings'] = []
 try {
@@ -52,23 +53,20 @@ try {
   headings = rendered.headings ?? []
 } catch (error) {
   console.error('Error rendering post content:', error)
-  // Fallback: return 404 or error page
   return Astro.redirect('/404')
 }
 
-// Error handling for authors parsing
 let authors: Awaited<ReturnType<typeof parseAuthors>> = []
 try {
   authors = await parseAuthors(post.data.authors ?? [])
 } catch (error) {
   console.error('Error parsing authors:', error)
-  // Continue with empty authors array
 }
 
-const isCurrentSubpost = isSubpost(currentPostId)
+const isCurrentSubpost = isSubpost(postLocaleId)
+const localeParentId = isCurrentSubpost ? getParentId(postLocaleId) : postLocaleId
 
-// Error handling for navigation and metadata
-let navigation: Awaited<ReturnType<typeof getAdjacentPosts>> = { newer: null, older: null, parent: null }
+let navigation: Awaited<ReturnType<typeof getAdjacentPostsByLocale>> = { newer: null, older: null, parent: null }
 let parentPost: Awaited<ReturnType<typeof getParentPost>> = null
 let hasChildPosts = false
 let subpostCount = 0
@@ -77,38 +75,34 @@ let combinedReadingTime: string | null = null
 let tocSections: Awaited<ReturnType<typeof getTOCSections>> = []
 
 try {
-  navigation = await getAdjacentPosts(currentPostId)
-  parentPost = isCurrentSubpost ? await getParentPost(currentPostId) : null
-  hasChildPosts = await hasSubposts(currentPostId)
-  subpostCount = !isCurrentSubpost ? await getSubpostCount(currentPostId) : 0
-  postReadingTime = await getPostReadingTime(currentPostId)
+  navigation = await getAdjacentPostsByLocale(postLocaleId, locale)
+  parentPost = isCurrentSubpost ? await getParentPost(postLocaleId) : null
+  hasChildPosts = await hasSubposts(localeParentId)
+  subpostCount = !isCurrentSubpost ? await getSubpostCount(postLocaleId) : 0
+  postReadingTime = await getPostReadingTime(postLocaleId)
   combinedReadingTime =
     hasChildPosts && !isCurrentSubpost
-      ? await getCombinedReadingTime(currentPostId)
+      ? await getCombinedReadingTime(postLocaleId)
       : null
-  tocSections = await getTOCSections(currentPostId)
+  tocSections = await getTOCSections(postLocaleId)
 } catch (error) {
   console.error('Error fetching post metadata:', error)
-  // Continue with default values - page will still render
 }
 
-const hasEsTranslation = await hasTranslation(
-  isCurrentSubpost ? getParentId(currentPostId) : currentPostId,
-  'es',
-)
+const parentBaseSlug = parentPost ? getBaseSlug(parentPost.id, locale) : null
 ---
 
 <Layout hideFloatingSidebar={hasChildPosts || isCurrentSubpost}>
   <PostHead slot="head" post={post} />
-  <meta slot="head" name="post-locale" content="en" />
+  <meta slot="head" name="post-locale" content={locale} />
   <meta slot="head" name="post-slug" content={currentPostId} />
-  {hasEsTranslation && <meta slot="head" name="post-has-es" content="true" />}
+  <meta slot="head" name="post-has-en" content="true" />
   {
     (hasChildPosts || isCurrentSubpost) && (
       <SubpostsHeader
         slot="subposts-navigation"
-        parentId={isCurrentSubpost ? getParentId(currentPostId) : currentPostId}
-        locale="en"
+        parentId={localeParentId}
+        locale={locale}
       />
     )
   }
@@ -127,23 +121,23 @@ const hasEsTranslation = await hasTranslation(
     <div class="col-start-2">
       <Breadcrumbs
         items={[
-          { href: '/blog', label: 'Blog', icon: 'lucide:library-big' },
-          ...(isCurrentSubpost && parentPost
+          { href: '/blog', label: 'Blog', icon: 'lucide:library-big', i18nKey: 'nav.blog' },
+          ...(isCurrentSubpost && parentPost && parentBaseSlug
             ? [
                 {
-                  href: `/blog/${parentPost.id}`,
+                  href: `/${locale}/blog/${parentBaseSlug}`,
                   label: parentPost.data.title,
                   icon: 'lucide:book-open',
                 },
                 {
-                  href: `/blog/${currentPostId}`,
+                  href: `/${locale}/blog/${currentPostId}`,
                   label: post.data.title,
                   icon: 'lucide:file-text',
                 },
               ]
             : [
                 {
-                  href: `/blog/${currentPostId}`,
+                  href: `/${locale}/blog/${currentPostId}`,
                   label: post.data.title,
                   icon: 'lucide:book-open-text',
                 },
@@ -184,19 +178,9 @@ const hasEsTranslation = await hasTranslation(
               <div class="flex w-full items-center justify-center gap-x-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
                 {authors.map((author) => (
                   <div class="flex items-center gap-x-1.5">
-                    <Image
-                      src={author.avatar}
-                      alt={author.name}
-                      width={20}
-                      height={20}
-                      class="rounded-full"
-                    />
+                    <Image src={author.avatar} alt={author.name} width={20} height={20} class="rounded-full" />
                     {author.isRegistered ? (
-                      <Link
-                        href={`/authors/${author.id}`}
-                        underline
-                        class="text-foreground"
-                      >
+                      <Link href={`/authors/${author.id}`} underline class="text-foreground">
                         <span>{author.name}</span>
                       </Link>
                     ) : (
@@ -207,30 +191,17 @@ const hasEsTranslation = await hasTranslation(
               </div>
             )
           }
-
-          <div
-            class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0"
-          >
+          <div class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
             <span>{formatDate(post.data.date)}</span>
           </div>
-
-          <div
-            class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0"
-          >
+          <div class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
             <span>
               {postReadingTime}
-              {
-                combinedReadingTime &&
-                  combinedReadingTime !== postReadingTime && (
-                    <span class="text-muted-foreground">
-                      {' '}
-                      ({combinedReadingTime} total)
-                    </span>
-                  )
-              }
+              {combinedReadingTime && combinedReadingTime !== postReadingTime && (
+                <span class="text-muted-foreground"> ({combinedReadingTime} total)</span>
+              )}
             </span>
           </div>
-
           {
             subpostCount > 0 && (
               <div class="flex w-full items-center justify-center gap-1 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
@@ -248,10 +219,7 @@ const hasEsTranslation = await hasTranslation(
                 const { variant, className, tooltip } = getTagVariant(tag)
                 return (
                   <div class="group relative">
-                    <a
-                      href={`/tags/${tag}`}
-                      class={`${badgeVariants({ variant })} ${className || ''}`}
-                    >
+                    <a href={`/tags/${tag}`} class={`${badgeVariants({ variant })} ${className || ''}`}>
                       <Icon name="lucide:hash" class="size-3" />
                       {tag}
                     </a>
@@ -275,11 +243,9 @@ const hasEsTranslation = await hasTranslation(
       />
     </section>
 
-    {
-      tocSections.length > 0 && (
-        <TOCSidebar sections={tocSections} currentPostId={currentPostId} />
-      )
-    }
+    {tocSections.length > 0 && (
+      <TOCSidebar sections={tocSections} currentPostId={postLocaleId} />
+    )}
 
     <article class="prose col-start-2 max-w-none">
       <Content />
@@ -287,26 +253,17 @@ const hasEsTranslation = await hasTranslation(
 
     {
       (hasChildPosts || isCurrentSubpost) && (
-        <SubpostsSidebar
-          parentId={
-            isCurrentSubpost ? getParentId(currentPostId) : currentPostId
-          }
-          locale="en"
-          className="w-64"
-        />
+        <SubpostsSidebar parentId={localeParentId} locale={locale} className="w-64" />
       )
     }
 
-    {
-      /* Social sharing buttons - show on all posts */
-      <div class="col-start-2 mt-8">
-        <SocialShare
-          title={post.data.title}
-          url={new URL(`/blog/${currentPostId}`, SITE.href).href}
-          description={post.data.description}
-        />
-      </div>
-    }
+    <div class="col-start-2 mt-8">
+      <SocialShare
+        title={post.data.title}
+        url={new URL(`/${locale}/blog/${currentPostId}`, SITE.href).href}
+        description={post.data.description}
+      />
+    </div>
 
     <PostNavigation
       newerPost={navigation.newer}
@@ -315,7 +272,6 @@ const hasEsTranslation = await hasTranslation(
     />
 
     {
-      /* Related posts - show on main posts only */
       !isCurrentSubpost && (
         <div class="col-start-2 mt-12">
           <RelatedPosts currentPostId={currentPostId} limit={3} />
@@ -323,7 +279,6 @@ const hasEsTranslation = await hasTranslation(
       )
     }
   </section>
-
 
   <Button
     variant="outline"
@@ -333,30 +288,21 @@ const hasEsTranslation = await hasTranslation(
     title="Scroll to top"
     aria-label="Scroll to top"
   >
-    <Icon
-      name="lucide:arrow-up"
-      class="mx-auto size-4 transition-all group-hover:-translate-y-0.5"
-    />
+    <Icon name="lucide:arrow-up" class="mx-auto size-4 transition-all group-hover:-translate-y-0.5" />
   </Button>
 
   <script>
     document.addEventListener('astro:page-load', () => {
       const scrollToTopButton = document.getElementById('scroll-to-top')
       const footer = document.querySelector('footer')
-
       if (scrollToTopButton && footer) {
         scrollToTopButton.addEventListener('click', () => {
           window.scrollTo({ top: 0, behavior: 'smooth' })
         })
-
         window.addEventListener('scroll', () => {
           const footerRect = footer.getBoundingClientRect()
           const isFooterVisible = footerRect.top <= window.innerHeight
-
-          scrollToTopButton.classList.toggle(
-            'hidden',
-            window.scrollY <= 300 || isFooterVisible,
-          )
+          scrollToTopButton.classList.toggle('hidden', window.scrollY <= 300 || isFooterVisible)
         })
       }
     })
@@ -368,8 +314,7 @@ const hasEsTranslation = await hasTranslation(
     if (!document.querySelector('link[href*="katex.min.css"]')) {
       const link = document.createElement('link')
       link.rel = 'stylesheet'
-      link.href =
-        'https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css'
+      link.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css'
       document.head.appendChild(link)
     }
   }

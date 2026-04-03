@@ -10,26 +10,43 @@ import { NAV_LINKS } from '@/consts'
 import { Menu, ExternalLink } from 'lucide-react'
 import { useTranslation } from '@/i18n/use-locale'
 
+const TRANSLATABLE = new Set(['blog', 'projects', 'photos'])
+
+function localizeHref(href: string, locale: 'en' | 'es'): string {
+  if (href.startsWith('http')) return href
+  const section = href.replace(/^\/(?:es\/)?/, '')
+  if (TRANSLATABLE.has(section)) {
+    return locale === 'es' ? `/es/${section}` : `/${section}`
+  }
+  return href
+}
+
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false)
+  const [locale, setLocale] = useState<'en' | 'es'>('en')
   const { t } = useTranslation()
 
   useEffect(() => {
-    const handleViewTransitionStart = () => {
-      setIsOpen(false)
+    const updateLocale = () => {
+      const path = window.location.pathname
+      setLocale(path === '/es' || path.startsWith('/es/') ? 'es' : 'en')
     }
+    updateLocale()
+    document.addEventListener('astro:page-load', updateLocale)
+    return () => document.removeEventListener('astro:page-load', updateLocale)
+  }, [])
+
+  useEffect(() => {
+    const handleViewTransitionStart = () => setIsOpen(false)
     document.addEventListener('astro:before-swap', handleViewTransitionStart)
-    return () => {
+    return () =>
       document.removeEventListener(
         'astro:before-swap',
         handleViewTransitionStart,
       )
-    }
   }, [])
 
-  const isExternalLink = (href: string) => {
-    return href.startsWith('http')
-  }
+  const isExternalLink = (href: string) => href.startsWith('http')
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={(val) => setIsOpen(val)}>
@@ -48,10 +65,11 @@ const MobileMenu = () => {
         {NAV_LINKS.map((item) => {
           const isExternal = isExternalLink(item.href)
           const isInsideLink = item.label.toLowerCase() === 'inside'
+          const href = localizeHref(item.href, locale)
           return (
             <DropdownMenuItem key={item.href} asChild>
               <a
-                href={item.href}
+                href={href}
                 target={isExternal ? '_blank' : '_self'}
                 rel={isExternal ? 'noopener noreferrer' : undefined}
                 className={`flex w-full items-center gap-2 text-lg font-medium capitalize ${

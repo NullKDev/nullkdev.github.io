@@ -10,6 +10,9 @@ import { Icon } from 'astro-icon/components'
 const isExternalLink = (href: string) => {
   return href.startsWith('http')
 }
+
+// Sections that have ES equivalents under /es/*
+const translatableSections = new Set(['blog', 'projects', 'photos'])
 ---
 
 <header class="bg-background/50 sticky top-0 z-10 backdrop-blur-md" transition:persist>
@@ -42,9 +45,12 @@ const isExternalLink = (href: string) => {
         {NAV_LINKS.map((item) => {
           const isExternal = isExternalLink(item.href)
           const isInsideLink = item.label.toLowerCase() === 'inside'
+          const section = item.href.replace(/^\//, '')
+          const isTranslatable = translatableSections.has(section)
           return (
             <Link
               href={item.href}
+              {...(isTranslatable ? { 'data-nav-section': section } : {})}
               class={isInsideLink
                 ? "text-primary hover:text-primary/80 capitalize transition-colors flex items-center gap-1.5 font-medium"
                 : "text-foreground/60 hover:text-foreground/80 capitalize transition-colors flex items-center gap-1.5"}
@@ -71,3 +77,13 @@ const isExternalLink = (href: string) => {
     </div>
   </div>
 </header>
+
+<script is:inline data-astro-rerun>
+  (function () {
+    var isEs = window.location.pathname === '/es' || window.location.pathname.startsWith('/es/')
+    document.querySelectorAll('a[data-nav-section]').forEach(function (a) {
+      var sec = a.getAttribute('data-nav-section')
+      a.setAttribute('href', isEs ? '/es/' + sec : '/' + sec)
+    })
+  })()
+</script>

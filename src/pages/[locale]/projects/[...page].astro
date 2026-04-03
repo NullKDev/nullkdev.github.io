@@ -4,10 +4,10 @@ import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import PageHead from '@/components/PageHead.astro'
 import ProjectCard from '@/components/ProjectCard.astro'
 import PaginationComponent from '@/components/ui/pagination'
-import { Separator } from "@/components/ui/separator" // Importar Separator
+import { Separator } from '@/components/ui/separator'
 import { SITE } from '@/consts'
 import Layout from '@/layouts/Layout.astro'
-import { getAllProjects, groupProjectsByYear } from '@/lib/data-utils'
+import { getProjectsByLocale, groupProjectsByYear } from '@/lib/data-utils'
 import type { PaginateFunction } from 'astro'
 
 export async function getStaticPaths({
@@ -15,11 +15,15 @@ export async function getStaticPaths({
 }: {
   paginate: PaginateFunction
 }) {
-  const allProjects = await getAllProjects()
-  return paginate(allProjects, { pageSize: SITE.postsPerPage })
+  const esProjects = await getProjectsByLocale('es')
+  return paginate(esProjects, {
+    params: { locale: 'es' },
+    pageSize: SITE.postsPerPage,
+  })
 }
 
 const { page } = Astro.props
+const { locale } = Astro.params
 const projectsByYear = groupProjectsByYear(page.data)
 const years = Object.keys(projectsByYear).sort((a, b) => {
   if (a === 'Present') return -1
@@ -28,42 +32,40 @@ const years = Object.keys(projectsByYear).sort((a, b) => {
 })
 ---
 
-{/* CAMBIO: max-w-4xl para que las tarjetas horizontales tengan espacio */}
 <Layout class="max-w-5xl mx-auto px-4">
   <PageHead slot="head" title="Projects" />
-  
+
   <div class="py-6">
     <Breadcrumbs
-        items={[
+      items={[
         { label: 'Projects', href: '/projects', icon: 'lucide:folder-git-2', i18nKey: 'nav.projects' },
         { label: 'Page', icon: 'lucide:git-merge', i18nKey: 'common.page', labelSuffix: ` ${page.currentPage}` },
-        ]}
+      ]}
     />
   </div>
 
   <div class="flex min-h-[calc(100vh-18rem)] flex-col gap-y-12 mb-12">
     {years.map((year) => (
-        <section class="flex flex-col gap-y-6">
-          <div class="flex items-center gap-4">
-             <div class="text-2xl font-bold tracking-tight text-foreground">{year}</div>
-             <Separator className="flex-1 bg-border/60" />
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {projectsByYear[year].map((project) => (
-                <ProjectCard project={project} />
-            ))}
-          </div>
-        </section>
-      ))
-    }
+      <section class="flex flex-col gap-y-6">
+        <div class="flex items-center gap-4">
+          <div class="text-2xl font-bold tracking-tight text-foreground">{year}</div>
+          <Separator className="flex-1 bg-border/60" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {projectsByYear[year].map((project) => (
+            <ProjectCard project={project} />
+          ))}
+        </div>
+      </section>
+    ))}
   </div>
 
   <div class="pb-12">
     <PaginationComponent
-        currentPage={page.currentPage}
-        totalPages={page.lastPage}
-        baseUrl="/projects/"
-        client:load
+      currentPage={page.currentPage}
+      totalPages={page.lastPage}
+      baseUrl={`/${locale}/projects/`}
+      client:load
     />
   </div>
 </Layout>

@@ -17,26 +17,28 @@ export const en = {
   'common.page': 'Page',
 
   // Homepage
-  'home.subtitle': 'Software Developer.',
-  'home.cta_blog': 'Read guides',
-  'home.cta_about': 'Learn more',
+  'home.subtitle': 'Mobile Developer · Android · Flutter · KMM',
+  'home.bio':
+    '7+ years building mobile apps. Kotlin and Flutter are my daily tools.',
+  'home.cta_projects': 'View projects',
+  'home.cta_about': 'About me',
   'home.core_stack': 'Core Stack',
+  'home.do_mobile_title': 'Mobile Apps',
+  'home.do_mobile_desc':
+    'Native Android apps with Kotlin & Java. Performance-first, clean architecture.',
+  'home.do_cross_title': 'Cross-Platform',
+  'home.do_cross_desc':
+    'Flutter & Kotlin Multiplatform — one codebase, iOS and Android.',
+  'home.do_other_title': 'Backend & Tools',
+  'home.do_other_desc':
+    'Python scripts, Laravel APIs, and developer tooling when the project calls for it.',
   'home.latest_posts': 'Latest Posts',
-  'home.latest_posts_desc': 'Recent guides and tutorials',
   'home.view_all': 'View all',
-  'home.view_all_posts': 'View all posts',
-  'home.explore': 'Explore',
-  'home.about_title': 'About',
-  'home.about_desc':
-    'Experience, skills, and background in system administration and security',
-  'home.about_cta': 'Learn more',
-  'home.projects_title': 'Projects',
-  'home.projects_desc':
-    'Infrastructure setups, homelab experiments, and technical write-ups',
-  'home.projects_cta': 'Explore',
+  'home.featured_projects': 'Featured Projects',
+  'home.view_all_projects': 'View all projects',
   'home.connect_title': "Let's connect",
   'home.connect_desc':
-    'Open to discussing infrastructure projects, security challenges, or sharing homelab experiences.',
+    'Open to mobile development projects, Android consulting, or just talking code.',
   'home.send_email': 'Send email',
   'home.view_experience': 'View experience',
 

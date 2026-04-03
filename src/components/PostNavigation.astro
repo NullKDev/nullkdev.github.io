@@ -1,11 +1,19 @@
 ---
 import Link from '@/components/Link.astro'
 import { buttonVariants } from '@/components/ui/button'
+import { getBaseSlug } from '@/lib/data-utils'
 import { cn } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
 
-const { newerPost, olderPost, parentPost, path } = Astro.props
+const { newerPost, olderPost, parentPost } = Astro.props
 const isSubpost = !!parentPost
+
+function entryUrl(entry: { id: string; collection: string; data: { lang?: string } }): string {
+  const locale = entry.data.lang === 'es' ? 'es' : 'en'
+  const slug = getBaseSlug(entry.id, locale)
+  const prefix = locale === 'es' ? '/es' : ''
+  return `${prefix}/${entry.collection}/${slug}#post-title`
+}
 ---
 
 <nav
@@ -15,7 +23,7 @@ const isSubpost = !!parentPost
   )}
 >
   <Link
-    href={olderPost ? `/${path}/${olderPost.id}#post-title` : '#'}
+    href={olderPost ? entryUrl(olderPost) : '#'}
     class={cn(
       buttonVariants({ variant: 'outline' }),
       'rounded-lg group flex items-center justify-start size-full',
@@ -43,7 +51,7 @@ const isSubpost = !!parentPost
   {
     isSubpost && (
       <Link
-        href={parentPost ? `/${path}/${parentPost.id}#post-title` : '#'}
+        href={parentPost ? entryUrl(parentPost) : '#'}
         class={cn(
           buttonVariants({ variant: 'outline' }),
           'group flex size-full items-center justify-center rounded-lg',
@@ -69,7 +77,7 @@ const isSubpost = !!parentPost
   }
 
   <Link
-    href={newerPost ? `/${path}/${newerPost.id}#post-title` : '#'}
+    href={newerPost ? entryUrl(newerPost) : '#'}
     class={cn(
       buttonVariants({ variant: 'outline' }),
       'rounded-lg group flex items-center justify-end size-full',

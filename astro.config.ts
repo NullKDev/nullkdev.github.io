@@ -20,6 +20,13 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   site: 'https://nullkdev.github.io/',
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'es'],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
   //base: 'mi-repo',
   // Static output - API routes are handled by Cloudflare Pages Functions in /functions folder
   integrations: [
