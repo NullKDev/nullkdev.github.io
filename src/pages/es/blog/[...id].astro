@@ -15,15 +15,18 @@ import Layout from '@/layouts/Layout.astro'
 import { SITE } from '@/consts'
 import {
   getAdjacentPosts,
-  getAllPostsAndSubposts,
+  getAllEsPostsAndSubposts,
   getCombinedReadingTime,
+  getBaseSlug,
+  getLocaleId,
   getParentId,
   getParentPost,
+  getPostByIdRaw,
   getPostReadingTime,
+  getPostUrl,
   getSubpostCount,
   getTOCSections,
   hasSubposts,
-  hasTranslation,
   isSubpost,
   parseAuthors,
 } from '@/lib/data-utils'
@@ -33,17 +36,20 @@ import { Image } from 'astro:assets'
 import { render } from 'astro:content'
 
 export async function getStaticPaths() {
-  const posts = await getAllPostsAndSubposts()
-  return posts.map((post) => ({
-    params: { id: post.id },
+  const esPosts = await getAllEsPostsAndSubposts()
+  return esPosts.map((post) => ({
+    // URL uses base slug without .es: /es/blog/k3s-cluster-in-2025
+    params: { id: getBaseSlug(post.id) },
     props: post,
   }))
 }
 
 const post = Astro.props
-const currentPostId = Astro.params.id
+// The real ES post ID (e.g. 'k3s-cluster-in-2025.es')
+const esPostId = post.id
+// The base slug for URL construction (e.g. 'k3s-cluster-in-2025')
+const currentPostId = Astro.params.id as string
 
-// Error handling for content rendering
 let Content: Awaited<ReturnType<typeof render>>['Content']
 let headings: Awaited<ReturnType<typeof render>>['headings'] = []
 try {
@@ -52,22 +58,21 @@ try {
   headings = rendered.headings ?? []
 } catch (error) {
   console.error('Error rendering post content:', error)
-  // Fallback: return 404 or error page
   return Astro.redirect('/404')
 }
 
-// Error handling for authors parsing
 let authors: Awaited<ReturnType<typeof parseAuthors>> = []
 try {
   authors = await parseAuthors(post.data.authors ?? [])
 } catch (error) {
   console.error('Error parsing authors:', error)
-  // Continue with empty authors array
 }
 
-const isCurrentSubpost = isSubpost(currentPostId)
+const isCurrentSubpost = isSubpost(esPostId)
 
-// Error handling for navigation and metadata
+// For ES subposts, the parentId in the ES namespace (e.g. 'k3s-cluster-in-2025.es')
+const esParentId = isCurrentSubpost ? getParentId(esPostId) : esPostId
+
 let navigation: Awaited<ReturnType<typeof getAdjacentPosts>> = { newer: null, older: null, parent: null }
 let parentPost: Awaited<ReturnType<typeof getParentPost>> = null
 let hasChildPosts = false
@@ -77,38 +82,36 @@ let combinedReadingTime: string | null = null
 let tocSections: Awaited<ReturnType<typeof getTOCSections>> = []
 
 try {
-  navigation = await getAdjacentPosts(currentPostId)
-  parentPost = isCurrentSubpost ? await getParentPost(currentPostId) : null
-  hasChildPosts = await hasSubposts(currentPostId)
-  subpostCount = !isCurrentSubpost ? await getSubpostCount(currentPostId) : 0
-  postReadingTime = await getPostReadingTime(currentPostId)
+  // Navigation uses the ES post IDs so adjacent posts are also ES
+  navigation = await getAdjacentPosts(esPostId)
+  parentPost = isCurrentSubpost ? await getParentPost(esPostId) : null
+  hasChildPosts = await hasSubposts(esParentId)
+  subpostCount = !isCurrentSubpost ? await getSubpostCount(esPostId) : 0
+  postReadingTime = await getPostReadingTime(esPostId)
   combinedReadingTime =
     hasChildPosts && !isCurrentSubpost
-      ? await getCombinedReadingTime(currentPostId)
+      ? await getCombinedReadingTime(esPostId)
       : null
-  tocSections = await getTOCSections(currentPostId)
+  tocSections = await getTOCSections(esPostId)
 } catch (error) {
   console.error('Error fetching post metadata:', error)
-  // Continue with default values - page will still render
 }
 
-const hasEsTranslation = await hasTranslation(
-  isCurrentSubpost ? getParentId(currentPostId) : currentPostId,
-  'es',
-)
+// Breadcrumb: show base slug for parent link
+const parentBaseSlug = parentPost ? getBaseSlug(parentPost.id) : null
 ---
 
 <Layout hideFloatingSidebar={hasChildPosts || isCurrentSubpost}>
   <PostHead slot="head" post={post} />
-  <meta slot="head" name="post-locale" content="en" />
+  <meta slot="head" name="post-locale" content="es" />
   <meta slot="head" name="post-slug" content={currentPostId} />
-  {hasEsTranslation && <meta slot="head" name="post-has-es" content="true" />}
+  <meta slot="head" name="post-has-en" content="true" />
   {
     (hasChildPosts || isCurrentSubpost) && (
       <SubpostsHeader
         slot="subposts-navigation"
-        parentId={isCurrentSubpost ? getParentId(currentPostId) : currentPostId}
-        locale="en"
+        parentId={esParentId}
+        locale="es"
       />
     )
   }
@@ -127,23 +130,23 @@ const hasEsTranslation = await hasTranslation(
     <div class="col-start-2">
       <Breadcrumbs
         items={[
-          { href: '/blog', label: 'Blog', icon: 'lucide:library-big' },
-          ...(isCurrentSubpost && parentPost
+          { href: '/blog', label: 'Blog', icon: 'lucide:library-big', i18nKey: 'nav.blog' },
+          ...(isCurrentSubpost && parentPost && parentBaseSlug
             ? [
                 {
-                  href: `/blog/${parentPost.id}`,
+                  href: `/es/blog/${parentBaseSlug}`,
                   label: parentPost.data.title,
                   icon: 'lucide:book-open',
                 },
                 {
-                  href: `/blog/${currentPostId}`,
+                  href: `/es/blog/${currentPostId}`,
                   label: post.data.title,
                   icon: 'lucide:file-text',
                 },
               ]
             : [
                 {
-                  href: `/blog/${currentPostId}`,
+                  href: `/es/blog/${currentPostId}`,
                   label: post.data.title,
                   icon: 'lucide:book-open-text',
                 },
@@ -274,7 +277,7 @@ const hasEsTranslation = await hasTranslation(
 
     {
       tocSections.length > 0 && (
-        <TOCSidebar sections={tocSections} currentPostId={currentPostId} />
+        <TOCSidebar sections={tocSections} currentPostId={esPostId} />
       )
     }
 
@@ -285,21 +288,18 @@ const hasEsTranslation = await hasTranslation(
     {
       (hasChildPosts || isCurrentSubpost) && (
         <SubpostsSidebar
-          parentId={
-            isCurrentSubpost ? getParentId(currentPostId) : currentPostId
-          }
-          locale="en"
+          parentId={esParentId}
+          locale="es"
           className="w-64"
         />
       )
     }
 
     {
-      /* Social sharing buttons - show on all posts */
       <div class="col-start-2 mt-8">
         <SocialShare
           title={post.data.title}
-          url={new URL(`/blog/${currentPostId}`, SITE.href).href}
+          url={new URL(`/es/blog/${currentPostId}`, SITE.href).href}
           description={post.data.description}
         />
       </div>
@@ -312,7 +312,6 @@ const hasEsTranslation = await hasTranslation(
     />
 
     {
-      /* Related posts - show on main posts only */
       !isCurrentSubpost && (
         <div class="col-start-2 mt-12">
           <RelatedPosts currentPostId={currentPostId} limit={3} />
@@ -320,7 +319,6 @@ const hasEsTranslation = await hasTranslation(
       )
     }
   </section>
-
 
   <Button
     variant="outline"
@@ -349,7 +347,6 @@ const hasEsTranslation = await hasTranslation(
         window.addEventListener('scroll', () => {
           const footerRect = footer.getBoundingClientRect()
           const isFooterVisible = footerRect.top <= window.innerHeight
-
           scrollToTopButton.classList.toggle(
             'hidden',
             window.scrollY <= 300 || isFooterVisible,
@@ -365,8 +362,7 @@ const hasEsTranslation = await hasTranslation(
     if (!document.querySelector('link[href*="katex.min.css"]')) {
       const link = document.createElement('link')
       link.rel = 'stylesheet'
-      link.href =
-        'https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css'
+      link.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css'
       document.head.appendChild(link)
     }
   }

@@ -25,6 +25,31 @@
         var current = localStorage.getItem('lang') || 'en'
         var next = current === 'en' ? 'es' : 'en'
         localStorage.setItem('lang', next)
+
+        // Smart redirect on translatable content pages (blog, projects, photos)
+        var postLocale = document.querySelector('meta[name="post-locale"]')
+        var postSlug = document.querySelector('meta[name="post-slug"]')
+        var postSection = document.querySelector('meta[name="post-section"]')
+        if (postLocale && postSlug) {
+          var slug = postSlug.getAttribute('content')
+          var section = postSection ? postSection.getAttribute('content') : 'blog'
+          if (next === 'es') {
+            var hasEs = document.querySelector('meta[name="post-has-es"]')
+            if (hasEs) {
+              window.location.href = '/es/' + section + '/' + slug
+              return
+            }
+            // No ES translation: apply i18n in place, no redirect
+          } else {
+            // Switching back to EN from an ES page
+            var hasEn = document.querySelector('meta[name="post-has-en"]')
+            if (hasEn) {
+              window.location.href = '/' + section + '/' + slug
+              return
+            }
+          }
+        }
+
         document.documentElement.lang = next
         window.dispatchEvent(new CustomEvent('locale-changed', { detail: { locale: next } }))
         if (typeof window.__applyI18n === 'function') window.__applyI18n(next)

@@ -14,12 +14,13 @@ import { Button } from '@/components/ui/button'
 import Layout from '@/layouts/Layout.astro'
 import {
   getAdjacentProjects,
-  getAllProjectsAndSubProjects,
+  getAllEsProjectsAndSubProjects,
+  getBaseSlug,
   getParentId,
   getParentProject,
+  getProjectUrl,
   getSubprojectCount,
   getTOCSectionsProjects,
-  hasProjectTranslation,
   hasSubProjects,
   isSubProject,
   parseAuthors,
@@ -30,50 +31,44 @@ import { Image } from 'astro:assets'
 import { render } from 'astro:content'
 
 export async function getStaticPaths() {
-  const projects = await getAllProjectsAndSubProjects()
-  return projects.map((project) => ({
-    params: { id: project.id },
+  const esProjects = await getAllEsProjectsAndSubProjects()
+  return esProjects.map((project) => ({
+    params: { id: getBaseSlug(project.id) },
     props: project,
   }))
 }
 
 const project = Astro.props
-const currentProjectId = Astro.params.id
+const esProjectId = project.id
+const currentProjectId = Astro.params.id as string
+
 const { Content, headings } = await render(project)
 const authors = await parseAuthors(project.data.contributors ?? [])
 
-const isCurrentSubproject = isSubProject(currentProjectId)
-const navigation = await getAdjacentProjects(currentProjectId)
-const parentProject = isCurrentSubproject
-  ? await getParentProject(currentProjectId)
-  : null
+const isCurrentSubproject = isSubProject(esProjectId)
+const esParentId = isCurrentSubproject ? getParentId(esProjectId) : esProjectId
 
-const hasChildProjects = await hasSubProjects(currentProjectId)
-const subprojectCount = !isCurrentSubproject
-  ? await getSubprojectCount(currentProjectId)
-  : 0
+const navigation = await getAdjacentProjects(esProjectId)
+const parentProject = isCurrentSubproject ? await getParentProject(esProjectId) : null
+const hasChildProjects = await hasSubProjects(esParentId)
+const subprojectCount = !isCurrentSubproject ? await getSubprojectCount(esProjectId) : 0
+const tocSections = await getTOCSectionsProjects(esProjectId)
 
-const tocSections = await getTOCSectionsProjects(currentProjectId)
-const hasEsTranslation = await hasProjectTranslation(
-  isCurrentSubproject ? getParentId(currentProjectId) : currentProjectId,
-  'es',
-)
+const parentBaseSlug = parentProject ? getBaseSlug(parentProject.id) : null
 ---
 
 <Layout>
   <ProjectHead slot="head" project={project} />
-  <meta slot="head" name="post-locale" content="en" />
+  <meta slot="head" name="post-locale" content="es" />
   <meta slot="head" name="post-slug" content={currentProjectId} />
   <meta slot="head" name="post-section" content="projects" />
-  {hasEsTranslation && <meta slot="head" name="post-has-es" content="true" />}
+  <meta slot="head" name="post-has-en" content="true" />
   {
     (hasChildProjects || isCurrentSubproject) && (
       <SubprojectsHeader
         slot="subposts-navigation"
-        parentId={
-          isCurrentSubproject ? getParentId(currentProjectId) : currentProjectId
-        }
-        locale="en"
+        parentId={esParentId}
+        locale="es"
       />
     )
   }
@@ -92,23 +87,23 @@ const hasEsTranslation = await hasProjectTranslation(
     <div class="col-start-2">
       <Breadcrumbs
         items={[
-          { href: '/projects', label: 'Projects', icon: 'lucide:git-merge' },
-          ...(isCurrentSubproject && parentProject
+          { href: '/projects', label: 'Projects', icon: 'lucide:git-merge', i18nKey: 'nav.projects' },
+          ...(isCurrentSubproject && parentProject && parentBaseSlug
             ? [
                 {
-                  href: `/projects/${parentProject.id}`,
+                  href: `/es/projects/${parentBaseSlug}`,
                   label: parentProject.data.title,
                   icon: 'lucide:folder-git-2',
                 },
                 {
-                  href: `/projects/${currentProjectId}`,
+                  href: `/es/projects/${currentProjectId}`,
                   label: project.data.title,
                   icon: 'lucide:git-merge',
                 },
               ]
             : [
                 {
-                  href: `/blog/${currentProjectId}`,
+                  href: `/es/projects/${currentProjectId}`,
                   label: project.data.title,
                   icon: 'lucide:git-commit',
                 },
@@ -151,7 +146,7 @@ const hasEsTranslation = await hasProjectTranslation(
               external={true}
               class="mb-8 text-xs md:text-xl border border-gray-700 bg-foreground/20 p-2 hover:bg-foreground/30"
             >
-              View Code Repository
+              Ver repositorio de código
             </LinkButton>
           )
         }
@@ -191,36 +186,25 @@ const hasEsTranslation = await hasProjectTranslation(
           <div
             class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0"
           >
-            <span
-              >{
-                project.data.startDate && formatDate(project.data.startDate)
-              }</span
-            >
-          </div>
-
-          <div
-            class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0"
-          >
+            <span>{project.data.startDate && formatDate(project.data.startDate)}</span>
           </div>
 
           {
             subprojectCount > 0 && (
               <div class="flex w-full items-center justify-center gap-1 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
                 <Icon name="lucide:file-text" class="size-3" />
-                {subprojectCount} subproject{subprojectCount === 1 ? '' : 's'}
+                {subprojectCount} subproyecto{subprojectCount === 1 ? '' : 's'}
               </div>
             )
           }
         </div>
+
         <div class="flex flex-wrap justify-center gap-2">
           {
             project.data.tags &&
               project.data.tags.length > 0 &&
               project.data.tags.map((tag) => (
-                <a
-                  href={`/tags/${tag}`}
-                  class={badgeVariants({ variant: 'outline' })}
-                >
+                <a href={`/tags/${tag}`} class={badgeVariants({ variant: 'outline' })}>
                   <Icon name="lucide:hash" class="size-3" />
                   {tag}
                 </a>
@@ -233,16 +217,13 @@ const hasEsTranslation = await hasProjectTranslation(
         newerPost={navigation.newer}
         olderPost={navigation.older}
         parentPost={isCurrentSubproject ? navigation.parent : undefined}
-        path="projects"
+        path="es/projects"
       />
     </section>
 
     {
       tocSections.length > 0 && (
-        <TOCSidebarProject
-          sections={tocSections}
-          currentProjectId={currentProjectId}
-        />
+        <TOCSidebarProject sections={tocSections} currentProjectId={esProjectId} />
       )
     }
 
@@ -253,12 +234,8 @@ const hasEsTranslation = await hasProjectTranslation(
     {
       (hasChildProjects || isCurrentSubproject) && (
         <SubprojectsSidebar
-          parentId={
-            isCurrentSubproject
-              ? getParentId(currentProjectId)
-              : currentProjectId
-          }
-          locale="en"
+          parentId={esParentId}
+          locale="es"
           className="w-64"
         />
       )
@@ -268,7 +245,7 @@ const hasEsTranslation = await hasProjectTranslation(
       newerPost={navigation.newer}
       olderPost={navigation.older}
       parentPost={isCurrentSubproject ? navigation.parent : undefined}
-      path="projects"
+      path="es/projects"
     />
   </section>
 
@@ -290,16 +267,13 @@ const hasEsTranslation = await hasProjectTranslation(
     document.addEventListener('astro:page-load', () => {
       const scrollToTopButton = document.getElementById('scroll-to-top')
       const footer = document.querySelector('footer')
-
       if (scrollToTopButton && footer) {
         scrollToTopButton.addEventListener('click', () => {
           window.scrollTo({ top: 0, behavior: 'smooth' })
         })
-
         window.addEventListener('scroll', () => {
           const footerRect = footer.getBoundingClientRect()
           const isFooterVisible = footerRect.top <= window.innerHeight
-
           scrollToTopButton.classList.toggle(
             'hidden',
             window.scrollY <= 300 || isFooterVisible,

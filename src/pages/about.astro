@@ -17,18 +17,23 @@ const personSchema = {
   "alternateName": "NullKDev",
   "url": SITE.href,
   "image": new URL('/static/avatar.png', Astro.site).href,
-  "jobTitle": "Android Developer",
+  "jobTitle": "Mobile Developer",
   "worksFor": {
     "@type": "Organization",
-    "name": "Overall Strategy S.A.C."
+    "name": "Corporativo Overall"
   },
+  "alumniOf": [
+    { "@type": "CollegeOrUniversity", "name": "Universidad Autónoma de Ica" },
+    { "@type": "CollegeOrUniversity", "name": "Universidad Alas Peruanas" }
+  ],
   "knowsAbout": [
     "Android Development",
     "Kotlin",
+    "Java",
     "Flutter",
-    "KMM",
+    "Kotlin Multiplatform",
     "Python",
-    "TypeScript",
+    "Laravel",
     "Clean Architecture",
     "MVVM",
     "MVI"
@@ -39,15 +44,17 @@ const personSchema = {
     "https://nullkdev.github.io"
   ],
   "email": AUTHOR.social.email.mail,
-  "description": "Desarrollador móvil con 5 años de experiencia especializado en Android, Kotlin, Flutter y KMM. Apasionado por crear experiencias de usuario excepcionales."
+  "description": "Mobile developer with 7+ years of experience specialized in Android, Kotlin, Java, Flutter and KMM. Passionate about creating exceptional user experiences."
 }
 
 const skills = [
   { name: 'Kotlin', icon: 'lucide:code-2' },
   { name: 'Android', icon: 'lucide:smartphone' },
   { name: 'Flutter', icon: 'lucide:layers' },
+  { name: 'Java', icon: 'lucide:coffee' },
   { name: 'KMM', icon: 'lucide:blocks' },
   { name: 'Python', icon: 'lucide:terminal' },
+  { name: 'Laravel', icon: 'lucide:server' },
   { name: 'TypeScript', icon: 'lucide:file-code' },
 ]
 
@@ -62,41 +69,33 @@ type ExperienceItem = {
   role: string
   company: string
   period: string
+  location: string
   current?: boolean
   icon: string
-  key: string
+  desc: string
+  descEs: string
 }
 
 const experience: ExperienceItem[] = [
   {
-    role: 'HPC System Administrator',
-    company: 'Forvia',
-    period: '2022 - Present',
+    role: 'Mobile Developer',
+    company: 'Corporativo Overall',
+    period: 'Oct 2023 - Present',
+    location: 'Peru · Remote',
     current: true,
-    icon: 'lucide:server',
-    key: 'Led end-to-end deployment of HPC cluster on Dell infrastructure with PBS scheduling • Cross-team coordination with network and firewall teams for infrastructure provisioning'
+    icon: 'lucide:smartphone',
+    desc: 'Android SDK, Kotlin, Flutter, KMM. Leading mobile development initiatives and driving growth of mobile products.',
+    descEs: 'Android SDK, Kotlin, Flutter, KMM. Liderando el desarrollo móvil e impulsando el crecimiento de productos móviles.',
   },
   {
-    role: 'Founder',
-    company: 'Dolphost',
-    period: '2022 - 2024',
-    icon: 'lucide:rocket',
-    key: 'Built secure WordPress hosting platform • Managed VPS infrastructure and implemented WHMCS/cPanel solutions'
+    role: 'Mobile Developer',
+    company: 'Agrosmart S.A.C.',
+    period: 'Jun 2018 - Sep 2023',
+    location: 'Ica, Peru · On-site',
+    icon: 'lucide:smartphone',
+    desc: '5+ years building Android and multiplatform applications for the agricultural tech sector using Java, Kotlin, and Flutter.',
+    descEs: 'Más de 5 años desarrollando aplicaciones Android y multiplataforma para el sector agrotecnológico con Java, Kotlin y Flutter.',
   },
-  {
-    role: 'Cyber Security Engineer',
-    company: 'Atos IT Solutions',
-    period: '2020 - 2022',
-    icon: 'lucide:shield',
-    key: 'Conducted vulnerability assessments with NESSUS • Implemented firewall policies across Cisco, Fortinet, Palo Alto, and Juniper platforms'
-  },
-  {
-    role: 'System Administrator',
-    company: 'Netex Romania',
-    period: '2018 - 2020',
-    icon: 'lucide:server',
-    key: 'Migrated Puppet infrastructure to Kubernetes • Managed BAREOS backups for 200+ servers • Configured IPsec site-to-site VPN connections'
-  }
 ]
 ---
 
@@ -183,15 +182,15 @@ const experience: ExperienceItem[] = [
           </div>
 
           <p class="text-muted-foreground leading-relaxed" data-i18n-html="about.bio_p1">
-            ¡Hola! Soy un <strong class="text-foreground">desarrollador móvil</strong> con 5 años de experiencia creando aplicaciones Android innovadoras. Actualmente trabajo en <strong class="text-foreground">Overall Strategy S.A.C.</strong>, donde impulso el crecimiento y desarrollo de iniciativas móviles.
+            Hi! I'm a <strong class="text-foreground">mobile developer</strong> with over 7 years of experience building innovative applications. I currently work at <strong class="text-foreground">Corporativo Overall</strong>, where I drive the growth and development of mobile initiatives.
           </p>
 
           <p class="text-muted-foreground leading-relaxed" data-i18n-html="about.bio_p2">
-            Me especializo en <strong class="text-foreground">desarrollo Android nativo</strong> utilizando tecnologías modernas como <strong class="text-foreground">Kotlin</strong>, <strong class="text-foreground">Flutter</strong> y <strong class="text-foreground">Kotlin Multiplatform</strong>. Tengo experiencia en todo el ciclo de vida de productos digitales, con énfasis en crear experiencias de usuario excepcionales.
+            I specialize in <strong class="text-foreground">native Android development</strong> using modern technologies like <strong class="text-foreground">Kotlin</strong>, <strong class="text-foreground">Java</strong>, <strong class="text-foreground">Flutter</strong>, and <strong class="text-foreground">Kotlin Multiplatform</strong>. My ability to learn new technologies allows me to stay up to date with market trends and ensure success in mobile development.
           </p>
 
           <p class="text-muted-foreground leading-relaxed" data-i18n-html="about.bio_p3">
-            Trabajo con metodologías ágiles y arquitecturas modernas. También tengo habilidades en <strong class="text-foreground">Python</strong>, <strong class="text-foreground">TypeScript</strong>, administración de bases de datos y desarrollo backend.
+            Beyond mobile, I also have skills in <strong class="text-foreground">Python</strong>, <strong class="text-foreground">Laravel</strong>, database administration, and more. I'm always looking for opportunities to collaborate with dynamic teams on projects that transform and improve the user experience.
           </p>
         </CardContent>
       </Card>
@@ -242,17 +241,17 @@ const experience: ExperienceItem[] = [
     <div class="mb-6">
       <h2 class="text-2xl font-semibold mb-2" data-i18n="about.exp_heading">Experience</h2>
       <p class="text-sm text-muted-foreground" data-i18n="about.exp_desc">
-        9+ years in server infrastructure and enterprise environments, with additional experience in cybersecurity
+        7+ years in mobile development across Android, Flutter and multiplatform technologies
       </p>
     </div>
-    
+
     <div class="space-y-6">
       {experience.map((exp, index) => (
         <div class="relative">
           {index < experience.length - 1 && (
             <div class="absolute left-[11px] top-8 bottom-0 w-px bg-border" aria-hidden="true"></div>
           )}
-          
+
           <div class="flex gap-4">
             <div class={cn(
               "relative flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ring-4 ring-background z-10",
@@ -260,16 +259,19 @@ const experience: ExperienceItem[] = [
             )}>
               <Icon name={exp.icon} class="size-3.5" />
             </div>
-            
+
             <div class="flex-1 pb-2 min-w-0">
               <div class="mb-1">
                 <h3 class="font-semibold text-lg leading-tight">{exp.role}</h3>
                 <p class="text-sm text-muted-foreground">
                   {exp.company} · {exp.period}
                 </p>
+                <p class="text-xs text-muted-foreground/70 mt-0.5">
+                  {exp.location}
+                </p>
               </div>
-              <p class="text-sm text-muted-foreground/90 leading-relaxed mt-2">
-                {exp.key}
+              <p class="text-sm text-muted-foreground/90 leading-relaxed mt-2" data-i18n-exp-en={exp.desc} data-i18n-exp-es={exp.descEs}>
+                {exp.desc}
               </p>
             </div>
           </div>
@@ -297,3 +299,23 @@ const experience: ExperienceItem[] = [
 
   </section>
 </Layout>
+
+<script is:inline data-astro-rerun>
+  (function () {
+    function applyExpI18n(lang) {
+      document.querySelectorAll('[data-i18n-exp-en]').forEach(function (el) {
+        var text = lang === 'es'
+          ? el.getAttribute('data-i18n-exp-es')
+          : el.getAttribute('data-i18n-exp-en')
+        if (text) el.textContent = text
+      })
+    }
+    applyExpI18n(localStorage.getItem('lang') || 'en')
+    window.addEventListener('locale-changed', function (e) {
+      applyExpI18n(e.detail.locale)
+    })
+    document.addEventListener('astro:after-swap', function () {
+      applyExpI18n(localStorage.getItem('lang') || 'en')
+    })
+  })()
+</script>

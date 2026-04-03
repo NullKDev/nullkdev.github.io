@@ -4,7 +4,7 @@ import PageHead from '@/components/PageHead.astro';
 //import GalleryLayout from '@/layouts/Gallery.astro'
 //import PhotoSwipe from "../../components/PhotoSwipe.astro";
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
-import { getAllPhotos, getAlbumImages, parseAuthors } from '@/lib/data-utils'
+import { getAllPhotos, getAlbumImages, hasPhotoTranslation, parseAuthors } from '@/lib/data-utils'
 import { Image } from "astro:assets";
 import { GalleryViewer } from "@/components/react/GalleryViewer";
 import { AuthorBadge } from "@/components/react/AuthorBadge";
@@ -28,14 +28,19 @@ const viewerImages = albumImages.map((img) => ({
     height: typeof img.src === 'object' ? img.src.height : undefined,
 }));
 const authors = await parseAuthors(album.data.authors ?? []);
+const hasEsTranslation = await hasPhotoTranslation(album.id, 'es');
 ---
 
 <Layout class="max-w-3xl">
-  <PageHead 
-    slot="head" 
+  <PageHead
+    slot="head"
     title={`${album.data.name} - Gallery`}
     description={album.data.description || `Gallery for ${album.data.name}`}
   />
+  <meta slot="head" name="post-locale" content="en" />
+  <meta slot="head" name="post-slug" content={album.id} />
+  <meta slot="head" name="post-section" content="photos" />
+  {hasEsTranslation && <meta slot="head" name="post-has-es" content="true" />}
 
   <Breadcrumbs 
     items={[

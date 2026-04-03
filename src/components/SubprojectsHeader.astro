@@ -4,12 +4,13 @@ import {
   getParentId,
   getParentProject,
   getProjectById,
+  getProjectUrl,
   getSubProjectsForParent,
   isSubProject,
 } from '@/lib/data-utils'
 import { Icon } from 'astro-icon/components'
 
-const { parentId } = Astro.props
+const { parentId, locale = 'en' } = Astro.props
 const currentProjectId = Astro.params.id as string
 const isCurrentSubproject = isSubProject(currentProjectId)
 const rootParentId = isCurrentSubproject
@@ -87,7 +88,7 @@ const currentSubprojectDetails = activeProject
                     </div>
                   ) : (
                     <a
-                      href={`/projects/${activeProject.id}`}
+                      href={getProjectUrl(activeProject.id, locale)}
                       class="mobile-subposts-link hover:text-foreground text-muted-foreground hover:bg-muted/50 flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors"
                     >
                       <Icon
@@ -123,7 +124,7 @@ const currentSubprojectDetails = activeProject
                       </div>
                     ) : (
                       <a
-                        href={`/projects/${subproject.id}`}
+                        href={getProjectUrl(subproject.id, locale)}
                         class="mobile-subposts-link hover:text-foreground text-muted-foreground hover:bg-muted/50 flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors"
                       >
                         <Icon

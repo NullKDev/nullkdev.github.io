@@ -152,9 +152,9 @@ const { class: className, hideFloatingSidebar = false } = Astro.props
           })
         }
 
-        // Detect language
+        // Default language is always 'en' unless the user has explicitly changed it
         var stored = localStorage.getItem('lang')
-        var lang = stored || (navigator.language && navigator.language.startsWith('es') ? 'es' : 'en')
+        var lang = stored || 'en'
         if (!stored) localStorage.setItem('lang', lang)
 
         // Make globally available for toggle

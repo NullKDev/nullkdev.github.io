@@ -13,6 +13,7 @@ const blog = defineCollection({
       tags: z.array(z.string()).optional(),
       authors: z.array(z.string()).optional().default(['me']),
       draft: z.boolean().optional(),
+      lang: z.enum(['en', 'es']).optional().default('en'),
     }),
 })
 
@@ -46,6 +47,7 @@ const projects = defineCollection({
       endDate: z.coerce.date().optional(),
       order: z.number().optional(),
       contributors: z.array(z.string()).optional().default(['me']),
+      lang: z.enum(['en', 'es']).optional().default('en'),
     }),
 })
 
@@ -57,13 +59,17 @@ const photos = defineCollection({
       title: z.string().optional(),
       description: z
         .string()
-        .max(160, 'Description should be 160 characters or less for optimal Open Graph display.'),
+        .max(
+          160,
+          'Description should be 160 characters or less for optimal Open Graph display.',
+        ),
       image: image(),
       date: z.coerce.date().optional(),
       authors: z.array(z.string()).optional().default(['me']),
       tags: z.array(z.string()).default([]),
       model: z.string().optional(),
       preset: z.string().optional(),
+      lang: z.enum(['en', 'es']).optional().default('en'),
     }),
 })
 

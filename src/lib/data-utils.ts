@@ -3,19 +3,51 @@ import { readingTime, calculateWordCountFromHtml } from '@/lib/utils'
 
 export async function getAllPhotos(): Promise<CollectionEntry<'photos'>[]> {
   const photos = await getCollection('photos')
-  return photos.sort((a, b) => {
-    const dateA = a.data.date ? new Date(a.data.date).getTime() : 0
-    const dateB = b.data.date ? new Date(b.data.date).getTime() : 0
-    return dateB - dateA
-  })
+  return photos
+    .filter((p) => !isTranslation(p.id))
+    .sort((a, b) => {
+      const dateA = a.data.date ? new Date(a.data.date).getTime() : 0
+      const dateB = b.data.date ? new Date(b.data.date).getTime() : 0
+      return dateB - dateA
+    })
+}
+
+export async function getAllEsPhotos(): Promise<CollectionEntry<'photos'>[]> {
+  const photos = await getCollection('photos')
+  return photos
+    .filter((p) => isTranslation(p.id))
+    .sort((a, b) => {
+      const dateA = a.data.date ? new Date(a.data.date).getTime() : 0
+      const dateB = b.data.date ? new Date(b.data.date).getTime() : 0
+      return dateB - dateA
+    })
+}
+
+export function getPhotoUrl(
+  photoId: string,
+  locale: 'en' | 'es' = 'en',
+): string {
+  const baseSlug = getBaseSlug(photoId)
+  return locale === 'es' ? `/es/photos/${baseSlug}` : `/photos/${baseSlug}`
+}
+
+export async function hasPhotoTranslation(
+  photoId: string,
+  locale: string,
+): Promise<boolean> {
+  const esId = getLocaleId(photoId, locale)
+  const all = await getCollection('photos')
+  return all.some((p) => p.id === esId)
 }
 
 export async function getAlbumImages(albumId: string) {
   const allImages = import.meta.glob<{ default: ImageMetadata }>(
     '/src/content/photos/**/*.{jpeg,jpg,png,webp}',
   )
+  // ES albums (e.g. 'my-album.es') share images with the EN album ('my-album')
+  const resolvedAlbumId = getBaseSlug(albumId)
   const albumImages = Object.entries(allImages).filter(([path]) => {
-    return path.includes(`/${albumId}/assets/`)
+    return path.includes(`/${resolvedAlbumId}/assets/`)
   })
   const resolvedImages = await Promise.all(
     albumImages.map(async ([path, loader]) => {
@@ -71,7 +103,10 @@ export async function getAuthorById(
 export async function getAllPosts(): Promise<CollectionEntry<'blog'>[]> {
   const posts = await getCollection('blog')
   return posts
-    .filter((post) => !post.data.draft && !isSubpost(post.id))
+    .filter(
+      (post) =>
+        !post.data.draft && !isSubpost(post.id) && !isTranslation(post.id),
+    )
     .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
 }
 
@@ -80,14 +115,36 @@ export async function getAllPostsAndSubposts(): Promise<
 > {
   const posts = await getCollection('blog')
   return posts
-    .filter((post) => !post.data.draft)
+    .filter((post) => !post.data.draft && !isTranslation(post.id))
     .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+}
+
+// All ES translated posts (parent + subposts), falling back to EN where no translation exists
+export async function getAllEsPostsAndSubposts(): Promise<
+  CollectionEntry<'blog'>[]
+> {
+  const posts = await getCollection('blog')
+  return posts
+    .filter((post) => !post.data.draft && isTranslation(post.id))
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+}
+
+// Check if a post has a translation in the given locale
+export async function hasTranslation(
+  postId: string,
+  locale: string,
+): Promise<boolean> {
+  const esId = getLocaleId(postId, locale)
+  const allPosts = await getCollection('blog')
+  return allPosts.some((p) => p.id === esId && !p.data.draft)
 }
 
 export async function getAllProjects(): Promise<CollectionEntry<'projects'>[]> {
   const projects = await getCollection('projects')
   return projects
-    .filter((project) => !isSubProject(project.id))
+    .filter(
+      (project) => !isSubProject(project.id) && !isTranslation(project.id),
+    )
     .sort((a, b) => {
       if (!a.data.endDate && b.data.endDate) return -1
       if (a.data.endDate && !b.data.endDate) return 1
@@ -100,12 +157,52 @@ export async function getAllProjectsAndSubProjects(): Promise<
   CollectionEntry<'projects'>[]
 > {
   const projects = await getCollection('projects')
-  return projects.sort((a, b) => {
-    if (!a.data.endDate && b.data.endDate) return -1
-    if (a.data.endDate && !b.data.endDate) return 1
-    if (!a.data.endDate && !b.data.endDate) return 0
-    return (b.data.endDate?.valueOf() ?? 0) - (a.data.endDate?.valueOf() ?? 0)
-  })
+  return projects
+    .filter((p) => !isTranslation(p.id))
+    .sort((a, b) => {
+      if (!a.data.endDate && b.data.endDate) return -1
+      if (a.data.endDate && !b.data.endDate) return 1
+      if (!a.data.endDate && !b.data.endDate) return 0
+      return (b.data.endDate?.valueOf() ?? 0) - (a.data.endDate?.valueOf() ?? 0)
+    })
+}
+
+export async function getAllEsProjectsAndSubProjects(): Promise<
+  CollectionEntry<'projects'>[]
+> {
+  const projects = await getCollection('projects')
+  return projects
+    .filter((p) => isTranslation(p.id))
+    .sort((a, b) => {
+      if (!a.data.endDate && b.data.endDate) return -1
+      if (a.data.endDate && !b.data.endDate) return 1
+      if (!a.data.endDate && !b.data.endDate) return 0
+      return (b.data.endDate?.valueOf() ?? 0) - (a.data.endDate?.valueOf() ?? 0)
+    })
+}
+
+export function getProjectUrl(
+  projectId: string,
+  locale: 'en' | 'es' = 'en',
+): string {
+  const baseSlug = getBaseSlug(projectId)
+  return locale === 'es' ? `/es/projects/${baseSlug}` : `/projects/${baseSlug}`
+}
+
+export async function getProjectByIdRaw(
+  projectId: string,
+): Promise<CollectionEntry<'projects'> | null> {
+  const all = await getCollection('projects')
+  return all.find((p) => p.id === projectId) ?? null
+}
+
+export async function hasProjectTranslation(
+  projectId: string,
+  locale: string,
+): Promise<boolean> {
+  const esId = getLocaleId(projectId, locale)
+  const all = await getCollection('projects')
+  return all.some((p) => p.id === esId)
 }
 
 export async function getAllTags(): Promise<Map<string, number>> {
@@ -459,6 +556,40 @@ export function isSubProject(projectId: string): boolean {
   return projectId.includes('/')
 }
 
+// Translation helpers
+// A translation has '.es' (or future locales) at the end of the root segment
+export function isTranslation(postId: string): boolean {
+  return /\.\w{2}$/.test(postId.split('/')[0])
+}
+
+// Remove locale suffix from root segment: 'slug.es/sub' → 'slug/sub'
+export function getBaseSlug(postId: string): string {
+  const parts = postId.split('/')
+  parts[0] = parts[0].replace(/\.\w{2}$/, '')
+  return parts.join('/')
+}
+
+// Add locale suffix to root segment: 'slug/sub' → 'slug.es/sub'
+export function getLocaleId(postId: string, locale: string): string {
+  const parts = postId.split('/')
+  parts[0] = getBaseSlug(parts[0]) + '.' + locale
+  return parts.join('/')
+}
+
+// Build the correct URL for a post given its ID and target locale
+export function getPostUrl(postId: string, locale: 'en' | 'es' = 'en'): string {
+  const baseSlug = getBaseSlug(postId)
+  return locale === 'es' ? `/es/blog/${baseSlug}` : `/blog/${baseSlug}`
+}
+
+// Lookup a post by ID without any collection filters (for ES posts lookup)
+export async function getPostByIdRaw(
+  postId: string,
+): Promise<CollectionEntry<'blog'> | null> {
+  const allPosts = await getCollection('blog')
+  return allPosts.find((p) => p.id === postId) ?? null
+}
+
 export async function getParentPost(
   subpostId: string,
 ): Promise<CollectionEntry<'blog'> | null> {
@@ -467,8 +598,8 @@ export async function getParentPost(
   }
 
   const parentId = getParentId(subpostId)
-  const allPosts = await getAllPosts()
-  return allPosts.find((post) => post.id === parentId) || null
+  // Use raw lookup so ES parents (e.g. 'slug.es') are also found
+  return getPostByIdRaw(parentId)
 }
 
 export async function getParentProject(
@@ -479,8 +610,7 @@ export async function getParentProject(
   }
 
   const parentId = getParentId(subprojectId)
-  const allProjects = await getAllProjects()
-  return allProjects.find((project) => project.id === parentId) || null
+  return getProjectByIdRaw(parentId)
 }
 
 export async function parseAuthors(authorIds: string[] = []) {
@@ -503,8 +633,8 @@ export async function parseAuthors(authorIds: string[] = []) {
 export async function getPostById(
   postId: string,
 ): Promise<CollectionEntry<'blog'> | null> {
-  const allPosts = await getAllPostsAndSubposts()
-  return allPosts.find((post) => post.id === postId) || null
+  // Use raw lookup so both EN and ES posts are found by ID
+  return getPostByIdRaw(postId)
 }
 
 export async function getPostsById(
@@ -517,8 +647,7 @@ export async function getPostsById(
 export async function getProjectById(
   projectId: string,
 ): Promise<CollectionEntry<'projects'> | null> {
-  const allProjects = await getAllProjectsAndSubProjects()
-  return allProjects.find((project) => project.id === projectId) || null
+  return getProjectByIdRaw(projectId)
 }
 
 export async function getProjectsById(

@@ -41,22 +41,22 @@ export const en = {
   'home.view_experience': 'View experience',
 
   // About page
-  'about.job_badge': 'Android Developer',
+  'about.job_badge': 'Mobile Developer',
   'about.country_badge': 'Peru',
   'about.years_exp': 'years of experience',
   'about.contact_btn': 'Contact me',
   'about.about_heading': 'About me',
   'about.bio_p1':
-    "Hi! I'm a <strong>mobile developer</strong> with 5 years of experience building innovative Android applications. I currently work at <strong>Overall Strategy S.A.C.</strong>, where I drive the growth and development of mobile initiatives.",
+    "Hi! I'm a <strong>mobile developer</strong> with over {yearsExp} years of experience building innovative applications. I currently work at <strong>Corporativo Overall</strong>, where I drive the growth and development of mobile initiatives.",
   'about.bio_p2':
-    'I specialize in <strong>native Android development</strong> using modern technologies like <strong>Kotlin</strong>, <strong>Flutter</strong>, and <strong>Kotlin Multiplatform</strong>. I have experience across the full digital product lifecycle, with a focus on creating exceptional user experiences.',
+    'I specialize in <strong>native Android development</strong> using modern technologies like <strong>Kotlin</strong>, <strong>Java</strong>, <strong>Flutter</strong>, and <strong>Kotlin Multiplatform</strong>. My ability to learn new technologies allows me to stay up to date with market trends and ensure success in mobile development.',
   'about.bio_p3':
-    'I work with agile methodologies and modern architectures. I also have skills in <strong>Python</strong>, <strong>TypeScript</strong>, database management, and backend development.',
+    "Beyond mobile, I also have skills in <strong>Python</strong>, <strong>Laravel</strong>, database administration, and more. I'm always looking for opportunities to collaborate with dynamic teams on projects that transform and improve the user experience.",
   'about.stack_title': 'Core Stack',
   'about.arch_title': 'Architectures',
   'about.exp_heading': 'Experience',
   'about.exp_desc':
-    '9+ years in server infrastructure and enterprise environments, with additional experience in cybersecurity',
+    '7+ years in mobile development across Android, Flutter and multiplatform technologies',
   'about.origin_title': 'Why NullKDev?',
   'about.origin_desc':
     "The name <strong>NullKDev</strong> represents my identity as a developer: <strong>Null</strong> for the fundamental concept in programming, <strong>K</strong> for <strong>Kotlin</strong> (my favorite language) and also for <strong>Karl</strong>, and <strong>Dev</strong> for developer. It's my way of expressing my passion for clean code and elegant solutions.",
@@ -131,6 +131,9 @@ export const en = {
 
   // Reading time
   'reading.min_read': 'min read',
+
+  // Tools breadcrumb labels (reuse tool names for breadcrumbs)
+  'tools.breadcrumb': 'Tools',
 
   // Gallery page
   'gallery.breadcrumb': 'Gallery',
