@@ -86,11 +86,11 @@ export default function PhotoPasswordProtection({
         ))}
       </div>
 
-      {/* Frosted overlay */}
-      <div className="bg-background/65 absolute inset-0 backdrop-blur-sm" />
+      {/* Frosted overlay — purely decorative, must not intercept events */}
+      <div className="bg-background/65 pointer-events-none absolute inset-0 backdrop-blur-sm" />
 
       {/* Lock card centered */}
-      <div className="absolute inset-0 flex items-center justify-center p-6">
+      <div className="absolute inset-0 z-10 flex items-center justify-center p-6">
         <div
           className={`border-border/50 bg-card/90 flex w-full max-w-sm flex-col items-center gap-5 rounded-2xl border p-8 shadow-2xl backdrop-blur-xl transition-transform ${shaking ? 'animate-[shake_0.4s_ease]' : ''}`}
         >
