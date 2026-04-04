@@ -57,8 +57,15 @@ export const es = {
   'about.stack_title': 'Stack Principal',
   'about.arch_title': 'Arquitecturas',
   'about.exp_heading': 'Experiencia',
-  'about.exp_desc':
-    '{yearsExp}+ años en desarrollo móvil con Android, Flutter y tecnologías multiplataforma',
+  'about.now_heading': 'Ahora',
+  'about.now_updated': 'Abr 2025',
+  'about.now_1':
+    'Desarrollo móvil en <strong style="color:inherit;font-weight:600">Corporativo Overall</strong> — Android y Flutter en producción.',
+  'about.now_2':
+    'Migrando a <strong style="color:inherit;font-weight:600">Jetpack Compose</strong> y explorando <strong style="color:inherit;font-weight:600">KMM</strong>.',
+  'about.now_3':
+    'Construyendo este sitio y escribiendo sobre desarrollo Android.',
+  'about.uses_heading': 'Herramientas',
   'about.origin_title': '¿Por qué NullKDev?',
   'about.origin_desc':
     'El nombre <strong>NullKDev</strong> representa mi identidad como desarrollador: <strong>Null</strong> por el concepto fundamental en programación, <strong>K</strong> por <strong>Kotlin</strong> (mi lenguaje favorito) y también por <strong>Karl</strong>, y <strong>Dev</strong> por desarrollador. Es mi forma de expresar mi pasión por el código limpio y las soluciones elegantes.',

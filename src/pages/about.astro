@@ -70,6 +70,12 @@ const architectures = [
   'MVP'
 ]
 
+type AppLink = {
+  name: string
+  store: 'google' | 'huawei' | 'apk'
+  href?: string
+}
+
 type ExperienceItem = {
   role: string
   company: string
@@ -79,6 +85,7 @@ type ExperienceItem = {
   icon: string
   desc: string
   descEs: string
+  apps?: AppLink[]
 }
 
 const experience: ExperienceItem[] = [
@@ -89,8 +96,12 @@ const experience: ExperienceItem[] = [
     location: 'Peru · Remote',
     current: true,
     icon: 'lucide:smartphone',
-    desc: 'Android SDK, Kotlin, Flutter, KMM. Leading mobile development initiatives and driving growth of mobile products.',
-    descEs: 'Android SDK, Kotlin, Flutter, KMM. Liderando el desarrollo móvil e impulsando el crecimiento de productos móviles.',
+    desc: 'Supporting and growing LiveTrade and LiveTrade Impulso (lite), a trading platform for the Peruvian market. Built with Android SDK and Kotlin — published on Google Play and Huawei AppGallery.',
+    descEs: 'Soporte y crecimiento de LiveTrade y LiveTrade Impulso (versión lite), una plataforma de trading para el mercado peruano. Desarrollada con Android SDK y Kotlin — publicada en Google Play y Huawei AppGallery.',
+    apps: [
+      { name: 'LiveTrade apps', store: 'google', href: 'https://play.google.com/store/apps/developer?id=Corporativo+Overall' },
+      { name: 'Livetrade apps', store: 'huawei', href: 'https://appgallery.huawei.com/tab/appdetailCommon%7CC103668187%7Cautomore%7Cdoublecolumncardwithstar%7C903547' }
+    ],
   },
   {
     role: 'Mobile Developer',
@@ -98,8 +109,12 @@ const experience: ExperienceItem[] = [
     period: 'Jun 2018 - Sep 2023',
     location: 'Ica, Peru · On-site',
     icon: 'lucide:smartphone',
-    desc: `${agrosmarYears}+ years building Android and multiplatform applications for the agricultural tech sector using Java, Kotlin, and Flutter.`,
-    descEs: `Más de ${agrosmarYears} años desarrollando aplicaciones Android y multiplataforma para el sector agrotecnológico con Java, Kotlin y Flutter.`,
+    desc: `${agrosmarYears}+ years building Android apps for the agricultural tech sector from the ground up — Java and Kotlin. Shipped apps on Google Play and maintained internal APKs distributed directly to field teams.`,
+    descEs: `Más de ${agrosmarYears} años construyendo apps Android para el sector agrotecnológico desde cero — Java y Kotlin. Apps publicadas en Google Play y APKs internos distribuidos directamente a equipos de campo.`,
+    apps: [
+      { name: 'Agrosmart apps', store: 'google', href: 'https://play.google.com/store/apps/developer?id=AGROSMART+SAC' },
+      { name: 'APKs internos', store: 'apk' },
+    ],
   },
 ]
 ---
@@ -108,7 +123,7 @@ const experience: ExperienceItem[] = [
   <PageHead slot="head" title="About" />
 
   <!-- Person Schema for About page SEO -->
-  <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(personSchema)} />
 
   <Breadcrumbs items={[{ label: 'About', icon: 'lucide:user' }]} />
 
@@ -245,8 +260,11 @@ const experience: ExperienceItem[] = [
   <section class="mt-8">
     <div class="mb-6">
       <h2 class="text-2xl font-semibold mb-2" data-i18n="about.exp_heading">Experience</h2>
-      <p class="text-sm text-muted-foreground" data-i18n="about.exp_desc">
-        7+ years in mobile development across Android, Flutter and multiplatform technologies
+      <p class="text-sm text-muted-foreground"
+        data-i18n-exp-en={`${yearsExp}+ years in mobile development across Android, Flutter and multiplatform technologies`}
+        data-i18n-exp-es={`${yearsExp}+ años en desarrollo móvil con Android, Flutter y tecnologías multiplataforma`}
+      >
+        {yearsExp}+ years in mobile development across Android, Flutter and multiplatform technologies
       </p>
     </div>
 
@@ -278,12 +296,85 @@ const experience: ExperienceItem[] = [
               <p class="text-sm text-muted-foreground/90 leading-relaxed mt-2" data-i18n-exp-en={exp.desc} data-i18n-exp-es={exp.descEs}>
                 {exp.desc}
               </p>
+              {exp.apps && exp.apps.length > 0 && (
+                <div class="flex flex-wrap gap-2 mt-3">
+                  {exp.apps.map((app) => (
+                    app.href ? (
+                      <a
+                        href={app.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-secondary/60 text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors border border-border/40"
+                      >
+                        {app.store === 'google' && <Icon name="lucide:play" class="size-3" />}
+                        {app.store === 'huawei' && <Icon name="lucide:smartphone" class="size-3" />}
+                        {app.store === 'apk' && <Icon name="lucide:package" class="size-3" />}
+                        {app.store === 'google' ? 'Google Play' : app.store === 'huawei' ? 'Huawei AppGallery' : 'APK'}
+                        <Icon name="lucide:external-link" class="size-2.5 opacity-60" />
+                      </a>
+                    ) : (
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-secondary/60 text-muted-foreground border border-border/40">
+                        {app.store === 'google' && <Icon name="lucide:play" class="size-3" />}
+                        {app.store === 'huawei' && <Icon name="lucide:smartphone" class="size-3" />}
+                        {app.store === 'apk' && <Icon name="lucide:package" class="size-3" />}
+                        {app.store === 'google' ? 'Google Play' : app.store === 'huawei' ? 'Huawei AppGallery' : 'APK directo'}
+                      </span>
+                    )
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
       ))}
     </div>
   </section>
+
+    <!-- Now -->
+    <section>
+      <div class="flex items-center gap-2 mb-4">
+        <Icon name="lucide:clock" class="size-4 text-primary" />
+        <h2 class="text-lg font-semibold" data-i18n="about.now_heading">Now</h2>
+        <span class="text-xs text-muted-foreground/60 ml-auto" data-i18n="about.now_updated">Apr 2025</span>
+      </div>
+      <ul class="space-y-2 text-sm text-muted-foreground">
+        <li class="flex gap-2">
+          <span class="text-primary shrink-0">—</span>
+          <span data-i18n-html="about.now_1">Mobile dev at <strong style="color:inherit;font-weight:600">Corporativo Overall</strong> — Android & KMP in production.</span>
+        </li>
+        <li class="flex gap-2">
+          <span class="text-primary shrink-0">—</span>
+          <span data-i18n-html="about.now_2">Migrating to <strong style="color:inherit;font-weight:600">Jetpack Compose</strong> and exploring <strong style="color:inherit;font-weight:600">KMP</strong>.</span>
+        </li>
+        <li class="flex gap-2">
+          <span class="text-primary shrink-0">—</span>
+          <span data-i18n="about.now_3">Building this site and writing about Android development.</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Uses -->
+    <section>
+      <div class="flex items-center gap-2 mb-4">
+        <Icon name="lucide:wrench" class="size-4 text-primary" />
+        <h2 class="text-lg font-semibold" data-i18n="about.uses_heading">Uses</h2>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-x-8 gap-y-1.5 text-sm">
+        {[
+          { label: 'Editor', value: 'Android Studio · VS Code' },
+          { label: 'Stack', value: 'Kotlin · Flutter · KMM' },
+          { label: 'Terminal', value: 'WSL2 · Zsh + Oh My Zsh' },
+          { label: 'Font', value: 'JetBrains Mono' },
+          { label: 'Theme', value: 'Material Theme Dark' },
+          { label: 'Tools', value: 'Notion · Figma · Postman' },
+        ].map(({ label, value }) => (
+          <div class="flex gap-2">
+            <span class="text-muted-foreground/60 shrink-0 w-16">{label}</span>
+            <span class="text-muted-foreground">{value}</span>
+          </div>
+        ))}
+      </div>
+    </section>
 
     <!-- Fun Fact / Origin Story -->
     <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent shadow-sm">
@@ -305,7 +396,7 @@ const experience: ExperienceItem[] = [
   </section>
 </Layout>
 
-<script is:inline define:vars={{ yearsExp }}>
+<script is:inline define:vars={{ yearsExp }} data-astro-rerun>
   window.__i18nVars = window.__i18nVars || {}
   window.__i18nVars.yearsExp = yearsExp
 </script>
