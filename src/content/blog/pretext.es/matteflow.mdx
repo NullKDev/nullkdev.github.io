@@ -1,0 +1,108 @@
+---
+title: "Matteflow: Texto Que Fluye Alrededor de un Bailarín"
+description: "Un demo de canvas inspirado en summerKK/Matteflow: extrae el sujeto de cualquier video usando un matte de distancia de color, luego usa pretext para fluir texto alrededor de la silueta en movimiento — recomputado en cada fotograma."
+date: 2026-04-04
+tags: ["javascript", "performance", "web", "canvas", "typography"]
+authors: ["me"]
+lang: es
+order: 5
+---
+
+import MatteflowDemo from '@/components/react/MatteflowDemo'
+
+*Parte 4 de [Pretext: La Librería de 15 kb Que Esquiva la Operación Más Cara del Navegador](/es/blog/pretext)*
+
+---
+
+## El Demo
+
+Carga cualquier video de una persona contra un fondo liso. El demo extrae el sujeto usando un matte de distancia de color y fluye texto alrededor de la silueta en movimiento — en cada fotograma, usando pretext para la colocación de líneas.
+
+<MatteflowDemo client:load />
+
+> **Mejores resultados:** videos con una persona contra un fondo sólido o con poca textura (pantalla verde/blanca de estudio, pared lisa). Los sliders te permiten ajustar la fuerza del wrap, la escala del sujeto y la posición.
+
+---
+
+## Cómo Funciona
+
+Este demo es un port comprimido de [Matteflow](https://github.com/summerKK/Matteflow) por summerKK — un prototipo de layout editorial que demuestra exactamente por qué existe pretext. El original tiene cuatro módulos; aquí están colapsados en un solo componente React.
+
+### Paso 1: Matte de Distancia de Color
+
+Cada fotograma del video se dibuja en un canvas offscreen y los datos de píxeles se leen una vez:
+
+```ts
+offCtx.drawImage(video, 0, 0, canvasWidth, canvasHeight)
+const { data } = offCtx.getImageData(0, 0, canvasWidth, canvasHeight)
+```
+
+El color de fondo se estima muestreando los bordes del fotograma (esquinas + bordes). Luego cada píxel recibe un valor alpha basado en su distancia de color respecto a ese fondo:
+
+```ts
+const distance = Math.sqrt(
+  (r - bg.r) ** 2 + (g - bg.g) ** 2 + (b - bg.b) ** 2
+)
+const alpha = clamp((distance - threshold) / feather, 0, 1)
+```
+
+Un píxel cercano al color de fondo obtiene alpha ≈ 0 (transparente). Un píxel alejado de él obtiene alpha ≈ 1 (primer plano). El slider **Threshold** controla cuándo un píxel cuenta como primer plano; el borde suave depende del feather.
+
+### Paso 2: Perfil de Wrap
+
+La máscara alpha se divide en bandas horizontales. Para cada banda, los píxeles más a la izquierda y más a la derecha del primer plano definen el ancho del sujeto y el centro horizontal a esa altura:
+
+```ts
+// Para cada banda (rebanada vertical de la figura)
+const bandWidth = (rightPixel - leftPixel) / frameWidth
+const bandCenter = ((leftPixel + rightPixel) / 2) / frameWidth - 0.5
+profile.push({ width: bandWidth, offset: bandCenter })
+```
+
+Este perfil — 10 números que describen la forma de la silueta — se calcula en cada fotograma. Dirige dónde están las zonas de exclusión del texto.
+
+### Paso 3: Layout de Texto con Pretext
+
+Para cada línea de texto, se calculan las regiones de wrap desde el perfil:
+
+```ts
+const regions = computeWrapRegions({
+  y, lineHeight,
+  stageCenterX, stageWidth, profile, wrapStrength, gutter,
+  articleLeft, articleWidth, stageTop, stageHeight,
+})
+```
+
+`computeWrapRegions` devuelve una o dos regiones de columna — las áreas a la izquierda y derecha del sujeto que son lo suficientemente anchas para el texto. Luego `layoutNextLine` de pretext coloca texto en cada región:
+
+```ts
+for (const region of regions) {
+  const line = prepared.nextLine(cursor, region.width)
+  if (!line) break
+  lines.push({ text: line.text, x: region.x, y })
+  cursor = line.end
+}
+```
+
+Esto se ejecuta por fotograma. La parte costosa — la medición de fuentes — ocurrió una vez cuando el componente se montó. El trabajo por fotograma es aritmética: cálculo del perfil + lógica de salto de línea. El resultado es texto que genuinamente sigue la forma en movimiento.
+
+---
+
+## Por Qué Esto Importa Más Allá del Demo
+
+El demo de Matteflow no es una característica del mundo real. Pero el patrón que demuestra sí lo es:
+
+**El layout de texto como una función pura de contenido + geometría, evaluada a voluntad.**
+
+Cuando `layout()` cuesta 0.09 ms, puedes llamarlo en tu loop de renderizado sin pensarlo dos veces. Puedes reconstruir todo el layout de texto en cada fotograma en respuesta a cualquier cambio — redimensionamiento del contenedor, actualización de contenido, movimiento de obstáculos — y el usuario nunca nota el costo.
+
+Sin pretext, este demo requeriría:
+- Precalcular layouts para cada posible fotograma de video (inviable)
+- Ejecutar la medición DOM fuera del hilo (no es posible; el layout solo puede estar en el hilo principal)
+- Aceptar el costo del reflow y ver caer la tasa de fotogramas (la respuesta incorrecta)
+
+El valor de la librería no es solo la velocidad. Es que la medición de texto se convierte en un **valor** que calculas — no en un **efecto secundario** que esperas.
+
+---
+
+*Esta serie está basada en el [README de pretext](https://github.com/chenglou/pretext) y la librería original de Cheng Lou. El concepto de Matteflow es de [summerKK/Matteflow](https://github.com/summerKK/Matteflow).*

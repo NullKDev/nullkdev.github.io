@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import Layout from '@/layouts/Layout.astro'
 import {
   getAdjacentProjectsByLocale,
+  getAllProjectsAndSubProjects,
   getProjectsAndSubProjectsByLocale,
   getBaseSlug,
   getParentId,
@@ -33,10 +34,24 @@ import { render } from 'astro:content'
 
 export async function getStaticPaths() {
   const esProjects = await getProjectsAndSubProjectsByLocale('es')
-  return esProjects.map((project) => ({
+  const enProjects = await getAllProjectsAndSubProjects()
+
+  const esCoveredSlugs = new Set(esProjects.map((p) => getBaseSlug(p.id, 'es')))
+
+  const esPaths = esProjects.map((project) => ({
     params: { locale: 'es', id: getBaseSlug(project.id, 'es') },
     props: project,
   }))
+
+  // EN projects without an ES translation fall back to English content at the same /es/projects/... URL
+  const fallbackPaths = enProjects
+    .filter((project) => !esCoveredSlugs.has(project.id))
+    .map((project) => ({
+      params: { locale: 'es', id: project.id },
+      props: project,
+    }))
+
+  return [...esPaths, ...fallbackPaths]
 }
 
 const project = Astro.props

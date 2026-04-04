@@ -1,0 +1,99 @@
+---
+title: "React Demo: Streaming Chat with Zero Reflow"
+description: "A live demo of an AI streaming chat interface where every bubble height is computed with pretext — no DOM reads, no layout reflow, smooth expansion at 60 fps."
+date: 2026-04-04
+tags: ["javascript", "performance", "web", "react"]
+authors: ["me"]
+lang: en
+order: 4
+---
+
+import PretextStreamingDemo from '@/components/react/PretextStreamingDemo'
+
+*Part 3 of [Pretext: The 15 kb Library That Bypasses Your Browser's Most Expensive Operation](/blog/pretext)*
+
+---
+
+## The Demo
+
+Hit **Simulate Stream** to watch AI messages arrive token by token. Each bubble expands smoothly as text fills in — no jank, no reflow, no layout thrashing. Then switch to **🐢 DOM mode** and run it again to see the difference in the fps counter.
+
+<PretextStreamingDemo client:load />
+
+---
+
+## What's Happening
+
+In **⚡ pretext mode**, every frame does this:
+
+1. Get the current streamed text slice
+2. Call `prepare(text, font)` — canvas measurement, runs once when text changes
+3. Call `layout(prepared, bubbleWidth, lineHeight)` — pure arithmetic, returns height
+4. Set `style.height` on the bubble
+
+No DOM reads after step 2. The browser's layout tree is never dirtied by the measurement itself.
+
+In **🐢 DOM mode**, every frame does this instead:
+
+1. Get the current streamed text slice
+2. Create a hidden `<div>`, set its text and styles, append to `document.body`
+3. Call `getBoundingClientRect()` — forces synchronous layout reflow
+4. Remove the hidden element
+5. Set `style.height` on the bubble
+
+The forced reflow in step 3 blocks the main thread. With multiple messages streaming simultaneously, the reflows compound.
+
+---
+
+## The Core Pattern
+
+```tsx
+import { prepare, layout } from '@chenglou/pretext'
+
+function measureBubbleHeight(text: string, maxWidth: number): number {
+  const prepared = prepare(text, '14px ui-sans-serif, system-ui, sans-serif')
+  const { height } = layout(prepared, maxWidth, 22)
+  return height + 24 // add padding
+}
+
+// Inside your streaming update handler:
+const height = measureBubbleHeight(currentText, bubbleWidth)
+element.style.height = `${height}px`
+```
+
+In production you'd cache the `PreparedText` handle across streaming ticks — only call `prepare()` when the full text changes significantly, not on every token. The `layout()` call is the cheap one; it's the one you call per frame.
+
+---
+
+## Handling Multiple Simultaneous Streams
+
+Where the gains compound is when multiple messages are streaming at once. Pretext makes each one independent:
+
+```tsx
+// All of these run in the same animation frame with no reflow
+for (const message of streamingMessages) {
+  const { height } = layout(message.prepared, containerWidth, LINE_HEIGHT)
+  message.element.style.height = `${height}px`
+}
+```
+
+With DOM measurement, each element access would force a reflow that potentially invalidates the measurements you just computed for the previous elements. With pretext, all measurements are independent arithmetic operations on cached data.
+
+---
+
+## The `pre-wrap` Case
+
+Textarea-like inputs need `white-space: pre-wrap` to respect hard newlines and tabs:
+
+```ts
+import { prepare, layout } from '@chenglou/pretext'
+
+const prepared = prepare(textareaValue, '14px ui-monospace', { whiteSpace: 'pre-wrap' })
+const { height } = layout(prepared, textareaWidth, 20)
+```
+
+This is useful for auto-growing textareas — one of the most common patterns that traditionally required DOM measurement loops.
+
+---
+
+[Next: Matteflow — text flowing around a dancer →](/blog/pretext/matteflow)

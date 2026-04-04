@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0a0f"/>
+      <stop offset="100%" stop-color="#10101a"/>
+    </linearGradient>
+    <linearGradient id="titleGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#e2e8f0"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+    <linearGradient id="fastGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="slowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f87171"/>
+      <stop offset="100%" stop-color="#dc2626"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="softglow">
+      <feGaussianBlur stdDeviation="20" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Subtle grid lines -->
+  <g opacity="0.04" stroke="#94a3b8" stroke-width="1">
+    <line x1="0" y1="105" x2="1200" y2="105"/>
+    <line x1="0" y1="210" x2="1200" y2="210"/>
+    <line x1="0" y1="315" x2="1200" y2="315"/>
+    <line x1="0" y1="420" x2="1200" y2="420"/>
+    <line x1="0" y1="525" x2="1200" y2="525"/>
+    <line x1="200" y1="0" x2="200" y2="630"/>
+    <line x1="400" y1="0" x2="400" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="800" y1="0" x2="800" y2="630"/>
+    <line x1="1000" y1="0" x2="1000" y2="630"/>
+  </g>
+
+  <!-- Background text lines (decorative) -->
+  <g opacity="0.035" fill="#94a3b8" font-family="Georgia, serif" font-size="13">
+    <text x="60" y="80">Typography has always shaped how we receive words. Long before screens,</text>
+    <text x="60" y="100">typographers spent careers perfecting the rhythm of text on a page — the</text>
+    <text x="60" y="120">interplay of white space, column width, and line length that makes reading</text>
+    <text x="60" y="460">effortless. The browser, for all its power, treats text layout as a side effect:</text>
+    <text x="60" y="480">something that happens after the fact, triggered by the DOM, measured by</text>
+    <text x="60" y="500">reflowing the entire layout tree. Pretext changes that contract.</text>
+    <text x="60" y="540">It brings text measurement into userland — pure arithmetic on cached segment</text>
+    <text x="60" y="560">widths — so that layout becomes an input to your render loop rather than a</text>
+    <text x="60" y="580">costly side effect of it.</text>
+  </g>
+
+  <!-- Left card: slow path -->
+  <rect x="60" y="175" width="280" height="200" rx="12" fill="#1e1e2e" stroke="#ef4444" stroke-width="1" opacity="0.9"/>
+  <text x="200" y="210" text-anchor="middle" fill="#f87171" font-family="ui-monospace,monospace" font-size="11" font-weight="600" letter-spacing="2">BEFORE</text>
+  <text x="200" y="245" text-anchor="middle" fill="#fca5a5" font-family="ui-monospace,monospace" font-size="13">getBoundingClientRect()</text>
+  <rect x="90" y="262" width="220" height="2" rx="1" fill="#ef4444" opacity="0.3"/>
+  <text x="200" y="292" text-anchor="middle" fill="#6b7280" font-family="ui-monospace,monospace" font-size="11">triggers layout reflow</text>
+  <text x="200" y="312" text-anchor="middle" fill="#6b7280" font-family="ui-monospace,monospace" font-size="11">discards layout tree</text>
+  <text x="200" y="332" text-anchor="middle" fill="#6b7280" font-family="ui-monospace,monospace" font-size="11">recalculates everything</text>
+  <!-- slow badge -->
+  <rect x="140" y="350" width="120" height="10" rx="3" fill="#ef4444" opacity="0.15"/>
+  <rect x="140" y="350" width="40" height="10" rx="3" fill="#ef4444" opacity="0.7"/>
+  <text x="270" y="359" text-anchor="end" fill="#f87171" font-family="ui-monospace,monospace" font-size="10">~19ms × N calls</text>
+
+  <!-- Arrow center -->
+  <g filter="url(#glow)">
+    <line x1="355" y1="275" x2="455" y2="275" stroke="#3b82f6" stroke-width="2" stroke-dasharray="6,4"/>
+    <polygon points="455,268 470,275 455,282" fill="#3b82f6"/>
+  </g>
+  <text x="412" y="262" text-anchor="middle" fill="#3b82f6" font-family="ui-monospace,monospace" font-size="10">pretext</text>
+
+  <!-- Center: main title area -->
+  <!-- Glow blob -->
+  <ellipse cx="600" cy="310" rx="200" ry="100" fill="#3b82f6" opacity="0.06" filter="url(#softglow)"/>
+
+  <!-- Main title -->
+  <text x="600" y="280" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="96" font-weight="700" fill="url(#titleGrad)" filter="url(#glow)" letter-spacing="-3">pretext</text>
+
+  <!-- Tagline -->
+  <text x="600" y="330" text-anchor="middle" fill="#94a3b8" font-family="ui-sans-serif,system-ui,sans-serif" font-size="18" letter-spacing="0.5">The 15 kb library that bypasses your browser's</text>
+  <text x="600" y="355" text-anchor="middle" fill="#94a3b8" font-family="ui-sans-serif,system-ui,sans-serif" font-size="18" letter-spacing="0.5">most expensive operation</text>
+
+  <!-- Two-phase chips -->
+  <g>
+    <rect x="470" y="385" width="100" height="30" rx="6" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1"/>
+    <text x="520" y="405" text-anchor="middle" fill="#93c5fd" font-family="ui-monospace,monospace" font-size="12">prepare()</text>
+    <rect x="630" y="385" width="100" height="30" rx="6" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1"/>
+    <text x="680" y="405" text-anchor="middle" fill="#93c5fd" font-family="ui-monospace,monospace" font-size="12">layout()</text>
+    <text x="620" y="405" text-anchor="middle" fill="#4b5563" font-family="ui-sans-serif,sans-serif" font-size="13">→</text>
+  </g>
+
+  <!-- Right card: fast path -->
+  <rect x="860" y="175" width="280" height="200" rx="12" fill="#0f2215" stroke="#22c55e" stroke-width="1" opacity="0.9"/>
+  <text x="1000" y="210" text-anchor="middle" fill="#4ade80" font-family="ui-monospace,monospace" font-size="11" font-weight="600" letter-spacing="2">AFTER</text>
+  <text x="1000" y="245" text-anchor="middle" fill="#86efac" font-family="ui-monospace,monospace" font-size="13">arithmetic only</text>
+  <rect x="890" y="262" width="220" height="2" rx="1" fill="#22c55e" opacity="0.3"/>
+  <text x="1000" y="292" text-anchor="middle" fill="#6b7280" font-family="ui-monospace,monospace" font-size="11">canvas measureText once</text>
+  <text x="1000" y="312" text-anchor="middle" fill="#6b7280" font-family="ui-monospace,monospace" font-size="11">cached segment widths</text>
+  <text x="1000" y="332" text-anchor="middle" fill="#6b7280" font-family="ui-monospace,monospace" font-size="11">zero DOM reads</text>
+  <!-- fast badge -->
+  <rect x="890" y="350" width="220" height="10" rx="3" fill="#22c55e" opacity="0.1"/>
+  <rect x="890" y="350" width="210" height="10" rx="3" fill="#22c55e" opacity="0.5"/>
+  <text x="1100" y="359" text-anchor="end" fill="#4ade80" font-family="ui-monospace,monospace" font-size="10">~0.09ms per layout call</text>
+
+  <!-- Arrow right -->
+  <g filter="url(#glow)">
+    <line x1="745" y1="275" x2="845" y2="275" stroke="#3b82f6" stroke-width="2" stroke-dasharray="6,4"/>
+    <polygon points="845,268 860,275 845,282" fill="#3b82f6"/>
+  </g>
+  <text x="795" y="262" text-anchor="middle" fill="#3b82f6" font-family="ui-monospace,monospace" font-size="10">500×</text>
+
+  <!-- Stats row -->
+  <g fill="#94a3b8" font-family="ui-sans-serif,sans-serif" font-size="14" text-anchor="middle">
+    <text x="300" y="450">layout thrashing</text>
+    <text x="600" y="450">500× faster layout calls</text>
+    <text x="900" y="450">zero DOM reads in hot path</text>
+  </g>
+  <g fill="#4b5563" font-family="ui-sans-serif,sans-serif" font-size="11" text-anchor="middle">
+    <text x="300" y="470">eliminated</text>
+    <text x="600" y="470">in the resize loop</text>
+    <text x="900" y="470">after prepare()</text>
+  </g>
+
+  <!-- Bottom strip -->
+  <rect x="0" y="600" width="1200" height="30" fill="#0d0d16"/>
+  <text x="60" y="620" fill="#4b5563" font-family="ui-monospace,monospace" font-size="11">@chenglou/pretext</text>
+  <text x="1140" y="620" text-anchor="end" fill="#4b5563" font-family="ui-monospace,monospace" font-size="11">nullkdev.github.io</text>
+</svg>

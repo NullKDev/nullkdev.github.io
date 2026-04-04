@@ -1,0 +1,108 @@
+---
+title: "Matteflow: Text That Flows Around a Dancer"
+description: "A canvas demo inspired by summerKK/Matteflow: extract the foreground from any video using a color-distance matte, then use pretext to flow article text around the moving silhouette — recomputed every frame."
+date: 2026-04-04
+tags: ["javascript", "performance", "web", "canvas", "typography"]
+authors: ["me"]
+lang: en
+order: 5
+---
+
+import MatteflowDemo from '@/components/react/MatteflowDemo'
+
+*Part 4 of [Pretext: The 15 kb Library That Bypasses Your Browser's Most Expensive Operation](/blog/pretext)*
+
+---
+
+## The Demo
+
+Load any video of a person against a plain background. The demo extracts the foreground using a color-distance matte and flows article text around the moving silhouette — every frame, using pretext for line placement.
+
+<MatteflowDemo client:load />
+
+> **Best results:** videos with a person against a solid or lightly textured background (studio green/white screen, plain wall). The sliders let you tune the wrap strength, subject scale, and position.
+
+---
+
+## How It Works
+
+This demo is a compressed port of [Matteflow](https://github.com/summerKK/Matteflow) by summerKK — an editorial layout prototype that demonstrates exactly why pretext exists. The original has four modules; here they're collapsed into a single React component.
+
+### Step 1: Color-Distance Matte
+
+Each video frame is drawn to an offscreen canvas and the pixel data is read once:
+
+```ts
+offCtx.drawImage(video, 0, 0, canvasWidth, canvasHeight)
+const { data } = offCtx.getImageData(0, 0, canvasWidth, canvasHeight)
+```
+
+The background color is estimated by sampling the frame edges (corners + borders). Then each pixel gets an alpha value based on its color distance from that background:
+
+```ts
+const distance = Math.sqrt(
+  (r - bg.r) ** 2 + (g - bg.g) ** 2 + (b - bg.b) ** 2
+)
+const alpha = clamp((distance - threshold) / feather, 0, 1)
+```
+
+A pixel close to the background color gets alpha ≈ 0 (transparent). A pixel far from it gets alpha ≈ 1 (foreground). The **Threshold** slider controls when a pixel counts as foreground; **Matte** would control the soft edge.
+
+### Step 2: Wrap Profile
+
+The alpha mask is divided into horizontal bands. For each band, the leftmost and rightmost foreground pixels define the subject width and horizontal center at that height:
+
+```ts
+// For each band (vertical slice of the figure)
+const bandWidth = (rightPixel - leftPixel) / frameWidth
+const bandCenter = ((leftPixel + rightPixel) / 2) / frameWidth - 0.5
+profile.push({ width: bandWidth, offset: bandCenter })
+```
+
+This profile — 10 numbers describing the silhouette shape — is computed every frame. It drives where the text exclusion zones are.
+
+### Step 3: Text Layout with Pretext
+
+For each text line, the wrap regions are computed from the profile:
+
+```ts
+const regions = computeWrapRegions({
+  y, lineHeight,
+  stageCenterX, stageWidth, profile, wrapStrength, gutter,
+  articleLeft, articleWidth, stageTop, stageHeight,
+})
+```
+
+`computeWrapRegions` returns one or two column regions — the areas to the left and right of the subject that are wide enough for text. Then `layoutNextLine` from pretext places text into each region:
+
+```ts
+for (const region of regions) {
+  const line = prepared.nextLine(cursor, region.width)
+  if (!line) break
+  lines.push({ text: line.text, x: region.x, y })
+  cursor = line.end
+}
+```
+
+This runs per frame. The expensive part — font measurement — happened once when the component mounted. The per-frame work is arithmetic: profile computation + line break logic. The result is text that genuinely follows the moving shape.
+
+---
+
+## Why This Matters Beyond the Demo
+
+The Matteflow demo is not a real-world feature. But the pattern it demonstrates is:
+
+**Text layout as a pure function of content + geometry, evaluated at will.**
+
+When `layout()` costs 0.09 ms, you can call it in your render loop without a second thought. You can rebuild the entire text layout every frame in response to any change — container resize, content update, obstacle movement — and the user never notices the cost.
+
+Without pretext, this demo would require either:
+- Pre-computing layouts for every possible video frame (infeasible)
+- Running DOM measurement off-thread (not possible; layout is main-thread only)
+- Accepting the reflow cost and watching the frame rate drop (the wrong answer)
+
+The library's value is not just speed. It is that text measurement becomes a **value** you compute — not a **side effect** you wait for.
+
+---
+
+*This series is based on the [pretext README](https://github.com/chenglou/pretext) and Cheng Lou's original library. The Matteflow concept is from [summerKK/Matteflow](https://github.com/summerKK/Matteflow).*

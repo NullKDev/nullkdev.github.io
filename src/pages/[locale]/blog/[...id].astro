@@ -16,6 +16,7 @@ import Layout from '@/layouts/Layout.astro'
 import { SITE } from '@/consts'
 import {
   getAdjacentPostsByLocale,
+  getAllPostsAndSubposts,
   getPostsAndSubpostsByLocale,
   getCombinedReadingTime,
   getBaseSlug,
@@ -35,10 +36,24 @@ import { render } from 'astro:content'
 
 export async function getStaticPaths() {
   const esPosts = await getPostsAndSubpostsByLocale('es')
-  return esPosts.map((post) => ({
+  const enPosts = await getAllPostsAndSubposts()
+
+  const esCoveredSlugs = new Set(esPosts.map((post) => getBaseSlug(post.id, 'es')))
+
+  const esPaths = esPosts.map((post) => ({
     params: { locale: 'es', id: getBaseSlug(post.id, 'es') },
     props: post,
   }))
+
+  // EN posts without an ES translation fall back to English content at the same /es/blog/... URL
+  const fallbackPaths = enPosts
+    .filter((post) => !esCoveredSlugs.has(post.id))
+    .map((post) => ({
+      params: { locale: 'es', id: post.id },
+      props: post,
+    }))
+
+  return [...esPaths, ...fallbackPaths]
 }
 
 const post = Astro.props
