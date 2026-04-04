@@ -107,6 +107,9 @@ importers:
       patch-package:
         specifier: ^8.0.0
         version: 8.0.1
+      pretext:
+        specifier: ^0.3.0
+        version: 0.3.0
       radix-ui:
         specifier: ^1.4.3
         version: 1.4.3(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
@@ -3138,6 +3141,10 @@ packages:
   postcss@8.5.6:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
     engines: {node: ^10 || ^12 || >=14}
+
+  pretext@0.3.0:
+    resolution: {integrity: sha512-Lw7xNZ0KL1N1pzcDr/y2rqsygNDCaZkwP4d/SglB9wFOkFtWPGj62MfYG63CAcf+J1Io5QBfGglzyULx3F9WdA==}
+    hasBin: true
 
   prettier-plugin-astro-organize-imports@0.4.11:
     resolution: {integrity: sha512-qJQZ7qgnTVmk8ALe1SXpCVGa2QNanhsKn6ivfGQqWH8SCgQY1/poxLVras0Q4fqRBugR3xPRGxovODk1tmkbwA==}
@@ -7559,6 +7566,8 @@ snapshots:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  pretext@0.3.0: {}
 
   prettier-plugin-astro-organize-imports@0.4.11(prettier-plugin-astro@0.14.1)(prettier-plugin-tailwindcss@0.7.2(prettier-plugin-astro@0.14.1)(prettier@3.7.4))(prettier@3.7.4):
     dependencies:

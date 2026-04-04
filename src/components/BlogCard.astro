@@ -35,11 +35,11 @@ const hasImage = !!entry.data.image
   href={postUrl}
   class="block group outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg mb-3"
 >
-  <Card className={`flex overflow-hidden border border-border/40 bg-card/50 hover:bg-muted/20 hover:border-border/70 hover:shadow-md transition-all duration-300 shadow-sm ${hasImage ? 'flex-row' : 'flex-col'}`}>
+  <Card className={`flex overflow-hidden border border-border/40 bg-card/50 hover:bg-muted/20 hover:border-border/70 hover:shadow-md transition-all duration-300 shadow-sm ${hasImage ? 'flex-col sm:flex-row' : 'flex-col'}`}>
 
     <!-- THUMBNAIL (solo si tiene imagen) -->
     {hasImage && (
-      <div class="relative w-32 sm:w-44 shrink-0 overflow-hidden bg-muted border-r border-border/30">
+      <div class="relative w-full h-44 sm:w-44 sm:h-auto shrink-0 overflow-hidden bg-muted border-b border-border/30 sm:border-b-0 sm:border-r">
         <Image
           src={entry.data.image!}
           alt={entry.data.title}

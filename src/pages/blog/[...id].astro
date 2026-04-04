@@ -282,16 +282,18 @@ const hasEsTranslation = await hasTranslation(
       )
     }
 
-    <PostProtection
-      isProtected={!!post.data.protected}
-      password={post.data.password}
-      postId={currentPostId}
-      protectionMessage={post.data.protectionMessage}
-    >
-      <article class="prose max-w-none">
-        <Content />
-      </article>
-    </PostProtection>
+    <div class="col-start-2">
+      <PostProtection
+        isProtected={!!post.data.protected}
+        password={post.data.password}
+        postId={currentPostId}
+        protectionMessage={post.data.protectionMessage}
+      >
+        <article class="prose max-w-none">
+          <Content />
+        </article>
+      </PostProtection>
+    </div>
 
     {
       (hasChildPosts || isCurrentSubpost) && (

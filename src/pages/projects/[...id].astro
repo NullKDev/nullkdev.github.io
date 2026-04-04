@@ -249,16 +249,18 @@ const hasEsTranslation = await hasProjectTranslation(
       )
     }
 
-    <ProjectProtection
-      isProtected={!!project.data.protected}
-      password={project.data.password}
-      postId={currentProjectId}
-      protectionMessage={project.data.protectionMessage}
-    >
-      <article class="prose max-w-none">
-        <Content />
-      </article>
-    </ProjectProtection>
+    <div class="col-start-2">
+      <ProjectProtection
+        isProtected={!!project.data.protected}
+        password={project.data.password}
+        postId={currentProjectId}
+        protectionMessage={project.data.protectionMessage}
+      >
+        <article class="prose max-w-none">
+          <Content />
+        </article>
+      </ProjectProtection>
+    </div>
 
     {
       (hasChildProjects || isCurrentSubproject) && (

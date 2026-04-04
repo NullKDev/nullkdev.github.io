@@ -29,7 +29,7 @@ const dateDisplay = !startDate ? '' : startDate === endDate ? startDate : `${sta
   <article class="flex flex-col h-full overflow-hidden rounded-xl border border-border/50 bg-card hover:border-primary/40 hover:shadow-xl shadow-sm transition-all duration-300">
 
     <!-- IMAGE / PLACEHOLDER -->
-    <div class="relative aspect-[16/9] overflow-hidden shrink-0">
+    <div class="relative aspect-[2/1] sm:aspect-[16/9] overflow-hidden shrink-0">
       {project.data.image ? (
         <Image
           src={project.data.image}
