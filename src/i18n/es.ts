@@ -76,9 +76,10 @@ export const es = {
     'El nombre <strong>NullKDev</strong> representa mi identidad como desarrollador: <strong>Null</strong> por el concepto fundamental en programación, <strong>K</strong> por <strong>Kotlin</strong> (mi lenguaje favorito) y también por <strong>Karl</strong>, y <strong>Dev</strong> por desarrollador. Es mi forma de expresar mi pasión por el código limpio y las soluciones elegantes.',
 
   // 404 page
-  'error.title': '404: Página no encontrada',
+  'error.title': 'Página no encontrada',
   'error.desc': '¡Vaya! La página que buscas no existe.',
-  'error.go_home': 'Ir a la página principal',
+  'error.go_home': 'Ir al inicio',
+  'error.go_blog': 'Ver el blog',
 
   // Tools page
   'tools.heading': 'Herramientas',

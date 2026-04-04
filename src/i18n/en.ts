@@ -75,9 +75,10 @@ export const en = {
     "The name <strong>NullKDev</strong> represents my identity as a developer: <strong>Null</strong> for the fundamental concept in programming, <strong>K</strong> for <strong>Kotlin</strong> (my favorite language) and also for <strong>Karl</strong>, and <strong>Dev</strong> for developer. It's my way of expressing my passion for clean code and elegant solutions.",
 
   // 404 page
-  'error.title': '404: Page not found',
+  'error.title': 'Page not found',
   'error.desc': "Oops! The page you're looking for doesn't exist.",
   'error.go_home': 'Go to home page',
+  'error.go_blog': 'Browse blog',
 
   // Tools page
   'tools.heading': 'Tools',
