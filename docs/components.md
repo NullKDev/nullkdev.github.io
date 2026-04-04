@@ -110,6 +110,34 @@ All favicon link tags. Included in `Head.astro`.
 
 ---
 
+## Home Page Components
+
+### `HomeSectionHeading.astro`
+Section heading used on the home page. Renders an `h2` with a decorative 3px accent line below and an optional "View all" link aligned right.
+
+```astro
+<HomeSectionHeading
+  titleKey="home.latest_posts"
+  titleDefault="Latest Posts"
+  linkHref="/blog"
+  linkKey="home.view_all"
+  linkDefault="View all"
+/>
+```
+
+Props: `titleKey`, `titleDefault` (required) · `linkHref`, `linkKey`, `linkDefault` (optional).
+
+### `HomeStatsBar.astro`
+A 4-column stats bar shown on the home page. Displays years of experience, apps published, technologies, and architecture patterns.
+
+```astro
+<HomeStatsBar yearsExp={yearsExp} />
+```
+
+Uses `grid grid-cols-2 sm:grid-cols-4 gap-px` with `bg-border/40` as the container to create hairline dividers between cells. Each stat animates in with `animate-fade-up` staggered via `animation-delay-*` classes.
+
+---
+
 ## Utility Components
 
 ### `Link.astro`

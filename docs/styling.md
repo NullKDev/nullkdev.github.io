@@ -96,6 +96,41 @@ import { Card, CardContent } from '@/components/ui/card'
 
 `typography.css` overrides Tailwind's prose plugin for article content. It controls heading sizes, line heights, code block styles, and link decoration inside `.prose` or article containers. Modify here when you need to change how rendered MDX content looks.
 
+## CSS Animations
+
+Defined at the bottom of `global.css`. All animations use `animation-fill-mode: both` so the final state persists.
+
+### Keyframes
+
+| Class | Effect |
+|---|---|
+| `animate-fade-up` | Fades in while sliding up 16px, duration 500ms ease-out |
+| `animate-fade-in` | Simple opacity fade, duration 400ms ease-out |
+
+### Delay utilities
+
+`animation-delay-100` through `animation-delay-500` (100ms steps). Use for staggered entrance animations:
+
+```html
+<div class="animate-fade-up animation-delay-200">...</div>
+```
+
+### `gradient-text`
+
+Applies a left-to-right gradient to text using `background-clip: text`. Has separate light and dark variants defined in `global.css` to work correctly with both themes.
+
+```html
+<span class="gradient-text">Dev</span>
+```
+
+Light: primary blue → purple-500. Dark: brighter variant of the same.
+
+### `stat-number`
+
+Used in `HomeStatsBar` for large stat figures. Applies `font-variant-numeric: tabular-nums` for consistent digit widths.
+
+---
+
 ## Conventions
 
 - Use Tailwind utilities directly in markup — no custom CSS classes unless truly necessary
