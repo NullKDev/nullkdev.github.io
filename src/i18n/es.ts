@@ -41,6 +41,11 @@ export const es = {
     'Abierto a proyectos de desarrollo móvil, consultoría Android, o simplemente hablar de código.',
   'home.send_email': 'Enviar correo',
   'home.view_experience': 'Ver experiencia',
+  'home.stats_years': 'Años exp.',
+  'home.stats_apps': 'Apps enviadas',
+  'home.stats_tech': 'Tecnologías',
+  'home.stats_arch': 'Arquitecturas',
+  'home.new_badge': 'NUEVO',
 
   // About page
   'about.job_badge': 'Desarrollador Móvil',

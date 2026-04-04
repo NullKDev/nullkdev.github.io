@@ -1,0 +1,30 @@
+---
+import Link from '@/components/Link.astro'
+import { Icon } from 'astro-icon/components'
+
+interface Props {
+  titleKey: string
+  titleDefault: string
+  linkHref?: string
+  linkKey?: string
+  linkDefault?: string
+}
+
+const { titleKey, titleDefault, linkHref, linkKey, linkDefault } = Astro.props
+---
+
+<div class="flex items-end justify-between mb-4">
+  <div>
+    <h2 class="text-xl sm:text-2xl font-bold tracking-tight" data-i18n={titleKey}>{titleDefault}</h2>
+    <div class="h-[3px] w-8 bg-primary rounded-full mt-2"></div>
+  </div>
+  {linkHref && linkKey && (
+    <Link
+      href={linkHref}
+      class="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+    >
+      <span data-i18n={linkKey}>{linkDefault}</span>
+      <Icon name="lucide:arrow-right" class="size-3" />
+    </Link>
+  )}
+</div>

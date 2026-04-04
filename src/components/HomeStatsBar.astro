@@ -1,0 +1,32 @@
+---
+import { Icon } from 'astro-icon/components'
+
+interface Props {
+  yearsExp: number
+}
+
+const { yearsExp } = Astro.props
+
+const stats = [
+  { value: `${yearsExp}+`, labelKey: 'home.stats_years', label: 'Years exp.',   icon: 'lucide:calendar' },
+  { value: '15+',          labelKey: 'home.stats_apps',  label: 'Apps shipped', icon: 'lucide:smartphone' },
+  { value: '7+',           labelKey: 'home.stats_tech',  label: 'Technologies', icon: 'lucide:code-2' },
+  { value: '3+',           labelKey: 'home.stats_arch',  label: 'Architectures',icon: 'lucide:layers' },
+]
+---
+
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-px rounded-xl overflow-hidden border border-border/40 bg-border/40">
+  {stats.map((stat, i) => (
+    <div class={`flex flex-col items-center justify-center gap-1.5 px-4 py-5 bg-card/60 hover:bg-muted/30 transition-colors animate-fade-up`}
+      style={`animation-delay: ${i * 80}ms`}
+    >
+      <div class="flex items-center gap-1.5">
+        <Icon name={stat.icon} class="size-3.5 text-primary/70" />
+        <span class="stat-number text-2xl text-foreground">{stat.value}</span>
+      </div>
+      <span class="text-[11px] text-muted-foreground/70 text-center leading-tight" data-i18n={stat.labelKey}>
+        {stat.label}
+      </span>
+    </div>
+  ))}
+</div>

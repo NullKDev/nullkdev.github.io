@@ -41,6 +41,11 @@ export const en = {
     'Open to mobile development projects, Android consulting, or just talking code.',
   'home.send_email': 'Send email',
   'home.view_experience': 'View experience',
+  'home.stats_years': 'Years exp.',
+  'home.stats_apps': 'Apps shipped',
+  'home.stats_tech': 'Technologies',
+  'home.stats_arch': 'Architectures',
+  'home.new_badge': 'NEW',
 
   // About page
   'about.job_badge': 'Mobile Developer',
