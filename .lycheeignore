@@ -1,0 +1,6 @@
+# Internal anchors
+#.*
+
+# External services that may rate-limit
+https://ip-api.com
+https://ipapi.co

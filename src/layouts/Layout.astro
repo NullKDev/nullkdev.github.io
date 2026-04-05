@@ -6,7 +6,7 @@ import FloatingSidebar from '@/components/FloatingSidebar.astro'
 import Footer from '@/components/Footer.astro'
 import Head from '@/components/Head.astro'
 import Header from '@/components/Header.astro'
-import { SITE } from '@/consts'
+import { SITE, UI } from '@/consts'
 import { cn } from '@/lib/utils'
 import { en } from '@/i18n/en'
 import { es } from '@/i18n/es'
@@ -106,7 +106,7 @@ const { class: className, hideFloatingSidebar = false } = Astro.props
     >
       <slot />
     </main>
-    {false && !hideFloatingSidebar && <FloatingSidebar />}
+    {UI.showFloatingSidebar && !hideFloatingSidebar && <FloatingSidebar />}
     <Footer />
 
     <!-- i18n: translations data (single source of truth from en.ts / es.ts) -->

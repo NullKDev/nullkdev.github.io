@@ -17,6 +17,9 @@ interface Props {
   protectionMessage?: string
 }
 
+const MAX_ATTEMPTS = 5
+const LOCKOUT_MS = 30_000
+
 export default function PhotoPasswordProtection({
   albumId,
   hashedPassword,
@@ -28,6 +31,8 @@ export default function PhotoPasswordProtection({
   const [error, setError] = useState(false)
   const [unlocked, setUnlocked] = useState(false)
   const [shaking, setShaking] = useState(false)
+  const [attempts, setAttempts] = useState(0)
+  const [locked, setLocked] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -39,14 +44,27 @@ export default function PhotoPasswordProtection({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (locked) return
     if (!input) return
+
+    if (attempts >= MAX_ATTEMPTS) {
+      setLocked(true)
+      setTimeout(() => {
+        setLocked(false)
+        setAttempts(0)
+      }, LOCKOUT_MS)
+      return
+    }
 
     if (verifyPassword(hashedPassword, input)) {
       sessionStorage.setItem(`photo-pw-${albumId}`, input)
       setUnlocked(true)
+      setError(false)
+      setAttempts(0)
     } else {
       setError(true)
       setShaking(true)
+      setAttempts((prev) => prev + 1)
       setInput('')
       setTimeout(() => {
         setShaking(false)
@@ -123,6 +141,12 @@ export default function PhotoPasswordProtection({
             </p>
           </div>
 
+          {locked && (
+            <p className="text-center text-xs text-amber-500">
+              Too many attempts. Please wait 30 seconds.
+            </p>
+          )}
+
           <form onSubmit={handleSubmit} className="w-full space-y-3">
             <input
               ref={inputRef}
@@ -134,20 +158,22 @@ export default function PhotoPasswordProtection({
               }}
               placeholder="Password"
               autoFocus
+              disabled={locked}
               className={`bg-background/60 placeholder:text-muted-foreground/50 h-10 w-full rounded-xl border px-4 text-center text-sm tracking-widest transition-all outline-none placeholder:tracking-normal ${
                 error
                   ? 'border-destructive/60 bg-destructive/5 ring-destructive/30 ring-1'
                   : 'border-border/50 focus:border-foreground/30 focus:bg-background/80'
-              }`}
+              } disabled:cursor-not-allowed disabled:opacity-50`}
             />
             {error && (
               <p className="text-destructive text-center text-xs">
-                Incorrect password.
+                Incorrect password. {MAX_ATTEMPTS - attempts} attempts
+                remaining.
               </p>
             )}
             <button
               type="submit"
-              disabled={!input}
+              disabled={!input || locked}
               className="bg-foreground text-background hover:bg-foreground/90 h-10 w-full rounded-xl text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
             >
               View Album

@@ -2,7 +2,7 @@ import { defineConfig } from 'astro/config'
 
 import mdx from '@astrojs/mdx'
 import react from '@astrojs/react'
-import sitemap from '@astrojs/sitemap'
+import sitemap, { ChangeFreqEnum } from '@astrojs/sitemap'
 import icon from 'astro-icon'
 
 import { rehypeHeadingIds } from '@astrojs/markdown-remark'
@@ -18,8 +18,10 @@ import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers'
 
 import tailwindcss from '@tailwindcss/vite'
 
+import { SITE_URL } from './src/consts'
+
 export default defineConfig({
-  site: 'https://nullkdev.github.io/',
+  site: SITE_URL,
   i18n: {
     defaultLocale: 'en',
     locales: ['en', 'es'],
@@ -49,8 +51,7 @@ export default defineConfig({
         codeFontSize: '0.75rem',
         borderColor: 'var(--border)',
         codeFontFamily: 'var(--font-mono)',
-        codeBackground:
-          'color-mix(in oklab, var(--muted) 25%, transparent)',
+        codeBackground: 'color-mix(in oklab, var(--muted) 25%, transparent)',
         frames: {
           editorActiveTabForeground: 'var(--muted-foreground)',
           editorActiveTabBackground:
@@ -75,7 +76,49 @@ export default defineConfig({
     }),
     mdx(),
     react(),
-    sitemap(),
+    sitemap({
+      serialize: (item) => {
+        const url = item.url
+        if (url === `${SITE_URL}/` || url === `${SITE_URL}/en/`) {
+          item.changefreq = ChangeFreqEnum.MONTHLY
+          item.priority = 1.0
+        } else if (url.includes('/blog/')) {
+          item.changefreq = ChangeFreqEnum.WEEKLY
+          item.priority = 0.8
+        } else if (url.includes('/projects/')) {
+          item.changefreq = ChangeFreqEnum.MONTHLY
+          item.priority = 0.7
+        } else if (url.includes('/photos/')) {
+          item.changefreq = ChangeFreqEnum.MONTHLY
+          item.priority = 0.6
+        } else if (url.includes('/tools/')) {
+          item.changefreq = ChangeFreqEnum.MONTHLY
+          item.priority = 0.5
+        } else if (url.includes('/about/')) {
+          item.changefreq = ChangeFreqEnum.MONTHLY
+          item.priority = 0.6
+        } else if (url.includes('/blog')) {
+          item.changefreq = ChangeFreqEnum.MONTHLY
+          item.priority = 0.7
+        } else if (url.includes('/projects')) {
+          item.changefreq = ChangeFreqEnum.MONTHLY
+          item.priority = 0.6
+        } else if (url.includes('/photos')) {
+          item.changefreq = ChangeFreqEnum.MONTHLY
+          item.priority = 0.5
+        } else if (url.includes('/tools')) {
+          item.changefreq = ChangeFreqEnum.MONTHLY
+          item.priority = 0.4
+        } else if (url.includes('/about')) {
+          item.changefreq = ChangeFreqEnum.MONTHLY
+          item.priority = 0.5
+        } else {
+          item.changefreq = ChangeFreqEnum.MONTHLY
+          item.priority = 0.5
+        }
+        return item
+      },
+    }),
     icon(),
   ],
   vite: {

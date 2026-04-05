@@ -20,34 +20,33 @@ All published (non-draft) pages are included. Draft posts are excluded because t
 
 No configuration needed — new posts appear automatically in the feed on next build.
 
-## IndexNow
-
-`src/pages/api/indexnow.ts` is a prerendered endpoint that implements the IndexNow protocol to notify search engines (Bing, Yandex) of new content. It's called automatically — no manual action needed.
-
 ## Structured Data (schema.org)
 
 The site uses JSON-LD structured data on multiple pages:
 
-| Page | Schema type | File |
-|---|---|---|
-| Home | `WebSite` + `Person` | `index.astro` |
-| About | `Person` (enhanced) | `about.astro` |
-| Blog post | `Article` or `BlogPosting` | `PostHead.astro` |
-| Project | `SoftwareApplication` or `CreativeWork` | `ProjectHead.astro` |
-| Tools index | `CollectionPage` + `ItemList` | `tools/index.astro` |
-| Individual tool | `WebApplication` | each tool page |
+| Page            | Schema type                             | File                |
+| --------------- | --------------------------------------- | ------------------- |
+| Home            | `WebSite` + `Person`                    | `index.astro`       |
+| About           | `Person` (enhanced)                     | `about.astro`       |
+| Blog post       | `Article` or `BlogPosting`              | `PostHead.astro`    |
+| Project         | `SoftwareApplication` or `CreativeWork` | `ProjectHead.astro` |
+| Tools index     | `CollectionPage` + `ItemList`           | `tools/index.astro` |
+| Individual tool | `WebApplication`                        | each tool page      |
 
 ### Adding structured data to a new page
 
 Inline a `<script type="application/ld+json">` in the page:
 
 ```astro
-<script type="application/ld+json" set:html={JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Page Title",
-  "url": new URL(Astro.url.pathname, Astro.site).href,
-})} />
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Page Title',
+    url: new URL(Astro.url.pathname, Astro.site).href,
+  })}
+/>
 ```
 
 ### FAQ and HowTo schemas
@@ -58,9 +57,7 @@ For posts with Q&A sections or step-by-step tutorials, use the dedicated compone
 import FAQSchema from '@/components/FAQSchema.astro'
 import HowToSchema from '@/components/HowToSchema.astro'
 
-<FAQSchema questions={[
-  { question: "What is X?", answer: "X is ..." },
-]} />
+<FAQSchema questions={[{ question: 'What is X?', answer: 'X is ...' }]} />
 ```
 
 ## Meta Tags

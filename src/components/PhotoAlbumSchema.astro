@@ -1,0 +1,64 @@
+---
+// JSON-LD structured data for photo album pages
+// Usage: <PhotoAlbumSchema album={album} />
+
+import { SITE } from '@/consts'
+
+interface Author {
+  name: string
+  url?: string
+}
+
+interface Props {
+  album: {
+    name: string
+    title?: string
+    description?: string
+    image?: { src: string } | string
+    date?: Date
+    authors?: string[] | Author[]
+    id: string
+  }
+}
+
+const { album } = Astro.props
+
+if (!album || !album.name) {
+  return null
+}
+
+const imageUrl = album.image
+  ? typeof album.image === 'string'
+    ? album.image
+    : album.image.src
+  : undefined
+
+const photoAlbumSchema = {
+  "@context": "https://schema.org",
+  "@type": "ImageGallery",
+  "name": album.name,
+  "description": album.description || album.title || undefined,
+  "dateCreated": album.date ? album.date.toISOString().split('T')[0] : undefined,
+  "author": album.authors && album.authors.length > 0
+    ? album.authors.map((a) => {
+        const name = typeof a === 'string' ? a : a.name
+        const url = typeof a === 'string' ? undefined : a.url
+        return {
+          "@type": "Person",
+          "name": name,
+          ...(url && { "url": url })
+        }
+      })
+    : undefined,
+  "associatedMedia": imageUrl
+    ? {
+        "@type": "ImageObject",
+        "contentUrl": imageUrl,
+        "name": album.name
+      }
+    : undefined,
+  "url": `${SITE.href}photos/${album.id}`
+}
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(photoAlbumSchema)} />

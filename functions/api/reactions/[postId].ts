@@ -12,6 +12,34 @@ interface ReactionData {
   [reactionKey: string]: number
 }
 
+const ALLOWED_ORIGIN = 'https://nullkdev.github.io' // Set via SITE_URL env var in production // Set via SITE_URL env var in production
+
+// Simple in-memory rate limiter (per-IP, 20 requests per hour for POST)
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const entry = rateLimitMap.get(ip)
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + 3_600_000 })
+    return true
+  }
+  if (entry.count >= 20) return false
+  entry.count++
+  return true
+}
+
+function corsHeaders(
+  extra: Record<string, string> = {},
+): Record<string, string> {
+  return {
+    'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    ...extra,
+  }
+}
+
 /**
  * GET /api/reactions/[postId]
  * Fetch reaction counts for a post
@@ -27,18 +55,13 @@ export const onRequestGet = async ({
     const { postId } = params
 
     if (!postId) {
-      return new Response(
-        JSON.stringify({ error: 'Post ID is required' }),
-        {
-          status: 400,
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type',
-          },
+      return new Response(JSON.stringify({ error: 'Post ID is required' }), {
+        status: 400,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders(),
         },
-      )
+      })
     }
 
     // Get reactions from KV
@@ -49,8 +72,9 @@ export const onRequestGet = async ({
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Cache-Control': 'public, max-age=60', // Cache for 1 minute
+        ...corsHeaders({
+          'Cache-Control': 'public, max-age=60',
+        }),
       },
     })
   } catch (error) {
@@ -58,13 +82,12 @@ export const onRequestGet = async ({
     return new Response(
       JSON.stringify({
         error: 'Failed to fetch reactions',
-        message: error instanceof Error ? error.message : 'Unknown error',
       }),
       {
         status: 500,
         headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
+          ...corsHeaders(),
         },
       },
     )
@@ -84,22 +107,34 @@ export const onRequestPost = async ({
   request: Request
   env: Env
 }) => {
+  // Rate limiting by IP
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown'
+  if (!checkRateLimit(ip)) {
+    return new Response(
+      JSON.stringify({ error: 'Too many requests. Please try again later.' }),
+      {
+        status: 429,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders({ 'Retry-After': '3600' }),
+        },
+      },
+    )
+  }
+
   try {
     const { postId } = params
     const body = await request.json()
     const { reactionKey } = body
 
     if (!postId) {
-      return new Response(
-        JSON.stringify({ error: 'Post ID is required' }),
-        {
-          status: 400,
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-          },
+      return new Response(JSON.stringify({ error: 'Post ID is required' }), {
+        status: 400,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders(),
         },
-      )
+      })
     }
 
     if (!reactionKey || typeof reactionKey !== 'string') {
@@ -109,7 +144,7 @@ export const onRequestPost = async ({
           status: 400,
           headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
+            ...corsHeaders(),
           },
         },
       )
@@ -118,16 +153,13 @@ export const onRequestPost = async ({
     // Valid reaction keys
     const validReactions = ['like', 'love', 'fire', 'celebrate', 'clap']
     if (!validReactions.includes(reactionKey)) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid reaction key' }),
-        {
-          status: 400,
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-          },
+      return new Response(JSON.stringify({ error: 'Invalid reaction key' }), {
+        status: 400,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders(),
         },
-      )
+      })
     }
 
     // Get current reactions
@@ -141,10 +173,7 @@ export const onRequestPost = async ({
     reactions[reactionKey] += 1
 
     // Save back to KV
-    await env.REACTIONS_KV.put(
-      `reactions:${postId}`,
-      JSON.stringify(reactions),
-    )
+    await env.REACTIONS_KV.put(`reactions:${postId}`, JSON.stringify(reactions))
 
     return new Response(
       JSON.stringify({
@@ -156,7 +185,7 @@ export const onRequestPost = async ({
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
+          ...corsHeaders(),
         },
       },
     )
@@ -165,13 +194,12 @@ export const onRequestPost = async ({
     return new Response(
       JSON.stringify({
         error: 'Failed to update reactions',
-        message: error instanceof Error ? error.message : 'Unknown error',
       }),
       {
         status: 500,
         headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
+          ...corsHeaders(),
         },
       },
     )
@@ -182,15 +210,16 @@ export const onRequestPost = async ({
  * OPTIONS /api/reactions/[postId]
  * Handle CORS preflight
  */
-export const onRequestOptions = async () => {
+export const onRequestOptions = async ({ request }: { request: Request }) => {
+  const origin = request.headers.get('Origin')
+  const allowedOrigin = origin === ALLOWED_ORIGIN ? origin : ALLOWED_ORIGIN
   return new Response(null, {
     status: 204,
     headers: {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': allowedOrigin,
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
       'Access-Control-Max-Age': '86400',
     },
   })
 }
-

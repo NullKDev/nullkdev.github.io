@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { InfiniteScroll } from './InfiniteScroll'
 import { getIcon } from './SkillsIconLoader'
 import { ANIMATION } from '@/lib/constants'
+import { useReducedMotion } from '@/lib/utils'
 
 // Types for technologies
 type Category = {
@@ -80,11 +81,49 @@ const categoryGroups = [
 ]
 
 const Skills: React.FC = () => {
+  const reducedMotion = useReducedMotion()
+
   useEffect(() => {
     document.querySelectorAll('.tech-badge').forEach((badge) => {
       badge.classList.add('tech-badge-visible')
     })
   }, [])
+
+  if (reducedMotion) {
+    return (
+      <div className="z-30 mx-auto mt-12 flex w-full max-w-[calc(100vw-5rem)] flex-col lg:max-w-full">
+        <div className="space-y-4">
+          {categoryGroups.map((group, groupIndex) => (
+            <div
+              key={groupIndex}
+              className="flex flex-wrap justify-center gap-3"
+            >
+              {group.flatMap((category) =>
+                technologies[category as keyof Technologies].map(
+                  (tech: Category, techIndex: number) => {
+                    const IconComponent = getIcon(tech.logo)
+                    return (
+                      <div
+                        key={`${category}-${techIndex}`}
+                        className="tech-badge repo-card border-border bg-card text-muted-foreground mr-2 flex items-center gap-3 rounded-full border p-3 shadow-sm backdrop-blur-sm"
+                      >
+                        <span className="bg-muted flex h-10 w-10 items-center justify-center rounded-full p-2 text-lg shadow-inner">
+                          <IconComponent className="tech-icon text-primary" />
+                        </span>
+                        <span className="text-foreground font-medium">
+                          {tech.text}
+                        </span>
+                      </div>
+                    )
+                  },
+                ),
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="z-30 mx-auto mt-12 flex w-full max-w-[calc(100vw-5rem)] flex-col lg:max-w-full">

@@ -33,8 +33,8 @@ All content fetching goes through `src/lib/data-utils.ts`. Key functions: `getAl
 File-based routing under `src/pages/`. Dynamic routes use `[...page].astro` for paginated listings and `[...id].astro` for individual entries. The blog and projects sections share the same structural pattern.
 
 API endpoints:
+
 - `src/pages/api/search-index.json.ts` — prerendered search index consumed by the React `SearchButton` component (Flexsearch)
-- `src/pages/api/indexnow.ts` — notifies search engines of new content
 
 Cloudflare Pages Functions in `functions/` handle dynamic server-side features (newsletter, post reactions).
 

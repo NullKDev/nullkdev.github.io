@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import DOMPurify from 'dompurify'
 import { decryptContent } from '@/lib/encryption'
 
 interface Props {
@@ -6,6 +7,9 @@ interface Props {
   encryptedContent: string
   protectionMessage?: string
 }
+
+const MAX_ATTEMPTS = 5
+const LOCKOUT_MS = 30_000
 
 export default function ProjectPasswordProtection({
   postId,
@@ -15,6 +19,8 @@ export default function ProjectPasswordProtection({
   const [input, setInput] = useState('')
   const [error, setError] = useState(false)
   const [decryptedHtml, setDecryptedHtml] = useState<string | null>(null)
+  const [attempts, setAttempts] = useState(0)
+  const [locked, setLocked] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -28,13 +34,27 @@ export default function ProjectPasswordProtection({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (locked) return
     if (!input) return
+
+    if (attempts >= MAX_ATTEMPTS) {
+      setLocked(true)
+      setTimeout(() => {
+        setLocked(false)
+        setAttempts(0)
+      }, LOCKOUT_MS)
+      return
+    }
+
     const html = decryptContent(encryptedContent, input)
     if (html) {
       sessionStorage.setItem(`project-pw-${postId}`, input)
-      setDecryptedHtml(html)
+      setDecryptedHtml(DOMPurify.sanitize(html))
+      setError(false)
+      setAttempts(0)
     } else {
       setError(true)
+      setAttempts((prev) => prev + 1)
       setInput('')
       setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 50)
     }
@@ -86,13 +106,19 @@ export default function ProjectPasswordProtection({
           {/* Lock message */}
           <div className="space-y-0.5 rounded border border-zinc-700/40 bg-zinc-900/60 px-4 py-3">
             <p className="font-medium text-zinc-300">
-              🔒 This project is encrypted
+              This project is encrypted
             </p>
             <p className="text-xs text-zinc-500">
               {protectionMessage ??
                 'Enter the access key to decrypt and read the full content.'}
             </p>
           </div>
+
+          {locked && (
+            <p className="text-center text-xs text-amber-500">
+              Too many attempts. Please wait 30 seconds.
+            </p>
+          )}
 
           {/* Input */}
           <div className="space-y-2">
@@ -111,13 +137,14 @@ export default function ProjectPasswordProtection({
                 }}
                 placeholder="enter access key to unlock"
                 autoFocus
-                className="flex-1 border-none bg-transparent text-zinc-100 caret-green-400 outline-none placeholder:text-zinc-600"
+                disabled={locked}
+                className="flex-1 border-none bg-transparent text-zinc-100 caret-green-400 outline-none placeholder:text-zinc-600 disabled:opacity-50"
                 autoComplete="off"
                 spellCheck={false}
               />
               <button
                 type="submit"
-                disabled={!input}
+                disabled={!input || locked}
                 className="shrink-0 rounded border border-green-500/30 bg-green-500/15 px-2.5 py-1 text-[11px] text-green-400 transition-colors hover:bg-green-500/25 disabled:cursor-not-allowed disabled:opacity-30"
               >
                 UNLOCK
@@ -126,7 +153,8 @@ export default function ProjectPasswordProtection({
 
             {error && (
               <p className="pl-1 text-xs text-red-400">
-                &gt; ERR_ACCESS_DENIED: Invalid key. Try again.
+                &gt; ERR_ACCESS_DENIED: Invalid key. {MAX_ATTEMPTS - attempts}{' '}
+                attempts remaining.
               </p>
             )}
           </div>

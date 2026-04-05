@@ -29,8 +29,8 @@ const authors = defineCollection({
     bio: z.string().optional(),
     mail: z.string().email().optional(),
     website: z.string().url().optional(),
-    twitter: z.string().url().optional(),
     github: z.string().url().optional(),
+    twitter: z.string().url().optional(),
     linkedin: z.string().url().optional(),
     discord: z.string().url().optional(),
     isRegistered: z.boolean().optional().default(false),
@@ -52,6 +52,10 @@ const projects = defineCollection({
       contributors: z.array(z.string()).optional().default(['me']),
       lang: z.enum(['en', 'es']).optional().default('en'),
       protected: z.boolean().optional().default(false),
+      status: z
+        .enum(['completed', 'in-development', 'archived'])
+        .optional()
+        .default('completed'),
       password: z.string().optional(),
       protectionMessage: z.string().optional(),
     }),

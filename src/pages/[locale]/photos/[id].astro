@@ -3,6 +3,7 @@ import Layout from '@/layouts/Layout.astro';
 import PageHead from '@/components/PageHead.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import PhotoProtection from '@/components/PhotoProtection.astro'
+import PhotoAlbumSchema from '@/components/PhotoAlbumSchema.astro'
 import { getAllPhotos, getPhotosByLocale, getAlbumImages, hasPhotoTranslation, parseAuthors, getBaseSlug } from '@/lib/data-utils'
 import { Image } from "astro:assets";
 import { GalleryViewer } from "@/components/react/GalleryViewer";
@@ -51,6 +52,7 @@ const coverSrc = typeof album.data.image === 'object' ? (album.data.image as { s
     title={`${album.data.name} - Gallery`}
     description={album.data.description || `Gallery for ${album.data.name}`}
   />
+  <PhotoAlbumSchema album={{ name: album.data.name, title: album.data.title, description: album.data.description, image: album.data.image, date: album.data.date, authors: album.data.authors, id: album.id }} />
   <meta slot="head" name="post-locale" content={locale} />
   <meta slot="head" name="post-slug" content={Astro.params.id} />
   <meta slot="head" name="post-section" content="photos" />
@@ -175,7 +177,7 @@ const coverSrc = typeof album.data.image === 'object' ? (album.data.image as { s
               images={viewerImages}
               protectionMessage={album.data.protectionMessage}
             >
-              <GalleryViewer client:load images={viewerImages} />
+              <GalleryViewer client:only="react" images={viewerImages} />
             </PhotoProtection>
         </section>
     )}

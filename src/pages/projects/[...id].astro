@@ -6,6 +6,7 @@ import LinkButton from '@/components/LinkButton.astro'
 import ProjectProtection from '@/components/ProjectProtection.astro'
 import PostNavigation from '@/components/PostNavigation.astro'
 import ProjectHead from '@/components/ProjectHead.astro'
+import ProjectSchema from '@/components/ProjectSchema.astro'
 import SubprojectsHeader from '@/components/SubprojectsHeader.astro'
 import SubprojectsSidebar from '@/components/SubprojectsSidebar.astro'
 import TOCHeader from '@/components/TOCHeader.astro'
@@ -63,6 +64,7 @@ const hasEsTranslation = await hasProjectTranslation(
 
 <Layout>
   <ProjectHead slot="head" project={project} />
+  <ProjectSchema project={{ title: project.data.title, description: project.data.description, startDate: project.data.startDate, tags: project.data.tags, contributors: (project.data.contributors ?? []).map((c: string) => ({ name: c })), image: project.data.image, id: project.id }} />
   <meta slot="head" name="post-locale" content="en" />
   <meta slot="head" name="post-slug" content={currentProjectId} />
   <meta slot="head" name="post-section" content="projects" />
@@ -141,6 +143,18 @@ const hasEsTranslation = await hasProjectTranslation(
         >
           {project.data.title}
         </h1>
+
+        {project.data.status === 'in-development' && (
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-500/90 text-white text-xs font-medium mb-2">
+            <span class="size-2 rounded-full bg-white animate-pulse"></span>
+            <span data-i18n="project.status.in_development">In Development</span>
+          </span>
+        )}
+        {project.data.status === 'archived' && (
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-500/90 text-white text-xs font-medium mb-2">
+            <span data-i18n="project.status.archived">Archived</span>
+          </span>
+        )}
 
         <p class="text-muted-foreground mb-2 text-xs md:text-xl">
           {project.data.description}

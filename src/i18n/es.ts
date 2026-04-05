@@ -47,6 +47,11 @@ export const es = {
   'home.stats_arch': 'Arquitecturas',
   'home.new_badge': 'NUEVO',
 
+  // Project status
+  'project.status.completed': 'Completado',
+  'project.status.in_development': 'En Desarrollo',
+  'project.status.archived': 'Archivado',
+
   // About page
   'about.job_badge': 'Desarrollador Móvil',
   'about.country_badge': 'Perú',

@@ -1,29 +1,30 @@
-import * as React from "react"
-import { X, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react"
+import * as React from 'react'
+import { X, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react'
 
 import {
   Dialog,
   DialogContent,
   DialogClose,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from '@/components/ui/dialog'
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   type CarouselApi,
-} from "@/components/ui/carousel"
-import { Button } from "@/components/ui/button"
+} from '@/components/ui/carousel'
+import { Button } from '@/components/ui/button'
+import { useReducedMotion } from '@/lib/utils'
 
 interface ImageAsset {
-  src: string;
-  fileName?: string;
-  width?: number;
-  height?: number;
+  src: string
+  fileName?: string
+  width?: number
+  height?: number
 }
 
 interface GalleryViewerProps {
-  images: ImageAsset[];
+  images: ImageAsset[]
 }
 
 export function GalleryViewer({ images }: GalleryViewerProps) {
@@ -31,6 +32,7 @@ export function GalleryViewer({ images }: GalleryViewerProps) {
   const [current, setCurrent] = React.useState(0)
   const [api, setApi] = React.useState<CarouselApi>()
   const [isLoading, setIsLoading] = React.useState<Record<number, boolean>>({})
+  const reducedMotion = useReducedMotion()
 
   React.useEffect(() => {
     if (!api) return
@@ -45,9 +47,9 @@ export function GalleryViewer({ images }: GalleryViewerProps) {
       setCurrent(api.selectedScrollSnap())
     }
 
-    api.on("select", handleSelect)
+    api.on('select', handleSelect)
     return () => {
-      api.off("select", handleSelect)
+      api.off('select', handleSelect)
     }
   }, [api])
 
@@ -55,19 +57,19 @@ export function GalleryViewer({ images }: GalleryViewerProps) {
     if (!open || !api) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") {
+      if (e.key === 'ArrowLeft') {
         api.scrollPrev()
         setTimeout(() => setCurrent(api.selectedScrollSnap()), 50)
       }
-      if (e.key === "ArrowRight") {
+      if (e.key === 'ArrowRight') {
         api.scrollNext()
         setTimeout(() => setCurrent(api.selectedScrollSnap()), 50)
       }
-      if (e.key === "Escape") setOpen(false)
+      if (e.key === 'Escape') setOpen(false)
     }
 
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
   }, [open, api])
 
   const scrollPrev = React.useCallback(() => {
@@ -78,7 +80,7 @@ export function GalleryViewer({ images }: GalleryViewerProps) {
       setCurrent(api.selectedScrollSnap())
     }, 50)
   }, [api])
-  
+
   const scrollNext = React.useCallback(() => {
     if (!api) return
     api.scrollNext()
@@ -89,79 +91,67 @@ export function GalleryViewer({ images }: GalleryViewerProps) {
   }, [api])
 
   const handleImageLoad = (index: number) => {
-    setIsLoading(prev => ({
+    setIsLoading((prev) => ({
       ...prev,
-      [index]: false
+      [index]: false,
     }))
   }
 
   const handleImageStart = (index: number) => {
-    setIsLoading(prev => ({
+    setIsLoading((prev) => ({
       ...prev,
-      [index]: true
+      [index]: true,
     }))
   }
 
   return (
     <>
       {/* Grid Masonry Mejorado */}
-      <div className="columns-1 sm:columns-2 lg:columns-3 gap-3 sm:gap-4 space-y-3 sm:space-y-4 p-4">
-        {images.map((img, index) => (
-          <div
-            key={index}
-            className="break-inside-avoid relative group rounded-xl overflow-hidden border border-border/40 bg-card shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer"
-            onClick={() => {
-              setCurrent(index)
-              setOpen(true)
-            }}
-          >
-            {/* Skeleton loader sutil */}
-            {isLoading[index] && (
-              <div className="absolute inset-0 bg-muted/50" />
-            )}
-            
-            <img
-              src={img.src}
-              alt={img.fileName || `Foto ${index + 1}`}
-              className="w-full h-auto object-cover transition-all duration-700 group-hover:scale-110"
-              loading="lazy"
-              draggable={false}
-              onLoadStart={() => handleImageStart(index)}
-              onLoad={() => handleImageLoad(index)}
-            />
-            
-            {/* Overlay con efecto de zoom */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end justify-between p-4">
-              <span className="text-white text-sm font-medium truncate">
-                {img.fileName || `Foto ${index + 1}`}
-              </span>
-              <div className="bg-white/20 backdrop-blur-sm rounded-full p-2">
-                <ZoomIn className="h-4 w-4 text-white" />
+      <div className="columns-1 gap-3 space-y-3 p-4 sm:columns-2 sm:gap-4 sm:space-y-4 lg:columns-3">
+        {images.map((img, index) => {
+          const isNearby =
+            Math.abs(index - current) <= 1 ||
+            Math.abs(index - current) >= images.length - 1
+          return (
+            <CarouselItem
+              key={`carousel-${index}-${img.src}`}
+              className="flex h-full items-center justify-center pl-0"
+            >
+              <div className="relative flex h-full w-full items-center justify-center p-4 sm:p-8">
+                <img
+                  key={`img-${index}-${img.src}`}
+                  src={img.src}
+                  alt={img.fileName || `Foto ${index + 1}`}
+                  className="h-auto max-h-[85vh] w-auto max-w-[95vw] rounded-lg object-contain shadow-2xl select-none sm:max-h-[90vh] sm:max-w-[90vw]"
+                  draggable={false}
+                  loading={isNearby ? 'eager' : 'lazy'}
+                  style={{
+                    margin: 'auto',
+                  }}
+                />
               </div>
-            </div>
-          </div>
-        ))}
+            </CarouselItem>
+          )
+        })}
       </div>
 
       {/* Lightbox Mejorado */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent
-          className="max-w-[100vw] w-screen h-screen p-0 border-none bg-black/95 backdrop-blur-2xl flex flex-col items-center justify-center outline-none [&>button:last-child]:hidden"
-        >
+        <DialogContent className="flex h-screen w-screen max-w-[100vw] flex-col items-center justify-center border-none bg-black/95 p-0 backdrop-blur-2xl outline-none [&>button:last-child]:hidden">
           <DialogTitle className="sr-only">
             Galería - Imagen {current + 1} de {images.length}
           </DialogTitle>
 
           {/* Header con contador y botón cerrar */}
-          <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between p-4 sm:p-6 bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
-            <div className="text-white/90 text-sm sm:text-base font-medium pointer-events-auto">
+          <div className="pointer-events-none absolute top-0 right-0 left-0 z-50 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent p-4 sm:p-6">
+            <div className="pointer-events-auto text-sm font-medium text-white/90 sm:text-base">
               {current + 1} / {images.length}
             </div>
             <DialogClose asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="pointer-events-auto rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 transition-all duration-300 h-10 w-10 sm:h-12 sm:w-12"
+                className={`pointer-events-auto h-10 w-10 rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-sm${reducedMotion ? '' : 'transition-all duration-300'} hover:bg-white/20 sm:h-12 sm:w-12`}
               >
                 <X className="h-5 w-5 sm:h-6 sm:w-6" />
               </Button>
@@ -169,36 +159,41 @@ export function GalleryViewer({ images }: GalleryViewerProps) {
           </div>
 
           {/* Carrusel con mejor centrado */}
-          <Carousel 
-            setApi={setApi} 
-            className="w-full h-full flex items-center justify-center"
+          <Carousel
+            setApi={setApi}
+            className="flex h-full w-full items-center justify-center"
             opts={{
               loop: true,
-              align: "center",
-              watchDrag: true
+              align: 'center',
+              watchDrag: true,
             }}
           >
-            <CarouselContent className="h-full -ml-0">
-              {images.map((img, index) => (
-                <CarouselItem 
-                  key={`carousel-${index}-${img.src}`}
-                  className="h-full flex items-center justify-center pl-0"
-                >
-                  <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-8">
-                    <img
-                      key={`img-${index}-${img.src}`}
-                      src={img.src}
-                      alt={img.fileName || `Foto ${index + 1}`}
-                      className="max-h-[85vh] max-w-[95vw] sm:max-h-[90vh] sm:max-w-[90vw] w-auto h-auto object-contain shadow-2xl rounded-lg select-none"
-                      draggable={false}
-                      loading="eager"
-                      style={{
-                        margin: 'auto'
-                      }}
-                    />
-                  </div>
-                </CarouselItem>
-              ))}
+            <CarouselContent className="-ml-0 h-full">
+              {images.map((img, index) => {
+                const isNearby =
+                  Math.abs(index - current) <= 1 ||
+                  Math.abs(index - current) >= images.length - 1
+                return (
+                  <CarouselItem
+                    key={`carousel-${index}-${img.src}`}
+                    className="flex h-full items-center justify-center pl-0"
+                  >
+                    <div className="relative flex h-full w-full items-center justify-center p-4 sm:p-8">
+                      <img
+                        key={`img-${index}-${img.src}`}
+                        src={img.src}
+                        alt={img.fileName || `Foto ${index + 1}`}
+                        className="h-auto max-h-[85vh] w-auto max-w-[95vw] rounded-lg object-contain shadow-2xl select-none sm:max-h-[90vh] sm:max-w-[90vw]"
+                        draggable={false}
+                        loading={isNearby ? 'eager' : 'lazy'}
+                        style={{
+                          margin: 'auto',
+                        }}
+                      />
+                    </div>
+                  </CarouselItem>
+                )
+              })}
             </CarouselContent>
           </Carousel>
 
@@ -207,7 +202,7 @@ export function GalleryViewer({ images }: GalleryViewerProps) {
             variant="ghost"
             size="icon"
             onClick={scrollPrev}
-            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 hidden md:flex h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 transition-all duration-300 hover:scale-110"
+            className={`absolute top-1/2 left-2 hidden h-12 w-12 -translate-y-1/2 rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-sm${reducedMotion ? '' : 'transition-all duration-300 hover:scale-110'} hover:bg-white/20 sm:left-4 sm:h-14 sm:w-14 md:flex`}
           >
             <ChevronLeft className="h-6 w-6 sm:h-8 sm:w-8" />
           </Button>
@@ -216,13 +211,13 @@ export function GalleryViewer({ images }: GalleryViewerProps) {
             variant="ghost"
             size="icon"
             onClick={scrollNext}
-            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 hidden md:flex h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 transition-all duration-300 hover:scale-110"
+            className={`absolute top-1/2 right-2 hidden h-12 w-12 -translate-y-1/2 rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-sm${reducedMotion ? '' : 'transition-all duration-300 hover:scale-110'} hover:bg-white/20 sm:right-4 sm:h-14 sm:w-14 md:flex`}
           >
             <ChevronRight className="h-6 w-6 sm:h-8 sm:w-8" />
           </Button>
 
           {/* Indicadores de navegación táctil - Mobile */}
-          <div className="md:hidden absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-50">
+          <div className="absolute bottom-6 left-1/2 z-50 flex -translate-x-1/2 gap-2 md:hidden">
             {images.map((_, index) => (
               <button
                 key={index}
@@ -230,9 +225,9 @@ export function GalleryViewer({ images }: GalleryViewerProps) {
                   setCurrent(index)
                   api?.scrollTo(index)
                 }}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  index === current 
-                    ? 'w-8 bg-white' 
+                className={`h-2 rounded-full ${reducedMotion ? '' : 'transition-all duration-300'}${
+                  index === current
+                    ? 'w-8 bg-white'
                     : 'w-2 bg-white/40 hover:bg-white/60'
                 }`}
                 aria-label={`Ir a imagen ${index + 1}`}
@@ -242,8 +237,8 @@ export function GalleryViewer({ images }: GalleryViewerProps) {
 
           {/* Nombre del archivo - Footer */}
           {images[current]?.fileName && (
-            <div className="absolute bottom-0 left-0 right-0 z-50 p-4 sm:p-6 bg-gradient-to-t from-black/80 to-transparent pointer-events-none">
-              <p className="text-white/90 text-sm sm:text-base text-center font-medium truncate max-w-2xl mx-auto">
+            <div className="pointer-events-none absolute right-0 bottom-0 left-0 z-50 bg-gradient-to-t from-black/80 to-transparent p-4 sm:p-6">
+              <p className="mx-auto max-w-2xl truncate text-center text-sm font-medium text-white/90 sm:text-base">
                 {images[current].fileName}
               </p>
             </div>

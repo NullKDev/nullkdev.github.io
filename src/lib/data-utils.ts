@@ -42,7 +42,7 @@ export async function hasPhotoTranslation(
 
 export async function getAlbumImages(albumId: string, lang?: string) {
   const allImages = import.meta.glob<{ default: ImageMetadata }>(
-    '/src/content/photos/**/*.{jpeg,jpg,png,webp}',
+    '/src/content/photos/**/*.{jpeg,jpg,png,webp,avif}',
   )
   // ES albums share images with the EN album — strip locale suffix to get the EN folder
   const resolvedAlbumId = getBaseSlug(albumId, lang)
@@ -64,7 +64,7 @@ export async function getAlbumImages(albumId: string, lang?: string) {
 
 export async function getAlbumCount() {
   const allImages = import.meta.glob(
-    '/src/content/photos/**/assets/*.{jpeg,jpg,png,webp}',
+    '/src/content/photos/**/assets/*.{jpeg,jpg,png,webp,avif}',
   )
   const stats: Record<string, number> = {}
   Object.keys(allImages).forEach((path) => {
@@ -469,7 +469,8 @@ export async function getAdjacentPostsByLocale(
     const currentIndex = subposts.findIndex((p) => p.id === currentId)
     if (currentIndex === -1) return { newer: null, older: null, parent }
     return {
-      newer: currentIndex < subposts.length - 1 ? subposts[currentIndex + 1] : null,
+      newer:
+        currentIndex < subposts.length - 1 ? subposts[currentIndex + 1] : null,
       older: currentIndex > 0 ? subposts[currentIndex - 1] : null,
       parent,
     }
@@ -480,7 +481,10 @@ export async function getAdjacentPostsByLocale(
   if (currentIndex === -1) return { newer: null, older: null, parent: null }
   return {
     newer: currentIndex > 0 ? parentPosts[currentIndex - 1] : null,
-    older: currentIndex < parentPosts.length - 1 ? parentPosts[currentIndex + 1] : null,
+    older:
+      currentIndex < parentPosts.length - 1
+        ? parentPosts[currentIndex + 1]
+        : null,
     parent: null,
   }
 }
@@ -504,14 +508,18 @@ export async function getAdjacentProjectsByLocale(
     const subprojects = allLocaleProjects
       .filter((p) => isSubpost(p.id) && getParentId(p.id) === parentId)
       .sort((a, b) => {
-        const dateDiff = (a.data.endDate?.valueOf() ?? -1) - (b.data.endDate?.valueOf() ?? 0)
+        const dateDiff =
+          (a.data.endDate?.valueOf() ?? -1) - (b.data.endDate?.valueOf() ?? 0)
         if (dateDiff !== 0) return dateDiff
         return (a.data.order ?? 0) - (b.data.order ?? 0)
       })
     const currentIndex = subprojects.findIndex((p) => p.id === currentId)
     if (currentIndex === -1) return { newer: null, older: null, parent }
     return {
-      newer: currentIndex < subprojects.length - 1 ? subprojects[currentIndex + 1] : null,
+      newer:
+        currentIndex < subprojects.length - 1
+          ? subprojects[currentIndex + 1]
+          : null,
       older: currentIndex > 0 ? subprojects[currentIndex - 1] : null,
       parent,
     }
@@ -522,7 +530,10 @@ export async function getAdjacentProjectsByLocale(
   if (currentIndex === -1) return { newer: null, older: null, parent: null }
   return {
     newer: currentIndex > 0 ? parentProjects[currentIndex - 1] : null,
-    older: currentIndex < parentProjects.length - 1 ? parentProjects[currentIndex + 1] : null,
+    older:
+      currentIndex < parentProjects.length - 1
+        ? parentProjects[currentIndex + 1]
+        : null,
     parent: null,
   }
 }

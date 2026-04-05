@@ -16,6 +16,9 @@ export async function GET(context: APIContext) {
       pubDate: post.data.date,
       link: `/blog/${post.id}/`,
       categories: post.data.tags,
+      customData: `<content:encoded><![CDATA[${post.data.description}
+
+<a href="${SITE.href}blog/${post.id}/">Read full post →</a>]]></content:encoded>`,
     }))
 
     const projectItems = projects.map((project) => ({
@@ -35,6 +38,11 @@ export async function GET(context: APIContext) {
       description: SITE.description,
       site: context.site ?? SITE.href,
       items: allItems,
+      customData: `<image>
+        <url>${SITE.href}static/avatar.png</url>
+        <title>${SITE.title}</title>
+        <link>${SITE.href}</link>
+      </image>`,
     })
   } catch (error) {
     if (import.meta.env.DEV) console.error('Error generating RSS feed:', error)

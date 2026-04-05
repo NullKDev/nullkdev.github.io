@@ -1,0 +1,59 @@
+---
+// JSON-LD structured data for project pages
+// Usage: <ProjectSchema project={project} />
+
+import { SITE } from '@/consts'
+
+interface Contributor {
+  name: string
+  url?: string
+}
+
+interface Props {
+  project: {
+    title: string
+    description: string
+    startDate?: string | Date
+    tags?: string[]
+    contributors?: string[] | Contributor[]
+    image?: { src: string } | string
+    id: string
+  }
+}
+
+const { project } = Astro.props
+
+if (!project || !project.title) {
+  return null
+}
+
+const imageUrl = project.image
+  ? typeof project.image === 'string'
+    ? project.image
+    : project.image.src
+  : undefined
+
+const projectSchema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": project.title,
+  "description": project.description,
+  "dateCreated": project.startDate ? new Date(project.startDate).toISOString().split('T')[0] : undefined,
+  "applicationCategory": project.tags && project.tags.length > 0 ? project.tags.join(', ') : undefined,
+  "author": project.contributors && project.contributors.length > 0
+    ? project.contributors.map((c) => {
+        const name = typeof c === 'string' ? c : c.name
+        const url = typeof c === 'string' ? undefined : c.url
+        return {
+          "@type": "Person",
+          "name": name,
+          ...(url && { "url": url })
+        }
+      })
+    : undefined,
+  "url": `${SITE.href}projects/${project.id}`,
+  ...(imageUrl && { "image": imageUrl })
+}
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(projectSchema)} />

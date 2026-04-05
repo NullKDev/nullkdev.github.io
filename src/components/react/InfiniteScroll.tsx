@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, useState } from 'react'
 import { motion, useAnimationControls } from 'framer-motion'
-import { cn } from '@/lib/utils'
+import { cn, useReducedMotion } from '@/lib/utils'
 
 interface InfiniteScrollProps {
   className?: string
@@ -25,6 +25,7 @@ export function InfiniteScroll({
   pauseOnHover = true,
   ariaLabel,
 }: InfiniteScrollProps) {
+  const reducedMotion = useReducedMotion()
   const [contentWidth, setContentWidth] = useState<number>(0)
   const [isPaused, setIsPaused] = useState(false)
   const scrollerRef = useRef<HTMLDivElement>(null)
@@ -105,19 +106,25 @@ export function InfiniteScroll({
       aria-label={ariaLabel}
       aria-live="polite"
     >
-      <div className="flex">
-        <motion.div
-          ref={scrollerRef}
-          className="flex shrink-0"
-          animate={controls}
-        >
-          <div ref={contentRef} className="flex shrink-0">
-            {children}
-          </div>
-          <div className="flex shrink-0">{children}</div>
-          <div className="flex shrink-0">{children}</div>
-        </motion.div>
-      </div>
+      {reducedMotion ? (
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          {children}
+        </div>
+      ) : (
+        <div className="flex">
+          <motion.div
+            ref={scrollerRef}
+            className="flex shrink-0"
+            animate={controls}
+          >
+            <div ref={contentRef} className="flex shrink-0">
+              {children}
+            </div>
+            <div className="flex shrink-0">{children}</div>
+            <div className="flex shrink-0">{children}</div>
+          </motion.div>
+        </div>
+      )}
       {showFade && (
         <div
           className="from-background to-background pointer-events-none absolute inset-0 bg-linear-to-r via-transparent sm:bg-gradient-to-r"

@@ -5,7 +5,7 @@ import Link from '@/components/Link.astro'
 import Layout from '@/layouts/Layout.astro'
 import { cn } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
-import { AUTHOR, SITE } from '@/consts'
+import { AUTHOR, SITE, SITE_URL } from '@/consts'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 
@@ -43,10 +43,10 @@ const personSchema = {
     "MVVM",
     "MVI"
   ],
-  "sameAs": [
+    "sameAs": [
     "https://github.com/NullKDev",
     "https://www.linkedin.com/in/jcarlos-dev/",
-    "https://nullkdev.github.io"
+    SITE_URL
   ],
   "email": AUTHOR.social.email.mail,
   "description": `Mobile developer with ${yearsExp}+ years of experience specialized in Android, Kotlin, Java, Flutter and KMM. Passionate about creating exceptional user experiences.`
