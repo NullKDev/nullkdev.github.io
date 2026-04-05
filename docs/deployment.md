@@ -22,7 +22,7 @@ Live URL: `https://nullkdev.github.io/`
 on:
   push:
     branches: [main]
-  workflow_dispatch:       # allows manual trigger from GitHub UI
+  workflow_dispatch: # allows manual trigger from GitHub UI
 
 jobs:
   build:
@@ -30,7 +30,8 @@ jobs:
       - uses: actions/checkout@v5
       - uses: withastro/action@v4
         env:
-          PUBLIC_GOOGLE_ANALYTICS_ID: 'G-EHJ4VSJT4Q'
+          PUBLIC_GOOGLE_ANALYTICS_ID: ${{ vars.PUBLIC_GOOGLE_ANALYTICS_ID }}
+          SITE_URL: ${{ vars.SITE_URL }}
   deploy:
     needs: build
     steps:
@@ -41,15 +42,20 @@ jobs:
 
 ## Environment Variables
 
-| Variable | Where set | Purpose |
-|---|---|---|
-| `PUBLIC_GOOGLE_ANALYTICS_ID` | Hardcoded in workflow | GA4 measurement ID |
+Variables are set in GitHub repo settings → **Settings → Secrets and variables → Actions → Variables**:
+
+| Variable                     | Type     | Purpose                                 |
+| ---------------------------- | -------- | --------------------------------------- |
+| `SITE_URL`                   | Variable | Production site URL (no trailing slash) |
+| `PUBLIC_GOOGLE_ANALYTICS_ID` | Variable | GA4 measurement ID                      |
 
 Variables prefixed with `PUBLIC_` are exposed to the client bundle. Variables without the prefix are server-side only (not relevant for a static build).
 
 To add a new env variable:
-1. Add it to the `env:` block in `deploy.yml` if it should be set at build time
-2. Or add it as a GitHub Actions secret (Settings → Secrets) and reference it as `${{ secrets.MY_VAR }}`
+
+1. Add it as a **Repository Variable** (Settings → Secrets and variables → Actions → Variables)
+2. Reference it in `deploy.yml` as `${{ vars.MY_VAR }}`
+3. For secrets (API keys, tokens), use **Secrets** and reference as `${{ secrets.MY_VAR }}`
 
 ## Local Build
 
@@ -70,8 +76,36 @@ You can trigger a deployment manually from the GitHub Actions tab without pushin
 - Custom domain: not configured — uses `nullkdev.github.io`
 - Enforce HTTPS: enabled
 
-The `astro.config.ts` must have `site: "https://nullkdev.github.io/"` for sitemap, canonical URLs, and OG image URLs to be correct.
+The `astro.config.ts` imports `SITE_URL` from `src/consts.ts` for the `site` option. Change `SITE_URL` in one place to migrate domains.
 
 ## Cloudflare Pages Functions
 
-`functions/` at the repo root contains serverless functions for dynamic features (newsletter subscription, post reactions). These are **not** part of the static GitHub Pages build — they run only if the site is hosted on Cloudflare Pages instead. Currently unused in the active GitHub Pages deployment.
+`functions/` at the repo root contains serverless functions for dynamic features:
+
+| Function                      | Purpose                          | Storage                        |
+| ----------------------------- | -------------------------------- | ------------------------------ |
+| `api/newsletter/subscribe.ts` | Brevo double opt-in subscription | Brevo API                      |
+| `api/reactions/[postId].ts`   | Post reaction counts             | Cloudflare KV (`REACTIONS_KV`) |
+
+These run **only on Cloudflare Pages**, not on GitHub Pages. Required Cloudflare env vars:
+
+| Variable        | Purpose                                     |
+| --------------- | ------------------------------------------- |
+| `BREVO_API_KEY` | Brevo API key for newsletter                |
+| `BREVO_LIST_ID` | Brevo contact list ID                       |
+| `SITE_URL`      | Redirect URL for double opt-in confirmation |
+| `REACTIONS_KV`  | Cloudflare KV namespace binding             |
+
+Both functions include rate limiting (by `CF-Connecting-IP`) and CORS restrictions.
+
+## Security Headers
+
+`public/_headers` defines security headers served by Cloudflare Pages:
+
+- `Content-Security-Policy` — restricts script/style sources
+- `Strict-Transport-Security` — forces HTTPS
+- `X-Frame-Options: DENY` — prevents clickjacking
+- `X-Content-Type-Options: nosniff` — prevents MIME sniffing
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Permissions-Policy` — disables camera, microphone, geolocation, etc.
+- `Cross-Origin-Opener-Policy` / `Cross-Origin-Resource-Policy` — isolation

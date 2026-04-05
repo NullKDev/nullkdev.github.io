@@ -203,6 +203,55 @@ Injects FAQ structured data (schema.org). Use in posts that have a Q&A section.
 
 Injects HowTo structured data. Use in tutorial-style posts.
 
+### `PhotoAlbumSchema.astro`
+
+Injects `ImageGallery` structured data for photo albums.
+
+### `ProjectSchema.astro`
+
+Injects `SoftwareApplication` or `CreativeWork` structured data for projects.
+
 ### `FloatingSidebar.astro`
 
 Floating navigation sidebar. Enabled by default via `UI.showFloatingSidebar` in `src/consts.ts`. Hidden on pages that pass `hideFloatingSidebar` to `Layout.astro`.
+
+---
+
+## Password Protection Components
+
+### `ToolProtection.astro`
+
+Gates tool pages with a password overlay. Hashes the password at build time (SHA-256) — only the hash is sent to the client. Includes client-side rate limiting (5 attempts, 30s lockout).
+
+```astro
+<ToolProtection
+  isProtected={true}
+  password="secret"
+  toolId="password-generator"
+  toolName="Password Generator"
+/>
+```
+
+### `PasswordProtection.tsx`
+
+React component for password-protected blog posts. Decrypts AES-encrypted content client-side and sanitizes with DOMPurify before rendering. Rate limited: 5 attempts, 30s lockout.
+
+### `ProjectPasswordProtection.tsx`
+
+Same as `PasswordProtection` but styled with a terminal aesthetic for projects.
+
+### `PhotoPasswordProtection.tsx`
+
+Password gate for photo albums. Compares SHA-256 hash client-side. Rate limited: 5 attempts, 30s lockout.
+
+---
+
+## Toast System
+
+### `Toast.tsx`
+
+Individual toast notification component. Supports `success`, `error`, `warning`, and `info` variants with auto-dismiss.
+
+### `ToastProvider.tsx`
+
+React context provider for the toast system. Wrap the app or use as an island. Provides `useToast()` hook with `toast.success()`, `toast.error()`, etc.

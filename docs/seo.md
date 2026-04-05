@@ -24,14 +24,15 @@ No configuration needed — new posts appear automatically in the feed on next b
 
 The site uses JSON-LD structured data on multiple pages:
 
-| Page            | Schema type                             | File                |
-| --------------- | --------------------------------------- | ------------------- |
-| Home            | `WebSite` + `Person`                    | `index.astro`       |
-| About           | `Person` (enhanced)                     | `about.astro`       |
-| Blog post       | `Article` or `BlogPosting`              | `PostHead.astro`    |
-| Project         | `SoftwareApplication` or `CreativeWork` | `ProjectHead.astro` |
-| Tools index     | `CollectionPage` + `ItemList`           | `tools/index.astro` |
-| Individual tool | `WebApplication`                        | each tool page      |
+| Page            | Schema type                             | File                                        |
+| --------------- | --------------------------------------- | ------------------------------------------- |
+| Home            | `WebSite` + `Person`                    | `index.astro`                               |
+| About           | `Person` (enhanced)                     | `about.astro`                               |
+| Blog post       | `Article` or `BlogPosting`              | `PostHead.astro`                            |
+| Project         | `SoftwareApplication` or `CreativeWork` | `ProjectHead.astro` / `ProjectSchema.astro` |
+| Photo album     | `ImageGallery`                          | `PhotoAlbumSchema.astro`                    |
+| Tools index     | `CollectionPage` + `ItemList`           | `tools/index.astro`                         |
+| Individual tool | `WebApplication`                        | each tool page                              |
 
 ### Adding structured data to a new page
 
@@ -80,6 +81,23 @@ Set automatically by `PostHead.astro` based on `Astro.site` + the current URL. F
 
 ## Google Analytics
 
-Injected via `Head.astro` using `PUBLIC_GOOGLE_ANALYTICS_ID` from the environment. The GA ID is set in the GitHub Actions workflow — see [deployment.md](./deployment.md).
+Injected via `Head.astro` using `PUBLIC_GOOGLE_ANALYTICS_ID` from the environment. The GA ID is set as a GitHub repository variable — see [deployment.md](./deployment.md).
 
 To disable analytics in local dev: the env var is not set by default, so no tracking happens unless you add it to a `.env` file.
+
+## Security Headers
+
+`public/_headers` defines security headers for Cloudflare Pages:
+
+| Header                         | Value                                                                                                                          | Purpose                     |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------- |
+| `Content-Security-Policy`      | `default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; ...` | Restricts resource loading  |
+| `Strict-Transport-Security`    | `max-age=31536000; includeSubDomains; preload`                                                                                 | Forces HTTPS                |
+| `X-Frame-Options`              | `DENY`                                                                                                                         | Prevents clickjacking       |
+| `X-Content-Type-Options`       | `nosniff`                                                                                                                      | Prevents MIME-type sniffing |
+| `Referrer-Policy`              | `strict-origin-when-cross-origin`                                                                                              | Controls referrer info      |
+| `Permissions-Policy`           | `camera=(), microphone=(), ...`                                                                                                | Disables browser features   |
+| `Cross-Origin-Opener-Policy`   | `same-origin`                                                                                                                  | Isolates browsing context   |
+| `Cross-Origin-Resource-Policy` | `same-origin`                                                                                                                  | Restricts resource sharing  |
+
+On GitHub Pages, these headers are not applied (GitHub Pages doesn't support custom headers). They take effect only when deployed to Cloudflare Pages.

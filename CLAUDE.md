@@ -9,9 +9,12 @@ pnpm dev          # Start dev server on port 1234
 pnpm build        # Type-check (astro check) then build to dist/
 pnpm preview      # Preview the built site
 pnpm prettier     # Format all TS/TSX/CSS/Astro files
+pnpm test         # Run Vitest tests (tests/**/*.test.ts)
+pnpm test:watch   # Run Vitest in watch mode
+pnpm test:coverage # Run tests with v8 coverage report
 ```
 
-No test suite is configured.
+Vitest test framework with v8 coverage. Tests live in `tests/**/*.test.ts`. No linter beyond `astro check` (runs as part of `pnpm build`).
 
 ## Architecture
 
@@ -36,7 +39,10 @@ API endpoints:
 
 - `src/pages/api/search-index.json.ts` — prerendered search index consumed by the React `SearchButton` component (Flexsearch)
 
-Cloudflare Pages Functions in `functions/` handle dynamic server-side features (newsletter, post reactions).
+Cloudflare Pages Functions in `functions/` handle dynamic server-side features:
+
+- `functions/api/newsletter/subscribe.ts` — newsletter subscription via Brevo API (double opt-in, rate limited 5 req/10min per IP)
+- `functions/api/reactions/[postId].ts` — post reaction counts stored in Cloudflare KV (rate limited 20 req/hour per IP, CORS restricted to site origin)
 
 ### Styling
 
@@ -44,7 +50,14 @@ Tailwind CSS 4 with CSS custom properties. Theme variables are defined in `src/s
 
 ### Site Configuration
 
-Global constants (site URL, author info, nav links, social links) are in `src/consts.ts`. The Astro config (`astro.config.ts`) sets `output: "static"` and `site: "https://nullkdev.github.io/"`.
+Global constants in `src/consts.ts`: `SITE_URL` (single source of truth for the production URL), `AUTHOR`, `SITE`, `NAV_LINKS`, `SOCIAL_LINKS`. The Astro config (`astro.config.ts`) references `SITE_URL` for the `site` option and sitemap serialization.
+
+### Security
+
+- **Security headers** via `public/_headers` (Cloudflare Pages): CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, COOP, CORP
+- **Password protection**: ToolProtection hashes passwords at build time (SHA-256), only the hash is sent to the client. Blog/project password-protected content is sanitized with DOMPurify before rendering.
+- **Rate limiting**: Client-side lockout (5 attempts, 30s) on all password forms. Server-side rate limiting on Cloudflare Functions.
+- **CORS**: Reactions API restricted to site origin only.
 
 ### Path Alias
 
@@ -52,4 +65,4 @@ Global constants (site URL, author info, nav links, social links) are in `src/co
 
 ## Deployment
 
-Push to `main` triggers the GitHub Actions workflow (`.github/workflows/deploy.yml`) which runs `withastro/action@v4` and deploys to GitHub Pages. `PUBLIC_GOOGLE_ANALYTICS_ID` is set as an environment variable in the workflow.
+Push to `main` triggers the GitHub Actions workflow (`.github/workflows/deploy.yml`) which runs `withastro/action@v4` and deploys to GitHub Pages. Environment variables are set as GitHub repository variables (`vars.PUBLIC_GOOGLE_ANALYTICS_ID`, `vars.SITE_URL`).
