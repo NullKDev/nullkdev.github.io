@@ -21,22 +21,12 @@ const translatableSections = new Set(['blog', 'projects', 'photos'])
       <img
         src="/static/logo.svg"
         alt={SITE.title}
-        class="size-8 dark:block hidden"
+        class="size-8"
         width="32"
         height="32"
         loading="eager"
         fetchpriority="high"
-        transition:persist="logo-dark"
-      />
-      <img
-        src="/static/logod.svg"
-        alt={SITE.title}
-        class="size-8 dark:hidden block"
-        width="32"
-        height="32"
-        loading="eager"
-        fetchpriority="high"
-        transition:persist="logo-light"
+        transition:persist="logo"
       />
      <span class="hidden min-[400px]:block">{SITE.title}</span>
     </Link>

@@ -36,7 +36,7 @@ export const AUTHOR = {
 export const SITE: Site = {
   title: 'CarlosDev',
   description:
-    'CarlosDev - System Administrator and Cybersecurity Engineer sharing practical guides on Linux, Kubernetes, homelab infrastructure, and security.',
+    'CarlosDev - Mobile and Multiplataform Developer.',
   href: 'https://nullkdev.github.io/',
   author: 'NullKDev',
   locale: 'es-PE',
