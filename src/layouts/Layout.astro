@@ -183,6 +183,9 @@ const { class: className, hideFloatingSidebar = false } = Astro.props
         var lang = stored || 'en'
         if (!stored) localStorage.setItem('lang', lang)
 
+        // Expose i18n globally for React components to use
+        window.__i18n = T
+
         // Make globally available for toggle
         window.__applyI18n = applyI18n
         window.__locale = lang

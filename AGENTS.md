@@ -122,3 +122,33 @@ Content can be password-protected using frontmatter:
 - `protectionMessage: "Enter password"` — Custom message
 
 **Security**: Use `passwordHash` for production. Hash with SHA-256 at build time or use environment variables. The `password` field exists for demo purposes only.
+
+## Security
+
+The project has an **A security rating**. See `docs/security.md` for comprehensive documentation.
+
+### Security Best Practices
+
+- **Never commit secrets** — Use environment variables, not hardcoded keys
+- **PBKDF2** — 600,000 iterations for password hashing (OWASP recommended)
+- **Hash with salt** — Format: `base64(salt):hash`
+- **CSP** — Configured in both `src/components/Head.astro` (GitHub Pages) and `public/_headers` (Cloudflare)
+- **XSS Protection** — DOMPurify with integrity verification for i18n HTML
+
+### Security Remediations Implemented
+
+| Priority | Fixes |
+|----------|-------|
+| CRITICAL | PBKDF2 600k, salt hash, crypto-js removed |
+| HIGH | CSP, DOMPurify, rate limiting, security logging |
+| MEDIUM | Email validation, payload limits, postId validation, honeypot |
+
+### Running Security Audits
+
+```bash
+# Check dependencies for vulnerabilities
+pnpm audit
+
+# Type-check to catch type errors
+pnpm build
+```

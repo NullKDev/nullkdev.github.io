@@ -8,7 +8,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { NAV_LINKS } from '@/consts'
 import { Menu, ExternalLink } from 'lucide-react'
-import { useTranslation } from '@/i18n/use-locale'
 
 const TRANSLATABLE = new Set(['blog', 'projects', 'photos'])
 
@@ -21,10 +20,35 @@ function localizeHref(href: string, locale: 'en' | 'es'): string {
   return href
 }
 
+// Use global i18n from Astro's Layout script - matches SSR output
+function useI18n() {
+  const [mounted, setMounted] = useState(false)
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+  
+  const getText = (key: string): string => {
+    if (typeof window === 'undefined') return ''
+    
+    const lang = localStorage.getItem('lang') || 'en'
+    const dict = (window as any).__i18n?.[lang]
+    if (dict && dict[key]) return dict[key]
+    
+    const enDict = (window as any).__i18n?.en
+    return (enDict && enDict[key]) ? enDict[key] : ''
+  }
+  
+  return {
+    t: getText,
+    toggle_menu: mounted ? getText('common.toggle_menu') : '',
+  }
+}
+
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [locale, setLocale] = useState<'en' | 'es'>('en')
-  const { t } = useTranslation()
+  const { t, toggle_menu } = useI18n()
 
   useEffect(() => {
     const updateLocale = () => {
@@ -55,10 +79,11 @@ const MobileMenu = () => {
           variant="outline"
           size="icon"
           className="md:hidden"
-          title={t('common.toggle_menu')}
+          title={toggle_menu}
+          suppressHydrationWarning
         >
           <Menu className="h-5 w-5" />
-          <span className="sr-only">{t('common.toggle_menu')}</span>
+          <span className="sr-only" suppressHydrationWarning>{toggle_menu}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="bg-background">
@@ -81,9 +106,7 @@ const MobileMenu = () => {
                 }`}
                 onClick={() => setIsOpen(false)}
               >
-                <span>
-                  {t(`nav.${item.label.toLowerCase()}`) || item.label}
-                </span>
+                <span>{t(`nav.${item.label.toLowerCase()}`) || item.label}</span>
                 {isExternal && (
                   <ExternalLink
                     className={`h-4 w-4 flex-shrink-0 opacity-80 ${isInsideLink ? 'text-primary' : ''}`}
