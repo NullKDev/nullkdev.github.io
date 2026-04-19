@@ -20,6 +20,7 @@ import {
 import { cn } from '@/lib/utils'
 import { PERFORMANCE } from '@/lib/constants'
 import { useTranslation } from '@/i18n/use-locale'
+import { getItem, setItem } from '@/lib/storage'
 
 interface SearchResult {
   id: string
@@ -117,52 +118,46 @@ function calculateRelevanceScore(
   return score
 }
 
-// Get search history from localStorage
+// Get search history from storage
 function getSearchHistory(): string[] {
-  try {
-    const history = localStorage.getItem(STORAGE_KEYS.SEARCH_HISTORY)
-    return history ? JSON.parse(history) : []
-  } catch {
-    return []
-  }
+  return getItem<string[]>(STORAGE_KEYS.SEARCH_HISTORY, [], { prefix: true })
 }
 
 // Save search to history
 function saveSearchHistory(query: string): void {
   if (!query.trim()) return
-  try {
-    const history = getSearchHistory()
-    const normalizedQuery = query.trim().toLowerCase()
-    // Remove if exists and add to front
-    const filtered = history.filter((q) => q.toLowerCase() !== normalizedQuery)
-    const updated = [normalizedQuery, ...filtered].slice(0, 10) // Keep last 10
-    localStorage.setItem(STORAGE_KEYS.SEARCH_HISTORY, JSON.stringify(updated))
-  } catch {
-    // Ignore localStorage errors
+  const history = getSearchHistory()
+  const normalizedQuery = query.trim().toLowerCase()
+  // Remove if exists and add to front
+  const filtered = history.filter((q) => q.toLowerCase() !== normalizedQuery)
+  const updated = [normalizedQuery, ...filtered].slice(0, 10) // Keep last 10
+  const success = setItem(STORAGE_KEYS.SEARCH_HISTORY, updated, { prefix: true })
+  if (!success && import.meta.env.DEV) {
+    console.warn('Failed to save search history: storage quota may be exceeded')
   }
 }
 
 // Get cached search index
 function getCachedIndex(): { data: SearchResult[]; version: string } | null {
-  try {
-    const cached = localStorage.getItem(STORAGE_KEYS.SEARCH_INDEX)
-    const version = localStorage.getItem(STORAGE_KEYS.SEARCH_INDEX_VERSION)
-    if (cached && version === INDEX_VERSION) {
+  const cached = getItem<string>(STORAGE_KEYS.SEARCH_INDEX, undefined, { prefix: true })
+  const version = getItem<string>(STORAGE_KEYS.SEARCH_INDEX_VERSION, undefined, { prefix: true })
+  if (cached && version === INDEX_VERSION) {
+    try {
       return { data: JSON.parse(cached), version }
+    } catch {
+      return null
     }
-  } catch {
-    // Ignore errors
   }
   return null
 }
 
 // Cache search index
 function cacheIndex(data: SearchResult[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEYS.SEARCH_INDEX, JSON.stringify(data))
-    localStorage.setItem(STORAGE_KEYS.SEARCH_INDEX_VERSION, INDEX_VERSION)
-  } catch {
-    // Ignore localStorage errors (quota exceeded, etc.)
+  const success =
+    setItem(STORAGE_KEYS.SEARCH_INDEX, JSON.stringify(data), { prefix: true }) &&
+    setItem(STORAGE_KEYS.SEARCH_INDEX_VERSION, INDEX_VERSION, { prefix: true })
+  if (!success && import.meta.env.DEV) {
+    console.warn('Failed to cache search index: storage quota may be exceeded')
   }
 }
 

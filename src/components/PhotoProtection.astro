@@ -8,7 +8,7 @@
  *   isProtected=true, no pw   → static "private album" screen
  */
 import PhotoPasswordProtection from '@/components/PhotoPasswordProtection'
-import { hashPassword } from '@/lib/encryption'
+import { hashPasswordSync } from '@/lib/encryption'
 
 interface ImageAsset {
   src: string
@@ -28,7 +28,7 @@ interface Props {
 
 const { isProtected, password, albumId, coverSrc, images, protectionMessage } = Astro.props
 
-const hashedPassword = password ? hashPassword(password) : undefined
+const hashedPassword = password ? hashPasswordSync(password) : undefined
 ---
 
 {!isProtected ? (

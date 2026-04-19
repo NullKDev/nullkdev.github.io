@@ -1007,3 +1007,35 @@ export async function getTOCSectionsProjects(
 
   return sections
 }
+
+// ============================================================================
+// Re-exports from modularized utilities
+// ============================================================================
+
+// Sorting utilities
+export {
+  sortPostsByDateDesc,
+  sortPostsByDateAsc,
+  sortProjectsByEndDateDesc,
+  sortPhotosByDateDesc,
+  sortTagsByCount,
+  sortSubposts,
+} from './data-utils/sorting'
+
+// Filter utilities
+export {
+  filterPostsByLocale,
+  filterPostsByLocaleWithDrafts,
+  filterProjectsByLocale,
+  filterPhotosByLocale,
+  filterParents,
+  filterSubpostsForParent,
+  filterByAuthor,
+  filterByTag,
+  filterPublished,
+  filterByAnyTag,
+} from './data-utils/filters'
+
+// Translation utilities - These already exist in data-utils.ts so we don't re-export
+// to avoid "Cannot redeclare exported variable" errors
+// The modules are available for direct import if needed

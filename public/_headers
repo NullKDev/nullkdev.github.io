@@ -2,7 +2,15 @@
 # https://developers.cloudflare.com/pages/platform/redirects#custom-headers
 
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https://api.brevo.com https://www.google-analytics.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https://api.brevo.com https://www.google-analytics.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests
+  # NOTE: CSP configuration for SSG site with React + i18n
+  # - 'unsafe-inline' required for Astro SSG (no per-request nonces)
+  # - All external scripts explicitly allowlisted:
+  #   - cdnjs.cloudflare.com (DOMPurify)
+  #   - googletagmanager.com + google-analytics.com (Analytics)
+  #   - google.com (Analytics JS)
+  # - XSS protection via DOMPurify sanitization + input validation
+  # - For higher security: migrate to SSR adapter for nonce-based CSP
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload

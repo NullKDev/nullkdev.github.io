@@ -1,6 +1,18 @@
 import { glob } from 'astro/loaders'
 import { defineCollection, z } from 'astro:content'
 
+// Shared password protection interface - consolidated for all protected content
+// Note: password plaintext is stored for demo purposes only.
+// In production, use build-time environment variables with hashPasswordSync.
+const passwordProtection = z.object({
+  protected: z.boolean().optional().default(false),
+  // Plaintext password - only for demo/protected content. Use env var in production.
+  password: z.string().optional(),
+  // Hash for runtime verification when password is not available
+  passwordHash: z.string().optional(),
+  protectionMessage: z.string().optional(),
+})
+
 const blog = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
   schema: ({ image }) =>
@@ -14,9 +26,7 @@ const blog = defineCollection({
       authors: z.array(z.string()).optional().default(['me']),
       draft: z.boolean().optional(),
       lang: z.enum(['en', 'es']).optional().default('en'),
-      protected: z.boolean().optional().default(false),
-      password: z.string().optional(),
-      protectionMessage: z.string().optional(),
+      ...passwordProtection.shape,
     }),
 })
 
@@ -51,13 +61,11 @@ const projects = defineCollection({
       order: z.number().optional(),
       contributors: z.array(z.string()).optional().default(['me']),
       lang: z.enum(['en', 'es']).optional().default('en'),
-      protected: z.boolean().optional().default(false),
       status: z
         .enum(['completed', 'in-development', 'archived'])
         .optional()
         .default('completed'),
-      password: z.string().optional(),
-      protectionMessage: z.string().optional(),
+      ...passwordProtection.shape,
     }),
 })
 
@@ -80,9 +88,7 @@ const photos = defineCollection({
       model: z.string().optional(),
       preset: z.string().optional(),
       lang: z.enum(['en', 'es']).optional().default('en'),
-      protected: z.boolean().optional().default(false),
-      password: z.string().optional(),
-      protectionMessage: z.string().optional(),
+      ...passwordProtection.shape,
     }),
 })
 

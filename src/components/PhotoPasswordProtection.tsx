@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { verifyPassword } from '@/lib/encryption'
 import { GalleryViewer } from '@/components/react/GalleryViewer'
 
@@ -37,42 +37,48 @@ export default function PhotoPasswordProtection({
 
   useEffect(() => {
     const stored = sessionStorage.getItem(`photo-pw-${albumId}`)
-    if (stored && verifyPassword(hashedPassword, stored)) {
-      setUnlocked(true)
+    if (stored) {
+      verifyPassword(hashedPassword, stored).then((isValid) => {
+        if (isValid) setUnlocked(true)
+      })
     }
   }, [albumId, hashedPassword])
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (locked) return
-    if (!input) return
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault()
+      if (locked) return
+      if (!input) return
 
-    if (attempts >= MAX_ATTEMPTS) {
-      setLocked(true)
-      setTimeout(() => {
-        setLocked(false)
-        setAttempts(0)
-      }, LOCKOUT_MS)
-      return
-    }
+      if (attempts >= MAX_ATTEMPTS) {
+        setLocked(true)
+        setTimeout(() => {
+          setLocked(false)
+          setAttempts(0)
+        }, LOCKOUT_MS)
+        return
+      }
 
-    if (verifyPassword(hashedPassword, input)) {
-      sessionStorage.setItem(`photo-pw-${albumId}`, input)
-      setUnlocked(true)
-      setError(false)
-      setAttempts(0)
-    } else {
-      setError(true)
-      setShaking(true)
-      setAttempts((prev) => prev + 1)
-      setInput('')
-      setTimeout(() => {
-        setShaking(false)
+      const isValid = await verifyPassword(hashedPassword, input)
+      if (isValid) {
+        sessionStorage.setItem(`photo-pw-${albumId}`, input)
+        setUnlocked(true)
         setError(false)
-        inputRef.current?.focus()
-      }, 600)
-    }
-  }
+        setAttempts(0)
+      } else {
+        setError(true)
+        setShaking(true)
+        setAttempts((prev) => prev + 1)
+        setInput('')
+        setTimeout(() => {
+          setShaking(false)
+          setError(false)
+          inputRef.current?.focus()
+        }, 600)
+      }
+    },
+    [locked, attempts, hashedPassword, input, albumId],
+  )
 
   if (unlocked) {
     return <GalleryViewer images={images} />

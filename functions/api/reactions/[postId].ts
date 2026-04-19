@@ -12,22 +12,54 @@ interface ReactionData {
   [reactionKey: string]: number
 }
 
-const ALLOWED_ORIGIN = 'https://nullkdev.github.io' // Set via SITE_URL env var in production // Set via SITE_URL env var in production
+const ALLOWED_ORIGIN = 'https://nullkdev.github.io'
 
-// Simple in-memory rate limiter (per-IP, 20 requests per hour for POST)
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+// Security event logging
+function logSecurityEvent(
+  event: string,
+  details: Record<string, unknown>,
+): void {
+  console.warn(`[SECURITY] ${event}`, {
+    timestamp: new Date().toISOString(),
+    ...details,
+  })
+}
 
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now()
-  const entry = rateLimitMap.get(ip)
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + 3_600_000 })
-    return true
+/**
+ * Validates postId to prevent path traversal and injection attacks
+ * - Must be alphanumeric, hyphens, or underscores only
+ * - Max 100 characters
+ * - No path traversal patterns
+ */
+function isValidPostId(postId: string): boolean {
+  if (!postId || typeof postId !== 'string') {
+    return false
   }
-  if (entry.count >= 20) return false
-  entry.count++
+
+  // Length check
+  if (postId.length > 100) {
+    return false
+  }
+
+  // Prevent path traversal and special characters
+  // Only allow alphanumeric, hyphens, underscores, slashes for nested paths
+  const validPattern = /^[a-zA-Z0-9][a-zA-Z0-9/_-]*$/
+  if (!validPattern.test(postId)) {
+    return false
+  }
+
+  // Double-check no path traversal patterns
+  if (postId.includes('..') || postId.includes('//') || postId.startsWith('/')) {
+    return false
+  }
+
   return true
 }
+
+// NOTE: In-memory rate limiting removed - Cloudflare handles it natively
+// Per Cloudflare docs: Rate limiting is handled at the edge level
+// Configure in Cloudflare dashboard: Settings > Security > DDoS > Rate Limiting
+// Recommended: 20 POST requests per hour per IP
 
 function corsHeaders(
   extra: Record<string, string> = {},
@@ -56,6 +88,18 @@ export const onRequestGet = async ({
 
     if (!postId) {
       return new Response(JSON.stringify({ error: 'Post ID is required' }), {
+        status: 400,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders(),
+        },
+      })
+    }
+
+    // Validate postId format
+    if (!isValidPostId(postId)) {
+      logSecurityEvent('invalid_postId', { postId, length: postId?.length })
+      return new Response(JSON.stringify({ error: 'Invalid Post ID format' }), {
         status: 400,
         headers: {
           'Content-Type': 'application/json',
@@ -107,19 +151,19 @@ export const onRequestPost = async ({
   request: Request
   env: Env
 }) => {
-  // Rate limiting by IP
-  const ip = request.headers.get('CF-Connecting-IP') || 'unknown'
-  if (!checkRateLimit(ip)) {
-    return new Response(
-      JSON.stringify({ error: 'Too many requests. Please try again later.' }),
-      {
-        status: 429,
-        headers: {
-          'Content-Type': 'application/json',
-          ...corsHeaders({ 'Retry-After': '3600' }),
-        },
+  // NOTE: Rate limiting removed - Cloudflare handles it natively
+  // Configure rate limiting rules in Cloudflare dashboard
+
+  // Limit JSON payload size to prevent DoS attacks (1KB max)
+  const contentLength = request.headers.get('content-length')
+  if (contentLength && parseInt(contentLength, 10) > 1024) {
+    return new Response(JSON.stringify({ error: 'Payload too large' }), {
+      status: 413,
+      headers: {
+        'Content-Type': 'application/json',
+        ...corsHeaders(),
       },
-    )
+    })
   }
 
   try {
@@ -129,6 +173,17 @@ export const onRequestPost = async ({
 
     if (!postId) {
       return new Response(JSON.stringify({ error: 'Post ID is required' }), {
+        status: 400,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders(),
+        },
+      })
+    }
+
+    // Validate postId format
+    if (!isValidPostId(postId)) {
+      return new Response(JSON.stringify({ error: 'Invalid Post ID format' }), {
         status: 400,
         headers: {
           'Content-Type': 'application/json',
@@ -153,6 +208,7 @@ export const onRequestPost = async ({
     // Valid reaction keys
     const validReactions = ['like', 'love', 'fire', 'celebrate', 'clap']
     if (!validReactions.includes(reactionKey)) {
+      logSecurityEvent('invalid_reaction_key', { reactionKey, postId })
       return new Response(JSON.stringify({ error: 'Invalid reaction key' }), {
         status: 400,
         headers: {

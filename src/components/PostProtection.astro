@@ -8,7 +8,7 @@
  *   isProtected=true, no pw   → static "private" lock screen, no unlock possible
  */
 import PasswordProtection from '@/components/PasswordProtection'
-import { encryptContent } from '@/lib/encryption'
+import { encryptContentSync } from '@/lib/encryption'
 import { Icon } from 'astro-icon/components'
 
 interface Props {
@@ -23,7 +23,7 @@ const { isProtected, password, postId, protectionMessage } = Astro.props
 let encryptedContent: string | undefined
 if (isProtected && password) {
   const html = await Astro.slots.render('default')
-  encryptedContent = encryptContent(html, password)
+  encryptedContent = encryptContentSync(html, password)
 }
 ---
 

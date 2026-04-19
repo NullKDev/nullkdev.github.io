@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Lock, Eye, EyeOff } from 'lucide-react'
 import DOMPurify from 'dompurify'
 import { decryptContent } from '@/lib/encryption'
@@ -28,37 +28,41 @@ export default function PasswordProtection({
   useEffect(() => {
     const stored = sessionStorage.getItem(`post-pw-${postId}`)
     if (stored) {
-      const html = decryptContent(encryptedContent, stored)
-      if (html) setDecryptedHtml(html)
-      else sessionStorage.removeItem(`post-pw-${postId}`)
+      decryptContent(encryptedContent, stored).then((html) => {
+        if (html) setDecryptedHtml(html)
+        else sessionStorage.removeItem(`post-pw-${postId}`)
+      })
     }
   }, [postId, encryptedContent])
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (locked) return
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault()
+      if (locked) return
 
-    if (attempts >= MAX_ATTEMPTS) {
-      setLocked(true)
-      setTimeout(() => {
-        setLocked(false)
+      if (attempts >= MAX_ATTEMPTS) {
+        setLocked(true)
+        setTimeout(() => {
+          setLocked(false)
+          setAttempts(0)
+        }, LOCKOUT_MS)
+        return
+      }
+
+      const html = await decryptContent(encryptedContent, input)
+      if (html) {
+        sessionStorage.setItem(`post-pw-${postId}`, input)
+        setDecryptedHtml(DOMPurify.sanitize(html))
+        setError(false)
         setAttempts(0)
-      }, LOCKOUT_MS)
-      return
-    }
-
-    const html = decryptContent(encryptedContent, input)
-    if (html) {
-      sessionStorage.setItem(`post-pw-${postId}`, input)
-      setDecryptedHtml(DOMPurify.sanitize(html))
-      setError(false)
-      setAttempts(0)
-    } else {
-      setError(true)
-      setAttempts((prev) => prev + 1)
-      setInput('')
-    }
-  }
+      } else {
+        setError(true)
+        setAttempts((prev) => prev + 1)
+        setInput('')
+      }
+    },
+    [locked, attempts, encryptedContent, input, postId],
+  )
 
   if (decryptedHtml) {
     return (

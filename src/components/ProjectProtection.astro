@@ -8,7 +8,7 @@
  *   isProtected=true, no pw   → static "classified" screen, no unlock possible
  */
 import ProjectPasswordProtection from '@/components/ProjectPasswordProtection'
-import { encryptContent } from '@/lib/encryption'
+import { encryptContentSync } from '@/lib/encryption'
 
 interface Props {
   isProtected: boolean
@@ -22,7 +22,7 @@ const { isProtected, password, postId, protectionMessage } = Astro.props
 let encryptedContent: string | undefined
 if (isProtected && password) {
   const html = await Astro.slots.render('default')
-  encryptedContent = encryptContent(html, password)
+  encryptedContent = encryptContentSync(html, password)
 }
 ---
 

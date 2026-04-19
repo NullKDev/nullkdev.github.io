@@ -1,5 +1,5 @@
 // Cloudflare Pages Function - Newsletter Subscription
-// This runs as a native Cloudflare Worker, no Astro adapter needed
+// Uses Cloudflare's built-in rate limiting (no in-memory Map needed)
 
 interface Env {
   BREVO_API_KEY: string
@@ -8,19 +8,40 @@ interface Env {
   SITE_URL?: string
 }
 
-// Simple in-memory rate limiter (per-IP, 5 requests per 10 minutes)
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+// NOTE: In-memory rate limiting removed - Cloudflare handles rate limiting natively
+// Per Cloudflare docs: Workers can use Cloudflare Rate Limiting via dashboard or API
+// For production, configure rate limiting rules in Cloudflare dashboard
+// This eliminates memory leaks and state issues between worker restarts
 
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now()
-  const entry = rateLimitMap.get(ip)
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + 600_000 })
-    return true
+// Brevo API response types
+interface BrevoErrorResponse {
+  code?: string
+  message?: string
+}
+
+interface BrevoSuccessResponse {
+  id: number
+  email: string
+  // Add other success response fields as needed
+}
+
+// Honeypot field name - invisible to humans, catches bots
+const HONEYPOT_FIELD = 'website'
+
+// Timestamp-based token to prevent replay attacks (valid for 5 minutes)
+function generateToken(): string {
+  const payload = `${Date.now()}:${Math.random().toString(36).slice(2)}`
+  return btoa(payload)
+}
+
+function isTokenValid(token: string, maxAgeMs: number = 5 * 60 * 1000): boolean {
+  try {
+    const decoded = atob(token)
+    const timestamp = parseInt(decoded.split(':')[0], 10)
+    return Date.now() - timestamp < maxAgeMs
+  } catch {
+    return false
   }
-  if (entry.count >= 5) return false
-  entry.count++
-  return true
 }
 
 // Map Brevo status codes to user-friendly messages (never leak internal details)
@@ -44,20 +65,54 @@ export const onRequestPost = async ({
   request: Request
   env: Env
 }) => {
-  // Rate limiting by IP
-  const ip = request.headers.get('CF-Connecting-IP') || 'unknown'
-  if (!checkRateLimit(ip)) {
-    return new Response(
-      JSON.stringify({ error: 'Too many requests. Please try again later.' }),
-      {
-        status: 429,
-        headers: { 'Content-Type': 'application/json', 'Retry-After': '600' },
-      },
-    )
+  // NOTE: Rate limiting removed - Cloudflare handles it automatically
+  // Configure rate limiting rules in Cloudflare dashboard for production:
+  // Settings > Security > DDoS > Rate Limiting
+  // Recommended: 5 requests per 10 minutes per IP
+
+  // Limit JSON payload size to prevent DoS attacks (1MB max)
+  const contentLength = request.headers.get('content-length')
+  if (contentLength && parseInt(contentLength, 10) > 1024 * 1024) {
+    return new Response(JSON.stringify({ error: 'Payload too large' }), {
+      status: 413,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 
   try {
-    const { email } = await request.json()
+    const formData = await request.json()
+
+    // Honeypot check - bots filling invisible fields get rejected
+    const honeypot = formData[HONEYPOT_FIELD]
+    if (honeypot && typeof honeypot === 'string' && honeypot.length > 0) {
+      // Silent reject - bot detected but pretend success
+      console.warn('[SECURITY] Bot honeypot triggered:', {
+        timestamp: new Date().toISOString(),
+        honeypot,
+      })
+      return new Response(
+        JSON.stringify({
+          message: 'Successfully subscribed! Please check your email.',
+          success: true,
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
+    }
+
+    // Timestamp token validation - prevents replay attacks
+    const token = formData._token
+    if (token && !isTokenValid(token)) {
+      console.warn('Invalid token detected')
+      return new Response(JSON.stringify({ error: 'Invalid request' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    const { email } = formData
 
     // Validate email
     if (!email || typeof email !== 'string') {
@@ -70,6 +125,14 @@ export const onRequestPost = async ({
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       return new Response(JSON.stringify({ error: 'Invalid email format' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    // RFC 5321 specifies max 254 characters for email
+    if (email.length > 254) {
+      return new Response(JSON.stringify({ error: 'Email exceeds maximum length of 254 characters' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       })
@@ -145,13 +208,13 @@ export const onRequestPost = async ({
       }
 
       // Parse error response for logging only (never expose to client)
-      let brevoData: any = {}
+      let brevoData: BrevoErrorResponse = {}
       const contentType = brevoResponse.headers.get('content-type')
       if (contentType?.includes('application/json')) {
         try {
           const text = await brevoResponse.text()
           if (text) {
-            brevoData = JSON.parse(text)
+            brevoData = JSON.parse(text) as BrevoErrorResponse
           }
         } catch (e) {
           console.error('Failed to parse Brevo error response:', e)

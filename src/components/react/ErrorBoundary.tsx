@@ -11,6 +11,18 @@ interface State {
   error: Error | null
 }
 
+/**
+ * ErrorBoundary - Class component for catching React errors
+ *
+ * Note: React error boundaries MUST be class components due to static
+ * getDerivedStateFromError method requirement. See:
+ * https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary
+ *
+ * @example
+ * <ErrorBoundary>
+ *   <MyComponent />
+ * </ErrorBoundary>
+ */
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
@@ -28,6 +40,10 @@ export class ErrorBoundary extends Component<Props, State> {
     }
     // In production, you could send to error tracking service
     // Example: Sentry.captureException(error, { contexts: { react: errorInfo } })
+  }
+
+  private handleReset = () => {
+    this.setState({ hasError: false, error: null })
   }
 
   render() {
@@ -49,7 +65,7 @@ export class ErrorBoundary extends Component<Props, State> {
             {this.state.error?.message || 'An unexpected error occurred'}
           </p>
           <button
-            onClick={() => this.setState({ hasError: false, error: null })}
+            onClick={this.handleReset}
             className="mt-4 text-sm text-primary hover:underline"
           >
             Try again
@@ -62,3 +78,4 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 }
 
+export default ErrorBoundary

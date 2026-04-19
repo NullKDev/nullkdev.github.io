@@ -111,6 +111,8 @@ const { class: className, hideFloatingSidebar = false } = Astro.props
 
     <!-- i18n: translations data (single source of truth from en.ts / es.ts) -->
     <script id="i18n-data" type="application/json" set:html={i18nData} />
+    <!-- DOMPurify for XSS protection in i18n_html -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.7/purify.min.js" integrity="sha256-QM/0krVDU6Vc35/7NpeGU5/7fVTSX5fdSh6JdbMJw10=" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <!-- i18n: language detection and translation engine -->
     <script is:inline data-astro-rerun>
@@ -134,10 +136,19 @@ const { class: className, hideFloatingSidebar = false } = Astro.props
             if (dict[key] !== undefined) el.textContent = interpolate(dict[key], vars)
           })
 
-          // Inner HTML (for paragraphs with <strong>)
+          // Inner HTML (for paragraphs with <strong>) - sanitized with DOMPurify
           document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
             var key = el.getAttribute('data-i18n-html')
-            if (dict[key] !== undefined) el.innerHTML = interpolate(dict[key], vars)
+            if (dict[key] !== undefined) {
+              // Import DOMPurify dynamically since it's client-side only
+              var rawHtml = interpolate(dict[key], vars)
+              // Use DOMPurify to sanitize HTML (only allow safe tags)
+              var clean = window.DOMPurify ? window.DOMPurify.sanitize(rawHtml, {
+                ALLOWED_TAGS: ['strong', 'b', 'em', 'i', 'u', 'a', 'br', 'span'],
+                ALLOWED_ATTR: ['style', 'href', 'target', 'rel']
+              }) : rawHtml.replace(/<(?!(?:strong|b|em|i|u|a|br|span)\b)[^>]+>/g, '')
+              el.innerHTML = clean
+            }
           })
 
           // title attribute

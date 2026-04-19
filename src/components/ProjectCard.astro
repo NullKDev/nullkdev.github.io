@@ -59,7 +59,7 @@ const dateDisplay = !startDate ? '' : startDate === endDate ? startDate : `${sta
       {project.data.protected && (
         <div class="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 rounded-lg bg-background/85 backdrop-blur-sm border border-border/40 shadow-sm">
           <Icon name="lucide:lock" class="size-3 text-muted-foreground" />
-          <span class="text-[10px] font-medium text-muted-foreground">{project.data.password ? 'Protected' : 'Private'}</span>
+          <span class="text-[10px] font-medium text-muted-foreground">{project.data.passwordHash ? 'Protected' : 'Private'}</span>
         </div>
       )}
 

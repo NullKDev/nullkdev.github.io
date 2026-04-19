@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import DOMPurify from 'dompurify'
 import { decryptContent } from '@/lib/encryption'
 
@@ -26,39 +26,43 @@ export default function ProjectPasswordProtection({
   useEffect(() => {
     const stored = sessionStorage.getItem(`project-pw-${postId}`)
     if (stored) {
-      const html = decryptContent(encryptedContent, stored)
-      if (html) setDecryptedHtml(html)
-      else sessionStorage.removeItem(`project-pw-${postId}`)
+      decryptContent(encryptedContent, stored).then((html) => {
+        if (html) setDecryptedHtml(html)
+        else sessionStorage.removeItem(`project-pw-${postId}`)
+      })
     }
   }, [postId, encryptedContent])
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (locked) return
-    if (!input) return
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault()
+      if (locked) return
+      if (!input) return
 
-    if (attempts >= MAX_ATTEMPTS) {
-      setLocked(true)
-      setTimeout(() => {
-        setLocked(false)
+      if (attempts >= MAX_ATTEMPTS) {
+        setLocked(true)
+        setTimeout(() => {
+          setLocked(false)
+          setAttempts(0)
+        }, LOCKOUT_MS)
+        return
+      }
+
+      const html = await decryptContent(encryptedContent, input)
+      if (html) {
+        sessionStorage.setItem(`project-pw-${postId}`, input)
+        setDecryptedHtml(DOMPurify.sanitize(html))
+        setError(false)
         setAttempts(0)
-      }, LOCKOUT_MS)
-      return
-    }
-
-    const html = decryptContent(encryptedContent, input)
-    if (html) {
-      sessionStorage.setItem(`project-pw-${postId}`, input)
-      setDecryptedHtml(DOMPurify.sanitize(html))
-      setError(false)
-      setAttempts(0)
-    } else {
-      setError(true)
-      setAttempts((prev) => prev + 1)
-      setInput('')
-      setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 50)
-    }
-  }
+      } else {
+        setError(true)
+        setAttempts((prev) => prev + 1)
+        setInput('')
+        setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 50)
+      }
+    },
+    [locked, attempts, encryptedContent, input, postId],
+  )
 
   if (decryptedHtml) {
     return (

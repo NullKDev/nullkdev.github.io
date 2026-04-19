@@ -4,7 +4,6 @@
   "version": "1.6.3",
   "private": true,
   "packageManager": "pnpm@10.24.0",
-  "packageManager": "pnpm@10.24.0",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -44,7 +43,6 @@
     "canvaskit-wasm": "^0.40.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "crypto-js": "^4.2.0",
     "dompurify": "^3.3.3",
     "embla-carousel-react": "^8.6.0",
     "flexsearch": "^0.8.212",
@@ -68,7 +66,7 @@
     "typescript": "^5.9.3"
   },
   "devDependencies": {
-    "@types/crypto-js": "^4.2.2",
+    "@testing-library/jest-dom": "^6.9.1",
     "@vitest/coverage-v8": "^4.1.2",
     "prettier": "^3.6.2",
     "prettier-plugin-astro": "^0.14.1",
