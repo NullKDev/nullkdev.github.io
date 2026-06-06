@@ -28,3 +28,6 @@ pnpm-debug.log*
 
 # Gitignore template for Astro projects
 .astro
+
+# Trash Temp files
+*/trash/*
