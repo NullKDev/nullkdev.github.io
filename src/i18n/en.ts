@@ -74,10 +74,6 @@ export const en = {
   'about.years_exp': 'years of experience',
   'about.contact_btn': 'Contact me',
   'about.about_heading': 'About me',
-  'about.bio_p1':
-    "Hi! I'm a <strong>mobile developer</strong> with over {yearsExp} years of experience building innovative applications. I currently work at <strong>Corporativo Overall</strong>, where I drive the growth and development of mobile initiatives.",
-  'about.bio_p2':
-    'I specialize in <strong>native Android development</strong> using modern technologies like <strong>Kotlin</strong>, <strong>Java</strong>, <strong>Flutter</strong>, and <strong>Kotlin Multiplatform</strong>. My ability to learn new technologies allows me to stay up to date with market trends and ensure success in mobile development.',
   'about.bio_p3':
     "Beyond mobile, I also have skills in <strong>Python</strong>, <strong>Laravel</strong>, database administration, and more. I'm always looking for opportunities to collaborate with dynamic teams on projects that transform and improve the user experience.",
   'about.stack_title': 'Core Stack',
@@ -257,6 +253,7 @@ export const en = {
   'gallery.desc':
     'Explore curated collections of AI generations and photography.',
   'gallery.photos_count': 'photos',
+  'gallery.back': '← Back to gallery',
 
   // Home redesign
   'home.hero_chip': 'mobile · web · ia',

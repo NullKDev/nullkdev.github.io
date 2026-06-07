@@ -43,6 +43,11 @@ const ogImage = image || (cleanPathname ? new URL(`/og${cleanPathname}.png`, Ast
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self'; connect-src 'self' https://cdnjs.cloudflare.com https://ipapi.co https://ip-api.com https://dns.google https://api.ipify.org https://www.google-analytics.com https://www.googletagmanager.com; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
   <meta name="generator" content={Astro.generator} />
 
+  <!-- Hreflang tags for i18n -->
+  <link rel="alternate" hreflang="en" href={`${Astro.site}${Astro.url.pathname === '/' ? '' : Astro.url.pathname.replace(/^\/es/, '') || '/'}`} />
+  <link rel="alternate" hreflang="es" href={`${Astro.site}/es${Astro.url.pathname === '/' ? '' : Astro.url.pathname.startsWith('/es') ? Astro.url.pathname : `/es${Astro.url.pathname}`}`} />
+  <link rel="alternate" hreflang="x-default" href={`${Astro.site}/`} />
+
   <!-- Primary Meta Tags (deduplicated) -->
   <meta name="title" content={title} />
   <meta name="description" content={truncatedDescription} />
@@ -75,12 +80,12 @@ const ogImage = image || (cleanPathname ? new URL(`/og${cleanPathname}.png`, Ast
 
   <meta
     name="theme-color"
-    content="#2563eb"
+    content="#BCE85A"
     media="(prefers-color-scheme: dark)"
   />
   <meta
     name="theme-color"
-    content="#2563eb"
+    content="#9FC944"
     media="(prefers-color-scheme: light)"
   />
 
@@ -106,8 +111,10 @@ const ogImage = image || (cleanPathname ? new URL(`/og${cleanPathname}.png`, Ast
   <link rel="prefetch" href="/api/search-index.json" as="fetch" crossorigin="anonymous" />
   
   <!-- Preload fonts to prevent layout shifts on mobile -->
-  <link rel="preload" href="/fonts/GeistVF.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
-  <link rel="preload" href="/fonts/GeistMonoVF.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+  <link rel="preload" href="/fonts/IBMPlexSans-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+  <link rel="preload" href="/fonts/IBMPlexSans-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+  <link rel="preload" href="/fonts/IBMPlexMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+  <link rel="preload" href="/fonts/IBMPlexMono-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
   
   <!-- Google Analytics -->
   {ANALYTICS.google && (

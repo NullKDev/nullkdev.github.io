@@ -6,10 +6,11 @@ import FloatingSidebar from '@/components/FloatingSidebar.astro'
 import Footer from '@/components/Footer.astro'
 import Head from '@/components/Head.astro'
 import Header from '@/components/Header.astro'
-import { SITE, UI } from '@/consts'
-import { cn } from '@/lib/utils'
+import ScrollProgress from '@/components/ScrollProgress.astro'
+import { UI } from '@/consts'
 import { en } from '@/i18n/en'
 import { es } from '@/i18n/es'
+import { cn } from '@/lib/utils'
 
 const i18nData = JSON.stringify({ en, es })
 
@@ -19,51 +20,61 @@ interface Props {
 }
 
 const { class: className, hideFloatingSidebar = false } = Astro.props
+
+// SSR locale detection for html lang attribute
+const pathname = Astro.url.pathname
+const ssrLocale =
+  pathname.startsWith('/es/') || pathname === '/es' ? 'es' : 'en'
 ---
 
 <!doctype html>
-<html
-  class="bg-background text-foreground scheme-light-dark"
-  lang="en"
->
+<html class="bg-background text-foreground scheme-light-dark" lang={ssrLocale}>
   <Head>
     <slot name="head" />
   </Head>
-  <body class="flex h-fit min-h-screen flex-col gap-y-6 font-sans" transition:persist>
+  <body
+    class="flex h-fit min-h-screen flex-col gap-y-6 font-sans"
+    transition:persist
+  >
     <!-- Skip to main content link for accessibility -->
     <a
       href="#main-content"
-      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+      class="focus:bg-primary focus:text-primary-foreground focus:ring-ring sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:rounded-md focus:px-4 focus:py-2 focus:shadow-lg focus:ring-2 focus:ring-offset-2 focus:outline-none"
       aria-label="Skip to main content"
       data-i18n-aria="common.skip_content"
     >
       <span data-i18n="common.skip_content">Skip to main content</span>
     </a>
-    
+
     <!-- Prevent same-page navigation to avoid unnecessary transitions -->
     <script is:inline>
-      (function() {
+      ;(function () {
         if (window.__preventSamePageNav) return
         window.__preventSamePageNav = true
-        
+
         function normalizePath(path) {
           return path ? path.split('#')[0].replace(/\/$/, '') || '/' : '/'
         }
-        
+
         function shouldPreventNavigation(link) {
           if (!link) return false
-          
+
           const href = link.getAttribute('href')
-          if (!href || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+          if (
+            !href ||
+            href.startsWith('http') ||
+            href.startsWith('mailto:') ||
+            href.startsWith('tel:')
+          ) {
             return false
           }
-          
+
           const currentPath = normalizePath(window.location.pathname)
           const targetPath = normalizePath(href)
-          
+
           return currentPath === targetPath && !href.includes('#')
         }
-        
+
         // Handle touch events first (mobile) - must be non-passive to prevent default
         function handleTouchStart(e) {
           const link = e.target.closest('a[data-internal-link="true"]')
@@ -74,7 +85,7 @@ const { class: className, hideFloatingSidebar = false } = Astro.props
             return false
           }
         }
-        
+
         // Handle click events (desktop and mobile fallback)
         function handleClick(e) {
           const link = e.target.closest('a[data-internal-link="true"]')
@@ -85,15 +96,19 @@ const { class: className, hideFloatingSidebar = false } = Astro.props
             return false
           }
         }
-        
+
         // Use capture phase to intercept before Astro's view transitions
         // Touch events must be non-passive to allow preventDefault
-        document.addEventListener('touchstart', handleTouchStart, { passive: false, capture: true })
+        document.addEventListener('touchstart', handleTouchStart, {
+          passive: false,
+          capture: true,
+        })
         document.addEventListener('click', handleClick, true)
       })()
     </script>
+    <ScrollProgress />
     <header
-      class="bg-background/50 sticky top-0 z-50 backdrop-blur-sm xl:backdrop-blur-none xl:bg-transparent divide-y divide-border xl:divide-none"
+      class="bg-background/50 divide-border sticky top-0 z-50 divide-y backdrop-blur-sm xl:divide-none xl:bg-transparent xl:backdrop-blur-none"
     >
       <Header />
       <slot name="subposts-navigation" />
@@ -101,23 +116,73 @@ const { class: className, hideFloatingSidebar = false } = Astro.props
     </header>
     <main
       id="main-content"
-      class={cn('w-full mx-auto flex grow flex-col gap-y-6 px-4 pb-20', className)}
+      class={cn(
+        'w-full mx-auto flex grow flex-col gap-y-6 px-4 pb-20',
+        className,
+      )}
       tabindex="-1"
     >
       <slot />
     </main>
     {UI.showFloatingSidebar && !hideFloatingSidebar && <FloatingSidebar />}
-    <Footer />
+    <Footer transition:persist />
+
+    <!-- Reveal on scroll -->
+    <script is:inline data-astro-rerun>
+      ;(function () {
+        if (!window.__revealIO) {
+          window.__revealIO = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((e) => {
+                if (e.isIntersecting) {
+                  e.target.classList.add('in')
+                  window.__revealIO.unobserve(e.target)
+                }
+              })
+            },
+            { rootMargin: '0px 0px -10% 0px', threshold: 0.05 },
+          )
+        }
+
+        function observeReveals() {
+          document
+            .querySelectorAll('.reveal, .reveal-stagger')
+            .forEach((el) => {
+              if (!el.classList.contains('in')) {
+                window.__revealIO.observe(el)
+              }
+            })
+        }
+
+        if (!window.__revealObserved) {
+          window.__revealObserved = true
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', observeReveals)
+          } else {
+            observeReveals()
+          }
+          document.addEventListener('astro:page-load', observeReveals)
+        } else {
+          observeReveals()
+        }
+      })()
+    </script>
 
     <!-- i18n: translations data (single source of truth from en.ts / es.ts) -->
     <script id="i18n-data" type="application/json" set:html={i18nData} />
     <!-- DOMPurify for XSS protection in i18n_html -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.7/purify.min.js" integrity="sha256-QM/0krVDU6Vc35/7NpeGU5/7fVTSX5fdSh6JdbMJw10=" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.7/purify.min.js"
+      integrity="sha256-QM/0krVDU6Vc35/7NpeGU5/7fVTSX5fdSh6JdbMJw10="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"></script>
 
     <!-- i18n: language detection and translation engine -->
     <script is:inline data-astro-rerun>
-      (function () {
-        var T = JSON.parse(document.getElementById('i18n-data').textContent || '{}')
+      ;(function () {
+        var T = JSON.parse(
+          document.getElementById('i18n-data').textContent || '{}',
+        )
 
         function interpolate(str, vars) {
           return str.replace(/\{(\w+)\}/g, function (_, k) {
@@ -133,7 +198,8 @@ const { class: className, hideFloatingSidebar = false } = Astro.props
           // Text content
           document.querySelectorAll('[data-i18n]').forEach(function (el) {
             var key = el.getAttribute('data-i18n')
-            if (dict[key] !== undefined) el.textContent = interpolate(dict[key], vars)
+            if (dict[key] !== undefined)
+              el.textContent = interpolate(dict[key], vars)
           })
 
           // Inner HTML (for paragraphs with <strong>) - sanitized with DOMPurify
@@ -143,10 +209,24 @@ const { class: className, hideFloatingSidebar = false } = Astro.props
               // Import DOMPurify dynamically since it's client-side only
               var rawHtml = interpolate(dict[key], vars)
               // Use DOMPurify to sanitize HTML (only allow safe tags)
-              var clean = window.DOMPurify ? window.DOMPurify.sanitize(rawHtml, {
-                ALLOWED_TAGS: ['strong', 'b', 'em', 'i', 'u', 'a', 'br', 'span'],
-                ALLOWED_ATTR: ['style', 'href', 'target', 'rel']
-              }) : rawHtml.replace(/<(?!(?:strong|b|em|i|u|a|br|span)\b)[^>]+>/g, '')
+              var clean = window.DOMPurify
+                ? window.DOMPurify.sanitize(rawHtml, {
+                    ALLOWED_TAGS: [
+                      'strong',
+                      'b',
+                      'em',
+                      'i',
+                      'u',
+                      'a',
+                      'br',
+                      'span',
+                    ],
+                    ALLOWED_ATTR: ['style', 'href', 'target', 'rel'],
+                  })
+                : rawHtml.replace(
+                    /<(?!(?:strong|b|em|i|u|a|br|span)\b)[^>]+>/g,
+                    '',
+                  )
               el.innerHTML = clean
             }
           })
@@ -160,22 +240,30 @@ const { class: className, hideFloatingSidebar = false } = Astro.props
           // aria-label attribute
           document.querySelectorAll('[data-i18n-aria]').forEach(function (el) {
             var key = el.getAttribute('data-i18n-aria')
-            if (dict[key] !== undefined) el.setAttribute('aria-label', dict[key])
+            if (dict[key] !== undefined)
+              el.setAttribute('aria-label', dict[key])
           })
 
           // placeholder attribute
-          document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
-            var key = el.getAttribute('data-i18n-placeholder')
-            if (dict[key] !== undefined) el.setAttribute('placeholder', dict[key])
-          })
+          document
+            .querySelectorAll('[data-i18n-placeholder]')
+            .forEach(function (el) {
+              var key = el.getAttribute('data-i18n-placeholder')
+              if (dict[key] !== undefined)
+                el.setAttribute('placeholder', dict[key])
+            })
         }
 
         function updateNavLinks() {
-          var isEs = window.location.pathname === '/es' || window.location.pathname.startsWith('/es/')
-          document.querySelectorAll('a[data-nav-section]').forEach(function (a) {
-            var sec = a.getAttribute('data-nav-section')
-            a.setAttribute('href', isEs ? '/es/' + sec : '/' + sec)
-          })
+          var isEs =
+            window.location.pathname === '/es' ||
+            window.location.pathname.startsWith('/es/')
+          document
+            .querySelectorAll('a[data-nav-section]')
+            .forEach(function (a) {
+              var sec = a.getAttribute('data-nav-section')
+              a.setAttribute('href', isEs ? '/es/' + sec : '/' + sec)
+            })
         }
 
         // Default language is always 'en' unless the user has explicitly changed it

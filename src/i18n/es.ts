@@ -74,10 +74,6 @@ export const es = {
   'about.years_exp': 'años de experiencia',
   'about.contact_btn': 'Contáctame',
   'about.about_heading': 'Sobre mí',
-  'about.bio_p1':
-    '¡Hola! Soy un <strong>desarrollador móvil</strong> con más de {yearsExp} años de experiencia creando aplicaciones innovadoras. Actualmente trabajo en <strong>Corporativo Overall</strong>, donde impulso el crecimiento y desarrollo de iniciativas móviles.',
-  'about.bio_p2':
-    'Me especializo en <strong>desarrollo Android nativo</strong> utilizando tecnologías modernas como <strong>Kotlin</strong>, <strong>Java</strong>, <strong>Flutter</strong> y <strong>Kotlin Multiplatform</strong>. Mi facilidad para aprender nuevas tecnologías me permite mantenerme al día con las tendencias del mercado y garantizar el éxito en el desarrollo móvil.',
   'about.bio_p3':
     'Además del desarrollo móvil, también tengo habilidades en <strong>Python</strong>, <strong>Laravel</strong>, administración de bases de datos y más. Estoy constantemente buscando oportunidades para colaborar con equipos dinámicos en proyectos que transformen y mejoren la experiencia del usuario.',
   'about.stack_title': 'Stack Principal',
@@ -259,6 +255,7 @@ export const es = {
   'gallery.heading': 'Galería & Colecciones',
   'gallery.desc': 'Explora colecciones de fotografía y generaciones de IA.',
   'gallery.photos_count': 'fotos',
+  'gallery.back': '← Volver a la galería',
 
   // Home redesign
   'home.hero_chip': 'mobile · web · ia',
