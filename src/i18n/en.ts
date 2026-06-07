@@ -53,6 +53,22 @@ export const en = {
   'project.status.archived': 'Archived',
 
   // About page
+  'about.hero_cap': '— about',
+  'about.hero_title': 'I build product. <span class="hl">Mobile, web & AI.</span>',
+  'about.hero_lead':
+    'Carlos Alarcón, from Lima. {yearsExp} years shipping — mobile apps that open 100k people a day, web dashboards when it applies, and experiments with LLM agents. I like simple things, short PRs, and writing what I learn.',
+  'about.read_btn': 'read me first',
+  'about.bio_p1':
+    'Today: lead mobile at Corporativo Overall. Before: 5 years at Agrosmart with Flutter for agri tech.',
+  'about.bio_p2':
+    'Core is mobile (Kotlin · Compose), but I also build web with Next/React and agents with LLMs when the problem calls for it. Product over tooling.',
+  'about.currently': 'currently',
+  'about.currently_desc':
+    'Migrating modules to Compose at Overall, writing the blog, and building a personal Python agent.',
+  'about.languages': 'languages',
+  'about.education': 'education',
+  'about.talks': 'talks',
+  'about.writing': 'writing',
   'about.job_badge': 'Mobile Developer',
   'about.country_badge': 'Peru',
   'about.years_exp': 'years of experience',
@@ -151,6 +167,87 @@ export const en = {
   // Reading time
   'reading.min_read': 'min read',
 
+  // Blog page
+  'blog.page_cap': '— blog',
+  'blog.page_title': 'Blog',
+  'blog.page_desc': 'Notes, tutorials, and reflections on mobile development and software engineering.',
+  'blog.filter_all': 'All Posts',
+
+  // Project details
+  'project.status_label': 'Status',
+  'project.meta_year': 'Year',
+  'project.meta_role': 'Role',
+  'project.meta_stack': 'Stack',
+  'project.meta_team': 'Team',
+  'project.writeup_label': 'Write-up',
+  'project.related_label': 'Related Projects',
+
+  // Projects page
+  'projects.page_cap': '— projects',
+  'projects.page_title': 'Projects',
+  'projects.page_desc': 'Selected projects I have built or contributed to.',
+  'projects.stat_total': 'Total',
+  'projects.stat_live': 'Live',
+  'projects.stat_private': 'Private',
+  'projects.stat_users': 'Users',
+  'projects.filter_all': 'All',
+  'projects.view_label': 'View',
+  'projects.featured_label': 'Featured',
+  'projects.grid_label': 'Grid',
+  'projects.archive_label': 'Archive',
+  'projects.col_year': 'Year',
+  'projects.col_project': 'Project',
+  'projects.col_stack': 'Stack',
+  'projects.col_role': 'Role',
+  'projects.col_status': 'Status',
+
+  // Gallery page
+  'gallery.hero_cap': 'photos · personal',
+  'gallery.hero_title': 'Frames<br />from',
+  'gallery.hero_desc': 'Street, typography, short trips. Shot with Fuji X-T30 and sometimes a phone.',
+
+  // Tools page
+  'tools.hero_cap': '— tools',
+  'tools.hero_title': 'Tools',
+  'tools.hero_highlight': 'that ship.',
+  'tools.hero_desc': 'Free online tools for system administrators, developers, and IT professionals.',
+  'tools.stat_tools': 'Tools',
+  'tools.stat_ready': 'Ready',
+  'tools.stat_wip': 'WIP',
+  'tools.stat_client': 'Client',
+
+  // Section labels
+  'section.what_i_do': 'what I do',
+  'section.stack': 'stack',
+  'section.selected_work': 'selected work',
+  'section.writing': 'writing',
+  'section.say_hi': 'say hi',
+
+  // Component labels
+  'ui.primary': 'primary',
+  'ui.exploring': 'exploring',
+  'ui.live': 'live',
+  'ui.shipped': 'shipped',
+  'ui.wip': 'wip',
+  'ui.archived': 'archived',
+  'ui.private': 'private',
+  'ui.new': 'new',
+  'ui.view_all': 'view all · {n} posts →',
+  'ui.on_this_page': 'on this page',
+  'ui.series': 'series',
+  'ui.share': 'share',
+  'ui.continue_reading': 'continue reading',
+  'ui.next_in_series': 'next in series',
+  'ui.related': 'related',
+  'ui.search': 'Search',
+  'ui.theme': 'Theme',
+
+  // Footer
+  'footer.site': 'Site',
+  'footer.social': 'Social',
+  'footer.contact': 'Contact',
+  'footer.made_by': 'made by hand in Lima',
+
   // Tools breadcrumb labels (reuse tool names for breadcrumbs)
   'tools.breadcrumb': 'Tools',
 
@@ -160,6 +257,36 @@ export const en = {
   'gallery.desc':
     'Explore curated collections of AI generations and photography.',
   'gallery.photos_count': 'photos',
+
+  // Home redesign
+  'home.hero_chip': 'mobile · web · ia',
+  'home.hero_cap': '/ desde Lima · {yearsExp}+ years',
+  'home.hero_title': 'Mobile, web & AI. Building things that ship',
+  'home.hero_lead':
+    'Carlos Alarcón — {yearsExp} years building product. Mobile (Kotlin, Flutter) in production, web with React & Next when it applies, and experimenting with AI. I write what I learn.',
+  'home.hero_cta_projects': 'View projects →',
+  'home.hero_cta_about': 'About me',
+  'home.deck_title': 'Three things, done well.',
+  'home.stack_title': 'Daily tools.',
+  'home.stack_legend': 'primary · secondary · exploring',
+  'home.legend_primary': 'primary · daily use',
+  'home.legend_secondary': 'secondary · when it applies',
+  'home.legend_exploring': 'exploring',
+  'home.work_title': 'Things I have built.',
+  'home.work_view_all': 'view all · {n} projects →',
+  'home.work_col_year': 'year',
+  'home.work_col_project': 'project',
+  'home.work_col_stack': 'stack',
+  'home.work_col_role': 'role',
+  'home.work_col_status': 'status',
+  'home.writing_title': 'I write what I learn.',
+  'home.writing_view_all': 'view all · {n} posts →',
+  'home.writing_view_all_mobile': 'view all posts →',
+  'home.cta_title': "Let's talk.",
+  'home.cta_desc':
+    'If something you saw was useful — or you want to throw a problem on the table — write me.',
+  'home.cta_email': '{email} →',
+  'home.cta_read_first': 'or read me first',
 } as const
 
 export type TranslationKeys = keyof typeof en
