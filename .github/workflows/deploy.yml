@@ -1,12 +1,16 @@
 # Branch model: feature/fix branches open PRs into `dev`; `dev` opens a PR into
-# `main`; only `main` publishes. Verification runs on every PR and on pushes to
-# the two long-lived branches — a feature branch is already covered by its PR,
-# so building it on push as well would double every run for no extra signal.
+# `main`; only `main` publishes.
+#
+# Verification runs on every pull request, and on pushes to `main` alone. Not
+# on `dev`: while the dev -> main PR is open, a push to dev fires both events
+# and every job runs twice for one commit. Nothing is lost by dropping it —
+# GitHub builds the `pull_request` event against the merge result, not the
+# branch tip, so what gets checked is what landing would actually produce.
 name: Verify and deploy GitHub Pages
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
