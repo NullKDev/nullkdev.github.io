@@ -25,7 +25,10 @@ type LinkKind =
   | 'external'
 
 const resolveKind = (link: { href: string; kind: string }): LinkKind => {
-  let host = ''
+  // A malformed href falls back to an empty host, which matches no brand and
+  // lands on the generic kind. Assigned once: the initialiser was dead, since
+  // both branches overwrite it.
+  let host: string
   try {
     host = new URL(link.href).hostname
   } catch {

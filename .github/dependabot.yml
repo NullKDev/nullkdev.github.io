@@ -18,9 +18,12 @@ updates:
     groups:
       # One PR per concern instead of a dozen: dev tooling churns constantly and
       # is not shipped to readers, so it does not deserve individual review.
+      # Majors included: eslint and @eslint/js must move together — bumped
+      # separately, each PR installs a version the other rejects and fails
+      # before any code runs.
       dev-tooling:
         dependency-type: development
-        update-types: [minor, patch]
+        update-types: [major, minor, patch]
       production-minor:
         dependency-type: production
         update-types: [minor, patch]
