@@ -5,6 +5,10 @@ version: 2
 updates:
   - package-ecosystem: npm
     directory: /
+    # Land on the integration branch like every other change. Without this,
+    # Dependabot opens against the default branch and quietly bypasses the
+    # main + dev model, pushing dependency bumps straight at what publishes.
+    target-branch: dev
     schedule:
       interval: weekly
       day: monday
@@ -24,6 +28,7 @@ updates:
 
   - package-ecosystem: github-actions
     directory: /
+    target-branch: dev
     schedule:
       interval: weekly
       day: monday
