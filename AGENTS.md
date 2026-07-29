@@ -104,6 +104,30 @@ Two independent mechanisms; do not mix them.
 - Anything that looks actionable must work completely and be keyboard-operable,
   or it is omitted.
 
+## Branching
+
+GitHub Flow, with one long-lived integration branch:
+
+```
+feat/… · fix/…  ──PR──▶  dev  ──PR──▶  main  ──▶  deploys + releases
+```
+
+- **`main` publishes.** Every push to it deploys to GitHub Pages, and cuts a
+  release if the version in `package.json` has no tag yet. Never commit to it
+  directly.
+- **`dev` integrates.** Feature and fix branches open pull requests into `dev`;
+  `dev` opens one into `main`. `dev` is permanent — do not delete it.
+- **Branches are short-lived and named after the work**, prefixed with the same
+  type as their commits: `feat/`, `fix/`, `refactor/`, `ci/`, `docs/`. Delete
+  them once merged; the branch was scaffolding, the commits are the record.
+- **Dependabot targets `dev`**, not the default branch, so dependency bumps take
+  the same path as everything else.
+
+CI verifies pull requests and pushes to `main` only. A push to `dev` is not
+verified on its own: while the `dev → main` pull request is open both events
+fire and every job would run twice, and GitHub already builds the pull-request
+event against the merge result rather than the branch tip.
+
 ## Commits, changelog, releases
 
 One commit format, verified in CI on every pull request:

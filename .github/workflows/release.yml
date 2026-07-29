@@ -95,7 +95,14 @@ jobs:
                     sub(/^[a-z]+(\([^)]*\))?!?: /, "", $1)
                     printf "- %s ([`%s`](%s/commit/%s))\n", $1, $2, repo, $3
                   }')
-            [ -n "$lines" ] && printf '### %s\n\n%s\n\n' "$title" "$lines"
+            # An explicit `return 0`: the step runs under `bash -e`, and a
+            # function whose last command is a failed test returns non-zero,
+            # which errexit treats as the whole script failing. An empty
+            # category is normal — most releases have no `perf` commits.
+            if [ -n "$lines" ]; then
+              printf '### %s\n\n%s\n\n' "$title" "$lines"
+            fi
+            return 0
           }
 
           {
