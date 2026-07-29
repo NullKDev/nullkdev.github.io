@@ -1,0 +1,536 @@
+---
+/**
+ * DesignPanel — a development-only live design tuner.
+ *
+ * Renders ONLY when `import.meta.env.DEV` is true, so it never ships to the
+ * static production build. It writes CSS custom properties directly on
+ * <html>, letting you experiment with type scale, spacing density, corner
+ * radius, accent palette, and glass/motion effects without editing CSS.
+ * Choices persist to localStorage and can be reset to the shipped defaults.
+ *
+ * It opens as a non-modal side drawer so the page stays interactive while
+ * you tune it.
+ */
+const accents = [
+  { name: 'Terracotta', value: '#ee7954' },
+  { name: 'Lime', value: '#bce85a' },
+  { name: 'Azure', value: '#5a9ce8' },
+  { name: 'Violet', value: '#9a7af0' },
+  { name: 'Amber', value: '#e8a85a' },
+  { name: 'Rose', value: '#ec5a86' },
+]
+---
+
+{
+  import.meta.env.DEV && (
+    <div class="dp-root">
+      <button
+        class="dp-tab"
+        type="button"
+        data-dp-open
+        aria-label="Open design tuner"
+        aria-haspopup="dialog"
+      >
+        <span aria-hidden="true">◐</span>
+        <span class="dp-tab-text">design</span>
+      </button>
+
+      <dialog class="dp-drawer" data-dp aria-label="Design tuner">
+        <header class="dp-head">
+          <strong>Design tuner</strong>
+          <span class="dp-badge">dev only</span>
+          <button
+            class="dp-x"
+            type="button"
+            data-dp-close
+            aria-label="Close design tuner"
+          >
+            ×
+          </button>
+        </header>
+
+        <div class="dp-body">
+          <section class="dp-group">
+            <p class="dp-legend">Typography &amp; layout</p>
+
+            <label class="dp-field">
+              <span class="dp-field-head">
+                Text size <output data-dp-out="--ui-scale">1.00</output>
+              </span>
+              <input
+                type="range"
+                data-dp-var="--ui-scale"
+                min="0.85"
+                max="1.2"
+                step="0.01"
+                value="1"
+              />
+            </label>
+
+            <label class="dp-field">
+              <span class="dp-field-head">
+                Heading emphasis{' '}
+                <output data-dp-out="--display-mult">1.00</output>
+              </span>
+              <input
+                type="range"
+                data-dp-var="--display-mult"
+                min="0.8"
+                max="1.25"
+                step="0.01"
+                value="1"
+              />
+            </label>
+
+            <label class="dp-field">
+              <span class="dp-field-head">
+                Density <output data-dp-out="--density">1.00</output>
+              </span>
+              <input
+                type="range"
+                data-dp-var="--density"
+                min="0.75"
+                max="1.25"
+                step="0.01"
+                value="1"
+              />
+            </label>
+
+            <label class="dp-field">
+              <span class="dp-field-head">
+                Corner radius{' '}
+                <output data-dp-out="--radius-lg" data-dp-unit="px">
+                  8
+                </output>
+              </span>
+              <input
+                type="range"
+                data-dp-var="--radius-lg"
+                data-dp-unit="px"
+                min="0"
+                max="20"
+                step="1"
+                value="8"
+              />
+            </label>
+          </section>
+
+          <section class="dp-group">
+            <p class="dp-legend">Accent</p>
+            <div class="dp-swatches">
+              {accents.map((accent) => (
+                <button
+                  class="dp-swatch"
+                  type="button"
+                  data-dp-accent={accent.value}
+                  style={`--sw:${accent.value}`}
+                  aria-label={accent.name}
+                  title={accent.name}
+                />
+              ))}
+            </div>
+            <label class="dp-field dp-field-inline">
+              <span class="dp-field-head">Custom</span>
+              <input type="color" data-dp-accent-input value="#ee7954" />
+            </label>
+          </section>
+
+          <section class="dp-group">
+            <p class="dp-legend">Effects</p>
+            <label class="dp-toggle">
+              <input type="checkbox" data-dp-fx="glass" checked />
+              <span>Glass blur</span>
+            </label>
+            <label class="dp-toggle">
+              <input type="checkbox" data-dp-fx="motion" checked />
+              <span>Motion</span>
+            </label>
+          </section>
+        </div>
+
+        <footer class="dp-foot">
+          <button class="dp-reset" type="button" data-dp-reset>
+            Reset to defaults
+          </button>
+        </footer>
+      </dialog>
+    </div>
+  )
+}
+
+<style>
+  .dp-tab {
+    position: fixed;
+    z-index: 90;
+    right: 0;
+    bottom: 6.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid var(--line-strong);
+    border-right: 0;
+    border-radius: 0.6rem 0 0 0.6rem;
+    background: var(--surface-raised);
+    color: var(--ink);
+    box-shadow: var(--shadow-1);
+    font:
+      600 0.68rem 'IBM Plex Mono',
+      monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      background-color 150ms ease,
+      transform 150ms ease;
+  }
+  .dp-tab:hover {
+    transform: translateX(-2px);
+    background: var(--surface);
+  }
+  .dp-tab-text {
+    line-height: 1;
+  }
+
+  .dp-drawer {
+    position: fixed;
+    z-index: 95;
+    inset: 0 0 0 auto;
+    width: min(92vw, 22rem);
+    max-width: none;
+    max-height: none;
+    height: 100dvh;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-left: 1px solid var(--line-strong);
+    background: var(--paper-raised);
+    color: var(--ink);
+    box-shadow: var(--shadow-2);
+  }
+  .dp-drawer:not([open]) {
+    display: none;
+  }
+
+  .dp-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1rem 1.1rem;
+    border-bottom: 1px solid var(--line);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .dp-head strong {
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+  }
+  .dp-badge {
+    padding: 0.15rem 0.4rem;
+    border: 1px solid var(--accent);
+    border-radius: 0.3rem;
+    color: var(--accent);
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .dp-x {
+    margin-left: auto;
+    width: 1.9rem;
+    height: 1.9rem;
+    border: 1px solid var(--line);
+    border-radius: 0.4rem;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .dp-x:hover {
+    border-color: var(--accent);
+  }
+
+  .dp-body {
+    display: grid;
+    gap: 1.4rem;
+    padding: 1.2rem 1.1rem;
+    overflow-y: auto;
+    height: calc(100dvh - 3.4rem - 3.6rem);
+  }
+  .dp-group {
+    display: grid;
+    gap: 0.8rem;
+  }
+  .dp-legend {
+    margin: 0;
+    color: var(--ink-muted);
+    font:
+      600 0.62rem 'IBM Plex Mono',
+      monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .dp-field {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .dp-field-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font-size: 0.8rem;
+  }
+  .dp-field-head output {
+    color: var(--ink-muted);
+    font:
+      0.72rem 'IBM Plex Mono',
+      monospace;
+  }
+  .dp-field-inline {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  .dp-field input[type='range'] {
+    width: 100%;
+    accent-color: var(--accent);
+  }
+  .dp-field input[type='color'] {
+    width: 2.4rem;
+    height: 1.8rem;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 0.3rem;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .dp-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .dp-swatch {
+    width: 1.9rem;
+    height: 1.9rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    background: var(--sw);
+    cursor: pointer;
+    transition: transform 120ms ease;
+  }
+  .dp-swatch:hover {
+    transform: scale(1.12);
+  }
+
+  .dp-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.82rem;
+  }
+  .dp-toggle input {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--accent);
+  }
+
+  .dp-foot {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 0.8rem 1.1rem;
+    border-top: 1px solid var(--line);
+    background: var(--paper-raised);
+  }
+  .dp-reset {
+    width: 100%;
+    min-height: 2.4rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 0.4rem;
+    background: transparent;
+    color: var(--ink);
+    font:
+      600 0.72rem 'IBM Plex Mono',
+      monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+  }
+  .dp-reset:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+</style>
+
+<style is:global>
+  /* Effect toggles driven by the dev tuner. */
+  :root[data-fx-motion='off'] *,
+  :root[data-fx-motion='off'] *::before,
+  :root[data-fx-motion='off'] *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+</style>
+
+<script>
+  const STORAGE_KEY = 'nullkdev-design-tune'
+  const root = document.documentElement
+
+  interface TuneState {
+    vars: Record<string, string>
+    accent: string | null
+    fx: Record<string, boolean>
+  }
+
+  const drawer = document.querySelector<HTMLDialogElement>('[data-dp]')
+  const openButton = document.querySelector<HTMLButtonElement>('[data-dp-open]')
+
+  if (drawer && openButton) {
+    const ranges = [
+      ...document.querySelectorAll<HTMLInputElement>('input[data-dp-var]'),
+    ]
+    const swatches = [
+      ...document.querySelectorAll<HTMLButtonElement>('[data-dp-accent]'),
+    ]
+    const accentInput = document.querySelector<HTMLInputElement>(
+      '[data-dp-accent-input]',
+    )
+    const fxToggles = [
+      ...document.querySelectorAll<HTMLInputElement>('input[data-dp-fx]'),
+    ]
+
+    const readState = (): TuneState => {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY)
+        if (raw) return JSON.parse(raw) as TuneState
+      } catch {
+        /* ignore malformed state */
+      }
+      return { vars: {}, accent: null, fx: {} }
+    }
+
+    let state = readState()
+
+    const persist = () => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+      } catch {
+        /* storage may be unavailable */
+      }
+    }
+
+    const outputFor = (name: string) =>
+      document.querySelector<HTMLOutputElement>(`output[data-dp-out="${name}"]`)
+
+    const applyVar = (name: string, value: string, unit: string) => {
+      root.style.setProperty(name, unit ? `${value}${unit}` : value)
+      const out = outputFor(name)
+      if (out) out.textContent = unit ? value : Number(value).toFixed(2)
+    }
+
+    const deriveAccent = (hex: string) => {
+      root.style.setProperty('--accent', hex)
+      root.style.setProperty(
+        '--accent-hover',
+        `color-mix(in srgb, ${hex} 78%, white)`,
+      )
+      root.style.setProperty('--focus', hex)
+      root.style.setProperty('--scene-primary', hex)
+      root.style.setProperty(
+        '--accent-soft',
+        `color-mix(in srgb, ${hex} 24%, var(--surface))`,
+      )
+    }
+
+    // Rehydrate persisted state onto controls + DOM.
+    for (const range of ranges) {
+      const name = range.dataset.dpVar as string
+      const unit = range.dataset.dpUnit ?? ''
+      const saved = state.vars[name]
+      if (saved !== undefined) range.value = saved
+      applyVar(name, range.value, unit)
+      range.addEventListener('input', () => {
+        state.vars[name] = range.value
+        applyVar(name, range.value, unit)
+        persist()
+      })
+    }
+
+    for (const swatch of swatches) {
+      swatch.addEventListener('click', () => {
+        const hex = swatch.dataset.dpAccent as string
+        state.accent = hex
+        if (accentInput) accentInput.value = hex
+        deriveAccent(hex)
+        persist()
+      })
+    }
+
+    if (accentInput) {
+      accentInput.addEventListener('input', () => {
+        state.accent = accentInput.value
+        deriveAccent(accentInput.value)
+        persist()
+      })
+    }
+
+    for (const toggle of fxToggles) {
+      const key = toggle.dataset.dpFx as string
+      const attr = `data-fx-${key}`
+      const saved = state.fx[key]
+      if (saved !== undefined) toggle.checked = saved
+      root.toggleAttribute(attr, !toggle.checked)
+      toggle.addEventListener('change', () => {
+        state.fx[key] = toggle.checked
+        root.toggleAttribute(attr, !toggle.checked)
+        persist()
+      })
+    }
+
+    if (state.accent) deriveAccent(state.accent)
+
+    openButton.addEventListener('click', () => drawer.show())
+    document
+      .querySelector<HTMLButtonElement>('[data-dp-close]')
+      ?.addEventListener('click', () => drawer.close())
+
+    document
+      .querySelector<HTMLButtonElement>('[data-dp-reset]')
+      ?.addEventListener('click', () => {
+        for (const name of [
+          '--ui-scale',
+          '--display-mult',
+          '--density',
+          '--radius-lg',
+          '--accent',
+          '--accent-hover',
+          '--accent-soft',
+          '--focus',
+          '--scene-primary',
+        ]) {
+          root.style.removeProperty(name)
+        }
+        root.removeAttribute('data-fx-glass')
+        root.removeAttribute('data-fx-motion')
+        state = { vars: {}, accent: null, fx: {} }
+        persist()
+        for (const range of ranges) {
+          range.value = range.defaultValue
+          const out = outputFor(range.dataset.dpVar as string)
+          if (out) {
+            const unit = range.dataset.dpUnit ?? ''
+            out.textContent = unit
+              ? range.defaultValue
+              : Number(range.defaultValue).toFixed(2)
+          }
+        }
+        for (const toggle of fxToggles) toggle.checked = true
+        if (accentInput) accentInput.value = '#ee7954'
+      })
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && drawer.open) drawer.close()
+    })
+  }
+</script>

@@ -1,0 +1,131 @@
+---
+import { stack } from '@/data/stack'
+import { brand, pageTitle } from '@/data/brand'
+import { uses } from '@/data/uses'
+import { getTopicLabel } from '@/data/taxonomy'
+import { getDictionary, type Locale } from '@/i18n'
+import { getArchiveLabel } from '@/i18n/archive'
+import Layout from '@/layouts/Layout.astro'
+import Icon from '@/components/primitives/Icon.astro'
+import {
+  getEntryDomain,
+  getEntryPath,
+  getTopicIndex,
+  type ArchiveEntry,
+} from '@/lib/content'
+
+type Section = 'uses' | 'stack' | 'tags' | 'colophon'
+interface Props {
+  locale: Locale
+  section: Section
+}
+const { locale, section } = Astro.props
+const dictionary = getDictionary(locale)
+const topics: Map<string, ArchiveEntry[]> =
+  section === 'tags' ? await getTopicIndex(locale) : new Map()
+const title = dictionary.secondary[section]
+const description = dictionary.secondary[`${section}Description`]
+---
+
+<Layout
+  locale={locale}
+  title={pageTitle(title)}
+  description={description}
+  counterpartPath={locale === 'en' ? `/es/${section}/` : `/${section}/`}
+>
+  <main class="secondary-page">
+    <header class="index-heading">
+      <p class="kicker">{dictionary.archive.index} / {brand.name}</p><h1>
+        {title}
+      </h1><p>{description}</p>
+    </header>
+    {
+      section === 'uses' && (
+        <>
+          <p class="secondary-intro">{uses[locale].intro}</p>
+          <div class="secondary-grid">
+            {uses[locale].groups.map((group) => (
+              <section>
+                <h2>{group.title}</h2>
+                <ul>
+                  {group.items.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
+        </>
+      )
+    }
+    {
+      section === 'stack' && (
+        <div class="stack-list">
+          {stack[locale].technologies.map((technology) => (
+            <a href={technology.href}>
+              <strong>{technology.name}</strong>
+              <span>{technology.evidence}</span>
+              <Icon name="external" size={13} />
+            </a>
+          ))}
+        </div>
+      )
+    }
+    {
+      section === 'tags' && (
+        <div class="tag-index">
+          {[...topics.entries()]
+            .toSorted(([left], [right]) => left.localeCompare(right))
+            .map(([topic, records]) => (
+              <section id={topic}>
+                <h2>{getTopicLabel(topic, locale)}</h2>
+                <p>
+                  {String(records.length).padStart(2, '0')}{' '}
+                  {records.length === 1
+                    ? dictionary.archive.record
+                    : dictionary.archive.records}
+                </p>
+                <ul class="tag-records">
+                  {records.map((entry) => (
+                    <li>
+                      <a href={getEntryPath(entry)}>
+                        <span>
+                          {getArchiveLabel(
+                            'domain',
+                            getEntryDomain(entry),
+                            locale,
+                          )}
+                        </span>
+                        <strong>{entry.data.title}</strong>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+        </div>
+      )
+    }
+    {
+      section === 'colophon' && (
+        <article class="prose colophon">
+          <>
+            <p>{dictionary.secondary.colophonBody}</p>
+            {dictionary.secondary.colophonSections.map((item) => (
+              <section>
+                <h2>{item.title}</h2>
+                <p>{item.body}</p>
+              </section>
+            ))}
+            <p>
+              <a href="https://github.com/NullKDev/nullkdev.github.io">
+                {dictionary.footer.source}
+                <Icon name="external" size={13} />
+              </a>
+            </p>
+          </>
+        </article>
+      )
+    }
+  </main>
+</Layout>

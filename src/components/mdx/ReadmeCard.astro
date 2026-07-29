@@ -1,0 +1,29 @@
+---
+// Authoring component for .mdx entries: a prominent link out to a repository
+// README (or any long-form source). Styles live in archive.css (.readme-card).
+import { renderIcon } from '@/lib/icons'
+
+interface Props {
+  href: string
+  repo?: string
+  label?: string
+}
+const { href, repo, label = 'Read the full README' } = Astro.props
+---
+
+<a class="readme-card" href={href} target="_blank" rel="noopener noreferrer">
+  <span
+    class="readme-card__icon"
+    aria-hidden="true"
+    set:html={renderIcon('citations')}
+  />
+  <span class="readme-card__text">
+    {repo && <span class="readme-card__kind">{repo}</span>}
+    <strong>{label}</strong>
+  </span>
+  <span
+    class="readme-card__go"
+    aria-hidden="true"
+    set:html={renderIcon('external', 16)}
+  />
+</a>

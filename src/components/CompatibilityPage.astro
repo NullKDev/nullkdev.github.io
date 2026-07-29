@@ -1,0 +1,48 @@
+---
+import { getDictionary, type Locale } from '@/i18n'
+import { pageTitle } from '@/data/brand'
+import Layout from '@/layouts/Layout.astro'
+import type { LegacyRoute } from '@/data/legacy-routes'
+import Icon from '@/components/primitives/Icon.astro'
+
+interface Props {
+  route: LegacyRoute
+  counterpart?: LegacyRoute
+}
+const { route, counterpart } = Astro.props
+const locale: Locale = route.locale
+const dictionary = getDictionary(locale)
+const retired = route.kind === 'retired'
+const title =
+  route.retirement === 'demo'
+    ? dictionary.compatibility.demoTitle
+    : retired
+      ? dictionary.compatibility.retiredTitle
+      : dictionary.compatibility.movedTitle
+const message =
+  route.retirement === 'demo'
+    ? dictionary.compatibility.demoBody
+    : retired
+      ? dictionary.compatibility.retiredBody
+      : dictionary.compatibility.movedBody
+---
+
+<Layout
+  locale={locale}
+  title={pageTitle(title)}
+  description={message}
+  canonicalPath={route.target}
+  counterpartPath={counterpart?.source}
+  noindex
+>
+  <meta http-equiv="refresh" content={`0;url=${route.target}`} slot="head" />
+  <main class="compatibility-page">
+    <p class="kicker">{dictionary.compatibility.eyebrow}</p>
+    <h1>{title}</h1>
+    <p>{message}</p>
+    <a href={route.target}>
+      {dictionary.compatibility.continue}
+      <Icon name="arrowRight" size={14} />
+    </a>
+  </main>
+</Layout>

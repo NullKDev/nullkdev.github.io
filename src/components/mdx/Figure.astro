@@ -1,0 +1,15 @@
+---
+// Authoring component for .mdx entries: an image with an optional caption.
+// Marked data-zoomable so the entry lightbox picks it up. Styles: .prose figure.
+interface Props {
+  src: string
+  alt: string
+  caption?: string
+}
+const { src, alt, caption } = Astro.props
+---
+
+<figure>
+  <img src={src} alt={alt} loading="lazy" decoding="async" data-zoomable />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>

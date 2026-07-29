@@ -1,0 +1,22 @@
+---
+interface Props {
+  label: string
+}
+
+const { label } = Astro.props
+---
+
+<div
+  class="model-loader"
+  data-model-loader
+  data-state="standby"
+  role="status"
+  aria-live="polite"
+>
+  <span class="model-loader__assembly" aria-hidden="true">
+    <span></span>
+    <span></span>
+    <span></span>
+  </span>
+  <span data-model-status>{label}</span>
+</div>

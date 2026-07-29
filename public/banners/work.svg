@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" fill="none" role="img" aria-label="Built software artifact">
+  <defs>
+    <linearGradient id="wkbg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#101c34"/>
+    </linearGradient>
+    <radialGradient id="wkg1" cx="14%" cy="8%" r="62%">
+      <stop offset="0" stop-color="#4f46e5" stop-opacity="0.40"/>
+      <stop offset="1" stop-color="#4f46e5" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="wkg2" cx="92%" cy="104%" r="60%">
+      <stop offset="0" stop-color="#059669" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#059669" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="wkdots" width="16" height="16" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1.5" fill="#8a97b5" fill-opacity="0.16"/>
+    </pattern>
+  </defs>
+  <rect width="640" height="360" fill="url(#wkbg)"/>
+  <rect width="640" height="360" fill="url(#wkdots)"/>
+  <rect width="640" height="360" fill="url(#wkg1)"/>
+  <rect width="640" height="360" fill="url(#wkg2)"/>
+  <!-- stacked module panels -->
+  <rect x="246" y="150" width="220" height="104" rx="14" fill="#161f31" stroke="#2a3550" stroke-width="1"/>
+  <rect x="220" y="126" width="220" height="104" rx="14" fill="#1a2436" stroke="#33405f" stroke-width="1"/>
+  <rect x="194" y="102" width="220" height="104" rx="14" fill="#1e293e" stroke="#3c4a6c" stroke-width="1"/>
+  <rect x="194" y="102" width="220" height="7" rx="3.5" fill="#4f46e5"/>
+  <rect x="214" y="132" width="70" height="9" rx="4.5" fill="#54628a"/>
+  <rect x="214" y="150" width="120" height="9" rx="4.5" fill="#3a4766"/>
+  <rect x="214" y="168" width="96" height="9" rx="4.5" fill="#3a4766"/>
+  <rect x="372" y="168" width="22" height="22" rx="6" fill="#059669"/>
+</svg>

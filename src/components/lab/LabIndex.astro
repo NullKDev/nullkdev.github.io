@@ -1,0 +1,196 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { pageTitle } from '@/data/brand'
+import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
+import LabCard from '@/components/lab/LabCard.astro'
+import { getTopicLabel } from '@/data/taxonomy'
+import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import { getArchiveLabel } from '@/i18n/archive'
+import Layout from '@/layouts/Layout.astro'
+
+interface Props {
+  locale: Locale
+  entries: CollectionEntry<'lab'>[]
+}
+
+const { locale, entries } = Astro.props
+const dictionary = getDictionary(locale)
+const total = entries.length
+
+// Facets come from the records themselves. A tag carried by every entry cannot
+// narrow anything, so it never becomes a filter.
+const facetCounts = new Map<string, number>()
+for (const entry of entries) {
+  const tags = entry.data.technologies.length
+    ? entry.data.technologies
+    : entry.data.topics
+  for (const tag of new Set(tags)) {
+    facetCounts.set(tag, (facetCounts.get(tag) ?? 0) + 1)
+  }
+}
+const facets = [...facetCounts.entries()]
+  .filter(([, count]) => count < total)
+  .map(([id, count]) => ({ id, count, label: getTopicLabel(id, locale) }))
+  .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, locale))
+
+// Status distribution, in the order a workbench actually reads: what is moving
+// first, what is settled after, what is put away last.
+const lifecycleOrder = ['active', 'prototype', 'stable', 'archived']
+const statusCounts = lifecycleOrder
+  .map((lifecycle) => ({
+    lifecycle,
+    count: entries.filter((entry) => entry.data.lifecycle === lifecycle).length,
+  }))
+  .filter(({ count }) => count > 0)
+  .map(
+    ({ lifecycle, count }) =>
+      `${count} ${getArchiveLabel('lifecycle', lifecycle, locale).toLowerCase()}`,
+  )
+
+const networked = entries.filter(
+  (entry) => entry.data.execution === 'third-party-network',
+).length
+const executionNote =
+  networked === 0
+    ? dictionary.lab.allLocal
+    : `${total - networked} ${dictionary.lab.localCount} · ${networked} ${dictionary.lab.networkCount}`
+
+const entryWord = total === 1 ? dictionary.lab.entry : dictionary.lab.entries
+---
+
+<Layout
+  locale={locale}
+  title={pageTitle(dictionary.nav.lab)}
+  description={dictionary.section.lab}
+  counterpartPath={locale === 'en' ? '/es/lab/' : '/lab/'}
+>
+  <main class="lab-index">
+    <header class="lab-head">
+      <Breadcrumb
+        locale={locale}
+        trail={[
+          { label: dictionary.nav.home, href: getLocalizedPath('/', locale) },
+          { label: dictionary.nav.lab },
+        ]}
+      />
+      <h1>{dictionary.nav.lab}</h1>
+      <p class="lab-lead">{dictionary.section.labLead}</p>
+
+      <dl class="lab-facts">
+        <div>
+          <dt>{entryWord}</dt>
+          <dd>{total}</dd>
+        </div>
+        {
+          statusCounts.length > 0 && (
+            <div>
+              <dt>{dictionary.lab.status}</dt>
+              <dd>{statusCounts.join(' · ')}</dd>
+            </div>
+          )
+        }
+        <div>
+          <dt>{dictionary.lab.execution}</dt>
+          <dd>{executionNote}</dd>
+        </div>
+      </dl>
+    </header>
+
+    {
+      facets.length > 0 && (
+        <div class="lab-filter" data-lab-filter hidden>
+          <div
+            class="lab-filter__bar"
+            role="group"
+            aria-label={dictionary.lab.filter}
+          >
+            <button type="button" data-facet="" aria-pressed="true">
+              {dictionary.lab.all}
+              <span class="lab-filter__n">{total}</span>
+            </button>
+            {facets.map((facet) => (
+              <button type="button" data-facet={facet.id} aria-pressed="false">
+                {facet.label}
+                <span class="lab-filter__n">{facet.count}</span>
+              </button>
+            ))}
+          </div>
+          <p
+            class="lab-filter__status"
+            role="status"
+            data-lab-status
+            data-template={dictionary.lab.showing}
+          />
+        </div>
+      )
+    }
+
+    {
+      entries.length ? (
+        <ul class="lab-grid" data-lab-grid>
+          {entries.map((entry) => (
+            <li
+              data-topics={[
+                ...new Set([...entry.data.technologies, ...entry.data.topics]),
+              ].join(' ')}
+            >
+              <LabCard entry={entry} locale={locale} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="lab-empty">{dictionary.section.empty}</p>
+      )
+    }
+
+    <p class="lab-none" data-lab-none hidden>{dictionary.lab.none}</p>
+  </main>
+</Layout>
+
+<script>
+  // Topic filtering is progressive: the bar ships hidden and only appears once
+  // this script can actually make it work.
+  const filter = document.querySelector<HTMLElement>('[data-lab-filter]')
+  const grid = document.querySelector<HTMLUListElement>('[data-lab-grid]')
+  const status = document.querySelector<HTMLElement>('[data-lab-status]')
+  const none = document.querySelector<HTMLElement>('[data-lab-none]')
+
+  if (filter && grid) {
+    const buttons = [
+      ...filter.querySelectorAll<HTMLButtonElement>('button[data-facet]'),
+    ]
+    const items = [...grid.querySelectorAll<HTMLLIElement>(':scope > li')]
+    const template = status?.dataset.template ?? ''
+
+    const apply = (facet: string) => {
+      let shown = 0
+      for (const item of items) {
+        const topics = (item.dataset.topics ?? '').split(' ')
+        const match = facet === '' || topics.includes(facet)
+        item.hidden = !match
+        if (match) shown += 1
+      }
+      for (const button of buttons) {
+        button.setAttribute(
+          'aria-pressed',
+          String(button.dataset.facet === facet),
+        )
+      }
+      if (none) none.hidden = shown > 0
+      if (status) {
+        status.textContent =
+          facet === ''
+            ? ''
+            : template
+                .replace('{shown}', String(shown))
+                .replace('{total}', String(items.length))
+      }
+    }
+
+    for (const button of buttons) {
+      button.addEventListener('click', () => apply(button.dataset.facet ?? ''))
+    }
+
+    filter.hidden = false
+  }
+</script>

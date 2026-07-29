@@ -1,0 +1,404 @@
+---
+import ModelLoader from '@/components/hero/ModelLoader.astro'
+import type { Dictionary } from '@/i18n'
+
+interface Props {
+  home: Dictionary['home']
+}
+
+const { home } = Astro.props
+---
+
+<div
+  class="model-showcase"
+  data-model-showcase
+  data-status-loading={home.modelLoading}
+  data-status-ready={home.modelReady}
+  data-status-error={home.modelError}
+>
+  <ModelLoader label={home.modelStandby} />
+
+  <model-viewer
+    class="model-showcase__viewer"
+    data-model-viewer
+    alt={home.modelRobotAlt}
+    loading="eager"
+    interaction-prompt="none"
+    shadow-intensity="0.8"
+    shadow-softness="0.9"
+    exposure="1.05"></model-viewer>
+
+  <span data-model-visibility-sentinel aria-hidden="true"></span>
+
+  <p class="model-showcase__attribution">
+    RobotExpressive by Tomás Laulhé · CC0
+  </p>
+</div>
+
+<script>
+  import type { ModelViewerElement } from '@google/model-viewer'
+  import {
+    ALLOWED_ROBOT_ANIMATIONS,
+    canAnimateRobot,
+    canLoadRobot,
+    getNextRobotAnimation,
+    getRobotRepetitions,
+    measureRobotVisibility,
+    ROBOT_GAP_MS,
+    ROBOT_TIME_SCALE,
+    supportsWebGL2,
+    VISIBILITY_THRESHOLD,
+    type RobotAnimationPhase,
+  } from './model-showcase-policy'
+
+  type AnimationMixerBridge = {
+    _listeners?: Record<string, unknown[]>
+    addEventListener: (type: 'finished', listener: () => void) => void
+    removeEventListener: (type: 'finished', listener: () => void) => void
+  }
+
+  let modelViewerModule: Promise<unknown> | undefined
+
+  const registerModelViewer = () => {
+    modelViewerModule ??= import('@google/model-viewer').catch((error) => {
+      modelViewerModule = undefined
+      throw error
+    })
+    return modelViewerModule
+  }
+
+  for (const host of document.querySelectorAll<HTMLElement>(
+    '[data-model-showcase]',
+  )) {
+    const viewer = host.querySelector<ModelViewerElement>('[data-model-viewer]')
+    const loader = host.querySelector<HTMLElement>('[data-model-loader]')
+    const status = loader?.querySelector<HTMLElement>('[data-model-status]')
+    const visibilitySentinel = host.querySelector<HTMLElement>(
+      '[data-model-visibility-sentinel]',
+    )
+    if (!viewer || !loader || !status || !visibilitySentinel) continue
+
+    let webglHealthy = supportsWebGL2()
+    let nearViewport = false
+    let fullyVisible = false
+    let loaded = false
+    let loadStarted = false
+    let phase: RobotAnimationPhase = 'idle'
+    let previousAnimation: string | null = null
+    let availableAnimations: string[] = []
+    let clipPlaying = false
+    let clipRepetitions = 1
+    let gapPending = false
+    let gapTimer = 0
+    let readyTimer = 0
+    let disposed = false
+    const bridgedMixers: AnimationMixerBridge[] = []
+
+    const relayMixerFinished = () => {
+      viewer.dispatchEvent(new CustomEvent('finished'))
+    }
+
+    const ensureFinishedEventBridge = () => {
+      const sceneSymbol = Object.getOwnPropertySymbols(viewer).find(
+        (symbol) => symbol.description === 'scene',
+      )
+      if (!sceneSymbol) return
+
+      const scene = (
+        viewer as unknown as Record<symbol, { mixers?: AnimationMixerBridge[] }>
+      )[sceneSymbol]
+      for (const mixer of scene.mixers ?? []) {
+        // model-viewer 4.3.1 subscribes before dynamic-source mixers exist.
+        // Bridge the real mixer completion only when the library has no listener.
+        if ((mixer._listeners?.finished?.length ?? 0) > 0) continue
+        mixer.addEventListener('finished', relayMixerFinished)
+        bridgedMixers.push(mixer)
+      }
+    }
+
+    const setStatus = (state: 'loading' | 'ready' | 'error') => {
+      window.clearTimeout(readyTimer)
+      loader.hidden = false
+      loader.dataset.state = state
+      status.textContent =
+        host.dataset[`status${state[0].toUpperCase()}${state.slice(1)}`] ?? ''
+
+      if (state === 'ready') {
+        readyTimer = window.setTimeout(() => {
+          loader.hidden = true
+        }, 1200)
+      }
+    }
+
+    const isEligible = () =>
+      canAnimateRobot({
+        fullyVisible,
+        documentVisible: document.visibilityState === 'visible',
+        loaded,
+        webglHealthy,
+      })
+
+    /**
+     * Dev-only trace, readable in the browser console. Every literal lives in
+     * this body so that `import.meta.env.DEV` folding to false leaves nothing
+     * but an empty function for the production bundle to drop.
+     */
+    const logRobot = (state: string) => {
+      if (!import.meta.env.DEV) return
+      const detail =
+        state === 'playing'
+          ? `${host.dataset.animation ?? ''}${clipRepetitions > 1 ? ` x${clipRepetitions}` : ''} · ${((viewer.duration * clipRepetitions) / ROBOT_TIME_SCALE).toFixed(2)}s at ${ROBOT_TIME_SCALE}x`
+          : state === 'waiting'
+            ? `${ROBOT_GAP_MS}ms gap`
+            : state === 'paused'
+              ? `coverage ${host.dataset.visibilityCoverage ?? '?'}`
+              : state === 'stopped'
+                ? 'WebGL or load failed'
+                : (host.dataset.animation ?? '')
+
+      console.info(
+        `%c robot %c ${state} %c ${detail}`,
+        'background:#4f46e5;color:#fff;border-radius:2px;padding:0 2px',
+        'font-weight:600',
+        'color:#64748b',
+      )
+    }
+
+    /**
+     * Single writer for the motion state. `applyPlaybackState` runs on every
+     * scroll frame, so tracing unconditionally would flood the console — only
+     * an actual transition is worth a line.
+     */
+    const setMotion = (state: string) => {
+      if (host.dataset.motion === state) return
+      host.dataset.motion = state
+      logRobot(state)
+    }
+
+    const clearGapTimer = () => {
+      window.clearTimeout(gapTimer)
+      gapTimer = 0
+      host.removeAttribute('data-gap-active')
+    }
+
+    const showIdlePose = () => {
+      clearGapTimer()
+      phase = 'idle'
+      previousAnimation = null
+      clipPlaying = false
+      gapPending = false
+      viewer.pause()
+      viewer.animationName = 'Idle'
+      viewer.currentTime = 0
+      host.dataset.animation = 'Idle'
+      setMotion('still')
+    }
+
+    const fail = () => {
+      webglHealthy = false
+      loaded = false
+      clipPlaying = false
+      gapPending = false
+      clearGapTimer()
+      window.clearTimeout(readyTimer)
+      host.removeAttribute('data-ready')
+      setMotion('stopped')
+      if (typeof viewer.pause === 'function') viewer.pause()
+      setStatus('error')
+    }
+
+    const playNext = async () => {
+      if (!isEligible()) return
+      const next = getNextRobotAnimation({
+        availableAnimations,
+        phase,
+        previousAnimation,
+      })
+      if (!next) {
+        fail()
+        return
+      }
+
+      phase = next.nextPhase
+      previousAnimation = next.animation
+      clipPlaying = true
+      gapPending = false
+      viewer.pause()
+      viewer.animationName = next.animation
+      viewer.currentTime = 0
+      await viewer.updateComplete
+      if (
+        !clipPlaying ||
+        previousAnimation !== next.animation ||
+        !isEligible()
+      ) {
+        return
+      }
+      viewer.currentTime = 0
+      clipRepetitions = getRobotRepetitions(next.animation)
+      viewer.timeScale = ROBOT_TIME_SCALE
+      viewer.play({ repetitions: clipRepetitions, pingpong: false })
+      host.dataset.animation = next.animation
+      host.dataset.motion = 'playing'
+      logRobot('playing')
+    }
+
+    const scheduleGap = () => {
+      if (!gapPending || gapTimer || !isEligible()) return
+      host.setAttribute('data-gap-active', '')
+      gapTimer = window.setTimeout(() => {
+        gapTimer = 0
+        host.removeAttribute('data-gap-active')
+        if (!isEligible()) return
+        gapPending = false
+        void playNext()
+      }, ROBOT_GAP_MS)
+    }
+
+    const applyPlaybackState = () => {
+      if (!loaded || !webglHealthy) return
+      if (!isEligible()) {
+        clearGapTimer()
+        viewer.pause()
+        setMotion('paused')
+        return
+      }
+      if (clipPlaying) {
+        viewer.timeScale = ROBOT_TIME_SCALE
+        viewer.play({ repetitions: clipRepetitions, pingpong: false })
+        setMotion('playing')
+      } else if (gapPending) scheduleGap()
+      else void playNext()
+    }
+
+    const handleLoad = () => {
+      ensureFinishedEventBridge()
+      availableAnimations = ALLOWED_ROBOT_ANIMATIONS.filter((animation) =>
+        viewer.availableAnimations.includes(animation),
+      )
+      if (
+        !availableAnimations.includes('Idle') ||
+        !availableAnimations.includes('Wave')
+      ) {
+        fail()
+        return
+      }
+
+      loaded = true
+      showIdlePose()
+      host.setAttribute('data-ready', '')
+      setStatus('ready')
+      applyPlaybackState()
+    }
+
+    const handleFinished = () => {
+      if (!clipPlaying || !loaded || !webglHealthy) return
+      clipPlaying = false
+      gapPending = true
+      setMotion('waiting')
+      scheduleGap()
+    }
+
+    const handleError = () => fail()
+
+    const loadRobot = async () => {
+      if (
+        loadStarted ||
+        !canLoadRobot({ nearViewport, webglHealthy }) ||
+        disposed
+      ) {
+        return
+      }
+
+      loadStarted = true
+      setStatus('loading')
+      try {
+        await registerModelViewer()
+        if (disposed) return
+        await customElements.whenDefined('model-viewer')
+        if (disposed) return
+        viewer.src = '/models/RobotExpressive.glb'
+      } catch {
+        fail()
+      }
+    }
+
+    const handleActivityChange = () => applyPlaybackState()
+    const loadObserver = new IntersectionObserver(
+      ([entry]) => {
+        nearViewport = entry.isIntersecting
+        if (nearViewport) void loadRobot()
+      },
+      { rootMargin: '300px 0px', threshold: 0.01 },
+    )
+    // An IntersectionObserver ratio cannot see the sticky header covering the
+    // model, and it can never reach 1 for a hero taller than the viewport —
+    // which left the robot frozen for good on short screens. Measure against
+    // the band the viewport can actually show instead.
+    const measureVisibility = () => {
+      const header = document.querySelector('header')
+      const occludedTop =
+        header && getComputedStyle(header).position === 'sticky'
+          ? header.getBoundingClientRect().bottom
+          : 0
+      const { coverage } = measureRobotVisibility({
+        rect: visibilitySentinel.getBoundingClientRect(),
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
+        occludedTop: Math.max(occludedTop, 0),
+      })
+
+      host.dataset.visibilityCoverage = coverage.toFixed(3)
+      fullyVisible = coverage >= VISIBILITY_THRESHOLD
+      applyPlaybackState()
+    }
+
+    let measureFrame = 0
+    const scheduleMeasure = () => {
+      if (measureFrame) return
+      measureFrame = requestAnimationFrame(() => {
+        measureFrame = 0
+        measureVisibility()
+      })
+    }
+
+    const animationObserver = new IntersectionObserver(scheduleMeasure, {
+      threshold: [0, 0.5, 0.98, 1],
+    })
+
+    viewer.addEventListener('load', handleLoad)
+    viewer.addEventListener('error', handleError)
+    viewer.addEventListener('finished', handleFinished)
+    document.addEventListener('visibilitychange', handleActivityChange)
+    window.addEventListener('scroll', scheduleMeasure, { passive: true })
+    window.addEventListener('resize', scheduleMeasure, { passive: true })
+    loadObserver.observe(host)
+    animationObserver.observe(visibilitySentinel)
+    measureVisibility()
+
+    if (!webglHealthy) fail()
+
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        disposed = true
+        clearGapTimer()
+        window.clearTimeout(readyTimer)
+        cancelAnimationFrame(measureFrame)
+        window.removeEventListener('scroll', scheduleMeasure)
+        window.removeEventListener('resize', scheduleMeasure)
+        loadObserver.disconnect()
+        animationObserver.disconnect()
+        document.removeEventListener('visibilitychange', handleActivityChange)
+        viewer.removeEventListener('load', handleLoad)
+        viewer.removeEventListener('error', handleError)
+        viewer.removeEventListener('finished', handleFinished)
+        for (const mixer of bridgedMixers) {
+          mixer.removeEventListener('finished', relayMixerFinished)
+        }
+        if (typeof viewer.pause === 'function') viewer.pause()
+      },
+      { once: true },
+    )
+  }
+</script>

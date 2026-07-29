@@ -1,0 +1,7 @@
+---
+/* The mark carries its own colours — indigo ground, white `</`, emerald cursor —
+   so it reads the same in both themes and needs no `currentColor` inheritance. */
+import brandMark from '@assets/brand/carlosdev-mark.svg?raw'
+---
+
+<span class="brand-mark" aria-hidden="true" set:html={brandMark} />

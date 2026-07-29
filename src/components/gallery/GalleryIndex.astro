@@ -1,0 +1,164 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content'
+import { pageTitle } from '@/data/brand'
+import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
+import StatusChip from '@/components/primitives/StatusChip.astro'
+import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import { getArchiveLabel } from '@/i18n/archive'
+import Layout from '@/layouts/Layout.astro'
+import { getEntryPath } from '@/lib/content'
+import { isMedia } from '@/lib/gallery'
+
+interface Props {
+  locale: Locale
+  entries: CollectionEntry<'gallery'>[]
+}
+
+const { locale, entries } = Astro.props
+const dictionary = getDictionary(locale)
+
+// One read for the whole page, grouped by collection key. Items are shared
+// across locales, so this is the same lookup the detail pages use.
+const allItems = await getCollection('galleryItems')
+const itemsFor = (entry: CollectionEntry<'gallery'>) =>
+  allItems
+    .filter((item) => item.data.collection === entry.data.translationKey)
+    .toSorted((left, right) => left.data.order - right.data.order)
+
+const sheets = entries.map((entry) => {
+  const items = itemsFor(entry)
+  const media = items.filter(isMedia)
+  const tally = items.reduce<Record<string, number>>((counts, item) => {
+    counts[item.data.type] = (counts[item.data.type] ?? 0) + 1
+    return counts
+  }, {})
+  return {
+    entry,
+    items,
+    // The sheet shows real contents. A collection with nothing visual still
+    // gets a card — it just leads with its file tally instead of a mosaic.
+    thumbs: media.slice(0, 5),
+    generated: items.filter((item) => item.data.origin === 'generated').length,
+    tally,
+  }
+})
+
+const totalPieces = sheets.reduce((sum, sheet) => sum + sheet.items.length, 0)
+const totalGenerated = sheets.reduce((sum, sheet) => sum + sheet.generated, 0)
+const pieceWord =
+  totalPieces === 1 ? dictionary.gallery.item : dictionary.gallery.items
+---
+
+<Layout
+  locale={locale}
+  title={pageTitle(dictionary.nav.gallery)}
+  description={dictionary.section.gallery}
+  counterpartPath={locale === 'en' ? '/es/gallery/' : '/gallery/'}
+>
+  <main class="gallery-index">
+    <header class="gallery-head">
+      <Breadcrumb
+        locale={locale}
+        trail={[
+          { label: dictionary.nav.home, href: getLocalizedPath('/', locale) },
+          { label: dictionary.nav.gallery },
+        ]}
+      />
+      <h1>{dictionary.nav.gallery}</h1>
+      <p class="gallery-lead">{dictionary.gallery.lead}</p>
+      <dl class="gallery-tally">
+        <div>
+          <dt>
+            {
+              entries.length === 1
+                ? dictionary.gallery.collection
+                : dictionary.gallery.collections
+            }
+          </dt>
+          <dd>{entries.length}</dd>
+        </div>
+        <div>
+          <dt>{pieceWord}</dt>
+          <dd>{totalPieces}</dd>
+        </div>
+        {
+          totalGenerated > 0 && (
+            <div>
+              <dt>{dictionary.gallery.generated}</dt>
+              <dd>{totalGenerated}</dd>
+            </div>
+          )
+        }
+      </dl>
+    </header>
+
+    {
+      sheets.length ? (
+        <ul class="gallery-shelf">
+          {sheets.map(({ entry, thumbs, tally, generated, items }) => (
+            <li>
+              <article
+                class="gallery-sheet"
+                data-empty={thumbs.length === 0 ? '' : undefined}
+              >
+                <a
+                  class="gallery-sheet__hit"
+                  href={getEntryPath(entry)}
+                  aria-label={entry.data.title}
+                />
+
+                <div class="gallery-sheet__contact" data-count={thumbs.length}>
+                  {thumbs.map((item) => (
+                    <img
+                      src={item.data.src}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ))}
+                  {items.length > thumbs.length && thumbs.length > 0 && (
+                    <span class="gallery-sheet__more">
+                      +{items.length - thumbs.length}
+                    </span>
+                  )}
+                </div>
+
+                <div class="gallery-sheet__body">
+                  <p class="gallery-sheet__kind">
+                    {getArchiveLabel('galleryKind', entry.data.kind, locale)}
+                    <StatusChip
+                      lifecycle={entry.data.lifecycle}
+                      locale={locale}
+                      size="sm"
+                    />
+                  </p>
+                  <h2>{entry.data.title}</h2>
+                  <p class="gallery-sheet__summary">{entry.data.summary}</p>
+                  <ul class="gallery-sheet__tally">
+                    {Object.entries(tally).map(([type, count]) => (
+                      <li>
+                        <b>{count}</b>{' '}
+                        {getArchiveLabel(
+                          count === 1 ? 'itemType' : 'itemTypePlural',
+                          type,
+                          locale,
+                        )}
+                      </li>
+                    ))}
+                    {generated > 0 && (
+                      <li data-generated>
+                        <b>{generated}</b> {dictionary.gallery.generated}
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              </article>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="gallery-empty">{dictionary.section.empty}</p>
+      )
+    }
+  </main>
+</Layout>

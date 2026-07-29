@@ -1,0 +1,109 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { pageTitle } from '@/data/brand'
+import ArchiveCard from '@/components/ArchiveCard.astro'
+import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
+import GalleryIndex from '@/components/gallery/GalleryIndex.astro'
+import LabIndex from '@/components/lab/LabIndex.astro'
+import WorkCard from '@/components/WorkCard.astro'
+import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import { taxonomy } from '@/data/taxonomy'
+import Layout from '@/layouts/Layout.astro'
+import type { ArchiveDomain, ArchiveEntry } from '@/lib/content'
+
+interface Props {
+  locale: Locale
+  domain: ArchiveDomain
+  entries: ArchiveEntry[]
+}
+const { locale, domain, entries } = Astro.props
+const dictionary = getDictionary(locale)
+const isWork = domain === 'work'
+const isLab = domain === 'lab'
+const isGallery = domain === 'gallery'
+const workEntries = isWork ? (entries as CollectionEntry<'work'>[]) : []
+const labEntries = isLab ? (entries as CollectionEntry<'lab'>[]) : []
+const galleryEntries = isGallery
+  ? (entries as CollectionEntry<'gallery'>[])
+  : []
+
+const countWord =
+  entries.length === 1
+    ? dictionary.archive.project
+    : dictionary.archive.projects
+const workDomains = isWork
+  ? [...new Set(workEntries.flatMap((entry) => entry.data.domains))].map(
+      (id) =>
+        taxonomy.domains[id as keyof typeof taxonomy.domains]?.[locale] ?? id,
+    )
+  : []
+---
+
+{isLab && <LabIndex locale={locale} entries={labEntries} />}
+
+{isGallery && <GalleryIndex locale={locale} entries={galleryEntries} />}
+
+{
+  !isLab && !isGallery && (
+    <Layout
+      locale={locale}
+      title={pageTitle(dictionary.nav[domain])}
+      description={dictionary.section[domain]}
+      counterpartPath={locale === 'en' ? `/es/${domain}/` : `/${domain}/`}
+    >
+      {isWork ? (
+        <main class="archive-index archive-index--work">
+          <header class="work-head">
+            <Breadcrumb
+              locale={locale}
+              trail={[
+                {
+                  label: dictionary.nav.home,
+                  href: getLocalizedPath('/', locale),
+                },
+                { label: dictionary.nav.work },
+              ]}
+            />
+            <h1>{dictionary.nav.work}</h1>
+            <p class="work-lead">{dictionary.section.workLead}</p>
+            <p class="work-stats">
+              <span>
+                {String(entries.length).padStart(2, '0')} {countWord}
+              </span>
+              {workDomains.length > 0 && <span>{workDomains.join(' · ')}</span>}
+            </p>
+          </header>
+          {entries.length ? (
+            <div class="work-grid">
+              {workEntries.map((entry) => (
+                <WorkCard entry={entry} locale={locale} />
+              ))}
+            </div>
+          ) : (
+            <p>{dictionary.section.empty}</p>
+          )}
+        </main>
+      ) : (
+        <main class={`archive-index archive-index--${domain}`}>
+          <header class="index-heading">
+            <p class="kicker">
+              {dictionary.section.eyebrow} /{' '}
+              {String(entries.length).padStart(2, '0')}
+            </p>
+            <h1>{dictionary.nav[domain]}</h1>
+            <p>{dictionary.section[domain]}</p>
+          </header>
+          {entries.length ? (
+            <div class="archive-grid">
+              {entries.map((entry, index) => (
+                <ArchiveCard entry={entry} locale={locale} index={index} />
+              ))}
+            </div>
+          ) : (
+            <p>{dictionary.section.empty}</p>
+          )}
+        </main>
+      )}
+    </Layout>
+  )
+}

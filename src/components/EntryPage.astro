@@ -1,0 +1,825 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { pageTitle } from '@/data/brand'
+import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
+import Icon from '@/components/primitives/Icon.astro'
+import StatusChip from '@/components/primitives/StatusChip.astro'
+import LabConsole from '@/components/lab/LabConsole.astro'
+import LabSpec from '@/components/lab/LabSpec.astro'
+import LabWorkbench from '@/components/lab/LabWorkbench'
+import GalleryItems from '@/components/gallery/GalleryItems.astro'
+import RelatedLab from '@/components/lab/RelatedLab.astro'
+import { render } from 'astro:content'
+import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import Layout from '@/layouts/Layout.astro'
+import {
+  getAdjacentEntries,
+  getArchiveEntries,
+  getDocumentsForEntry,
+  getEntryCounterpartPath,
+  getEntryDomain,
+  getEntryPath,
+  getEntryRelationships,
+  getGalleryItems,
+  getNotesSeriesNavigation,
+  type ArchiveEntry,
+} from '@/lib/content'
+import { getTopicLabel } from '@/data/taxonomy'
+import { getArchiveLabel } from '@/i18n/archive'
+import { getRelatedLabEntries } from '@/lib/lab'
+import { renderIcon } from '@/lib/icons'
+
+interface Props {
+  entry: ArchiveEntry
+  locale: Locale
+}
+const { entry, locale } = Astro.props
+const dictionary = getDictionary(locale)
+const domain = getEntryDomain(entry)
+const documents = await getDocumentsForEntry(entry)
+const counterpartPath = await getEntryCounterpartPath(entry)
+const series = await getNotesSeriesNavigation(entry)
+const adjacent = await getAdjacentEntries(entry)
+const relationships = await getEntryRelationships(entry)
+const { Content, headings } = await render(entry)
+
+// Lab records are framed as instruments, not as reading — the console, the
+// declared spec, and derived neighbours replace the article furniture.
+const galleryItems = domain === 'gallery' ? await getGalleryItems(entry) : []
+const isLab = domain === 'lab'
+const labEntry = isLab ? (entry as CollectionEntry<'lab'>) : undefined
+const relatedLab = labEntry
+  ? getRelatedLabEntries(
+      labEntry,
+      (await getArchiveEntries('lab', locale)) as CollectionEntry<'lab'>[],
+    )
+  : []
+
+// Render subposts inline so the whole series reads as one thread under one URL.
+const renderedDocuments = await Promise.all(
+  documents.map(async (document) => ({
+    document,
+    rendered: await render(document),
+  })),
+)
+
+// Reading time from the combined word count of the entry and its subposts.
+const readingSource = [entry, ...documents]
+  .map((item) => item.body ?? '')
+  .join(' ')
+const wordCount = readingSource.split(/\s+/).filter(Boolean).length
+const readingMinutes = Math.max(1, Math.round(wordCount / 200))
+
+/* A single anchored table of contents spanning the entry and its subposts.
+   Subposts are read continuously rather than navigated, so their own headings
+   belong in the index too — nested under the part they live in. `level` is the
+   normalised outline depth (1-3) the sidebar indents by; the raw markdown depth
+   would collapse an entry h2 and a subpost h2 onto the same rung despite one
+   sitting inside the other. */
+const outlineLevel = (depth: number, offset: number) =>
+  Math.min(depth - 2 + offset, 3)
+
+const tableOfContents = [
+  ...headings
+    .filter(({ depth }) => depth >= 2 && depth < 4)
+    .map((heading) => ({
+      slug: heading.slug,
+      text: heading.text,
+      level: outlineLevel(heading.depth, 1),
+    })),
+  ...renderedDocuments.flatMap(({ document, rendered }) => [
+    {
+      slug: `part-${document.data.order}`,
+      text: document.data.title,
+      level: 1,
+    },
+    ...rendered.headings
+      .filter(({ depth }) => depth >= 2 && depth < 4)
+      .map((heading) => ({
+        slug: heading.slug,
+        text: heading.text,
+        level: outlineLevel(heading.depth, 2),
+      })),
+  ]),
+]
+
+const published = entry.data.publishedAt
+const updated = entry.data.updatedAt ?? entry.data.publishedAt
+const role = 'role' in entry.data ? entry.data.role : undefined
+
+// Section markers and typed link marks come from the shared registry so the
+// same drawing is never redefined per component.
+const sectionIcon = {
+  outcomes: renderIcon('outcomes'),
+  conditions: renderIcon('conditions'),
+  evidence: renderIcon('evidence'),
+  citations: renderIcon('citations'),
+  links: renderIcon('links'),
+}
+const checkIcon = renderIcon('check')
+const linkIcon: Record<string, string> = {
+  repository: renderIcon('repository'),
+  release: renderIcon('release'),
+  demo: renderIcon('demo'),
+  publication: renderIcon('publication'),
+  external: renderIcon('external'),
+}
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type':
+    domain === 'notes'
+      ? 'Article'
+      : domain === 'lab'
+        ? 'SoftwareApplication'
+        : 'CreativeWork',
+  headline: entry.data.title,
+  description: entry.data.summary,
+  inLanguage: locale,
+  datePublished: entry.data.publishedAt?.toISOString(),
+  dateModified: entry.data.updatedAt?.toISOString(),
+  url: new URL(getEntryPath(entry), Astro.site).toString(),
+}
+---
+
+<Layout
+  locale={locale}
+  title={pageTitle(entry.data.title)}
+  description={entry.data.summary}
+  counterpartPath={counterpartPath}
+  jsonLd={jsonLd}
+>
+  <main
+    class="entry-page"
+    data-copy={dictionary.archive.copy}
+    data-copied={dictionary.archive.copied}
+    data-close={dictionary.nav.closeText}
+    data-note-key={isLab
+      ? undefined
+      : domain === 'notes'
+        ? entry.data.translationKey
+        : undefined}
+  >
+    <div class="read-progress" aria-hidden="true">
+      <span data-read-progress></span>
+    </div>
+    <Breadcrumb
+      locale={locale}
+      trail={[
+        { label: dictionary.nav.home, href: getLocalizedPath('/', locale) },
+        {
+          label: dictionary.nav[domain],
+          href: getLocalizedPath(`/${domain}`, locale),
+        },
+        { label: entry.data.title },
+      ]}
+    />
+    <header class="entry-heading">
+      <p class="entry-chips">
+        {
+          labEntry && (
+            <span class="entry-kind">
+              {labEntry.data.kind === 'experiment'
+                ? dictionary.lab.experiment
+                : dictionary.lab.tool}
+            </span>
+          )
+        }
+        <StatusChip lifecycle={entry.data.lifecycle} locale={locale} />
+      </p>
+      <h1>{entry.data.title}</h1>
+      <p class="lede">{entry.data.summary}</p>
+      <dl class="entry-facts">
+        {
+          role && (
+            <div class="fact fact--text">
+              <dt>{dictionary.archive.role}</dt>
+              <dd>{role}</dd>
+            </div>
+          )
+        }
+        {
+          published && (
+            <div class="fact">
+              <dt>{dictionary.archive.published}</dt>
+              <dd>
+                <time datetime={published.toISOString()}>
+                  {published.toLocaleDateString(locale, {
+                    dateStyle: 'medium',
+                  })}
+                </time>
+              </dd>
+            </div>
+          )
+        }
+        {
+          updated && entry.data.updatedAt && (
+            <div class="fact">
+              <dt>{dictionary.archive.updated}</dt>
+              <dd>
+                <time datetime={updated.toISOString()}>
+                  {updated.toLocaleDateString(locale, { dateStyle: 'medium' })}
+                </time>
+              </dd>
+            </div>
+          )
+        }
+        {
+          galleryItems.length > 0 ? (
+            <div class="fact">
+              <dt>{dictionary.gallery.pieces}</dt>
+              <dd>{galleryItems.length}</dd>
+            </div>
+          ) : labEntry ? (
+            <div class="fact fact--text">
+              <dt>{dictionary.lab.maturity}</dt>
+              <dd>
+                {getArchiveLabel('maturity', labEntry.data.maturity, locale)}
+              </dd>
+            </div>
+          ) : (
+            <div class="fact">
+              <dt>{dictionary.archive.reading}</dt>
+              <dd>
+                {readingMinutes} {dictionary.archive.readTime}
+              </dd>
+            </div>
+          )
+        }
+      </dl>
+    </header>
+
+    {
+      entry.data.image && (
+        <figure class="entry-banner">
+          <img
+            src={entry.data.image}
+            alt={entry.data.imageAlt ?? ''}
+            width="1200"
+            height="480"
+            loading="eager"
+            decoding="async"
+          />
+        </figure>
+      )
+    }
+
+    {
+      entry.data.statusNote && (
+        <aside class="status-note" aria-label={dictionary.archive.status}>
+          <>
+            <strong>
+              {labEntry
+                ? dictionary.lab.scopeLimits
+                : dictionary.archive.statusNote}
+            </strong>
+            <p>{entry.data.statusNote}</p>
+          </>
+        </aside>
+      )
+    }
+
+    {
+      labEntry && labEntry.data.implementationId && (
+        <LabConsole entry={labEntry} locale={locale}>
+          <LabWorkbench
+            client:idle
+            implementationId={labEntry.data.implementationId}
+            locale={locale}
+          />
+          <noscript>
+            <p class="lab-noscript">{dictionary.archive.labNoScript}</p>
+          </noscript>
+          <p class="lab-noscript lab-nojs-fallback">
+            {dictionary.archive.labNoScript}
+          </p>
+        </LabConsole>
+      )
+    }
+
+    {labEntry && <LabSpec entry={labEntry} locale={locale} />}
+
+    {
+      galleryItems.length > 0 && (
+        <GalleryItems items={galleryItems} locale={locale} />
+      )
+    }
+
+    <div class="entry-layout">
+      <article class="prose">
+        <Content />
+        {
+          renderedDocuments.map(({ document, rendered }) => {
+            const DocumentContent = rendered.Content
+            return (
+              <section class="subpost" id={`part-${document.data.order}`}>
+                <p class="subpost-index">
+                  {dictionary.archive.part} {document.data.order} /{' '}
+                  {documents.length}
+                </p>
+                <h2>{document.data.title}</h2>
+                <DocumentContent />
+              </section>
+            )
+          })
+        }
+      </article>
+      <aside class="entry-index" aria-label={dictionary.archive.contents}>
+        {
+          tableOfContents.length > 0 && (
+            <nav class="toc" aria-label={dictionary.archive.contents}>
+              <h2>{dictionary.archive.contents}</h2>
+              <ol class="toc-list" data-toc>
+                {tableOfContents.map((item) => (
+                  <li data-level={item.level}>
+                    <a href={`#${item.slug}`}>{item.text}</a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )
+        }
+        <h2>{dictionary.archive.topics}</h2><ul class="topic-list">
+          {
+            entry.data.topics.map((topic) => (
+              <li>
+                <a href={getLocalizedPath(`/tags#${topic}`, locale)}>
+                  {getTopicLabel(topic, locale)}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </aside>
+    </div>
+
+    {
+      (('outcomes' in entry.data && entry.data.outcomes.length > 0) ||
+        ('operatingConditions' in entry.data &&
+          entry.data.operatingConditions.length > 0) ||
+        entry.data.evidence.length > 0 ||
+        ('citations' in entry.data && entry.data.citations.length > 0) ||
+        entry.data.links.length > 0 ||
+        relationships.references.length > 0 ||
+        relationships.backlinks.length > 0) && (
+        <div class="entry-record">
+          {'outcomes' in entry.data && entry.data.outcomes.length > 0 && (
+            <section class="record-block">
+              <header class="record-block__head">
+                <span
+                  class="record-block__icon"
+                  aria-hidden="true"
+                  set:html={sectionIcon.outcomes}
+                />
+                <h2>{dictionary.archive.outcomes}</h2>
+                <span class="record-block__count">
+                  {entry.data.outcomes.length}
+                </span>
+              </header>
+              <ol class="outcome-list">
+                {entry.data.outcomes.map((outcome) => (
+                  <li class="outcome">
+                    <span
+                      class="outcome__mark"
+                      aria-hidden="true"
+                      set:html={checkIcon}
+                    />
+                    <div class="outcome__body">
+                      <p class="outcome__claim">{outcome.label}</p>
+                      <ul class="cite-line">
+                        {outcome.evidence.map((ev) => (
+                          <li>
+                            <span class="cite-line__source">{ev.source}</span>
+                            <span class="prov" data-prov={ev.provenance}>
+                              {getArchiveLabel(
+                                'provenance',
+                                ev.provenance,
+                                locale,
+                              )}
+                            </span>
+                            {ev.url && (
+                              <a href={ev.url}>
+                                {dictionary.archive.source}
+                                <Icon name="external" size={13} />
+                              </a>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
+          {'operatingConditions' in entry.data &&
+            entry.data.operatingConditions.length > 0 && (
+              <section class="record-block">
+                <header class="record-block__head">
+                  <span
+                    class="record-block__icon"
+                    aria-hidden="true"
+                    set:html={sectionIcon.conditions}
+                  />
+                  <h2>{dictionary.archive.conditions}</h2>
+                  <span class="record-block__count">
+                    {entry.data.operatingConditions.length}
+                  </span>
+                </header>
+                <dl class="condition-list">
+                  {entry.data.operatingConditions.map(
+                    ({ condition, implication }) => (
+                      <div class="condition">
+                        <dt>{condition}</dt>
+                        <dd>{implication}</dd>
+                      </div>
+                    ),
+                  )}
+                </dl>
+              </section>
+            )}
+          {entry.data.evidence.length > 0 && (
+            <section class="record-block">
+              <header class="record-block__head">
+                <span
+                  class="record-block__icon"
+                  aria-hidden="true"
+                  set:html={sectionIcon.evidence}
+                />
+                <h2>{dictionary.archive.evidence}</h2>
+                <span class="record-block__count">
+                  {entry.data.evidence.length}
+                </span>
+              </header>
+              <ul class="evidence-list">
+                {entry.data.evidence.map((item) => (
+                  <li class="evidence-item">
+                    <p class="evidence-item__claim">{item.claim}</p>
+                    <p class="cite-line">
+                      <span class="cite-line__source">{item.source}</span>
+                      <span class="prov" data-prov={item.provenance}>
+                        {getArchiveLabel('provenance', item.provenance, locale)}
+                      </span>
+                      {item.url && (
+                        <a href={item.url}>
+                          {dictionary.archive.source}
+                          <Icon name="external" size={13} />
+                        </a>
+                      )}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+          {'citations' in entry.data && entry.data.citations.length > 0 && (
+            <section class="record-block">
+              <header class="record-block__head">
+                <span
+                  class="record-block__icon"
+                  aria-hidden="true"
+                  set:html={sectionIcon.citations}
+                />
+                <h2>{dictionary.archive.citations}</h2>
+                <span class="record-block__count">
+                  {entry.data.citations.length}
+                </span>
+              </header>
+              <ul class="citation-list">
+                {entry.data.citations.map((citation) => (
+                  <li>
+                    <a href={citation.url}>
+                      <strong>{citation.title}</strong>
+                      <Icon name="external" size={13} />
+                    </a>
+                    {citation.accessedAt && (
+                      <span class="citation-list__date">
+                        {dictionary.archive.updated}{' '}
+                        {citation.accessedAt.toLocaleDateString(locale)}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+          {entry.data.links.length > 0 && (
+            <section class="record-block">
+              <header class="record-block__head">
+                <span
+                  class="record-block__icon"
+                  aria-hidden="true"
+                  set:html={sectionIcon.links}
+                />
+                <h2>{dictionary.archive.links}</h2>
+              </header>
+              <div class="record-links">
+                {entry.data.links.map((link) => (
+                  <a href={link.href} class="record-link">
+                    <span
+                      class="record-link__icon"
+                      aria-hidden="true"
+                      set:html={linkIcon[link.kind] ?? linkIcon.external}
+                    />
+                    <span class="record-link__text">
+                      <span class="record-link__kind">
+                        {getArchiveLabel('linkKind', link.kind, locale)}
+                      </span>
+                      <strong>{link.label}</strong>
+                    </span>
+                    <span class="record-link__go">
+                      <Icon name="external" size={15} />
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+          {relationships.references.length > 0 && (
+            <section class="record-block">
+              <header class="record-block__head">
+                <span
+                  class="record-block__icon"
+                  aria-hidden="true"
+                  set:html={sectionIcon.links}
+                />
+                <h2>{dictionary.archive.references}</h2>
+              </header>
+              <div class="relationship-list">
+                {relationships.references.map(
+                  ({ reference, entry: target }) => (
+                    <a href={getEntryPath(target)}>
+                      <span>
+                        {getArchiveLabel(
+                          'relationship',
+                          reference.relationship,
+                          locale,
+                        )}
+                      </span>
+                      <strong>{target.data.title}</strong>
+                    </a>
+                  ),
+                )}
+              </div>
+            </section>
+          )}
+          {relationships.backlinks.length > 0 && (
+            <section class="record-block">
+              <header class="record-block__head">
+                <span
+                  class="record-block__icon"
+                  aria-hidden="true"
+                  set:html={sectionIcon.links}
+                />
+                <h2>{dictionary.archive.backlinks}</h2>
+              </header>
+              <div class="relationship-list">
+                {relationships.backlinks.map(({ reference, entry: source }) => (
+                  <a href={getEntryPath(source)}>
+                    <span>
+                      {getArchiveLabel(
+                        'relationship',
+                        reference.relationship,
+                        locale,
+                      )}
+                    </span>
+                    <strong>{source.data.title}</strong>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+      )
+    }
+    <RelatedLab entries={relatedLab} locale={locale} />
+    {
+      series && (
+        <nav class="series-navigation" aria-label={dictionary.archive.series}>
+          <p>
+            <strong>
+              {dictionary.archive.series}: {series.id}
+            </strong>
+            <span>
+              {dictionary.archive.part} {series.order} / {series.total}
+            </span>
+          </p>
+          <div>
+            {series.previous && (
+              <a href={getEntryPath(series.previous)}>
+                <Icon name="arrowLeft" size={14} />
+                {dictionary.archive.previous}: {series.previous.data.title}
+              </a>
+            )}
+            {series.next && (
+              <a href={getEntryPath(series.next)}>
+                {dictionary.archive.next}: {series.next.data.title}
+                <Icon name="arrowRight" size={14} />
+              </a>
+            )}
+          </div>
+        </nav>
+      )
+    }
+    {
+      (adjacent.previous || adjacent.next) && (
+        <nav class="entry-pager" aria-label={dictionary.archive.pager}>
+          {adjacent.previous ? (
+            <a
+              class="pager-link"
+              data-dir="prev"
+              href={getEntryPath(adjacent.previous)}
+            >
+              <span class="pager-link__label">
+                <Icon name="arrowLeft" size={14} />{' '}
+                {dictionary.archive.previous}
+              </span>
+              <span class="pager-link__title">
+                {adjacent.previous.data.title}
+              </span>
+            </a>
+          ) : (
+            <span />
+          )}
+          {adjacent.next && (
+            <a
+              class="pager-link"
+              data-dir="next"
+              href={getEntryPath(adjacent.next)}
+            >
+              <span class="pager-link__label">
+                {dictionary.archive.next} <Icon name="arrowRight" size={14} />
+              </span>
+              <span class="pager-link__title">{adjacent.next.data.title}</span>
+            </a>
+          )}
+        </nav>
+      )
+    }
+  </main>
+</Layout>
+
+<script>
+  import { markRead } from '@/lib/reading-log'
+
+  // Opening a note records it locally so the index can show what is left.
+  const noteKey =
+    document.querySelector<HTMLElement>('.entry-page')?.dataset.noteKey
+  if (noteKey) markRead(noteKey)
+
+  // Reading progress: fraction of the article scrolled past the viewport.
+  const bar = document.querySelector<HTMLElement>('[data-read-progress]')
+  const article = document.querySelector<HTMLElement>('.entry-page .prose')
+  if (bar && article) {
+    let ticking = false
+    const update = () => {
+      ticking = false
+      const rect = article.getBoundingClientRect()
+      const total = rect.height - window.innerHeight
+      const scrolled = -rect.top
+      const ratio = total > 0 ? Math.min(1, Math.max(0, scrolled / total)) : 0
+      bar.style.transform = `scaleX(${ratio})`
+    }
+    const onScroll = () => {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll, { passive: true })
+  }
+
+  // Wrap each code block with a language label and a copy button.
+  const main = document.querySelector<HTMLElement>('.entry-page')
+  const copyText = main?.dataset.copy ?? 'Copy'
+  const copiedText = main?.dataset.copied ?? 'Copied'
+  document
+    .querySelectorAll<HTMLPreElement>('.entry-page .prose pre.astro-code')
+    .forEach((pre) => {
+      if (pre.parentElement?.classList.contains('code-block')) return
+      const lang = pre.getAttribute('data-language') ?? ''
+      const wrap = document.createElement('div')
+      wrap.className = 'code-block'
+      const bar = document.createElement('div')
+      bar.className = 'code-block__bar'
+      const label = document.createElement('span')
+      label.className = 'code-block__lang'
+      label.textContent = lang === 'plaintext' ? '' : lang
+      const button = document.createElement('button')
+      button.type = 'button'
+      button.className = 'code-block__copy'
+      button.textContent = copyText
+      button.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(pre.innerText)
+          button.textContent = copiedText
+          button.classList.add('is-copied')
+          setTimeout(() => {
+            button.textContent = copyText
+            button.classList.remove('is-copied')
+          }, 1600)
+        } catch {
+          /* Clipboard may be unavailable; ignore. */
+        }
+      })
+      bar.append(label, button)
+      pre.replaceWith(wrap)
+      wrap.append(bar, pre)
+    })
+
+  // Table of contents: mark the section currently in view as active.
+  const tocLinks = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>('[data-toc] a[href^="#"]'),
+  )
+  if (tocLinks.length && 'IntersectionObserver' in window) {
+    const linkById = new Map<string, HTMLAnchorElement>()
+    const targets: HTMLElement[] = []
+    tocLinks.forEach((link) => {
+      const id = decodeURIComponent(link.hash.slice(1))
+      const target = document.getElementById(id)
+      if (target) {
+        linkById.set(id, link)
+        targets.push(target)
+      }
+    })
+    let activeId: string | null = null
+    const setActive = (id: string) => {
+      if (id === activeId) return
+      activeId = id
+      tocLinks.forEach((link) => link.removeAttribute('aria-current'))
+      linkById.get(id)?.setAttribute('aria-current', 'true')
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
+        if (visible[0]) setActive(visible[0].target.id)
+      },
+      { rootMargin: '-12% 0px -70% 0px', threshold: 0 },
+    )
+    targets.forEach((target) => observer.observe(target))
+  }
+
+  // Figures & lightbox: promote standalone markdown images to <figure> with a
+  // caption from their alt text, and open any zoomable image in a lightbox.
+  const prose = document.querySelector<HTMLElement>('.entry-page .prose')
+  const closeLabel = main?.dataset.close ?? 'Close'
+  if (prose) {
+    prose.querySelectorAll<HTMLImageElement>('img').forEach((img) => {
+      img.dataset.zoomable = ''
+      if (img.closest('figure')) return
+      const parent = img.parentElement
+      // A markdown image on its own line renders as a paragraph whose only
+      // child is the image; promote that whole paragraph to a figure.
+      const alone = parent?.tagName === 'P' && parent.childNodes.length === 1
+      const figure = document.createElement('figure')
+      ;(alone ? parent : img).replaceWith(figure)
+      figure.appendChild(img)
+      const alt = img.getAttribute('alt')?.trim()
+      if (alt) {
+        const caption = document.createElement('figcaption')
+        caption.textContent = alt
+        figure.appendChild(caption)
+      }
+    })
+
+    let lightbox: HTMLElement | null = null
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeLightbox()
+    }
+    function closeLightbox() {
+      lightbox?.remove()
+      lightbox = null
+      document.removeEventListener('keydown', onKey)
+    }
+    const openLightbox = (src: string, alt: string) => {
+      lightbox = document.createElement('div')
+      lightbox.className = 'lightbox'
+      lightbox.setAttribute('role', 'dialog')
+      lightbox.setAttribute('aria-modal', 'true')
+      if (alt) lightbox.setAttribute('aria-label', alt)
+      const big = document.createElement('img')
+      big.src = src
+      big.alt = alt
+      const close = document.createElement('button')
+      close.type = 'button'
+      close.className = 'lightbox__close'
+      close.setAttribute('aria-label', closeLabel)
+      close.textContent = '✕'
+      lightbox.append(big, close)
+      lightbox.addEventListener('click', (event) => {
+        if (event.target === lightbox || event.target === close) closeLightbox()
+      })
+      document.body.appendChild(lightbox)
+      document.addEventListener('keydown', onKey)
+      close.focus()
+    }
+    prose.addEventListener('click', (event) => {
+      const image = (event.target as HTMLElement)?.closest<HTMLImageElement>(
+        'img[data-zoomable]',
+      )
+      if (image) openLightbox(image.currentSrc || image.src, image.alt)
+    })
+  }
+</script>
