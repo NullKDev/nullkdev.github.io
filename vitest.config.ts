@@ -45,27 +45,27 @@ export default defineConfig({
         'src/lib/content.ts',
         'src/lib/protection/routes.ts',
       ],
-      /* Tiered on purpose. A flat 80% was aspirational rather than true — it
-         has never passed — and a gate that is always red teaches everyone to
-         ignore it, which costs more than having no gate at all.
+      /* Tiered, and set just under the numbers the suite actually reaches.
+         A threshold above reality is not a standard, it is a permanently red
+         check that everyone learns to scroll past; one far below reality
+         cannot catch anything. These sit close enough underneath that a real
+         regression fails, and low enough that a normal change — a post in two
+         languages — never has to argue with them.
 
-         This is an archive. Most changes are a post in two languages, and
-         holding those to the same bar as executable logic would block writing
-         to satisfy a number. So the global floor sits just under where the
-         suite actually is: it cannot be met by deleting tests, and a real
-         regression still fails, but publishing never does.
+         Where a bug is expensive the bar is higher and can only go up. The
+         protection module derives keys and encrypts payloads that are then
+         served from a public host: a silent regression there is not a coverage
+         statistic, it is readable private content. The content module
+         validates the schemas every page is projected from.
 
-         Where a bug is expensive, the bar stays high. The protection module
-         derives keys and encrypts payloads that are then published to a public
-         host; a silent regression there is not a coverage statistic, it is
-         readable private content. The content module validates the schemas
-         every page is projected from. Both are pinned near their current
-         numbers, so they can only go up. */
+         src/lib/notes.ts is still uncovered. It is a thin read over
+         `getCollection`, like src/lib/content.ts which is already excluded —
+         left in the numbers rather than excluded, so the gap stays visible. */
       thresholds: {
-        statements: 68,
-        branches: 63,
-        functions: 62,
-        lines: 68,
+        statements: 84,
+        branches: 76,
+        functions: 79,
+        lines: 85,
 
         'src/lib/protection/**': {
           statements: 85,
