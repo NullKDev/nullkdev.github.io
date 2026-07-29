@@ -51,6 +51,12 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ## [Unreleased]
 
+_Nada todavía._
+
+## [0.1.0] — 2026-07-29
+
+Primera versión publicada del archivo reconstruido.
+
 ### Agregado
 
 - Convención de commits verificada en CI (`type(scope): descripción`), con los
