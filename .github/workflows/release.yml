@@ -1,0 +1,132 @@
+# Tags and publishes a release when `main` moves and `package.json` carries a
+# version that has no tag yet.
+#
+# The version bump is the trigger, not the merge. Every merge to main would
+# otherwise produce a release, and a version number that increments on
+# housekeeping stops meaning anything. No bump, no release — the job exits
+# cleanly and says so.
+#
+# Notes are generated from commit subjects, which is why the commit convention
+# is enforced on every pull request: this file is the thing that consumes it.
+# The hand-written CHANGELOG.md stays the curated record; these notes are the
+# complete one.
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Tag and publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write # creates the tag and the release
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Resolve the version and decide whether to publish
+        id: version
+        run: |
+          VERSION=$(bun --print 'require("./package.json").version' 2>/dev/null \
+            || node -p 'require("./package.json").version')
+          echo "value=$VERSION" >> "$GITHUB_OUTPUT"
+
+          if ! printf '%s' "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::package.json version '$VERSION' is not semver (X.Y.Z)."
+            exit 1
+          fi
+
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "Tag v$VERSION already exists — nothing to publish. Bump the version in package.json to cut a release."
+            exit 0
+          fi
+
+          LATEST=$(git tag -l 'v*' --sort=-v:refname | head -1)
+          if [ -n "$LATEST" ]; then
+            HIGHEST=$(printf '%s\n%s\n' "${LATEST#v}" "$VERSION" | sort -V | tail -1)
+            if [ "$HIGHEST" != "$VERSION" ]; then
+              echo "::error::version $VERSION is not greater than the latest release ${LATEST#v}."
+              exit 1
+            fi
+          fi
+
+          echo "publish=true" >> "$GITHUB_OUTPUT"
+          echo "previous=$LATEST" >> "$GITHUB_OUTPUT"
+          echo "Will publish v$VERSION."
+
+      - name: Compose the notes
+        if: steps.version.outputs.publish == 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+          PREVIOUS: ${{ steps.version.outputs.previous }}
+          REPO: ${{ github.repository }}
+        run: |
+          REPO_URL="https://github.com/$REPO"
+
+          if [ -n "$PREVIOUS" ]; then
+            RANGE="$PREVIOUS..HEAD"
+            COMPARE="**Cambios completos:** [\`$PREVIOUS...v$VERSION\`]($REPO_URL/compare/$PREVIOUS...v$VERSION)"
+          else
+            RANGE="HEAD"
+            COMPARE="**Primera versión publicada.**"
+          fi
+
+          # Categories are the Conventional Commit types in Spanish, matching
+          # CHANGELOG.md rather than the generic Added/Changed of the standard.
+          section() {
+            local title="$1" pattern="$2" lines
+            # shellcheck disable=SC2016,SC2086
+            lines=$(git log $RANGE --no-merges --pretty=format:'%s|%h|%H' \
+              | awk -F'|' -v pat="$pattern" -v repo="$REPO_URL" '
+                  $1 ~ pat {
+                    sub(/^[a-z]+(\([^)]*\))?!?: /, "", $1)
+                    printf "- %s ([`%s`](%s/commit/%s))\n", $1, $2, repo, $3
+                  }')
+            [ -n "$lines" ] && printf '### %s\n\n%s\n\n' "$title" "$lines"
+          }
+
+          {
+            echo "$COMPARE"
+            echo ""
+            section 'Agregado'     '^feat'
+            section 'Corregido'    '^fix'
+            section 'Rendimiento'  '^perf'
+            section 'Seguridad'    '^security'
+            section 'Cambiado'     '^(refactor|build)'
+            section 'Mantenimiento' '^(chore|docs|test|ci|style|revert)'
+            echo "---"
+            echo ""
+            echo "El registro curado, en prosa, está en [CHANGELOG.md]($REPO_URL/blob/main/CHANGELOG.md). Estas notas son el registro completo."
+            echo ""
+            # A mention emails every account with read access to the repo.
+            # This is the notification: no extra secret, no third-party service.
+            echo "cc @NullKDev"
+          } > notes.md
+
+          cat notes.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Tag and publish
+        if: steps.version.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          gh release create "v$VERSION" \
+            --title "v$VERSION" \
+            --notes-file notes.md \
+            --target "$GITHUB_SHA" \
+            --verify-tag=false
+          echo "Published v$VERSION."

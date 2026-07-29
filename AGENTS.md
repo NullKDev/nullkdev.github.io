@@ -15,6 +15,7 @@ bun run test:e2e       # Playwright
 bun run format         # Format (no semicolons, single quotes); format:check verifies
 bun run lint           # ESLint over src, tests, scripts, configs
 bun run gallery:scan   # Stub items.yml records for new gallery assets
+bun run commits:check  # Verify commit subjects follow the convention
 ```
 
 `bun run build` is a chain, and a failure in any link fails the build:
@@ -102,6 +103,78 @@ Two independent mechanisms; do not mix them.
 - Dark mode via `data-theme` on `<html>`; tokens in `src/styles/global.css`.
 - Anything that looks actionable must work completely and be keyboard-operable,
   or it is omitted.
+
+## Commits, changelog, releases
+
+One commit format, verified in CI on every pull request:
+
+```
+type(scope): description
+```
+
+`bun run commits:check` runs the same check locally. The rules live in
+`scripts/check-commit-messages.ts` and are unit-tested — read that file rather
+than guessing from examples.
+
+| | |
+|---|---|
+| **type** | Required, lowercase, from the list below |
+| **scope** | Optional. Lowercase, may contain `-` and `/` — `(lab)`, `(notes)`, `(lib/protection)` |
+| **`!`** | Before the colon, marks a breaking change: `feat(content)!: …` |
+| **description** | Required, ≥10 chars, lowercase, no trailing period |
+| **whole subject** | ≤72 chars, so it survives `git log --oneline` |
+
+**Types**, derived from this repository's own history rather than a generic
+list. `security` is not part of Conventional Commits; it is kept because the
+distinction between hardening and a bug fix is worth making here.
+
+`feat` · `fix` · `perf` · `refactor` · `security` · `docs` · `style` · `test` ·
+`build` · `ci` · `chore` · `revert`
+
+If no type fits, the change is probably two changes.
+
+Merge and revert subjects are exempt — git and GitHub generate them. The check
+only reads the commits a pull request **adds**: 28 commits predate the
+convention, and rewriting published history to satisfy a linter would cost more
+than the inconsistency.
+
+The pull request title is checked too, because a squash merge takes its subject
+from the title.
+
+### Changelog
+
+`CHANGELOG.md` is hand-written and curated. Add your line under
+`## [Unreleased]` as part of the pull request — not at release time.
+
+Only `feat`, `fix`, `perf`, `security`, and `refactor`/`build` **with observable
+impact** earn an entry. `style`, `test`, `ci`, `docs`, `chore` and pure refactors
+do not. That curation is the whole point of maintaining it by hand instead of
+generating it from the log.
+
+An unreleased feature is **one** entry. While it lives under `## [Unreleased]`,
+later corrections fold into that same line referencing every commit — no second
+_Corregido_ bullet. Once the feature has shipped in a published version, a later
+fix earns its own line.
+
+Categories, in Spanish, mapped to the types above: `Agregado` · `Corregido` ·
+`Rendimiento` · `Cambiado` · `Seguridad` · `Eliminado`. Only the ones with
+content appear.
+
+### Releases
+
+`release.yml` publishes when `main` moves **and** `version` in `package.json`
+has no tag yet. The version bump is the trigger, not the merge — a version that
+increments on housekeeping stops meaning anything.
+
+Notes are generated from commit subjects and grouped into the same Spanish
+categories, which is exactly why the commit format is enforced: this is what
+consumes it. The generated notes are the complete record; `CHANGELOG.md` stays
+the curated one. Publishing mentions `@NullKDev`, and a mention emails every
+account with read access — that is the notification, with no extra secret and no
+third-party service.
+
+To cut a release: move `## [Unreleased]` to `## [x.y.z] — YYYY-MM-DD`, open an
+empty `## [Unreleased]` above it, bump `version` in `package.json`, and merge.
 
 ## Skills
 
