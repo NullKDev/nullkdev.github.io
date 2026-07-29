@@ -456,8 +456,8 @@ test('public records, series, and nested document adjacency resolve', async ({
   )
   await page.goto('/notes/gof-patterns-android/proxy-facade/')
   const navigation = page.getByRole('navigation', { name: 'Documents' })
-  await expect(navigation).toContainText('Observer and State')
-  await expect(navigation).toContainText('Adapter and Factory')
+  await expect(navigation).toContainText('Observer & State')
+  await expect(navigation).toContainText('Adapter & Factory')
   await page.getByRole('link', { name: 'View in Spanish' }).click()
   await expect(page).toHaveURL(
     /\/es\/notes\/patrones-gof-android\/proxy-facade\/$/,
@@ -479,9 +479,15 @@ test('local Lab provides bounded localized operations without network requests',
     'true',
   )
   await page.selectOption('select', 'minify')
-  await page.getByLabel('Entrada').fill('{"signal":true}')
+  // getByLabel matches on substring, so 'Entrada' also caught the
+  // 'Entradas relacionadas' region and the 'Más entradas' pager. Name the role.
+  await page
+    .getByRole('textbox', { name: 'Entrada', exact: true })
+    .fill('{"signal":true}')
   await page.getByRole('button', { name: 'Ejecutar localmente' }).click()
-  await expect(page.getByLabel('Resultado')).toHaveValue('{"signal":true}')
+  await expect(
+    page.getByRole('textbox', { name: 'Resultado', exact: true }),
+  ).toHaveValue('{"signal":true}')
   expect(externalRequests).toEqual([])
   await expectNoAxeViolations(page)
 })

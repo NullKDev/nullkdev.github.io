@@ -2461,6 +2461,16 @@
   font:
     0.85em 'IBM Plex Mono',
     monospace;
+  /* An API name has no spaces to break at, so a phone-width line containing
+     `prepareWithSegments` pushed the whole document sideways — the code blocks
+     scroll, but inline code sits in the prose and had nothing to give. Break
+     inside the word rather than let one identifier widen every page. */
+  overflow-wrap: anywhere;
+}
+/* Block code opts back out: inside a <pre> the horizontal scroll is the
+   affordance, and breaking a line there would misrepresent the source. */
+.prose pre code {
+  overflow-wrap: normal;
 }
 .prose pre {
   max-width: 100%;
