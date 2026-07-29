@@ -1,4 +1,4 @@
-import { readFile, stat } from 'node:fs/promises'
+import { readFile } from 'node:fs/promises'
 import { extname, resolve } from 'node:path'
 import { gzipSync } from 'node:zlib'
 
@@ -101,8 +101,17 @@ export const collectRouteWeight = async (
     if (!path || visited.has(path)) continue
     visited.add(path)
     const file = resolve(distRoot, path.slice(1))
-    if ((await stat(file)).isDirectory()) continue
-    const buffer = await readFile(file)
+    /* Read first and let the failure classify the entry, instead of asking
+       `stat` whether it is a directory and then opening it by name. Two
+       lookups of the same path can disagree — CodeQL flags it as CWE-367 —
+       and the single read is also one syscall cheaper per asset. */
+    let buffer: Buffer
+    try {
+      buffer = await readFile(file)
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'EISDIR') continue
+      throw error
+    }
     const type = classify(path)
     assets.push({
       path,
