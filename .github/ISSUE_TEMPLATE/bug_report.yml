@@ -1,0 +1,30 @@
+name: Something is broken
+description: A page, tool, or demo does not behave as it should.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what you got instead.
+    validations: { required: true }
+  - type: input
+    id: url
+    attributes:
+      label: Page
+      placeholder: https://nullkdev.github.io/...
+    validations: { required: true }
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and OS
+      placeholder: Firefox 141 on Windows 11
+    validations: { required: true }
+  - type: textarea
+    id: console
+    attributes:
+      label: Console output
+      description: >
+        Anything in the browser console. A "Content Security Policy" message is
+        especially useful — it usually means something is being blocked.
+      render: text

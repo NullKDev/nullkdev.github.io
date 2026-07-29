@@ -1,0 +1,37 @@
+# The workflows themselves are attack surface: they hold the token that can
+# publish the site. actionlint catches correctness bugs, zizmor catches the
+# security patterns — injection sinks, over-broad permissions, unpinned actions.
+name: Workflow lint
+
+on:
+  push:
+    branches: [main, dev]
+    paths: ['.github/workflows/**']
+  pull_request:
+    paths: ['.github/workflows/**']
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - name: actionlint
+        # Pinned to a commit, not `main`: piping a moving script into a shell
+        # would reintroduce exactly the supply-chain hole the SHA pins close.
+        run: |
+          curl -fsSL --proto '=https' --tlsv1.2 \
+            https://raw.githubusercontent.com/rhysd/actionlint/914e7df21a07ef503a81201c76d2b11c789d3fca/scripts/download-actionlint.bash \
+            -o download-actionlint.sh
+          bash download-actionlint.sh 1.7.12
+          ./actionlint -color
+      - name: zizmor
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: false
+      - run: uvx zizmor --persona=regular .github/workflows
