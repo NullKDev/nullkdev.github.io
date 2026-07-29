@@ -1,0 +1,67 @@
+---
+import { getDictionary, type Locale } from '@/i18n'
+import { getEntryDomain, getEntryPath, type ArchiveEntry } from '@/lib/content'
+import { getTopicLabel } from '@/data/taxonomy'
+import { getArchiveLabel } from '@/i18n/archive'
+import Icon from '@/components/primitives/Icon.astro'
+
+interface Props {
+  entry: ArchiveEntry
+  locale: Locale
+  index?: number
+}
+const { entry, locale, index = 0 } = Astro.props
+const dictionary = getDictionary(locale)
+const domain = getEntryDomain(entry)
+const date = entry.data.updatedAt ?? entry.data.publishedAt
+---
+
+<article class="archive-card">
+  {
+    entry.data.image && (
+      <figure class="card-cover">
+        <img
+          src={entry.data.image}
+          alt={entry.data.imageAlt ?? ''}
+          width="640"
+          height="220"
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
+    )
+  }
+  <p class="card-coordinate" aria-hidden="true">
+    {String(index + 1).padStart(2, '0')} / {
+      getArchiveLabel('domain', domain, locale).toUpperCase()
+    }
+  </p>
+  <div>
+    <p class="card-meta">
+      <span>{getArchiveLabel('maturity', entry.data.maturity, locale)}</span>{
+        date && (
+          <time datetime={date.toISOString()}>
+            {date.toLocaleDateString(locale, {
+              month: 'short',
+              year: 'numeric',
+            })}
+          </time>
+        )
+      }
+    </p>
+    <h2><a href={getEntryPath(entry)}>{entry.data.title}</a></h2>
+    <p>{entry.data.summary}</p>
+  </div>
+  <footer>
+    <ul class="topic-list" aria-label={dictionary.archive.topics}>
+      {
+        entry.data.topics
+          .slice(0, 4)
+          .map((topic) => <li>{getTopicLabel(topic, locale)}</li>)
+      }
+    </ul>
+    <a class="card-link" href={getEntryPath(entry)}
+      >{dictionary.archive.open}<Icon name="external" size={13} /></a
+    >
+  </footer>
+</article>

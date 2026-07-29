@@ -1,0 +1,371 @@
+- id: preview
+  order: 1
+  type: image
+  src: /gallery/san-francisco/preview.jpg
+  format: jpg
+  bytes: 50209
+  dimensions:
+    - 600
+    - 338
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: Aerial view of the Golden Gate Bridge spanning the strait, with the San Francisco hills behind it.
+    es: Vista aérea del puente Golden Gate cruzando el estrecho, con los cerros de San Francisco al fondo.
+  caption:
+    en: The only frame in the set that is actually San Francisco.
+    es: La única toma del conjunto que es realmente San Francisco.
+  lqip: data:image/webp;base64,UklGRkAAAABXRUJQVlA4IDQAAADQAQCdASoQAAkAA8BgJYwAAua0+Ha9AAD33oVl/t1/hhgk52kqqBygJ+0aEpI/57nRQAAA
+- id: image-115
+  order: 2
+  type: image
+  src: /gallery/san-francisco/image-115.jpg
+  format: jpg
+  bytes: 236862
+  dimensions:
+    - 1280
+    - 950
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: Black and white macro of a daisy, filling the frame with its petals and seeded centre.
+    es: Macro en blanco y negro de una margarita que llena el cuadro con sus pétalos y su centro.
+  lqip: data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAADQAQCdASoQAAwAA8BgJaQAAlo9mactwAD+4IAu2k3hHxti2K0C2QMzPYtSKoXFXL0fgnpSWP9cGEnx1mkNNlSgAAA=
+- id: image-116
+  order: 3
+  type: image
+  src: /gallery/san-francisco/image-116.jpg
+  format: jpg
+  bytes: 274766
+  dimensions:
+    - 853
+    - 1280
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: Black and white portrait of a duck with a pale bill, turned in profile against a soft background.
+    es: Retrato en blanco y negro de un pato de pico claro, de perfil sobre un fondo desenfocado.
+  lqip: data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAABQAwCdASoQABgAPwFqrE8rJiQiMAgBYCAJaQAAQft5gnxMwAD+dbF4+5CDov9czoqrtXf8nyrg3UuAL7KSHfOjgKydd0i+lpKju4Gl0edsv6bMDjMJvlSxPmFKR6RRq0iWKDZ2N59U2/d6OKbw4AAA
+- id: image-117
+  order: 4
+  type: image
+  src: /gallery/san-francisco/image-117.jpg
+  format: jpg
+  bytes: 431307
+  dimensions:
+    - 1280
+    - 853
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: Close-up of a green ring-necked parakeet with a red beak against a dark green background.
+    es: Primer plano de una cotorra verde de pico rojo sobre un fondo verde oscuro.
+  lqip: data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAADwAQCdASoQAAsAA8BgJZgC7AEDHxoReAAA/VCJg8kf/T/L0FT1C1tZkdjX544DJzp7ylr0LzbAyG/b8k2Si164uaPPHZAA
+- id: image-118
+  order: 5
+  type: image
+  src: /gallery/san-francisco/image-118.jpg
+  format: jpg
+  bytes: 344486
+  dimensions:
+    - 1280
+    - 853
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: A lone acacia tree on a dry savanna plain under a pale sky, with a salt pan on the horizon.
+    es: Una acacia solitaria en una llanura seca bajo un cielo pálido, con un salar en el horizonte.
+  lqip: data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAACwAQCdASoQAAsAA8BgJbAC7AEUeEYAAP7v0kTszFmp4fK5e9N7k1oNVA3yfkcxi43sXiwD+TREVAZlh/DvcpNM2AA=
+- id: image-1129
+  order: 6
+  type: image
+  src: /gallery/san-francisco/image-1129.jpg
+  format: jpg
+  bytes: 455031
+  dimensions:
+    - 1280
+    - 853
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: Backlit oak leaves in autumn colour, rimmed with light against a blurred background.
+    es: Hojas de roble a contraluz en colores de otoño, delineadas por la luz sobre un fondo desenfocado.
+  lqip: data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAADwAQCdASoQAAsAA8BgJbACdAEZwomMMAAA/s0M/XHa1N6ME6slsrdJkDpVXNlAwyGAeD67m+deSuhTGOoIWIfAqllNXTEEVehLHUo9VBIXcNB2Ew0Mni0TJbV7Kt2musWOR6PSAAA=
+- id: image-1138
+  order: 7
+  type: image
+  src: /gallery/san-francisco/image-1138.jpg
+  format: jpg
+  bytes: 410529
+  dimensions:
+    - 1280
+    - 853
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: A white ceramic vase of dried baby's breath on a woven mat, in a dim interior.
+    es: Un jarrón blanco de cerámica con paniculata seca sobre un mantel tejido, en un interior tenue.
+  lqip: data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAAAQAgCdASoQAAsAA8BgJZQCw7DhYCkIiWMAAP7s4aBv3ujSF8D54bUbve9MnYswAL6hlkrmTK2ux4sm3jBbtktDDobtlVfDMPw0hgk+AAA=
+- id: image-1143
+  order: 8
+  type: image
+  src: /gallery/san-francisco/image-1143.jpg
+  format: jpg
+  bytes: 481481
+  dimensions:
+    - 853
+    - 1280
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: A translucent blue octopus with speckled arms, suspended against black water.
+    es: Un pulpo azul translúcido de brazos moteados, suspendido sobre agua negra.
+  lqip: data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAABwAwCdASoQABgAPwForE6rJaQiMAgBYCAJYgC06B6QR8IrwwAA/vK01Col3XfQNfJHnsdHSXkOgddWHuOZm9BXJFfwpysEENbAe7n7pePWO8AA
+- id: image-1145
+  order: 9
+  type: image
+  src: /gallery/san-francisco/image-1145.jpg
+  format: jpg
+  bytes: 175991
+  dimensions:
+    - 1280
+    - 853
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: A cluster of daisies in black and white, several in focus against a dark field.
+    es: Un grupo de margaritas en blanco y negro, algunas enfocadas sobre un campo oscuro.
+  lqip: data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAADwAQCdASoQAAsAA8BgJaQAD4csemvQRAAA/vNDBtG4VvbKycA69EJmPOAoN22kXev1E57IaHIoufQvQODvDCahtVwZiFBopgdf7InNh+wskFlkNb9F41D5bM2wj9KgDGVSNsQAAAA=
+- id: image-1155
+  order: 10
+  type: image
+  src: /gallery/san-francisco/image-1155.jpg
+  format: jpg
+  bytes: 275352
+  dimensions:
+    - 1280
+    - 853
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: Low angle of a ferris wheel's steel frame and gondolas in black and white.
+    es: Contrapicado de la estructura de acero y las cabinas de una rueda de la fortuna, en blanco y negro.
+  lqip: data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAADQAQCdASoQAAsAA8BgJaQAAlo9JMX5oAD+TO5OEIvfMZDgwmxfIRtXiwhHrHWG8QriyBkNAauXqS2pZ8Agdwo1THOqk20jjLCzx9OI0OQAAA==
+- id: image-1164
+  order: 11
+  type: image
+  src: /gallery/san-francisco/image-1164.jpg
+  format: jpg
+  bytes: 227971
+  dimensions:
+    - 1280
+    - 853
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: Sepia-toned frame of a monkey sitting on a branch among pine needles.
+    es: Toma en tono sepia de un mono sentado en una rama entre agujas de pino.
+  lqip: data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACQAQCdASoQAAsAA8BgJZmM+RgAiwAA/ucNWAs5KeXcJubXw7ubr1rZ2rY+uwAA
+- id: image-1181
+  order: 12
+  type: image
+  src: /gallery/san-francisco/image-1181.jpg
+  format: jpg
+  bytes: 261955
+  dimensions:
+    - 1280
+    - 720
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: Macro of an orange flower's centre, showing its stamens and deep red filaments.
+    es: Macro del centro de una flor naranja, con sus estambres y filamentos rojo oscuro.
+  lqip: data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAABQAgCdASoQAAkAA8BgJbACdLoB+AACKs0h9YAA/e03nxtfiT4IDHniVgKKeEl23fkZ8rOBtXqGP+FqLZQVf/IpWhem3Y910df6sDdo+pD+MkgA
+- id: image-1193
+  order: 13
+  type: image
+  src: /gallery/san-francisco/image-1193.jpg
+  format: jpg
+  bytes: 164189
+  dimensions:
+    - 1280
+    - 896
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: Sepia view of a curved stone colonnade topped with statues, at Saint Peter's Square.
+    es: Vista en sepia de una columnata curva coronada por estatuas, en la plaza de San Pedro.
+  lqip: data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAACQAQCdASoQAAsAA8BgJZgCdAB/LQAA2Xs/wGWTzloKQsmX4rlnN/InLuk/U/lAAAA=
+- id: image-1199
+  order: 14
+  type: image
+  src: /gallery/san-francisco/image-1199.jpg
+  format: jpg
+  bytes: 176675
+  dimensions:
+    - 1280
+    - 961
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: Black and white frame of a small curly-haired dog in a coat, running through snow.
+    es: Toma en blanco y negro de un perro pequeño y rizado con abrigo, corriendo por la nieve.
+  lqip: data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACwAQCdASoQAAwAA8BgJaQAAhdzyVQgAP7AKnS+6BW+/NHylGBCmCHUfUu0AAAA
+- id: image-1205
+  order: 15
+  type: image
+  src: /gallery/san-francisco/image-1205.jpg
+  format: jpg
+  bytes: 250842
+  dimensions:
+    - 1280
+    - 853
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: An ear of corn opened in its dry husk, lit warmly at low sun.
+    es: Una mazorca abierta entre sus hojas secas, iluminada con luz cálida y baja.
+  lqip: data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAADwAQCdASoQAAsAA8BgJbACdAC1iePFOmAA/pGcNNddm5K/FWV2nNIwXJ+I7Scr5VptulvmQChQ6Ol0VC1YDXfepE/dwIlxwZSqSlJfpR8BL2AQGMzdea0Z2R3a5/X2GkfZAAAA
+- id: image-1209
+  order: 16
+  type: image
+  src: /gallery/san-francisco/image-1209.jpg
+  format: jpg
+  bytes: 304571
+  dimensions:
+    - 1280
+    - 853
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: A person in a red jacket, seen from behind, carrying a basket of persimmons in an autumn orchard.
+    es: Una persona de chaqueta roja, de espaldas, con una canasta de caquis en un huerto otoñal.
+  lqip: data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADwAQCdASoQAAsAA8BgJagCdAEDZgtmfgAA/LTkpDVn6qyXxRM076dfalcuwd4lkAFCnuqk0T5kbS8Hh5wD+8phpHypfKiV4Bj9DzQub7ucfrTLQiCagK+d+jCWfmkzPUlgAA==
+- id: image-1211
+  order: 17
+  type: image
+  src: /gallery/san-francisco/image-1211.jpg
+  format: jpg
+  bytes: 468019
+  dimensions:
+    - 1280
+    - 852
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: A betta fish with trailing red and white fins, swimming against a dark background.
+    es: Un pez betta de aletas rojas y blancas extendidas, nadando sobre un fondo oscuro.
+  lqip: data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAADwAQCdASoQAAsAA8BgJYwC7AEO6/EcSqAA/vSI2iWaQDSzOAQQwUO7gd9Zc5+uqxoX7PvwKCcnHZj18OJa3JOCtaXk+1AA
+- id: image-1216
+  order: 18
+  type: image
+  src: /gallery/san-francisco/image-1216.jpg
+  format: jpg
+  bytes: 556896
+  dimensions:
+    - 1280
+    - 852
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: A red locomotive framed by the rusted steel trusses of a railway bridge, seen head on.
+    es: Una locomotora roja enmarcada por las vigas oxidadas de un puente ferroviario, vista de frente.
+  lqip: data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAAAQAgCdASoQAAsAA8BgJbACdAD0dNNhfVCAAP7AN/nSZ5k1Mus0nq0Nq9gaeBFACp3nb8EY/pWsPBQd1CRkiNhqhdjHaLMYTHd4OpQbRRg22BYA
+- id: image-1233
+  order: 19
+  type: image
+  src: /gallery/san-francisco/image-1233.jpg
+  format: jpg
+  bytes: 471882
+  dimensions:
+    - 1280
+    - 853
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: Long-exposure black and white waterfall falling into a rocky pool among trees.
+    es: Cascada en blanco y negro con larga exposición, cayendo en una poza rocosa entre árboles.
+  lqip: data:image/webp;base64,UklGRj4AAABXRUJQVlA4IDIAAADwAQCdASoQAAsAA8BgJaQAAsSKDb2NeAAA/sE5qj4bNpBukM8+4LBQXi9AhE+kVju8AA==
+- id: image-1237
+  order: 20
+  type: image
+  src: /gallery/san-francisco/image-1237.jpg
+  format: jpg
+  bytes: 184872
+  dimensions:
+    - 1280
+    - 854
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: A gull floating on rippled water, the surface catching warm low light.
+    es: Una gaviota flotando sobre agua ondulada que refleja una luz cálida y baja.
+  lqip: data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAADQAQCdASoQAAsAA8BgJZACdAEUxv8FoAD+mAyecBuxrUcvpz70lSySeaP4nQCk92vG3bv+J7dMr1ndbumyRFpSeAA=
+- id: image-1242
+  order: 21
+  type: image
+  src: /gallery/san-francisco/image-1242.jpg
+  format: jpg
+  bytes: 262430
+  dimensions:
+    - 853
+    - 1280
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: Black and white still life of fruit on a pedestal dish beside a small pot of roses.
+    es: Bodegón en blanco y negro con fruta en una fuente de pie junto a una maceta de rosas.
+  lqip: data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAACQAwCdASoQABgAPwFqrE8rJaQiMAgBYCAJaQAAK9tHfnpMZggAAPvWplUqNfT6FT32CTmJfQ196/m6K5R47EC8f8jddMbn6I5iAglJDk//FfCrMUCd6A52eiltpSg1arWg2mNpyppA27xJfWEv+1aE2DuwBLCnJzy1AAAA
+- id: image-1248
+  order: 22
+  type: image
+  src: /gallery/san-francisco/image-1248.jpg
+  format: jpg
+  bytes: 158976
+  dimensions:
+    - 1280
+    - 855
+  origin: third-party
+  rights: Unverified — inherited from the previous site's sample album
+  provenance: Imported from the predecessor build; original author unknown
+  alt:
+    en: Black and white close-up of an open daisy with buds rising beside it.
+    es: Primer plano en blanco y negro de una margarita abierta con capullos a su lado.
+  lqip: data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAAAQAgCdASoQAAsAA8BgJaQAAu05t9DRTDIAAP73fLwDNoMJPYDmftgp0nWVOO25oIuDfekYYo59MkoQ2NnRAb8u/3gd0n9ZsbxgAA==
+- id: album-notes
+  order: 23
+  type: document
+  src: /gallery/san-francisco/album-notes.pdf
+  format: pdf
+  bytes: 989
+  pages: 1
+  origin: derived
+  rights: First-party site asset
+  provenance: Generated for this archive to record what the album is and is not
+  label:
+    en: Album notes
+    es: Notas del álbum
+  caption:
+    en: What this set is, where it came from, and what is still unverified.
+    es: Qué es este conjunto, de dónde vino y qué sigue sin verificarse.

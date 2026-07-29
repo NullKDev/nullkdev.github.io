@@ -1,0 +1,9 @@
+# Everything, by default.
+*                       @NullKDev
+
+# Anything that changes what publishes, what executes, or what is claimed
+# publicly gets looked at deliberately rather than merged on momentum.
+/.github/               @NullKDev
+/src/lib/protection/    @NullKDev
+/src/layouts/           @NullKDev
+/scripts/               @NullKDev

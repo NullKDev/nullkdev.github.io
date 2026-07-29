@@ -1,138 +1,134 @@
 # Architecture
 
-## Directory Structure
+How this site is put together, and the rules that keep it that way. If a change
+breaks one of the rules below, the rule is wrong or the change is — resolve that
+before merging, don't route around it.
+
+## The shape
+
+Content is data. Pages are projections of that data. Nothing in between invents
+facts.
 
 ```
-src/
-├── components/         # Reusable Astro/React components
-├── content/            # Content collections (blog, projects, photos, authors)
-│   ├── blog/
-│   ├── projects/
-│   ├── photos/
-│   └── authors/
-├── i18n/               # Translation dictionaries
-│   ├── en.ts           # English (source of truth)
-│   └── es.ts           # Spanish
-├── layouts/
-│   └── Layout.astro    # Root layout — injects i18n engine, theme toggle
-├── lib/
-│   ├── data-utils.ts   # All content fetching functions
-│   ├── encryption.ts   # AES encrypt/decrypt, SHA-256 hash, PBKDF2 slow hash
-│   └── utils.ts        # Shared utilities (cn, readingTime, etc.)
-├── pages/              # File-based routing
-│   ├── index.astro
-│   ├── about.astro
-│   ├── blog/
-│   ├── projects/
-│   ├── photos/
-│   ├── tools/
-│   ├── es/             # Spanish routes (blog, projects, photos)
-│   ├── tags/
-│   ├── authors/
-│   └── api/            # Prerendered JSON endpoints (search-index)
-├── styles/
-│   ├── global.css      # Tailwind import + CSS variables + fonts
-│   └── typography.css  # Prose typography overrides
-└── consts.ts           # Site-wide constants (SITE_URL, SITE, AUTHOR, NAV_LINKS)
-
-functions/              # Cloudflare Pages Functions (server-side only)
-├── api/
-│   ├── newsletter/
-│   │   └── subscribe.ts
-│   └── reactions/
-│       └── [postId].ts
-
-public/
-├── _headers            # Security headers for Cloudflare Pages
-└── ...                 # Static assets (favicon, fonts, images)
+src/content/<domain>/<entry>/index[.es].md   typed records, the source of truth
+        │
+        ▼
+src/content.config.ts                        Zod schemas — the contract
+        │
+        ▼
+src/lib/*.ts                                 derivation layer (no rendering)
+        │
+        ▼
+src/components/                              presentation (no data fetching)
+        │
+        ▼
+src/pages/                                   routing only
 ```
 
-## Routing
+### Rules
 
-Astro uses file-based routing. Key patterns:
+1. **Pages never call `getCollection()`.** All reads go through `src/lib/content.ts`.
+   A page that fetches its own data is a page that will drift from every other page.
+2. **Components never fetch.** They receive typed entries as props. The one
+   exception is `EntryPage.astro`, which resolves relationships and neighbours —
+   that is a known wart, not a pattern to copy.
+3. **Derived values live in `src/lib/`, never inline in a component.** Counts,
+   tones, related entries, byte formatting, capability probes. If two components
+   would compute the same thing, it belongs here.
+4. **Never hand-enter a count or a claim.** Every number on the site is derived
+   from validated records at build time. See `PRODUCT.md` — "evidence before claims"
+   is binding, not aspirational.
+5. **New content fields go in `content.config.ts` first**, with a default, so
+   existing entries stay valid and the UI can treat the field as optional.
 
-| Pattern                 | Purpose                              | Example URL            |
-| ----------------------- | ------------------------------------ | ---------------------- |
-| `[...page].astro`       | Paginated listing                    | `/blog/2`              |
-| `[...id].astro`         | Individual entry (supports subposts) | `/blog/my-post/part-1` |
-| `[id].astro`            | Single item                          | `/photos/my-album`     |
-| `es/blog/[...id].astro` | Spanish version of entry             | `/es/blog/my-post`     |
+## Directory map
 
-### Spanish Routes
+| Path | What lives here |
+|---|---|
+| `src/content/` | Typed records: `work`, `lab`, `notes`, `gallery`, `galleryItems`, `documents` |
+| `src/content.config.ts` | Zod schemas for every collection. See [content-schema.md](content-schema.md) |
+| `src/data/taxonomy.ts` | Controlled vocabularies (domains, surfaces, topics, technologies) |
+| `src/data/brand.ts` | The public name, written once. **Not the address** — the host, the GitHub URLs and the storage identifiers stay `nullkdev` and must never be renamed with it |
+| `src/data/about.ts` | The About record: positions, products and their distribution channels, capabilities, credentials |
+| `src/components/primitives/` | Project-owned shared UI (`Icon`, `StatusChip`, `Breadcrumb`, `BrandMark`) |
+| `src/components/ui/` | **shadcn only.** `shadcn add` writes here and may overwrite — never put project components in it |
+| `src/components/{lab,notes,gallery}/` | One folder per domain; the index, its card, and anything only that section uses |
+| `src/components/mdx/` | Components authors can use inside markdown |
+| `src/i18n/` | UI strings (`en.ts`, `es.ts`) and label registries (`archive.ts`) |
+| `src/styles/` | `global.css` (tokens, shell) and `archive.css` (archive surfaces) |
+| `src/pages/` | File-based routes; EN unprefixed, ES under `/es` |
 
-Spanish content lives under `src/pages/es/`. Only blog, projects, and photos have `/es/*` routes — static pages (about, tools) use the i18n JS toggle in place.
+### The derivation layer — `src/lib/`
 
-## Key Files
+Everything a component would otherwise recompute. If two components would
+derive the same value, it belongs here.
 
-### `src/consts.ts`
+| Module | Owns |
+|---|---|
+| `content.ts` | **The only place collections are read.** Entry lookup, counterparts, adjacency, relationships, and `assertTrackedContentIntegrity()` |
+| `status.ts` | `getLifecycleTone()` — every collection's lifecycle vocabulary onto one shared tone |
+| `icons.ts` | The single icon registry, and the only seam to the icon packs (Lucide · Simple Icons). **No inline `<svg>` in components** |
+| `lab.ts` | Execution tone, `sendsDataTo` hostnames, `formatBytes`, download totals, related entries |
+| `capabilities.ts` | Runtime browser capability probe (feature detection, never user-agent) |
+| `notes.ts` | Type/topic facets, `NOTES_PER_PAGE`, `getNotesMeta()` (reading time + subpost titles in one pass), `getSupersededBy()` |
+| `reading-log.ts` | Private localStorage record of when each note was opened, and `read` / `revised` state |
+| `about.ts` | Career derivation — years of practice from `careerStart`, position periods and durations. **No figure on the About page is typed by hand** |
+| `gallery.ts` | `isMedia` / `isFile` type guards — `Array.filter` does not narrow a discriminated union |
+| `archive-routes.ts` · `rss.ts` · `protection/` | Path building, feed ordering, and the encrypted-content pipeline |
 
-Global configuration: `SITE_URL` (single source of truth for the production URL, no trailing slash), `AUTHOR`, `SITE`, `NAV_LINKS`, `SOCIAL_LINKS`, `UI`. All URL-dependent values derive from `SITE_URL`.
+### Build scripts — `scripts/`
 
-### `src/content.config.ts`
+Registered in `package.json` and chained into `bun run build`.
 
-Defines the four Astro Content Collections (`blog`, `projects`, `photos`, `authors`) with their Zod schemas. Any new field must be declared here first.
+| Script | Does |
+|---|---|
+| `gallery:scan` | Appends `items.yml` stubs for new assets with machine-known facts (size, format, dimensions, `lqip`); backfills placeholders |
+| `gallery:copy` | Publishes `src/content/gallery/*/assets/` to `dist/gallery/<collection>/` |
+| `private:generate` · `private:copy` · `private:scan` | Encrypted-content pipeline and leak scan |
+| `performance:check` | Per-route gzip budgets for total, JS, CSS, images, fonts |
+| `links:check` · `metadata:check` | Built-link crawl, and metadata/RSS/sitemap/JSON-LD/hreflang checks |
 
-### `src/lib/data-utils.ts`
+## Route families
 
-**Single source of truth for all content fetching.** Never call `getCollection()` directly from pages — always use a function from this file. Key functions:
+Most sections are one index plus one detail route. **Notes is the exception**
+and owns its own routes, because filters and pagination there are real URLs:
 
-| Function                     | Returns                                                        |
-| ---------------------------- | -------------------------------------------------------------- |
-| `getAllPosts()`              | EN parent posts only (no drafts, no subposts, no translations) |
-| `getAllPostsAndSubposts()`   | EN posts including subposts                                    |
-| `getAllEsPostsAndSubposts()` | ES translated posts                                            |
-| `getSubpostsForParent(id)`   | Subposts of a given parent, sorted                             |
-| `getAdjacentPosts(id)`       | Prev/next for a post or subpost                                |
-| `getTOCSections(id)`         | TOC data including subposts                                    |
-| `isSubpost(id)`              | `true` if ID contains `/`                                      |
-| `isTranslation(id)`          | `true` if root segment ends in `.es`                           |
-| `getBaseSlug(id)`            | Strips locale suffix (`slug.es/sub` → `slug/sub`)              |
-| `getLocaleId(id, locale)`    | Adds locale suffix (`slug` → `slug.es`)                        |
-| `getPostUrl(id, locale)`     | Builds correct URL for a post                                  |
-
-Same pattern exists for projects (`getAllProjects`, `getSubProjectsForParent`, etc.) and photos (`getAllPhotos`, `getAlbumImages`, etc.).
-
-## Layout
-
-`Layout.astro` is the single root layout used by all pages. It:
-
-- Imports global CSS and typography
-- Renders `<Header>`, `<Footer>`
-- Injects the i18n translation engine (see [i18n.md](./i18n.md))
-- Accepts `class` prop for max-width control (e.g. `<Layout class="max-w-4xl">`)
-- Accepts `hideFloatingSidebar` prop
-
-## React Islands
-
-React is used only for interactive components that need client-side state. They are loaded with `client:idle` to avoid blocking render. Current React components live in `src/components/react/` and include tool pages, search, password protection, gallery viewer, and toast notifications.
-
-## Search
-
-`src/pages/api/search-index.json.ts` is a prerendered endpoint that builds a Flexsearch index from all posts and projects at build time. The `SearchButton` React component fetches this JSON and queries it client-side.
-
-## Server-Side Functions (Cloudflare Pages only)
-
-`functions/` contains Cloudflare Pages Functions that run server-side, separate from the static build:
-
-| Function                      | Purpose                                | Features                                                    |
-| ----------------------------- | -------------------------------------- | ----------------------------------------------------------- |
-| `api/newsletter/subscribe.ts` | Brevo double opt-in subscription       | Rate limiting (5 req/10min), error sanitization             |
-| `api/reactions/[postId].ts`   | Post reaction counts via Cloudflare KV | Rate limiting (20 req/hour), CORS restricted to site origin |
-
-These functions are **not** part of the GitHub Pages build. They require Cloudflare Pages deployment with appropriate env vars and KV bindings.
-
-## Security
-
-- **Security headers** defined in `public/_headers` (applied by Cloudflare Pages): CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, COOP, CORP
-- **Password protection**: `ToolProtection.astro` hashes passwords at build time (SHA-256), only the hash reaches the client. `PasswordProtection.tsx` and `ProjectPasswordProtection.tsx` sanitize decrypted HTML with DOMPurify
-- **Rate limiting**: Client-side lockout (5 attempts, 30s) on all password forms. Server-side per-IP rate limiting on Cloudflare Functions
-- **CORS**: Reactions API restricted to `SITE_URL` origin only
-
-## Path Alias
-
-`@/*` maps to `src/*`. Always use this for internal imports:
-
-```ts
-import { getAllPosts } from '@/lib/data-utils'
-import Layout from '@/layouts/Layout.astro'
 ```
+/notes/  ·  /notes/2/
+/notes/type/<kind>/  ·  /notes/type/<kind>/2/
+/notes/topic/<topic>/  ·  /notes/topic/<topic>/2/
+/notes-search.json                      build-time index for client search
+```
+
+with `/es` counterparts throughout. Filtering a paginated collection on the
+client would filter only the visible page and misreport the result, so both
+axes are routes. `[section].astro` explicitly excludes `notes` for this reason.
+
+## Islands
+
+React is used only where something genuinely runs in the browser: the Lab
+workbench and protected-content unlocking. Everything else is static Astro.
+An island always gets a hydration directive and a no-JS fallback.
+
+## i18n
+
+Two independent mechanisms, do not mix them:
+
+- **Content** — separate records per locale (`index.md` / `index.es.md`) linked by
+  `translationKey`. Spanish slugs are translated (`/es/lab/calculadora-subred/`).
+  A missing translation stays missing; English never leaks under a `/es` URL.
+- **UI strings** — `src/i18n/en.ts` and `es.ts`, same shape, enforced by the
+  `Dictionary` type. Controlled-vocabulary labels live in `src/i18n/archive.ts`.
+
+## Static-host boundary
+
+GitHub Pages. No SSR, no runtime secrets, no response headers, no real
+authorization. Content protection is a deterrent, and the copy must say so.
+Any privacy claim on a page must be derived from data (see the Lab `execution`
+field), never written by hand.
+
+## Verification
+
+`bun run build` runs, in order: type-check, build, private-content copy, leak
+scan, performance budgets, built-link crawl, and metadata/RSS/sitemap/hreflang
+checks. A green build means all of those passed.

@@ -1,0 +1,191 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { getDictionary, type Locale } from '@/i18n'
+import { getArchiveLabel } from '@/i18n/archive'
+import { getTopicLabel, taxonomy } from '@/data/taxonomy'
+import { getEntryPath } from '@/lib/content'
+import { renderIcon } from '@/lib/icons'
+
+interface Props {
+  entry: CollectionEntry<'work'>
+  locale: Locale
+}
+const { entry, locale } = Astro.props
+const dictionary = getDictionary(locale)
+const data = entry.data
+const path = getEntryPath(entry)
+
+type LinkKind =
+  | 'github'
+  | 'playstore'
+  | 'huawei'
+  | 'release'
+  | 'demo'
+  | 'publication'
+  | 'external'
+
+const resolveKind = (link: { href: string; kind: string }): LinkKind => {
+  let host = ''
+  try {
+    host = new URL(link.href).hostname
+  } catch {
+    host = ''
+  }
+  if (host.includes('play.google')) return 'playstore'
+  if (host.includes('huawei') || host.includes('appgallery')) return 'huawei'
+  if (link.kind === 'release') return 'release'
+  if (link.kind === 'demo') return 'demo'
+  if (host.includes('github')) return 'github'
+  if (link.kind === 'publication') return 'publication'
+  return 'external'
+}
+
+// A recognizable version pulled from a release link, e.g. .../tag/1.0.5 → v1.0.5
+const releaseLink = data.links.find((link) => link.kind === 'release')
+const versionMatch = releaseLink?.href.match(/\/tag\/([^/?#]+)/)
+const version = versionMatch
+  ? /^\d/.test(versionMatch[1])
+    ? `v${versionMatch[1]}`
+    : versionMatch[1]
+  : undefined
+
+// Repo path as a manifest line, e.g. NullKDev/Keyboard-Simple
+const repoLink = data.links.find((link) => resolveKind(link) === 'github')
+let repoPath: string | undefined
+if (repoLink) {
+  try {
+    repoPath = new URL(repoLink.href).pathname.replace(/^\/|\/$/g, '')
+  } catch {
+    repoPath = undefined
+  }
+}
+
+const surfaceLabel =
+  taxonomy.surfaces[data.surfaces[0] as keyof typeof taxonomy.surfaces]?.[
+    locale
+  ] ?? data.surfaces[0]
+const domainLabel =
+  taxonomy.domains[data.domains[0] as keyof typeof taxonomy.domains]?.[
+    locale
+  ] ?? data.domains[0]
+
+const dateLabel = (value?: Date) =>
+  value?.toLocaleDateString(locale, { month: 'short', year: 'numeric' })
+const published = dateLabel(data.publishedAt)
+
+const lifecycle = getArchiveLabel('lifecycle', data.lifecycle, locale)
+
+const role = data.role
+const featured = data.featuredRank != null
+const categoryText = [surfaceLabel, domainLabel, role]
+  .filter(Boolean)
+  .join(' · ')
+
+// License read from the evidence/summary (e.g. Apache-2.0), never invented.
+const licenseSource = [
+  data.summary,
+  ...data.evidence.map((item) => item.claim),
+].join(' ')
+const license = licenseSource.match(
+  /\b(Apache-2\.0|MIT|GPL-?[\d.]*|LGPL[\w.-]*|AGPL[\w.-]*|BSD-[\w.-]+|MPL-[\d.]+|ISC|Unlicense|CC-BY[\w.-]*)\b/,
+)?.[1]
+
+const iconSvg: Record<LinkKind, string> = {
+  github: renderIcon('github', 17),
+  playstore: renderIcon('playstore', 17),
+  huawei: renderIcon('appgallery', 17),
+  release: renderIcon('release', 17),
+  demo: renderIcon('demo', 17),
+  publication: renderIcon('publication', 17),
+  external: renderIcon('external', 17),
+}
+---
+
+<article class="work-card">
+  <a class="work-card__hit" href={path} aria-label={data.title}></a>
+
+  <div class="wc-banner">
+    <img
+      src={data.image ?? '/banners/work.svg'}
+      alt={data.imageAlt ?? ''}
+      width="640"
+      height="360"
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+  <span class="wc-ribbon" data-lifecycle={data.lifecycle}>{lifecycle}</span>
+
+  <div class="wc-body">
+    {
+      featured && (
+        <p class="wc-featured">
+          <span aria-hidden="true">★</span>
+          {dictionary.archive.featured}
+        </p>
+      )
+    }
+
+    {
+      (repoPath || license) && (
+        <p class="wc-manifest">
+          {repoPath && <span class="wc-repo">{repoPath}</span>}
+          {license && <span class="wc-license">{license}</span>}
+        </p>
+      )
+    }
+
+    <div class="wc-title-row">
+      <h2 class="wc-title">{data.title}</h2>
+      {version && <span class="wc-version">{version}</span>}
+    </div>
+    <p class="wc-category">
+      <span class="wc-category__text">{categoryText}</span>
+    </p>
+    <p class="wc-summary">{data.summary}</p>
+
+    {
+      data.technologies.length > 0 && (
+        <ul class="wc-tech" aria-label={dictionary.archive.topics}>
+          {data.technologies.slice(0, 5).map((tech) => (
+            <li>{getTopicLabel(tech, locale)}</li>
+          ))}
+        </ul>
+      )
+    }
+
+    <div class="wc-foot">
+      <p class="wc-dates">
+        {
+          published && (
+            <span>
+              {dictionary.archive.published} {published}
+            </span>
+          )
+        }
+      </p>
+      <div class="wc-links">
+        {
+          data.links.map((link) => {
+            const kind = resolveKind(link)
+            return (
+              <a
+                class="wc-link"
+                href={link.href}
+                rel="noopener noreferrer"
+                target="_blank"
+                aria-label={link.label}
+                title={link.label}
+                set:html={iconSvg[kind]}
+              />
+            )
+          })
+        }
+        <span class="wc-view" aria-hidden="true">
+          {dictionary.archive.view}
+          <span set:html={renderIcon('arrowRight', 14)} />
+        </span>
+      </div>
+    </div>
+  </div>
+</article>

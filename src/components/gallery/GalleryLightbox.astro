@@ -1,0 +1,90 @@
+---
+import Icon from '@/components/primitives/Icon.astro'
+import { getDictionary, type Locale } from '@/i18n'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const dictionary = getDictionary(locale)
+---
+
+<dialog
+  class="gallery-viewer"
+  data-lightbox
+  aria-label={dictionary.gallery.viewer}
+>
+  <div class="gallery-viewer__frame">
+    <button
+      type="button"
+      class="gallery-viewer__close"
+      data-close
+      aria-label={dictionary.gallery.close}
+    >
+      <Icon name="cross" size={20} />
+    </button>
+
+    <div class="gallery-viewer__stage">
+      <button
+        type="button"
+        class="gallery-viewer__step"
+        data-step="-1"
+        aria-label={dictionary.gallery.previous}
+      >
+        <Icon name="chevronRight" size={22} />
+      </button>
+
+      {
+        /* Left empty on purpose: the script builds the picture element when the
+          viewer opens, so no source-less image tag is ever shipped. */
+      }
+      <figure class="gallery-viewer__media" data-lightbox-media></figure>
+
+      <button
+        type="button"
+        class="gallery-viewer__step"
+        data-step="1"
+        aria-label={dictionary.gallery.next}
+      >
+        <Icon name="chevronRight" size={22} />
+      </button>
+    </div>
+
+    <aside class="gallery-viewer__panel" data-lightbox-panel>
+      <p class="gallery-viewer__origin" data-field="origin"></p>
+      <p class="gallery-viewer__caption" data-field="caption"></p>
+      <div class="gallery-viewer__prompt" data-field="prompt" hidden>
+        <h3>{dictionary.gallery.prompt}</h3>
+        <p data-field="prompt-text"></p>
+        <p class="gallery-viewer__seed" data-field="seed"></p>
+      </div>
+      <dl class="gallery-viewer__facts">
+        <div data-fact="model" hidden>
+          <dt>{dictionary.gallery.model}</dt>
+          <dd data-field="model"></dd>
+        </div>
+        <div data-fact="dimensions" hidden>
+          <dt>{dictionary.gallery.dimensions}</dt>
+          <dd data-field="dimensions"></dd>
+        </div>
+        <div data-fact="size" hidden>
+          <dt>{dictionary.gallery.size}</dt>
+          <dd data-field="size"></dd>
+        </div>
+        <div data-fact="rights">
+          <dt>{dictionary.gallery.rights}</dt>
+          <dd data-field="rights"></dd>
+        </div>
+        <div data-fact="provenance">
+          <dt>{dictionary.gallery.provenance}</dt>
+          <dd data-field="provenance"></dd>
+        </div>
+      </dl>
+      <p class="gallery-viewer__alt" data-field="alt"></p>
+    </aside>
+
+    <p class="gallery-viewer__counter" data-lightbox-counter aria-live="polite">
+    </p>
+  </div>
+</dialog>

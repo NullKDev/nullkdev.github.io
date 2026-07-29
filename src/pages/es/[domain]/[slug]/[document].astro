@@ -1,0 +1,32 @@
+---
+import DocumentPage from '@/components/DocumentPage.astro'
+import {
+  getAllPublicEntries,
+  getDocumentsForEntry,
+  getEntryDomain,
+  type ArchiveDocument,
+  type ArchiveEntry,
+} from '@/lib/content'
+
+export const getStaticPaths = async () =>
+  (
+    await Promise.all(
+      (await getAllPublicEntries('es')).map(async (entry) =>
+        (await getDocumentsForEntry(entry)).map((document) => ({
+          params: {
+            domain: getEntryDomain(entry),
+            slug: entry.data.slug,
+            document: document.data.slug,
+          },
+          props: { entry, document },
+        })),
+      ),
+    )
+  ).flat()
+const { entry, document } = Astro.props as {
+  entry: ArchiveEntry
+  document: ArchiveDocument
+}
+---
+
+<DocumentPage locale="es" entry={entry} document={document} />

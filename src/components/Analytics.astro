@@ -1,0 +1,42 @@
+---
+/**
+ * Google Analytics 4.
+ *
+ * Renders nothing unless `PUBLIC_GOOGLE_ANALYTICS_ID` holds a valid measurement
+ * ID, so a local build, a fork, and a preview all ship zero tracking without
+ * anyone having to remember to turn it off.
+ *
+ * Three deliberate choices:
+ *
+ * - Consent Mode denies `ad_storage` and `ad_user_data` outright. The point of
+ *   this tag is knowing which entries get read, not building an advertising
+ *   profile of the people reading them, and a default that is never revisited
+ *   should be the restrictive one.
+ * - `anonymize_ip` is redundant on GA4 (it always truncates) but harmless, and
+ *   stating it keeps the intent legible to whoever reads this next.
+ * - The tag loads on idle. The archive's performance budgets are enforced in
+ *   CI, and analytics should never be the reason a page misses them.
+ *
+ * The inline bootstrap below is hashed into the CSP automatically by
+ * `scripts/apply-csp.ts`, which reads the bytes that actually shipped. The
+ * Google origins are added to `script-src`/`connect-src`/`img-src` by that same
+ * script, and only when this ID is set.
+ */
+import { analytics } from '@/data/analytics'
+
+const id = analytics.googleMeasurementId
+---
+
+{
+  analytics.enabled && (
+    <script
+      is:inline
+      set:html={`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
+gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'granted'});
+gtag('js',new Date());
+gtag('config','${id}',{anonymize_ip:true});
+(function(){var load=function(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=${id}';document.head.appendChild(s)};
+'requestIdleCallback'in window?requestIdleCallback(load,{timeout:4000}):setTimeout(load,2000)})()`}
+    />
+  )
+}

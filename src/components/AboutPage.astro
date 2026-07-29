@@ -1,0 +1,342 @@
+---
+import Icon from '@/components/primitives/Icon.astro'
+import { pageTitle } from '@/data/brand'
+import type { IconName } from '@/lib/icons'
+import { about, type ChannelKind } from '@/data/about'
+import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import {
+  formatDuration,
+  formatPeriod,
+  getYearsBuilding,
+  isCurrent,
+} from '@/lib/about'
+import Layout from '@/layouts/Layout.astro'
+
+interface Props {
+  locale: Locale
+}
+const { locale } = Astro.props
+const dictionary = getDictionary(locale)
+const profile = about[locale]
+const copy = dictionary.about
+
+const years = getYearsBuilding()
+const current = profile.positions.find(isCurrent)
+
+/* The short self-description, not the displayed bio: a meta description has to
+   survive a ~155-character truncation, while `profile.bio` is written to be read
+   at display size. One string doing two jobs beats a third field to keep in
+   sync. */
+const metaDescription = dictionary.home.intro
+
+/* Distribution channel → registry mark. All three are brand-family glyphs, so
+   a store and a hand-delivered build read as the same kind of fact. */
+const channelIcon = {
+  playstore: 'playstore',
+  appgallery: 'appgallery',
+  appstore: 'appstore',
+  direct: 'android',
+} as const satisfies Record<ChannelKind, IconName>
+
+/* Rendered through flex gaps rather than literal spaces: JSX drops whitespace
+   that sits alone on a line, so any reformat would silently weld these words
+   together. */
+const measures = [
+  { value: years, label: copy.practice },
+  { value: profile.positions.length, label: copy.employers },
+]
+---
+
+<Layout
+  locale={locale}
+  title={pageTitle(dictionary.nav.about)}
+  description={metaDescription}
+  counterpartPath={locale === 'en' ? '/es/about/' : '/about/'}
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: profile.name,
+    url: Astro.site?.toString(),
+    jobTitle: profile.role,
+    description: `${profile.bio.thesis} ${profile.bio.note}`,
+    ...(current
+      ? { worksFor: { '@type': 'Organization', name: current.org } }
+      : {}),
+    alumniOf: profile.education.map((entry) => ({
+      '@type': 'CollegeOrUniversity',
+      name: entry.issuer,
+    })),
+    knowsAbout: profile.capabilities.flatMap((group) => group.items),
+    sameAs: profile.links
+      .filter((link) => !link.href.startsWith('mailto:'))
+      .map((link) => link.href),
+  }}
+>
+  <main class="about-page">
+    <header class="about-heading">
+      <div class="about-id">
+        <img
+          class="about-avatar"
+          src={profile.avatar}
+          alt={profile.avatarAlt}
+          width="112"
+          height="112"
+          loading="eager"
+          decoding="async"
+        />
+        <div>
+          <p class="kicker">{copy.eyebrow}</p>
+          <h1>{profile.name}</h1>
+          <p class="lede">{profile.role}</p>
+          <p class="about-location">
+            <span aria-hidden="true">◈</span>{profile.location}
+          </p>
+        </div>
+      </div>
+      <div class="about-aside">
+        <p class="about-measure">
+          {
+            measures.map((measure, index) => (
+              <span class="about-measure__part">
+                {index > 0 && (
+                  <span class="about-measure__sep" aria-hidden="true">
+                    ·
+                  </span>
+                )}
+                <b>{measure.value}</b>
+                <span>{measure.label}</span>
+              </span>
+            ))
+          }
+        </p>
+        <ul class="about-links" aria-label={copy.eyebrow}>
+          {
+            profile.links.map((link) => (
+              <li>
+                <a href={link.href}>
+                  <Icon name={link.icon} size={14} />
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </header>
+
+    {
+      /* One opening block, three jobs: the thesis at display size, its
+        elaboration at reading size, and the current status as a dated note —
+        rather than two paragraphs of equal weight saying adjacent things. */
+    }
+    {
+      /* The opening is a structured profile, not a paragraph. Prose was the
+        wrong container: it had to carry the thesis, the breadth, the way of
+        working and the languages at once, so no arrangement of it read well.
+        Each fact now has a slot. */
+    }
+    <section class="about-thesis" aria-labelledby="about-thesis-title">
+      <h2 id="about-thesis-title" class="about-thesis__question">
+        {profile.bio.thesis}
+      </h2>
+      <p class="about-thesis__note">{profile.bio.note}</p>
+    </section>
+
+    <dl class="facets">
+      {
+        profile.facets.map((facet) => (
+          <div class="facet">
+            <dt>{facet.label}</dt>
+            <dd>{facet.body}</dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <section class="about-now" aria-labelledby="about-now-title">
+      <h2 id="about-now-title">
+        {copy.now}
+        <time datetime={profile.now.updatedAt}>{profile.now.updatedAt}</time>
+      </h2>
+      <ul class="about-now__items">
+        {profile.now.items.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class="about-section" aria-labelledby="about-track-title">
+      <h2 id="about-track-title" class="about-section__title">{copy.track}</h2>
+      <ol class="track">
+        {
+          profile.positions.map((position) => (
+            <li
+              class="track__item"
+              data-current={isCurrent(position) || undefined}
+            >
+              <div class="track__meta">
+                <p class="track__period">
+                  {formatPeriod(position, locale, copy.present)}
+                </p>
+                <p class="track__duration">
+                  {formatDuration(position, copy.duration)}
+                </p>
+                <p class="track__place">
+                  {position.mode} · {position.place}
+                </p>
+              </div>
+              <div class="track__body">
+                <div class="track__main">
+                  <h3 class="track__role">
+                    {position.role}
+                    <span class="track__org">
+                      {position.orgUrl ? (
+                        <a href={position.orgUrl}>{position.org}</a>
+                      ) : (
+                        position.org
+                      )}
+                    </span>
+                  </h3>
+                  <p class="track__summary">{position.summary}</p>
+                  {/* The shipped products run as their own column beside all of
+                    this once there is room: the prose is capped at 62ch for
+                    readability, so the right side is otherwise dead space. */}
+                  <ul class="track__highlights">
+                    {position.highlights.map((line) => (
+                      <li>{line}</li>
+                    ))}
+                  </ul>
+                </div>
+                {position.products && (
+                  <div class="track__products">
+                    <p class="kicker">{copy.products}</p>
+                    <ul>
+                      {position.products.map((product) => (
+                        <li class="product">
+                          <p class="product__name">{product.name}</p>
+                          <ul class="product__channels">
+                            {product.channels.map((channel) => {
+                              const label = copy.channels[channel.kind]
+                              /* A store logo is recognised on sight, so it
+                                 carries no visible text. A build handed over
+                                 directly has no mark to recognise, so it
+                                 keeps its words. */
+                              const named = channel.kind === 'direct'
+                              const mark = (
+                                <>
+                                  <Icon
+                                    name={channelIcon[channel.kind]}
+                                    size={16}
+                                  />
+                                  {named ? (
+                                    <span>{label}</span>
+                                  ) : (
+                                    <span class="sr-only">{label}</span>
+                                  )}
+                                </>
+                              )
+                              return (
+                                <li>
+                                  {channel.href ? (
+                                    <a
+                                      class="channel"
+                                      data-named={named || undefined}
+                                      href={channel.href}
+                                      title={`${product.name} — ${label}`}
+                                    >
+                                      {mark}
+                                    </a>
+                                  ) : (
+                                    <span
+                                      class="channel"
+                                      data-named={named || undefined}
+                                    >
+                                      {mark}
+                                    </span>
+                                  )}
+                                </li>
+                              )
+                            })}
+                          </ul>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="about-section" aria-labelledby="about-caps-title">
+      <h2 id="about-caps-title" class="about-section__title">
+        {copy.capabilities}
+      </h2>
+      <dl class="capabilities">
+        {
+          profile.capabilities.map((group) => (
+            <div class="capabilities__row">
+              <dt>
+                {group.label}
+                <span>{group.body}</span>
+              </dt>
+              <dd>
+                <ul>
+                  {group.items.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    <section class="about-section about-credentials">
+      <div>
+        <h2 class="about-section__title">{copy.education}</h2>
+        <ul class="credentials">
+          {
+            profile.education.map((entry) => (
+              <li>
+                <span class="credentials__title">{entry.title}</span>
+                <span class="credentials__issuer">{entry.issuer}</span>
+                <span class="credentials__year">{entry.year}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div>
+        <h2 class="about-section__title">{copy.recognition}</h2>
+        <ul class="credentials">
+          {
+            profile.recognition.map((entry) => (
+              <li>
+                <span class="credentials__title">{entry.title}</span>
+                <span class="credentials__issuer">{entry.issuer}</span>
+                <span class="credentials__year">{entry.year}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <section class="about-elsewhere">
+      <h2>{copy.elsewhere}</h2>
+      <p>{copy.elsewhereBody}</p>
+      <p class="about-elsewhere__links">
+        <a href={getLocalizedPath('/uses/', locale)}>
+          {copy.usesLink}
+          <Icon name="arrowRight" size={15} />
+        </a>
+        <a href={getLocalizedPath('/stack/', locale)}>
+          {copy.stackLink}
+          <Icon name="arrowRight" size={15} />
+        </a>
+      </p>
+    </section>
+  </main>
+</Layout>

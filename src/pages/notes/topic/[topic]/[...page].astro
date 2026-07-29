@@ -1,0 +1,30 @@
+---
+import type { GetStaticPaths } from 'astro'
+import type { CollectionEntry } from 'astro:content'
+import NotesIndex from '@/components/notes/NotesIndex.astro'
+import { assertTrackedContentIntegrity, getArchiveEntries } from '@/lib/content'
+import { getAvailableTopics, getNotesMeta, NOTES_PER_PAGE } from '@/lib/notes'
+
+export const getStaticPaths = (async ({ paginate }) => {
+  await assertTrackedContentIntegrity()
+  const entries = (await getArchiveEntries(
+    'notes',
+    'en',
+  )) as CollectionEntry<'notes'>[]
+  return getAvailableTopics(entries).flatMap(({ id }) =>
+    paginate(
+      entries.filter((entry) => entry.data.topics.includes(id)),
+      { params: { topic: id }, props: { topic: id }, pageSize: NOTES_PER_PAGE },
+    ),
+  )
+}) satisfies GetStaticPaths
+
+const { page, topic } = Astro.props
+const all = (await getArchiveEntries(
+  'notes',
+  'en',
+)) as CollectionEntry<'notes'>[]
+const meta = await getNotesMeta(all)
+---
+
+<NotesIndex locale="en" page={page} all={all} meta={meta} topic={topic} />

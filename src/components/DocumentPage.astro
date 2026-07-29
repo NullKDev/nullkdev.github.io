@@ -1,0 +1,168 @@
+---
+import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import { pageTitle } from '@/data/brand'
+import { render } from 'astro:content'
+import Layout from '@/layouts/Layout.astro'
+import {
+  getAdjacentDocuments,
+  getDocumentCounterpartPath,
+  getDocumentPath,
+  getDocumentRelationships,
+  getEntryDomain,
+  getEntryPath,
+  type ArchiveDocument,
+  type ArchiveEntry,
+} from '@/lib/content'
+import { getTopicLabel } from '@/data/taxonomy'
+import { getArchiveLabel } from '@/i18n/archive'
+import Icon from '@/components/primitives/Icon.astro'
+
+interface Props {
+  entry: ArchiveEntry
+  document: ArchiveDocument
+  locale: Locale
+}
+const { entry, document, locale } = Astro.props
+const dictionary = getDictionary(locale)
+const domain = getEntryDomain(entry)
+const counterpartPath = await getDocumentCounterpartPath(entry, document)
+const adjacent = await getAdjacentDocuments(entry, document)
+const relationships = await getDocumentRelationships(document)
+const { Content, headings } = await render(document)
+---
+
+<Layout
+  locale={locale}
+  title={pageTitle(`${document.data.title} — ${entry.data.title}`)}
+  description={document.data.summary}
+  counterpartPath={counterpartPath}
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: document.data.title,
+    description: document.data.summary,
+    inLanguage: locale,
+    isPartOf: new URL(getEntryPath(entry), Astro.site).toString(),
+  }}
+>
+  <main class="entry-page document-page">
+    <nav class="breadcrumbs" aria-label={dictionary.archive.breadcrumb}>
+      <a href={getLocalizedPath(`/${domain}`, locale)}
+        >{dictionary.nav[domain]}</a
+      ><span aria-hidden="true">/</span><a href={getEntryPath(entry)}
+        >{entry.data.title}</a
+      ><span aria-hidden="true">/</span><span aria-current="page"
+        >{document.data.title}</span
+      >
+    </nav>
+    <header class="entry-heading">
+      <p class="kicker">
+        {getArchiveLabel('domain', domain, locale)} / {
+          String(document.data.order).padStart(2, '0')
+        }
+      </p><h1>{document.data.title}</h1><p class="lede">
+        {document.data.summary}
+      </p>
+    </header>
+    <div class="entry-layout">
+      <article class="prose"><Content /></article><aside
+        class="entry-index"
+        aria-label={dictionary.archive.contents}
+      >
+        {
+          headings.length > 0 && (
+            <>
+              <>
+                <h2>{dictionary.archive.contents}</h2>
+                <ol>
+                  {headings.map((heading) => (
+                    <li>
+                      <a href={`#${heading.slug}`}>{heading.text}</a>
+                    </li>
+                  ))}
+                </ol>
+              </>
+            </>
+          )
+        }<h2>{dictionary.archive.topics}</h2><ul class="topic-list">
+          {
+            document.data.topics.map((topic) => (
+              <li>{getTopicLabel(topic, locale)}</li>
+            ))
+          }
+        </ul>
+      </aside>
+    </div>
+    {
+      document.data.evidence.length > 0 && (
+        <section class="record-section">
+          <h2>{dictionary.archive.evidence}</h2>
+          {document.data.evidence.map((item) => (
+            <div class="evidence-row">
+              <strong>{item.claim}</strong>
+              <p>
+                {item.source} ·{' '}
+                {getArchiveLabel('provenance', item.provenance, locale)}
+                {item.url && (
+                  <>
+                    {' '}
+                    ·{' '}
+                    <a href={item.url}>
+                      {dictionary.archive.source}
+                      <Icon name="external" size={13} />
+                    </a>
+                  </>
+                )}
+              </p>
+            </div>
+          ))}
+        </section>
+      )
+    }
+    {
+      relationships.length > 0 && (
+        <section class="record-section">
+          <h2>{dictionary.archive.references}</h2>
+          <div class="relationship-list">
+            {relationships.map(({ reference, entry: target }) => (
+              <a href={getEntryPath(target)}>
+                <span>
+                  {getArchiveLabel(
+                    'relationship',
+                    reference.relationship,
+                    locale,
+                  )}
+                </span>
+                <strong>{target.data.title}</strong>
+              </a>
+            ))}
+          </div>
+        </section>
+      )
+    }
+    <nav class="series-navigation" aria-label={dictionary.archive.documents}>
+      <div>
+        {
+          adjacent.previous && (
+            <a href={getDocumentPath(entry, adjacent.previous)}>
+              <Icon name="arrowLeft" size={14} />
+              {dictionary.archive.previous}: {adjacent.previous.data.title}
+            </a>
+          )
+        }
+        {
+          adjacent.next && (
+            <a href={getDocumentPath(entry, adjacent.next)}>
+              {dictionary.archive.next}: {adjacent.next.data.title}
+              <Icon name="arrowRight" size={14} />
+            </a>
+          )
+        }
+      </div>
+    </nav>
+    <a class="back-link" href={getEntryPath(entry)}
+      ><Icon name="arrowLeft" size={14} />{dictionary.archive.back}
+      {entry.data.title}</a
+    >
+  </main>
+</Layout>

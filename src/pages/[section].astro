@@ -1,0 +1,44 @@
+---
+import AboutPage from '@/components/AboutPage.astro'
+import ArchiveIndex from '@/components/ArchiveIndex.astro'
+import SecondaryPage from '@/components/SecondaryPage.astro'
+import {
+  archiveDomains,
+  assertTrackedContentIntegrity,
+  getArchiveEntries,
+  type ArchiveDomain,
+} from '@/lib/content'
+
+export const getStaticPaths = async () => {
+  await assertTrackedContentIntegrity()
+  // Notes owns its own paginated + type-filtered routes.
+  const primary = [
+    ...archiveDomains.filter((domain) => domain !== 'notes'),
+    'about',
+  ] as const
+  const secondary = ['uses', 'stack', 'tags', 'colophon'] as const
+  return [...primary, ...secondary].map((section) => ({ params: { section } }))
+}
+const section = Astro.params.section ?? 'work'
+const isDomain = archiveDomains.includes(section as ArchiveDomain)
+const entries = isDomain
+  ? await getArchiveEntries(section as ArchiveDomain, 'en')
+  : []
+---
+
+{
+  isDomain ? (
+    <ArchiveIndex
+      locale="en"
+      domain={section as ArchiveDomain}
+      entries={entries}
+    />
+  ) : section === 'about' ? (
+    <AboutPage locale="en" />
+  ) : (
+    <SecondaryPage
+      locale="en"
+      section={section as 'uses' | 'stack' | 'tags' | 'colophon'}
+    />
+  )
+}

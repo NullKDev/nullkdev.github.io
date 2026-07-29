@@ -1,0 +1,63 @@
+---
+import { getDictionary, type Locale } from '@/i18n'
+import Icon from '@/components/primitives/Icon.astro'
+
+interface Props {
+  locale: Locale
+  current: number
+  total: number
+  /** Astro's paginate() URLs for the surrounding pages. */
+  prev?: string
+  next?: string
+  /** Builds the href for an arbitrary page number. */
+  href: (page: number) => string
+  labels: { previous: string; next: string }
+}
+
+const { locale, current, total, prev, next, href, labels } = Astro.props
+const dictionary = getDictionary(locale)
+const pages = Array.from({ length: total }, (_, index) => index + 1)
+---
+
+{
+  total > 1 && (
+    <nav class="pagination" aria-label={dictionary.notes.pagination}>
+      {prev ? (
+        <a class="pagination__step" href={prev} rel="prev">
+          <Icon name="arrowLeft" size={14} /> {labels.previous}
+        </a>
+      ) : (
+        <span class="pagination__step" aria-hidden="true" data-disabled>
+          <Icon name="arrowLeft" size={14} /> {labels.previous}
+        </span>
+      )}
+
+      <ol class="pagination__pages">
+        {pages.map((page) => (
+          <li>
+            {page === current ? (
+              <span aria-current="page">{page}</span>
+            ) : (
+              <a href={href(page)}>
+                <span class="sr-only">
+                  {dictionary.notes.page} {page}
+                </span>
+                <span aria-hidden="true">{page}</span>
+              </a>
+            )}
+          </li>
+        ))}
+      </ol>
+
+      {next ? (
+        <a class="pagination__step" href={next} rel="next">
+          {labels.next} <Icon name="arrowRight" size={14} />
+        </a>
+      ) : (
+        <span class="pagination__step" aria-hidden="true" data-disabled>
+          {labels.next} <Icon name="arrowRight" size={14} />
+        </span>
+      )}
+    </nav>
+  )
+}

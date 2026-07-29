@@ -1,0 +1,118 @@
+---
+import HomeCard from '@/components/HomeCard.astro'
+import ModelShowcase from '@/components/hero/ModelShowcase.astro'
+import { getDictionary, getLocalizedPath, type Locale } from '@i18n/index'
+import Layout from '@layouts/Layout.astro'
+import { buttonVariants } from '@ui/button'
+import { getTopicLabel } from '@/data/taxonomy'
+import { getHomeSections, getTopicIndex } from '@/lib/content'
+import Icon from '@/components/primitives/Icon.astro'
+
+interface Props {
+  locale: Locale
+}
+const { locale } = Astro.props
+const dictionary = getDictionary(locale)
+const sections = await getHomeSections(locale)
+const topics = [...(await getTopicIndex(locale)).entries()]
+  .sort(([, left], [, right]) => right.length - left.length)
+  .slice(0, 12)
+const tagsPath = getLocalizedPath('/tags', locale)
+---
+
+<Layout
+  locale={locale}
+  title={dictionary.meta.title}
+  description={dictionary.meta.description}
+  counterpartPath={locale === 'en' ? '/es/' : '/'}
+>
+  <main>
+    <section class="hero" aria-labelledby="home-title">
+      <div class="hero-copy">
+        <p class="kicker">{dictionary.home.eyebrow}</p>
+        <h1 id="home-title">{dictionary.home.title}</h1>
+        <p class="hero-intro">{dictionary.home.intro}</p>
+        <div class="hero-actions">
+          <a
+            class={buttonVariants({ variant: 'default' })}
+            data-slot="button"
+            href={getLocalizedPath('/work', locale)}
+          >
+            {dictionary.nav.work}
+            <Icon name="external" size={14} />
+          </a>
+          <p class="status-line">
+            <span aria-hidden="true"></span>{dictionary.home.status}
+          </p>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <ModelShowcase home={dictionary.home} />
+      </div>
+    </section>
+
+    <div class="home-sections">
+      {
+        sections.map(
+          ({ domain, items, total }) =>
+            items.length > 0 && (
+              <section
+                class={`home-domain home-domain--${domain}`}
+                aria-labelledby={`home-${domain}-title`}
+              >
+                <header class="home-domain-head">
+                  <div>
+                    <h2 id={`home-${domain}-title`}>
+                      {dictionary.nav[domain]}
+                    </h2>
+                    <p>{dictionary.section[domain]}</p>
+                  </div>
+                  <a
+                    class="home-domain-more"
+                    href={getLocalizedPath(`/${domain}`, locale)}
+                  >
+                    {dictionary.home.seeAll}
+                    {total > items.length && (
+                      <span class="home-domain-count">· {total}</span>
+                    )}
+                    <Icon name="arrowRight" size={14} />
+                  </a>
+                </header>
+                <div class="home-domain-grid">
+                  {items.map((entry, index) => (
+                    <HomeCard entry={entry} locale={locale} index={index} />
+                  ))}
+                </div>
+              </section>
+            ),
+        )
+      }
+    </div>
+
+    <section class="home-topics" aria-labelledby="home-topics-title">
+      <header class="home-domain-head">
+        <div>
+          <h2 id="home-topics-title">{dictionary.home.topics}</h2>
+          <p>{dictionary.home.topicsIntro}</p>
+        </div>
+        <a class="home-domain-more" href={tagsPath}>
+          {dictionary.home.allTopics}<Icon name="arrowRight" size={14} />
+        </a>
+      </header>
+      <ul class="home-topic-cloud">
+        {
+          topics.map(([topic, records]) => (
+            <li>
+              <a href={`${tagsPath}#${topic}`}>
+                {getTopicLabel(topic, locale)}
+                <span aria-hidden="true">
+                  {String(records.length).padStart(2, '0')}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </main>
+</Layout>

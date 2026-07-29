@@ -1,204 +1,188 @@
 ---
-import '@/styles/global.css'
-import '@/styles/typography.css'
+import { createHash } from 'node:crypto'
 
-import FloatingSidebar from '@/components/FloatingSidebar.astro'
-import Footer from '@/components/Footer.astro'
-import Head from '@/components/Head.astro'
-import Header from '@/components/Header.astro'
-import { SITE, UI } from '@/consts'
-import { cn } from '@/lib/utils'
-import { en } from '@/i18n/en'
-import { es } from '@/i18n/es'
-
-const i18nData = JSON.stringify({ en, es })
+import Header from '@components/Header.astro'
+import { brand } from '@/data/brand'
+import Footer from '@components/Footer.astro'
+import Analytics from '@components/Analytics.astro'
+import DesignPanel from '@components/dev/DesignPanel.astro'
+import { getDictionary, type Locale } from '@i18n/index'
+import '@styles/global.css'
+import '@styles/archive.css'
 
 interface Props {
-  class?: string
-  hideFloatingSidebar?: boolean
+  locale: Locale
+  title: string
+  description: string
+  counterpartPath?: string
+  image?: string
+  noindex?: boolean
+  jsonLd?: Record<string, unknown>
+  canonicalPath?: string
+  imageAlt?: string
 }
 
-const { class: className, hideFloatingSidebar = false } = Astro.props
+const {
+  locale,
+  title,
+  description,
+  counterpartPath,
+  image = '/og/signal-archive.png',
+  imageAlt,
+  noindex,
+  jsonLd,
+  canonicalPath,
+} = Astro.props
+const dictionary = getDictionary(locale)
+const canonical = new URL(canonicalPath ?? Astro.url.pathname, Astro.site)
+
+/* Theme has to resolve before the first paint or the page flashes the wrong
+   one, which rules out an external file. That means one inline script — and an
+   inline script under a real CSP needs a hash, not `unsafe-inline`. Hashing the
+   exact bytes we render keeps the two from ever drifting apart: edit the script
+   and the hash follows on the next build. */
+const themeScript = `;(() => {
+  document.documentElement.dataset.js = 'true'
+  let theme
+  try {
+    theme = localStorage.getItem('nullkdev-theme')
+  } catch {
+    theme = undefined
+  }
+  document.documentElement.dataset.theme =
+    theme === 'light' || theme === 'dark'
+      ? theme
+      : matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light'
+})()`
+const themeScriptHash = createHash('sha256')
+  .update(themeScript)
+  .digest('base64')
+
+/* GitHub Pages serves static files and exposes no header configuration, so the
+   policy travels in the document. Two limits worth stating rather than hiding:
+   `frame-ancestors` and HSTS are both ignored when a CSP arrives via meta, so
+   clickjacking cannot be refused from here — that needs a host which lets you
+   set response headers. A `_headers` file does nothing on Pages.
+
+   Styles keep `unsafe-inline` because a static build has no per-request nonce.
+   Scripts do not: everything executable is either a bundled module from this
+   origin or the hashed theme script above. Keep this list closed — anything
+   added is something a compromised dependency is then allowed to reach. */
+const csp = [
+  "default-src 'self'",
+  `script-src 'self' 'sha256-${themeScriptHash}'`,
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob:",
+  "font-src 'self'",
+  "connect-src 'self'",
+  "media-src 'self'",
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-src 'none'",
+  'upgrade-insecure-requests',
+].join('; ')
 ---
 
 <!doctype html>
-<html
-  class="bg-background text-foreground scheme-light-dark"
-  lang="en"
->
-  <Head>
+<html lang={locale} data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Security-Policy" content={csp} />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <link
+      rel="preload"
+      href="/fonts/switzer-variable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    {
+      /* Matches the page it sits above, not the brand tile: the browser chrome
+        should continue the surface rather than announce a second colour. */
+    }
+    <meta
+      name="theme-color"
+      content="#fafbfc"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#0a0f1c"
+      media="(prefers-color-scheme: dark)"
+    />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${brand.name} Notes`}
+      href="/rss.xml"
+    />
+    <link rel="alternate" hreflang={locale} href={canonical} />
+    {
+      counterpartPath && (
+        <link
+          rel="alternate"
+          hreflang={locale === 'en' ? 'es' : 'en'}
+          href={new URL(counterpartPath, Astro.site)}
+        />
+      )
+    }
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={brand.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={locale === 'en' ? 'en_US' : 'es_ES'} />
+    <meta property="og:image" content={new URL(image, Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta
+      property="og:image:alt"
+      content={imageAlt ?? dictionary.meta.socialImageAlt}
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(image, Astro.site)} />
+    <meta
+      name="twitter:image:alt"
+      content={imageAlt ?? dictionary.meta.socialImageAlt}
+    />
     <slot name="head" />
-  </Head>
-  <body class="flex h-fit min-h-screen flex-col gap-y-6 font-sans" transition:persist>
-    <!-- Skip to main content link for accessibility -->
-    <a
-      href="#main-content"
-      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-      aria-label="Skip to main content"
-      data-i18n-aria="common.skip_content"
-    >
-      <span data-i18n="common.skip_content">Skip to main content</span>
-    </a>
-    
-    <!-- Prevent same-page navigation to avoid unnecessary transitions -->
-    <script is:inline>
-      (function() {
-        if (window.__preventSamePageNav) return
-        window.__preventSamePageNav = true
-        
-        function normalizePath(path) {
-          return path ? path.split('#')[0].replace(/\/$/, '') || '/' : '/'
-        }
-        
-        function shouldPreventNavigation(link) {
-          if (!link) return false
-          
-          const href = link.getAttribute('href')
-          if (!href || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('tel:')) {
-            return false
-          }
-          
-          const currentPath = normalizePath(window.location.pathname)
-          const targetPath = normalizePath(href)
-          
-          return currentPath === targetPath && !href.includes('#')
-        }
-        
-        // Handle touch events first (mobile) - must be non-passive to prevent default
-        function handleTouchStart(e) {
-          const link = e.target.closest('a[data-internal-link="true"]')
-          if (link && shouldPreventNavigation(link)) {
-            e.preventDefault()
-            e.stopPropagation()
-            e.stopImmediatePropagation()
-            return false
-          }
-        }
-        
-        // Handle click events (desktop and mobile fallback)
-        function handleClick(e) {
-          const link = e.target.closest('a[data-internal-link="true"]')
-          if (link && shouldPreventNavigation(link)) {
-            e.preventDefault()
-            e.stopPropagation()
-            e.stopImmediatePropagation()
-            return false
-          }
-        }
-        
-        // Use capture phase to intercept before Astro's view transitions
-        // Touch events must be non-passive to allow preventDefault
-        document.addEventListener('touchstart', handleTouchStart, { passive: false, capture: true })
-        document.addEventListener('click', handleClick, true)
-      })()
-    </script>
-    <header
-      class="bg-background/50 sticky top-0 z-50 backdrop-blur-sm xl:backdrop-blur-none xl:bg-transparent divide-y divide-border xl:divide-none"
-    >
-      <Header />
-      <slot name="subposts-navigation" />
-      <slot name="table-of-contents" />
-    </header>
-    <main
-      id="main-content"
-      class={cn('w-full mx-auto flex grow flex-col gap-y-6 px-4 pb-20', className)}
-      tabindex="-1"
-    >
-      <slot />
-    </main>
-    {UI.showFloatingSidebar && !hideFloatingSidebar && <FloatingSidebar />}
-    <Footer />
-
-    <!-- i18n: translations data (single source of truth from en.ts / es.ts) -->
-    <script id="i18n-data" type="application/json" set:html={i18nData} />
-    <!-- DOMPurify for XSS protection in i18n_html -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.7/purify.min.js" integrity="sha256-QM/0krVDU6Vc35/7NpeGU5/7fVTSX5fdSh6JdbMJw10=" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <!-- i18n: language detection and translation engine -->
-    <script is:inline data-astro-rerun>
-      (function () {
-        var T = JSON.parse(document.getElementById('i18n-data').textContent || '{}')
-
-        function interpolate(str, vars) {
-          return str.replace(/\{(\w+)\}/g, function (_, k) {
-            return vars[k] !== undefined ? vars[k] : '{' + k + '}'
-          })
-        }
-
-        function applyI18n(lang) {
-          var dict = T[lang] || T.en
-          var vars = window.__i18nVars || {}
-          document.documentElement.lang = lang
-
-          // Text content
-          document.querySelectorAll('[data-i18n]').forEach(function (el) {
-            var key = el.getAttribute('data-i18n')
-            if (dict[key] !== undefined) el.textContent = interpolate(dict[key], vars)
-          })
-
-          // Inner HTML (for paragraphs with <strong>) - sanitized with DOMPurify
-          document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
-            var key = el.getAttribute('data-i18n-html')
-            if (dict[key] !== undefined) {
-              // Import DOMPurify dynamically since it's client-side only
-              var rawHtml = interpolate(dict[key], vars)
-              // Use DOMPurify to sanitize HTML (only allow safe tags)
-              var clean = window.DOMPurify ? window.DOMPurify.sanitize(rawHtml, {
-                ALLOWED_TAGS: ['strong', 'b', 'em', 'i', 'u', 'a', 'br', 'span'],
-                ALLOWED_ATTR: ['style', 'href', 'target', 'rel']
-              }) : rawHtml.replace(/<(?!(?:strong|b|em|i|u|a|br|span)\b)[^>]+>/g, '')
-              el.innerHTML = clean
-            }
-          })
-
-          // title attribute
-          document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
-            var key = el.getAttribute('data-i18n-title')
-            if (dict[key] !== undefined) el.setAttribute('title', dict[key])
-          })
-
-          // aria-label attribute
-          document.querySelectorAll('[data-i18n-aria]').forEach(function (el) {
-            var key = el.getAttribute('data-i18n-aria')
-            if (dict[key] !== undefined) el.setAttribute('aria-label', dict[key])
-          })
-
-          // placeholder attribute
-          document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
-            var key = el.getAttribute('data-i18n-placeholder')
-            if (dict[key] !== undefined) el.setAttribute('placeholder', dict[key])
-          })
-        }
-
-        function updateNavLinks() {
-          var isEs = window.location.pathname === '/es' || window.location.pathname.startsWith('/es/')
-          document.querySelectorAll('a[data-nav-section]').forEach(function (a) {
-            var sec = a.getAttribute('data-nav-section')
-            a.setAttribute('href', isEs ? '/es/' + sec : '/' + sec)
-          })
-        }
-
-        // Default language is always 'en' unless the user has explicitly changed it
-        var stored = localStorage.getItem('lang')
-        var lang = stored || 'en'
-        if (!stored) localStorage.setItem('lang', lang)
-
-        // Expose i18n globally for React components to use
-        window.__i18n = T
-
-        // Make globally available for toggle
-        window.__applyI18n = applyI18n
-        window.__locale = lang
-
-        applyI18n(lang)
-        updateNavLinks()
-
-        document.addEventListener('astro:after-swap', function () {
-          var current = localStorage.getItem('lang') || 'en'
-          applyI18n(current)
-          updateNavLinks()
-        })
-      })()
-    </script>
+    {
+      jsonLd && (
+        <script
+          is:inline
+          type="application/ld+json"
+          set:html={JSON.stringify(jsonLd)}
+        />
+      )
+    }
+    <title>{title}</title>
+    <script is:inline set:html={themeScript} />
+    <Analytics />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">{dictionary.nav.skip}</a>
+    <Header
+      locale={locale}
+      pathname={Astro.url.pathname}
+      counterpartPath={counterpartPath}
+    />
+    <div id="main-content" tabindex="-1"><slot /></div>
+    <Footer locale={locale} pathname={Astro.url.pathname} />
+    <DesignPanel />
   </body>
 </html>

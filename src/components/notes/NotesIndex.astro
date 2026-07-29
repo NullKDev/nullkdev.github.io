@@ -1,0 +1,342 @@
+---
+import type { Page } from 'astro'
+import { pageTitle } from '@/data/brand'
+import type { CollectionEntry } from 'astro:content'
+import NoteRow from '@/components/notes/NoteRow.astro'
+import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
+import Icon from '@/components/primitives/Icon.astro'
+import Pagination from '@/components/primitives/Pagination.astro'
+import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import { getTopicLabel } from '@/data/taxonomy'
+import { getArchiveLabel } from '@/i18n/archive'
+import Layout from '@/layouts/Layout.astro'
+import { countByKind, getAvailableKinds, getSupersededBy } from '@/lib/notes'
+
+interface Props {
+  locale: Locale
+  page: Page<CollectionEntry<'notes'>>
+  /** All published notes in this locale — used for counts and back-references. */
+  all: CollectionEntry<'notes'>[]
+  /** Reading time and subpost titles per entry id, derived once by the route. */
+  meta: Record<string, { minutes: number; parts: string[] }>
+  /** The active type filter, if this is a filtered route. */
+  kind?: string
+  /** The active topic filter, if this is a topic route. */
+  topic?: string
+}
+
+const { locale, page, all, meta, kind, topic } = Astro.props
+const dictionary = getDictionary(locale)
+
+const counts = countByKind(all)
+const kinds = getAvailableKinds(all)
+const base = getLocalizedPath('/notes', locale)
+
+// One place that knows how a Notes URL is built, for every axis and page.
+const viewPath = topic
+  ? `${base}/topic/${topic}/`
+  : kind
+    ? `${base}/type/${kind}/`
+    : `${base}/`
+const pageHref = (target: number) =>
+  target === 1 ? viewPath : `${viewPath}${target}/`
+const topicLabel = topic ? getTopicLabel(topic, locale) : undefined
+
+// No lead entry: the stream is reverse-chronological, so the first card is
+// already the newest, and there is no popularity signal on this site to
+// justify featuring anything else.
+const rows = page.data
+
+const title = topicLabel
+  ? pageTitle(`${topicLabel} — ${dictionary.nav.notes}`)
+  : kind
+    ? pageTitle(getArchiveLabel('noteKindPlural', kind, locale))
+    : pageTitle(dictionary.nav.notes)
+const countWord =
+  all.length === 1 ? dictionary.notes.entry : dictionary.notes.entries
+---
+
+<Layout
+  locale={locale}
+  title={title}
+  description={dictionary.section.notes}
+  counterpartPath={locale === 'en'
+    ? `/es${viewPath}`
+    : viewPath.replace('/es', '')}
+>
+  <main class="notes-index">
+    <header class="notes-head">
+      <Breadcrumb
+        locale={locale}
+        trail={[
+          { label: dictionary.nav.home, href: getLocalizedPath('/', locale) },
+          ...(kind || topicLabel
+            ? [
+                { label: dictionary.nav.notes, href: `${base}/` },
+                {
+                  label:
+                    topicLabel ??
+                    getArchiveLabel('noteKindPlural', kind ?? '', locale),
+                },
+              ]
+            : [{ label: dictionary.nav.notes }]),
+        ]}
+      />
+      <div class="notes-head__row">
+        <h1>{dictionary.nav.notes}</h1>
+        <p class="notes-head__count">
+          {all.length}
+          <span>{countWord}</span>
+          <a class="notes-head__feed" href="/rss.xml">
+            <Icon name="feed" size={14} />
+            RSS
+          </a>
+        </p>
+      </div>
+      <p class="notes-lead">{dictionary.notes.lead}</p>
+    </header>
+
+    <form
+      class="notes-search"
+      role="search"
+      data-notes-search
+      data-endpoint={locale === 'en'
+        ? '/notes-search.json'
+        : '/es/notes-search.json'}
+      hidden
+    >
+      <label for="notes-q" class="sr-only">{dictionary.notes.search}</label>
+      <Icon name="search" size={16} />
+      <input
+        id="notes-q"
+        type="search"
+        autocomplete="off"
+        placeholder={dictionary.notes.searchPlaceholder}
+      />
+      <button type="reset" hidden>{dictionary.notes.clear}</button>
+    </form>
+
+    <nav class="notes-filter" aria-label={dictionary.notes.filter}>
+      <a href={`${base}/`} aria-current={kind || topic ? undefined : 'page'}>
+        {dictionary.notes.all}
+        <span class="notes-filter__n">{all.length}</span>
+      </a>
+      {
+        kinds.map((available: string) => (
+          <a
+            href={`${base}/type/${available}/`}
+            data-kind={available}
+            aria-current={kind === available ? 'page' : undefined}
+          >
+            {getArchiveLabel('noteKindPlural', available, locale)}
+            <span class="notes-filter__n">{counts[available]}</span>
+          </a>
+        ))
+      }
+      {
+        topicLabel && (
+          <span class="notes-filter__topic">
+            {topicLabel}
+            <a href={`${base}/`} aria-label={dictionary.notes.all}>
+              <Icon name="cross" size={12} />
+            </a>
+          </span>
+        )
+      }
+    </nav>
+
+    {
+      rows.length > 0 ? (
+        <div
+          class="notes-stream"
+          data-read-label={dictionary.notes.read}
+          data-revised-label={dictionary.notes.revised}
+        >
+          {rows.map((entry) => (
+            <NoteRow
+              entry={entry}
+              locale={locale}
+              minutes={meta[entry.id]?.minutes ?? 1}
+              parts={meta[entry.id]?.parts ?? []}
+              supersededBy={getSupersededBy(entry, all)}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="notes-empty">{dictionary.notes.empty}</p>
+      )
+    }
+
+    <section class="notes-results" data-notes-results hidden aria-live="polite">
+      <p
+        class="notes-results__count"
+        data-notes-count
+        data-template={dictionary.notes.results}
+        data-jump={dictionary.notes.jumpTo}
+      >
+      </p>
+      <ol class="notes-results__list" data-notes-list></ol>
+    </section>
+
+    <Pagination
+      locale={locale}
+      current={page.currentPage}
+      total={page.lastPage}
+      prev={page.url.prev}
+      next={page.url.next}
+      href={pageHref}
+      labels={{
+        previous: dictionary.notes.newer,
+        next: dictionary.notes.older,
+      }}
+    />
+  </main>
+</Layout>
+
+<script>
+  import { getReadingLog, getReadState } from '@/lib/reading-log'
+
+  // Mark what this browser has already opened, and — the point of storing a
+  // timestamp — what changed since. Purely local; with storage unavailable
+  // nothing is marked and the list is unchanged.
+  const stream = document.querySelector<HTMLElement>('.notes-stream')
+  const labels = {
+    read: stream?.dataset.readLabel ?? '',
+    revised: stream?.dataset.revisedLabel ?? '',
+  }
+  const log = getReadingLog()
+
+  for (const card of document.querySelectorAll<HTMLElement>('.note-row')) {
+    const state = getReadState(log, card.dataset.entry, card.dataset.updated)
+    if (state === 'unread') continue
+    card.dataset.read = state
+    const badge = card.querySelector<HTMLElement>('[data-note-state]')
+    if (badge) {
+      badge.textContent = labels[state]
+      badge.hidden = false
+    }
+  }
+</script>
+
+<script>
+  // Search runs over the whole collection, not the current page — the same
+  // reason filtering and pagination are routes. The field only appears once
+  // this script can actually make it work.
+  type Row = {
+    title: string
+    summary: string
+    kindLabel: string
+    topics: string[]
+    path: string
+    minutes: number
+    date: string
+  }
+  type Filter = { label: string; count: number; path: string }
+  type Index = { entries: Row[]; filters: Filter[] }
+
+  const form = document.querySelector<HTMLFormElement>('[data-notes-search]')
+  const input = form?.querySelector<HTMLInputElement>('input')
+  const reset = form?.querySelector<HTMLButtonElement>('button[type="reset"]')
+  const results = document.querySelector<HTMLElement>('[data-notes-results]')
+  const list = document.querySelector<HTMLOListElement>('[data-notes-list]')
+  const count = document.querySelector<HTMLElement>('[data-notes-count]')
+  const stream = document.querySelector<HTMLElement>('.notes-stream')
+  const pagination = document.querySelector<HTMLElement>('.pagination')
+  const template = count?.dataset.template ?? ''
+  const jumpLabel = count?.dataset.jump ?? ''
+
+  if (form && input && results && list && count) {
+    let index: Index | undefined
+    let pending: number | undefined
+
+    const load = async () => {
+      if (index) return index
+      const response = await fetch(form.dataset.endpoint ?? '')
+      index = (await response.json()) as Index
+      return index
+    }
+
+    const filterRow = (filter: Filter) => {
+      const item = document.createElement('li')
+      item.className = 'notes-results__jump'
+      const link = document.createElement('a')
+      link.href = filter.path
+      const kind = document.createElement('span')
+      kind.className = 'notes-results__kind'
+      kind.textContent = jumpLabel
+      const title = document.createElement('strong')
+      title.textContent = filter.label
+      const meta = document.createElement('span')
+      meta.className = 'notes-results__meta'
+      meta.textContent = String(filter.count)
+      link.append(kind, title, meta)
+      item.append(link)
+      return item
+    }
+
+    const render = (query: string, data: Index) => {
+      const needle = query.toLowerCase()
+      const jumps = data.filters.filter((filter) =>
+        filter.label.toLowerCase().includes(needle),
+      )
+      const matches = data.entries.filter((row) =>
+        [row.title, row.summary, row.kindLabel, ...row.topics]
+          .join(' ')
+          .toLowerCase()
+          .includes(needle),
+      )
+      list.replaceChildren(
+        ...jumps.map(filterRow),
+        ...matches.map((row) => {
+          const item = document.createElement('li')
+          const link = document.createElement('a')
+          link.href = row.path
+          const kind = document.createElement('span')
+          kind.className = 'notes-results__kind'
+          kind.textContent = row.kindLabel
+          const title = document.createElement('strong')
+          title.textContent = row.title
+          const meta = document.createElement('span')
+          meta.className = 'notes-results__meta'
+          meta.textContent = `${row.date} · ${row.minutes}`
+          link.append(kind, title, meta)
+          item.append(link)
+          return item
+        }),
+      )
+      count.textContent = template
+        .replace('{shown}', String(matches.length))
+        .replace('{total}', String(data.entries.length))
+      results.hidden = false
+      if (stream) stream.hidden = true
+      if (pagination) pagination.hidden = true
+      if (reset) reset.hidden = false
+    }
+
+    const clear = () => {
+      results.hidden = true
+      if (stream) stream.hidden = false
+      if (pagination) pagination.hidden = false
+      if (reset) reset.hidden = true
+    }
+
+    input.addEventListener('input', () => {
+      window.clearTimeout(pending)
+      const query = input.value.trim()
+      if (query.length < 2) {
+        clear()
+        return
+      }
+      pending = window.setTimeout(async () => {
+        render(query, await load())
+      }, 120)
+    })
+
+    form.addEventListener('submit', (event) => event.preventDefault())
+    form.addEventListener('reset', () => {
+      window.setTimeout(clear, 0)
+    })
+
+    form.hidden = false
+  }
+</script>
