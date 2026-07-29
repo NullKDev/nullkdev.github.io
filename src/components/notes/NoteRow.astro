@@ -1,0 +1,163 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import Icon from '@/components/primitives/Icon.astro'
+import { getTopicLabel } from '@/data/taxonomy'
+import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import { getArchiveLabel } from '@/i18n/archive'
+import { getEntryPath } from '@/lib/content'
+import type { IconName } from '@/lib/icons'
+
+interface Props {
+  entry: CollectionEntry<'notes'>
+  locale: Locale
+  minutes: number
+  /** Subpost titles, in order. */
+  parts: string[]
+  supersededBy?: CollectionEntry<'notes'>
+}
+
+const { entry, locale, minutes, parts, supersededBy } = Astro.props
+const dictionary = getDictionary(locale)
+const data = entry.data
+
+const kindIcon: Record<string, IconName> = {
+  article: 'article',
+  note: 'note',
+  guide: 'guide',
+  paper: 'paper',
+  decision: 'decision',
+  reference: 'reference',
+}
+
+const kindLabel = getArchiveLabel('noteKind', data.kind, locale)
+const partCount = parts.length
+const date = data.publishedAt
+const topics = data.topics.slice(0, 3)
+
+// Each type shows what that type actually carries. A paper leads with its
+// citation register; a guide leads with the ground it covers; a note stays
+// out of the way. The preview is not one of those distinctions — any entry
+// that has an image shows it, and only its shape changes with the type.
+const showThumb = Boolean(data.image)
+const showSteps = data.kind === 'guide' || data.kind === 'reference'
+const showCitations = data.kind === 'paper' && data.citations.length > 0
+const showParts = partCount > 0 && !showSteps
+---
+
+<article
+  class="note-row"
+  data-entry={data.translationKey}
+  data-updated={(data.updatedAt ?? data.publishedAt)?.toISOString()}
+  data-kind={data.kind}
+  data-stale={data.lifecycle !== 'current' ? '' : undefined}
+>
+  <a class="note-row__hit" href={getEntryPath(entry)} aria-label={data.title}
+  ></a>
+
+  <div class="note-row__body">
+    <p class="note-row__type">
+      <Icon name={kindIcon[data.kind] ?? 'note'} size={15} />
+      {kindLabel}
+      <span class="note-row__state" data-note-state hidden></span>
+      {
+        data.level && (
+          <span class="note-row__level">
+            {getArchiveLabel('level', data.level, locale)}
+          </span>
+        )
+      }
+    </p>
+
+    <div class="note-row__main">
+      <h2 class="note-row__title">{data.title}</h2>
+      <p class="note-row__dek">{data.summary}</p>
+
+      {
+        showSteps && partCount > 0 && (
+          <div class="note-row__covers">
+            <p class="note-row__covers-label">{dictionary.notes.steps}</p>
+            <ol class="note-row__steps">
+              {parts.slice(0, 5).map((part) => (
+                <li>{part}</li>
+              ))}
+            </ol>
+          </div>
+        )
+      }
+
+      {
+        showCitations && (
+          <p class="note-row__citations">
+            <Icon name="citations" size={14} />
+            {data.citations.length} {dictionary.notes.citations}
+            {data.pdf && (
+              <span class="note-row__pdf">{dictionary.notes.pdf}</span>
+            )}
+          </p>
+        )
+      }
+
+      {
+        supersededBy && (
+          <p class="note-row__superseded">
+            {dictionary.notes.supersededBy}
+            <a href={getEntryPath(supersededBy)}>{supersededBy.data.title}</a>
+          </p>
+        )
+      }
+
+      {
+        topics.length > 0 && (
+          <ul class="note-row__topics" aria-label={dictionary.archive.topics}>
+            {topics.map((topic) => (
+              <li>
+                <a
+                  href={`${getLocalizedPath('/notes', locale)}/topic/${topic}/`}
+                >
+                  {getTopicLabel(topic, locale)}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+
+    <p class="note-row__meta">
+      {
+        date && (
+          <time datetime={date.toISOString()}>
+            {date.toLocaleDateString(locale, {
+              month: 'short',
+              year: 'numeric',
+            })}
+          </time>
+        )
+      }
+      <span>{minutes} {dictionary.notes.readTime}</span>
+      {
+        showParts && (
+          <span>
+            {dictionary.notes.series} {partCount}{' '}
+            {partCount === 1 ? dictionary.notes.part : dictionary.notes.parts}
+          </span>
+        )
+      }
+    </p>
+  </div>
+
+  {
+    showThumb && (
+      <figure class="note-row__thumb">
+        <img
+          src={data.image}
+          alt={data.imageAlt ?? ''}
+          width="320"
+          height="200"
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
+    )
+  }
+</article>

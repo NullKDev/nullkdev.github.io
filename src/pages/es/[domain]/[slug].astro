@@ -1,0 +1,54 @@
+---
+import EntryPage from '@/components/EntryPage.astro'
+import { pageTitle } from '@/data/brand'
+import { UnlockContent } from '@/components/protection/UnlockContent'
+import { getDictionary } from '@/i18n'
+import Layout from '@/layouts/Layout.astro'
+import {
+  getAllPublicEntries,
+  getEntryDomain,
+  type ArchiveEntry,
+} from '@/lib/content'
+import { getGeneratedProtectedRoutes } from '@/lib/protection/routes'
+
+export const getStaticPaths = async () => {
+  const publicRoutes = (await getAllPublicEntries('es')).map((entry) => ({
+    params: { domain: getEntryDomain(entry), slug: entry.data.slug },
+    props: { kind: 'public' as const, entry },
+  }))
+  const protectedRoutes = (await getGeneratedProtectedRoutes())
+    .filter(({ locale }) => locale === 'es')
+    .map((manifest) => ({
+      params: { domain: manifest.domain, slug: manifest.slug },
+      props: { kind: 'protected' as const, manifest },
+    }))
+  return [...publicRoutes, ...protectedRoutes]
+}
+
+const props = Astro.props
+const dictionary = getDictionary('es')
+---
+
+{
+  props.kind === 'public' ? (
+    <EntryPage locale="es" entry={props.entry as ArchiveEntry} />
+  ) : (
+    <Layout
+      locale="es"
+      title={pageTitle(dictionary.nav[props.manifest.domain])}
+      description={dictionary.protection.explanation}
+      counterpartPath={`/${props.manifest.domain}/`}
+      noindex
+    >
+      <main class="protected-page">
+        <UnlockContent
+          client:idle
+          entryId={props.manifest.entryId}
+          manifestUrl={`/protected/${props.manifest.entryId}/es/manifest.json`}
+          locale="es"
+          message={dictionary.protection[props.manifest.domain]}
+        />
+      </main>
+    </Layout>
+  )
+}

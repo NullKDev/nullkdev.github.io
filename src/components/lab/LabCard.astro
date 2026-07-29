@@ -1,0 +1,91 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { getLabIcon } from '@/components/lab/lab-icons'
+import { getTopicLabel } from '@/data/taxonomy'
+import { getDictionary, type Locale } from '@/i18n'
+import StatusChip from '@/components/primitives/StatusChip.astro'
+import { getArchiveLabel } from '@/i18n/archive'
+import { getEntryPath } from '@/lib/content'
+import { formatBytes, getTotalDownloadBytes } from '@/lib/lab'
+import Icon from '@/components/primitives/Icon.astro'
+
+interface Props {
+  entry: CollectionEntry<'lab'>
+  locale: Locale
+}
+
+const { entry, locale } = Astro.props
+const dictionary = getDictionary(locale)
+const data = entry.data
+const path = getEntryPath(entry)
+
+const icon = getLabIcon(data.implementationId, data.slug, data.kind, [
+  ...data.technologies,
+  ...data.topics,
+])
+
+// Two costs a visitor should see before clicking: whether the entry talks to
+// a third party, and how much it will download. Both stay silent by default.
+const sendsData = data.execution === 'third-party-network'
+const totalBytes = getTotalDownloadBytes(data.downloads)
+const notices = [
+  sendsData ? getArchiveLabel('execution', data.execution, locale) : undefined,
+  totalBytes > 0 ? formatBytes(totalBytes, locale) : undefined,
+].filter(Boolean) as string[]
+
+// Technologies are the point when they exist; topics stand in for the smaller
+// entries that only carry subject tags.
+const chips = (data.technologies.length ? data.technologies : data.topics)
+  .filter((chip) => chip !== 'developer-tools')
+  .slice(0, 3)
+
+const updated = data.updatedAt ?? data.publishedAt
+const featured = data.featuredRank != null
+---
+
+<article class="lab-card" data-featured={featured ? '' : undefined}>
+  <a class="lab-card__hit" href={path} aria-label={data.title}></a>
+
+  <div class="lab-card__top">
+    <span class="lab-card__icon" aria-hidden="true" set:html={icon} />
+    <StatusChip lifecycle={data.lifecycle} locale={locale} size="sm" />
+  </div>
+
+  <h2 class="lab-card__title">{data.title}</h2>
+  <p class="lab-card__summary">{data.summary}</p>
+
+  {
+    notices.length > 0 && (
+      <p class="lab-card__notice" data-network={sendsData ? '' : undefined}>
+        {notices.join(' · ')}
+      </p>
+    )
+  }
+
+  <div class="lab-card__foot">
+    {
+      chips.length > 0 && (
+        <ul class="lab-card__tags" aria-label={dictionary.archive.topics}>
+          {chips.map((chip) => (
+            <li>{getTopicLabel(chip, locale)}</li>
+          ))}
+        </ul>
+      )
+    }
+    <p class="lab-card__line">
+      {
+        updated && (
+          <time datetime={updated.toISOString()}>
+            {updated.toLocaleDateString(locale, {
+              month: 'short',
+              year: 'numeric',
+            })}
+          </time>
+        )
+      }
+      <span class="lab-card__open">
+        {dictionary.archive.open}<Icon name="arrowRight" size={14} />
+      </span>
+    </p>
+  </div>
+</article>

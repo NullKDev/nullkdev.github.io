@@ -1,24 +1,33 @@
-import { en, type TranslationKeys } from './en'
+import { en } from './en'
 import { es } from './es'
 
 export type Locale = 'en' | 'es'
 
-export const DEFAULT_LOCALE: Locale = 'en'
-export const SUPPORTED_LOCALES: readonly Locale[] = ['en', 'es'] as const
-
-const translations: Record<Locale, Record<string, string>> = { en, es }
-
-export function t(key: string, locale: Locale = DEFAULT_LOCALE): string {
-  return (
-    translations[locale][key as TranslationKeys] ??
-    translations.en[key as TranslationKeys] ??
-    key
-  )
+type WidenStrings<T> = {
+  [Key in keyof T]: T[Key] extends string ? string : WidenStrings<T[Key]>
 }
 
-export function getLocaleFromStorage(): Locale {
-  if (typeof localStorage === 'undefined') return DEFAULT_LOCALE
-  const stored = localStorage.getItem('lang')
-  if (stored === 'es' || stored === 'en') return stored
-  return DEFAULT_LOCALE
+export type Dictionary = WidenStrings<typeof en>
+
+const dictionaries: Record<Locale, Dictionary> = { en, es }
+
+export const getDictionary = (locale: Locale): Dictionary =>
+  dictionaries[locale]
+
+export const getLocaleFromPath = (pathname: string): Locale =>
+  pathname === '/es' || pathname.startsWith('/es/') ? 'es' : 'en'
+
+const withoutLocalePrefix = (pathname: string) => {
+  const normalized = pathname.startsWith('/') ? pathname : `/${pathname}`
+  if (normalized === '/es') return '/'
+  return normalized.startsWith('/es/') ? normalized.slice(3) || '/' : normalized
+}
+
+export const getLocalizedPath = (pathname: string, locale: Locale): string => {
+  const basePath = withoutLocalePrefix(pathname)
+  return locale === 'es'
+    ? basePath === '/'
+      ? '/es/'
+      : `/es${basePath}`
+    : basePath
 }

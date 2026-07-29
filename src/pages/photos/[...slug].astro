@@ -1,0 +1,22 @@
+---
+import CompatibilityPage from '@/components/CompatibilityPage.astro'
+import { getLegacyRoutes } from '@/data/legacy-routes'
+export const getStaticPaths = () =>
+  getLegacyRoutes()
+    .filter(
+      ({ locale, source }) => locale === 'en' && source.startsWith('/photos/'),
+    )
+    .map((route) => ({
+      params: { slug: route.source.slice('/photos/'.length, -1) || undefined },
+      props: {
+        route,
+        counterpart: getLegacyRoutes().find(
+          ({ locale, source }) =>
+            locale === 'es' && source.replace('/es', '') === route.source,
+        ),
+      },
+    }))
+const { route, counterpart } = Astro.props
+---
+
+<CompatibilityPage route={route} counterpart={counterpart} />

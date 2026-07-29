@@ -1,0 +1,48 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { getLabIcon } from '@/components/lab/lab-icons'
+import { getDictionary, type Locale } from '@/i18n'
+import { getArchiveLabel } from '@/i18n/archive'
+import { getEntryPath } from '@/lib/content'
+
+interface Props {
+  entries: CollectionEntry<'lab'>[]
+  locale: Locale
+}
+
+const { entries, locale } = Astro.props
+const dictionary = getDictionary(locale)
+---
+
+{
+  entries.length > 0 && (
+    <section class="lab-related" aria-labelledby="related-lab">
+      <h2 id="related-lab">{dictionary.lab.related}</h2>
+      <ul>
+        {entries.map((entry) => (
+          <li>
+            <a href={getEntryPath(entry)}>
+              <span
+                class="lab-related__icon"
+                aria-hidden="true"
+                set:html={getLabIcon(
+                  entry.data.implementationId,
+                  entry.data.slug,
+                  entry.data.kind,
+                  [...entry.data.technologies, ...entry.data.topics],
+                )}
+              />
+              <span class="lab-related__body">
+                <strong>{entry.data.title}</strong>
+                <span>{entry.data.summary}</span>
+              </span>
+              <span class="lab-related__state">
+                {getArchiveLabel('lifecycle', entry.data.lifecycle, locale)}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}

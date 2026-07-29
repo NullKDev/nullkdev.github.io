@@ -1,0 +1,26 @@
+---
+import Layout from '@/layouts/Layout.astro'
+import { pageTitle } from '@/data/brand'
+---
+
+<Layout
+  locale="es"
+  title={pageTitle('Registro no encontrado')}
+  description="El registro solicitado no existe."
+  canonicalPath="/es/"
+  counterpartPath="/"
+  noindex
+>
+  <main class="not-found-page">
+    <p class="kicker">404 / Fuera del índice</p>
+    <h1>Señal no encontrada.</h1>
+    <p>
+      El registro solicitado puede haberse movido, seguir siendo privado o nunca
+      haber ingresado al archivo público.
+    </p>
+    <div class="hero-actions">
+      <a href="/es/">Volver al archivo</a><a href="/es/notes/">Explorar Notas</a
+      >
+    </div>
+  </main>
+</Layout>

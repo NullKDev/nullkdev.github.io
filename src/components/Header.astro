@@ -1,80 +1,190 @@
 ---
-import Link from '@/components/Link.astro'
-import ThemeToggle from '@/components/ThemeToggle.astro'
-import LanguageToggle from '@/components/LanguageToggle.astro'
-import MobileMenu from '@/components/ui/mobile-menu'
-import SearchButton from '@/components/react/SearchButton'
-import { NAV_LINKS, SITE } from '@/consts'
-import { Icon } from 'astro-icon/components'
+import { getDictionary, getLocalizedPath, type Locale } from '@i18n/index'
+import { brand } from '@/data/brand'
+import BrandMark from '@/components/primitives/BrandMark.astro'
+import { renderIcon } from '@/lib/icons'
 
-const isExternalLink = (href: string) => {
-  return href.startsWith('http')
+interface Props {
+  locale: Locale
+  pathname: string
+  counterpartPath?: string
 }
 
-// Sections that have ES equivalents under /es/*
-const translatableSections = new Set(['blog', 'projects', 'photos'])
+const { locale, pathname, counterpartPath } = Astro.props
+const dictionary = getDictionary(locale)
+const otherLocale = locale === 'en' ? 'es' : 'en'
+const sections = ['work', 'lab', 'notes', 'gallery', 'about'] as const
+const currentSection = sections.find((section) =>
+  pathname.includes(`/${section}`),
+)
+const localeFallback = getLocalizedPath(
+  currentSection ? `/${currentSection}/` : '/',
+  otherLocale,
+)
 ---
 
-<header class="bg-background/50 sticky top-0 z-10 backdrop-blur-md" transition:persist>
-  <div class="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-4 p-4">
-    <Link href="/" class="flex shrink-0 items-center gap-2 text-xl font-medium" data-astro-reload prefetch="hover">
-      <img
-        src="/static/logo.svg"
-        alt={SITE.title}
-        class="size-8"
-        width="32"
-        height="32"
-        loading="eager"
-        fetchpriority="high"
-        transition:persist="logo"
-      />
-     <span class="hidden min-[400px]:block">{SITE.title}</span>
-    </Link>
-    <div class="flex items-center gap-2 md:gap-4">
-      <nav class="hidden items-center gap-4 text-sm sm:gap-6 md:flex">
-        {NAV_LINKS.map((item) => {
-          const isExternal = isExternalLink(item.href)
-          const isInsideLink = item.label.toLowerCase() === 'inside'
-          const section = item.href.replace(/^\//, '')
-          const isTranslatable = translatableSections.has(section)
-          return (
-            <Link
-              href={item.href}
-              {...(isTranslatable ? { 'data-nav-section': section } : {})}
-              prefetch="hover"
-              class={isInsideLink
-                ? "text-primary hover:text-primary/80 capitalize transition-colors flex items-center gap-1.5 font-medium"
-                : "text-foreground/60 hover:text-foreground/80 capitalize transition-colors flex items-center gap-1.5"}
-            >
-              <span data-i18n={`nav.${item.label.toLowerCase()}`}>{item.label}</span>
-              {isExternal && (
-                <Icon 
-                  name="lucide:external-link" 
-                  class={isInsideLink 
-                    ? "size-3.5 opacity-80 flex-shrink-0 text-primary" 
-                    : "size-3.5 opacity-70 flex-shrink-0"} 
-                  aria-hidden="true"
-                />
-              )}
-            </Link>
-          )
-        })}
-      </nav>
-      <div class="hidden h-6 w-px bg-border/60 md:block" aria-hidden="true"></div>
-      <SearchButton client:idle />
-      <MobileMenu client:idle transition:persist />
-      <LanguageToggle />
-      <ThemeToggle transition:persist />
-    </div>
+<header class="site-header">
+  <a
+    class="wordmark"
+    href={getLocalizedPath('/', locale)}
+    aria-label={dictionary.nav.home}
+  >
+    <BrandMark />
+    <span>{brand.mark}</span>
+  </a>
+  <nav class="desktop-nav" aria-label={dictionary.nav.primary}>
+    {
+      sections.map((section) => (
+        <a
+          href={getLocalizedPath(`/${section}`, locale)}
+          aria-current={pathname.includes(`/${section}`) ? 'page' : undefined}
+        >
+          {dictionary.nav[section]}
+        </a>
+      ))
+    }
+  </nav>
+  <div class="header-tools">
+    <button
+      class="icon-control"
+      type="button"
+      data-theme-toggle
+      aria-label={dictionary.nav.themeToDark}
+      aria-pressed="false"
+      data-label-light={dictionary.nav.themeToLight}
+      data-label-dark={dictionary.nav.themeToDark}
+      ><span
+        class="theme-icon-light"
+        aria-hidden="true"
+        set:html={renderIcon('sun', 18)}
+      /><span
+        class="theme-icon-dark"
+        aria-hidden="true"
+        set:html={renderIcon('moon', 18)}
+      /></button
+    >
+    <a
+      class="locale-control"
+      href={counterpartPath ?? localeFallback}
+      aria-label={dictionary.nav.language}
+      hreflang={otherLocale}
+      data-locale-control
+    >
+      {otherLocale.toUpperCase()}
+    </a>
+    <button
+      class="menu-control"
+      type="button"
+      data-menu-open
+      aria-label={dictionary.nav.menu}
+      aria-controls="mobile-navigation"
+      aria-expanded="false">{dictionary.nav.menuText}</button
+    >
   </div>
 </header>
 
-<script is:inline data-astro-rerun>
-  (function () {
-    var isEs = window.location.pathname === '/es' || window.location.pathname.startsWith('/es/')
-    document.querySelectorAll('a[data-nav-section]').forEach(function (a) {
-      var sec = a.getAttribute('data-nav-section')
-      a.setAttribute('href', isEs ? '/es/' + sec : '/' + sec)
+<dialog
+  id="mobile-navigation"
+  class="mobile-drawer"
+  data-mobile-drawer
+  aria-labelledby="mobile-nav-title"
+>
+  <div class="drawer-heading">
+    <span id="mobile-nav-title" class="wordmark">
+      <BrandMark />
+      <span>{brand.mark}</span>
+    </span>
+    <button type="button" data-menu-close aria-label={dictionary.nav.close}
+      >{dictionary.nav.closeText}</button
+    >
+  </div>
+  <nav aria-label={dictionary.nav.primary}>
+    {
+      sections.map((section) => (
+        <a
+          href={getLocalizedPath(`/${section}`, locale)}
+          aria-current={pathname.includes(`/${section}`) ? 'page' : undefined}
+        >
+          {dictionary.nav[section]}
+        </a>
+      ))
+    }
+  </nav>
+</dialog>
+
+<script>
+  const drawer = document.querySelector<HTMLDialogElement>(
+    '[data-mobile-drawer]',
+  )
+  const openButton =
+    document.querySelector<HTMLButtonElement>('[data-menu-open]')
+  const closeButton =
+    document.querySelector<HTMLButtonElement>('[data-menu-close]')
+  openButton?.addEventListener('click', () => {
+    drawer?.showModal()
+    openButton.setAttribute('aria-expanded', 'true')
+  })
+  const closeDrawer = () => {
+    if (drawer?.open) drawer.close()
+    openButton?.setAttribute('aria-expanded', 'false')
+  }
+  closeButton?.addEventListener('click', closeDrawer)
+  drawer?.addEventListener('click', (event) => {
+    if (event.target === drawer) closeDrawer()
+  })
+  drawer?.addEventListener('close', () => {
+    openButton?.setAttribute('aria-expanded', 'false')
+  })
+  drawer?.addEventListener('cancel', () => {
+    openButton?.setAttribute('aria-expanded', 'false')
+  })
+
+  const themeButton = document.querySelector<HTMLButtonElement>(
+    '[data-theme-toggle]',
+  )
+  const syncThemeButton = () => {
+    if (!themeButton) return
+    const dark = document.documentElement.dataset.theme === 'dark'
+    themeButton.setAttribute('aria-pressed', String(dark))
+    themeButton.setAttribute(
+      'aria-label',
+      dark
+        ? (themeButton.dataset.labelLight ?? '')
+        : (themeButton.dataset.labelDark ?? ''),
+    )
+  }
+  if (themeButton) {
+    syncThemeButton()
+    themeButton.addEventListener('click', () => {
+      const root = document.documentElement
+      const next = root.dataset.theme === 'dark' ? 'light' : 'dark'
+      root.dataset.theme = next
+      syncThemeButton()
+      try {
+        localStorage.setItem('nullkdev-theme', next)
+      } catch {
+        /* Theme persistence is optional. */
+      }
     })
-  })()
+  }
+
+  const header = document.querySelector<HTMLElement>('.site-header')
+  if (header) {
+    let ticking = false
+    const updateScrolled = () => {
+      header.toggleAttribute('data-scrolled', window.scrollY > 4)
+      ticking = false
+    }
+    updateScrolled()
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          ticking = true
+          requestAnimationFrame(updateScrolled)
+        }
+      },
+      { passive: true },
+    )
+  }
 </script>

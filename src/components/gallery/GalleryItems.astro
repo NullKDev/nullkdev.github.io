@@ -1,0 +1,295 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import Icon from '@/components/primitives/Icon.astro'
+import { getDictionary, type Locale } from '@/i18n'
+import { getArchiveLabel } from '@/i18n/archive'
+import GalleryLightbox from '@/components/gallery/GalleryLightbox.astro'
+import { isFile, isMedia } from '@/lib/gallery'
+import { formatBytes } from '@/lib/lab'
+import type { IconName } from '@/lib/icons'
+
+interface Props {
+  items: CollectionEntry<'galleryItems'>[]
+  locale: Locale
+}
+
+const { items, locale } = Astro.props
+const dictionary = getDictionary(locale)
+
+// Two surfaces, because two kinds of object. Pictures want to be looked at, so
+// they get a bento. Files and links want to be found and taken, so they get a
+// list with sizes and destinations.
+const media = items.filter(isMedia)
+const files = items.filter(isFile)
+
+const fileIcon: Record<string, IconName> = {
+  document: 'paper',
+  archive: 'archive',
+  link: 'external',
+}
+
+const hostOf = (href: string) => {
+  try {
+    return new URL(href).hostname
+  } catch {
+    return ''
+  }
+}
+---
+
+{
+  media.length > 0 && (
+    <section class="gallery-bento" aria-label={dictionary.gallery.pieces}>
+      {media.map((item, index) => {
+        const data = item.data
+        const [width, height] = data.dimensions ?? [4, 3]
+        const ratio = width / height
+        return (
+          <figure
+            class="gallery-piece"
+            data-span={ratio > 1.7 ? 'wide' : ratio < 0.85 ? 'tall' : undefined}
+            data-origin={data.origin}
+            style={data.lqip ? `--lqip: url('${data.lqip}')` : undefined}
+          >
+            {/* A real link, so the piece still opens without JavaScript. The
+                script upgrades it into the viewer. */}
+            <a
+              class="gallery-piece__open"
+              href={data.src}
+              data-piece={index}
+              aria-label={data.alt[locale]}
+            >
+              {data.type === 'video' ? (
+                <video
+                  src={data.src}
+                  poster={data.poster}
+                  muted
+                  playsinline
+                  preload="metadata"
+                />
+              ) : (
+                <img
+                  src={data.src}
+                  alt={data.alt[locale]}
+                  width={width}
+                  height={height}
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
+              <span class="gallery-piece__veil">
+                <span class="gallery-piece__origin">
+                  {getArchiveLabel('origin', data.origin, locale)}
+                  {data.generation && (
+                    <b>
+                      {data.generation.tool} · {data.generation.model}
+                    </b>
+                  )}
+                </span>
+                {data.caption && (
+                  <span class="gallery-piece__caption">
+                    {data.caption[locale]}
+                  </span>
+                )}
+              </span>
+            </a>
+          </figure>
+        )
+      })}
+    </section>
+  )
+}
+
+<script
+  type="application/json"
+  data-gallery-pieces
+  set:html={JSON.stringify(
+    media.map((item) => {
+      const data = item.data
+      return {
+        src: data.src,
+        type: data.type,
+        alt: data.alt[locale],
+        caption: data.caption?.[locale] ?? '',
+        origin: getArchiveLabel('origin', data.origin, locale),
+        generated: data.origin === 'generated',
+        model: data.generation
+          ? `${data.generation.tool} · ${data.generation.model}`
+          : '',
+        prompt: data.generation?.prompt ?? '',
+        seed:
+          data.generation?.seed !== undefined
+            ? String(data.generation.seed)
+            : '',
+        dimensions: data.dimensions
+          ? `${data.dimensions[0]} × ${data.dimensions[1]}`
+          : '',
+        size: data.bytes ? formatBytes(data.bytes, locale) : '',
+        rights: data.rights,
+        provenance: data.provenance,
+      }
+    }),
+  )}
+/>
+
+{
+  files.length > 0 && (
+    <section class="gallery-files" aria-labelledby="gallery-files">
+      <h2 id="gallery-files">{dictionary.gallery.files}</h2>
+      <ul>
+        {files.map((item) => {
+          const data = item.data
+          const href = data.type === 'link' ? data.href : data.src
+          const external = data.type === 'link'
+          return (
+            <li>
+              <a
+                href={href}
+                download={external ? undefined : ''}
+                rel={external ? 'noopener noreferrer' : undefined}
+                target={external ? '_blank' : undefined}
+              >
+                <span class="gallery-files__icon" aria-hidden="true">
+                  <Icon name={fileIcon[data.type] ?? 'paper'} size={18} />
+                </span>
+                <span class="gallery-files__body">
+                  <strong>{data.label[locale]}</strong>
+                  {data.caption && <span>{data.caption[locale]}</span>}
+                </span>
+                <span class="gallery-files__meta">
+                  {external
+                    ? hostOf(data.href)
+                    : [
+                        'format' in data && data.format
+                          ? data.format.toUpperCase()
+                          : undefined,
+                        'bytes' in data && data.bytes
+                          ? formatBytes(data.bytes, locale)
+                          : undefined,
+                        'pages' in data && data.pages
+                          ? `${data.pages} ${data.pages === 1 ? dictionary.gallery.page : dictionary.gallery.pages}`
+                          : undefined,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                </span>
+              </a>
+            </li>
+          )
+        })}
+      </ul>
+    </section>
+  )
+}
+
+{media.length > 0 && <GalleryLightbox locale={locale} />}
+
+<script>
+  // The viewer is an enhancement: every piece is already a link to its own
+  // file, so with JavaScript off the gallery still works.
+  const source = document.querySelector<HTMLScriptElement>(
+    '[data-gallery-pieces]',
+  )
+  const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]')
+  const stage = dialog?.querySelector<HTMLElement>('[data-lightbox-media]')
+  const counter = dialog?.querySelector<HTMLElement>('[data-lightbox-counter]')
+
+  type Piece = {
+    src: string
+    type: string
+    alt: string
+    caption: string
+    origin: string
+    generated: boolean
+    model: string
+    prompt: string
+    seed: string
+    dimensions: string
+    size: string
+    rights: string
+    provenance: string
+  }
+
+  if (source && dialog && stage && counter) {
+    const pieces = JSON.parse(source.textContent ?? '[]') as Piece[]
+    let current = 0
+
+    const set = (field: string, value: string) => {
+      const node = dialog.querySelector<HTMLElement>(`[data-field="${field}"]`)
+      if (node) node.textContent = value
+    }
+    const toggle = (fact: string, on: boolean) => {
+      const node = dialog.querySelector<HTMLElement>(`[data-fact="${fact}"]`)
+      if (node) node.hidden = !on
+    }
+
+    const show = (index: number) => {
+      current = (index + pieces.length) % pieces.length
+      const piece = pieces[current]
+
+      const media =
+        piece.type === 'video'
+          ? Object.assign(document.createElement('video'), {
+              src: piece.src,
+              controls: true,
+              autoplay: false,
+            })
+          : Object.assign(document.createElement('img'), {
+              src: piece.src,
+              alt: piece.alt,
+            })
+      stage.replaceChildren(media)
+
+      set('origin', piece.origin)
+      set('caption', piece.caption)
+      set('alt', piece.alt)
+      set('rights', piece.rights)
+      set('provenance', piece.provenance)
+      set('model', piece.model)
+      set('dimensions', piece.dimensions)
+      set('size', piece.size)
+      set('prompt-text', piece.prompt)
+      set('seed', piece.seed ? `Seed ${piece.seed}` : '')
+
+      toggle('model', Boolean(piece.model))
+      toggle('dimensions', Boolean(piece.dimensions))
+      toggle('size', Boolean(piece.size))
+      const prompt = dialog.querySelector<HTMLElement>('[data-field="prompt"]')
+      if (prompt) prompt.hidden = !piece.prompt
+      dialog.dataset.origin = piece.generated ? 'generated' : ''
+
+      counter.textContent = `${current + 1} / ${pieces.length}`
+    }
+
+    for (const trigger of document.querySelectorAll<HTMLAnchorElement>(
+      '.gallery-piece__open',
+    )) {
+      trigger.addEventListener('click', (event) => {
+        event.preventDefault()
+        show(Number(trigger.dataset.piece ?? 0))
+        dialog.showModal()
+      })
+    }
+
+    for (const step of dialog.querySelectorAll<HTMLButtonElement>(
+      '[data-step]',
+    )) {
+      step.addEventListener('click', () =>
+        show(current + Number(step.dataset.step)),
+      )
+    }
+    dialog
+      .querySelector<HTMLButtonElement>('[data-close]')
+      ?.addEventListener('click', () => dialog.close())
+
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight') show(current + 1)
+      if (event.key === 'ArrowLeft') show(current - 1)
+    })
+
+    // Clicking the backdrop closes, but clicking the panel or image does not.
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close()
+    })
+  }
+</script>

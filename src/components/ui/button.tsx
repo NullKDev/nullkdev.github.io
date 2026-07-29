@@ -1,57 +1,71 @@
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
+import { Slot } from '@radix-ui/react-slot'
+import { cva, type VariantProps } from 'class-variance-authority'
+import type { ComponentProps } from 'react'
 
-import { cn } from "@/lib/utils"
+import { cn } from '@lib/utils'
 
-const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+export const buttonVariants = cva(
+  'inline-flex min-h-11 items-center justify-center gap-2 border px-4 font-mono text-xs font-semibold tracking-[0.08em] uppercase transition-[background-color,border-color,color,box-shadow,transform] duration-150 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--paper)] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-45 data-[disabled]:pointer-events-none data-[disabled]:opacity-45',
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+          'border-[var(--action)] bg-[var(--action)] text-[var(--action-foreground)] shadow-[var(--shadow-action)] hover:-translate-y-px hover:bg-[var(--action-hover)]',
         outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          'border-[var(--line-strong)] bg-transparent text-[var(--ink)] hover:border-[var(--action)] hover:bg-[var(--surface-raised)]',
+        quiet:
+          'border-transparent bg-transparent text-[var(--ink-muted)] hover:border-[var(--line)] hover:text-[var(--ink)]',
       },
       size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
-        icon: "h-9 w-9",
+        sm: 'min-h-9 px-3 text-[0.68rem]',
+        default: 'min-h-11 px-4',
+        icon: 'size-11 min-h-11 px-0',
       },
     },
     defaultVariants: {
-      variant: "default",
-      size: "default",
+      variant: 'default',
+      size: 'default',
     },
-  }
+  },
 )
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  extends ComponentProps<'button'>, VariantProps<typeof buttonVariants> {
   asChild?: boolean
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button"
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    )
-  }
-)
-Button.displayName = "Button"
+export function Button({
+  asChild = false,
+  className,
+  disabled,
+  onClickCapture,
+  size,
+  tabIndex,
+  type,
+  variant,
+  ...props
+}: ButtonProps) {
+  const Component = asChild ? Slot : 'button'
+  const isDisabledLink = asChild && disabled
 
-export { Button, buttonVariants }
+  return (
+    <Component
+      data-slot="button"
+      data-disabled={disabled ? '' : undefined}
+      aria-disabled={isDisabledLink || undefined}
+      className={cn(buttonVariants({ size, variant }), className)}
+      disabled={asChild ? undefined : disabled}
+      onClickCapture={
+        isDisabledLink
+          ? (event) => {
+              event.preventDefault()
+              event.stopPropagation()
+            }
+          : onClickCapture
+      }
+      tabIndex={isDisabledLink ? -1 : tabIndex}
+      type={asChild ? undefined : (type ?? 'button')}
+      {...props}
+    />
+  )
+}

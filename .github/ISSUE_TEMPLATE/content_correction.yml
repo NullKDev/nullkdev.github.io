@@ -1,0 +1,21 @@
+name: Something is wrong or out of date
+description: A technical claim, number, or link in a Note, Work, or Lab entry.
+labels: [content]
+body:
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      placeholder: https://nullkdev.github.io/notes/...
+    validations: { required: true }
+  - type: textarea
+    id: claim
+    attributes:
+      label: What it says now
+    validations: { required: true }
+  - type: textarea
+    id: correction
+    attributes:
+      label: What is actually true
+      description: A source or a reproduction is worth more than an assertion.
+    validations: { required: true }

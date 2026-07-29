@@ -1,0 +1,30 @@
+# Cooldowns exist because the danger window for a supply-chain attack is the
+# hours right after a malicious release lands, before it is yanked. Waiting a
+# few days costs nothing on a static site and skips most of that window.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 5
+    groups:
+      # One PR per concern instead of a dozen: dev tooling churns constantly and
+      # is not shipped to readers, so it does not deserve individual review.
+      dev-tooling:
+        dependency-type: development
+        update-types: [minor, patch]
+      production-minor:
+        dependency-type: production
+        update-types: [minor, patch]
+    labels: [dependencies]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    labels: [dependencies, ci]

@@ -1,0 +1,30 @@
+---
+// Authoring component for .mdx entries: a labelled callout with a type-driven
+// icon and accent. Styles live in src/styles/archive.css (.callout).
+import { renderIcon, type IconName } from '@/lib/icons'
+
+interface Props {
+  type?: 'note' | 'info' | 'success' | 'warn'
+  title?: string
+}
+const { type = 'note', title } = Astro.props
+
+const icons: Record<NonNullable<Props['type']>, IconName> = {
+  note: 'pencil',
+  info: 'info',
+  success: 'circleCheck',
+  warn: 'warning',
+}
+---
+
+<aside class="callout" data-type={type}>
+  <span
+    class="callout__icon"
+    aria-hidden="true"
+    set:html={renderIcon(icons[type])}
+  />
+  <div class="callout__body">
+    {title && <p class="callout__title">{title}</p>}
+    <slot />
+  </div>
+</aside>

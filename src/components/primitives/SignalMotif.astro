@@ -1,0 +1,15 @@
+---
+import orbitDivider from '@assets/illustrations/orbit-divider.svg?raw'
+
+interface Props {
+  class?: string
+}
+
+const { class: className } = Astro.props
+---
+
+<div
+  class:list={['signal-motif', className]}
+  aria-hidden="true"
+  set:html={orbitDivider}
+/>

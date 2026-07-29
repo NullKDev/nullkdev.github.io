@@ -1,0 +1,39 @@
+---
+import Icon from '@/components/primitives/Icon.astro'
+import { getDictionary, type Locale } from '@/i18n'
+
+interface Crumb {
+  label: string
+  /** Omit on the last crumb — it marks the current page. */
+  href?: string
+}
+
+interface Props {
+  locale: Locale
+  trail: Crumb[]
+}
+
+const { locale, trail } = Astro.props
+const dictionary = getDictionary(locale)
+---
+
+<nav class="crumb" aria-label={dictionary.archive.breadcrumb}>
+  <ol>
+    {
+      trail.map((crumb, index) => (
+        <li>
+          {crumb.href ? (
+            <a href={crumb.href}>
+              {index === 0 && (
+                <Icon class="crumb__home" name="home" size={13} />
+              )}
+              {crumb.label}
+            </a>
+          ) : (
+            <span aria-current="page">{crumb.label}</span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>

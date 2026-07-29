@@ -1,0 +1,196 @@
+---
+interface Props {
+  fallback: string
+  eyebrow: string
+  title: string
+}
+
+const { eyebrow, fallback, title } = Astro.props
+---
+
+<section
+  class="ambient-study"
+  aria-labelledby="ambient-title"
+  data-ambient-scene
+  data-scene-mode="fallback"
+>
+  <div class="ambient-copy">
+    <p class="kicker">{eyebrow}</p>
+    <h2 id="ambient-title">{title}</h2>
+    <p>{fallback}</p>
+  </div>
+  <div class="ambient-canvas" aria-hidden="true" data-ambient-canvas>
+    <svg class="ambient-static" viewBox="0 0 640 360" role="presentation">
+      <path d="M130 195C230 40 414 64 510 176S454 338 294 278 104 246 130 195Z"
+      ></path>
+      <circle cx="230" cy="182" r="58"></circle>
+      <rect
+        x="354"
+        y="130"
+        width="112"
+        height="112"
+        transform="rotate(18 410 186)"></rect>
+    </svg>
+  </div>
+</section>
+
+<script>
+  import {
+    Camera,
+    Color,
+    Geometry,
+    Mesh,
+    Program,
+    Renderer,
+    Transform,
+  } from 'ogl'
+
+  const vertex = /* glsl */ `
+    attribute vec3 position;
+    uniform mat4 modelViewMatrix;
+    uniform mat4 projectionMatrix;
+    void main() {
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `
+  const fragment = /* glsl */ `
+    precision highp float;
+    uniform vec3 uColor;
+    void main() { gl_FragColor = vec4(uColor, 0.88); }
+  `
+
+  for (const section of document.querySelectorAll<HTMLElement>(
+    '[data-ambient-scene]',
+  )) {
+    const host = section.querySelector<HTMLElement>('[data-ambient-canvas]')
+    if (!host) continue
+
+    let cleanup = () => undefined
+    const start = () => {
+      cleanup()
+      let renderer: Renderer
+      try {
+        renderer = new Renderer({
+          alpha: true,
+          antialias: true,
+          dpr: Math.min(devicePixelRatio, 1.5),
+          powerPreference: 'low-power',
+        })
+      } catch {
+        section.dataset.sceneMode = 'fallback'
+        return
+      }
+      const gl = renderer.gl
+      if (!gl) {
+        section.dataset.sceneMode = 'fallback'
+        return
+      }
+      host.append(gl.canvas)
+
+      const camera = new Camera(gl, { fov: 42 })
+      camera.position.z = 5.5
+      const scene = new Transform()
+      const geometry = new Geometry(gl, {
+        position: {
+          size: 3,
+          data: new Float32Array([
+            -1.7, -0.75, 0, -0.35, 1.15, 0, 0.15, -0.75, 0,
+          ]),
+        },
+      })
+      const program = new Program(gl, {
+        vertex,
+        fragment,
+        transparent: true,
+        cullFace: null,
+        uniforms: { uColor: { value: new Color() } },
+      })
+      const mesh = new Mesh(gl, { geometry, program })
+      mesh.setParent(scene)
+
+      const motion = matchMedia('(prefers-reduced-motion: reduce)')
+      let visible = false
+      let frame = 0
+      let disposed = false
+      let failed = false
+      let renderCount = 0
+      const resize = () => {
+        const { width, height } = host.getBoundingClientRect()
+        renderer.setSize(Math.max(width, 1), Math.max(height, 1))
+        camera.perspective({ aspect: Math.max(width, 1) / Math.max(height, 1) })
+      }
+      const render = (time = 0) => {
+        if (disposed || failed) return
+        const animated = visible && !motion.matches
+        section.dataset.sceneMode = visible
+          ? motion.matches
+            ? 'still'
+            : 'animated'
+          : 'paused'
+        if (animated) mesh.rotation.z = Math.sin(time * 0.00018) * 0.14 - 0.2
+        renderer.render({ scene, camera })
+        renderCount += 1
+        section.dataset.sceneRenders = String(renderCount)
+        if (animated) frame = requestAnimationFrame(render)
+      }
+      const update = () => {
+        cancelAnimationFrame(frame)
+        render()
+      }
+      const updateTheme = () => {
+        const color = getComputedStyle(section)
+          .getPropertyValue('--scene-primary')
+          .trim()
+        program.uniforms.uColor.value.set(color)
+        section.dataset.sceneColor = color
+        update()
+      }
+      const intersection = new IntersectionObserver(
+        ([entry]) => {
+          visible = entry.isIntersecting
+          update()
+        },
+        { rootMargin: '100px' },
+      )
+      const resizeObserver = new ResizeObserver(() => {
+        resize()
+        render()
+      })
+      const contextLost = (event: Event) => {
+        event.preventDefault()
+        failed = true
+        cancelAnimationFrame(frame)
+        section.dataset.sceneMode = 'fallback'
+      }
+      const themeObserver = new MutationObserver(updateTheme)
+
+      gl.canvas.addEventListener('webglcontextlost', contextLost)
+      themeObserver.observe(document.documentElement, {
+        attributeFilter: ['data-theme'],
+        attributes: true,
+      })
+      motion.addEventListener('change', update)
+      intersection.observe(section)
+      resizeObserver.observe(host)
+      resize()
+      updateTheme()
+
+      cleanup = () => {
+        disposed = true
+        cancelAnimationFrame(frame)
+        intersection.disconnect()
+        resizeObserver.disconnect()
+        themeObserver.disconnect()
+        motion.removeEventListener('change', update)
+        gl.canvas.removeEventListener('webglcontextlost', contextLost)
+        geometry.remove()
+        program.remove()
+        gl.canvas.remove()
+      }
+    }
+    start()
+    document.addEventListener('astro:before-swap', () => cleanup(), {
+      once: true,
+    })
+  }
+</script>

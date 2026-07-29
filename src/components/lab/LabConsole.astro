@@ -1,0 +1,207 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { getDictionary, type Locale } from '@/i18n'
+import { getArchiveLabel } from '@/i18n/archive'
+import { renderIcon } from '@/lib/icons'
+import {
+  formatBytes,
+  getDataHosts,
+  getExecutionTone,
+  getTotalDownloadBytes,
+} from '@/lib/lab'
+
+interface Props {
+  entry: CollectionEntry<'lab'>
+  locale: Locale
+}
+
+const { entry, locale } = Astro.props
+const dictionary = getDictionary(locale)
+const data = entry.data
+
+const executionTone = getExecutionTone(data.execution)
+const executionLabel = getArchiveLabel('execution', data.execution, locale)
+const hosts = getDataHosts(data.sendsDataTo)
+const totalBytes = getTotalDownloadBytes(data.downloads)
+
+// The panel only earns its column when it has something to say.
+const hasPanel =
+  data.steps.length > 0 || data.requires.length > 0 || data.downloads.length > 0
+
+const icon = {
+  step: renderIcon('list', 15),
+  requirement: renderIcon('shield', 15),
+  download: renderIcon('arrowDown', 15),
+  pending: renderIcon('minus', 13),
+}
+
+// Capability labels for the client probe, resolved at build time so the
+// script never needs the dictionary.
+const capabilityStates = {
+  supported: dictionary.lab.supported,
+  missing: dictionary.lab.missing,
+  prompts: dictionary.lab.prompts,
+}
+const stateIcons = {
+  supported: renderIcon('check', 13),
+  missing: renderIcon('cross', 13),
+  prompts: renderIcon('info', 13),
+}
+---
+
+<section
+  class="lab-console"
+  data-surface={data.surface}
+  data-panel={hasPanel ? '' : undefined}
+  aria-labelledby="workbench-title"
+>
+  <header class="lab-console__bar">
+    <h2 id="workbench-title">
+      {
+        data.kind === 'experiment'
+          ? dictionary.lab.experiment
+          : dictionary.lab.workbench
+      }
+    </h2>
+    <p class="lab-console__run" data-tone={executionTone}>
+      <span class="lab-console__dot" aria-hidden="true"></span>
+      {executionLabel}
+      {
+        data.execution === 'local' && data.sendsDataTo.length === 0 && (
+          <span class="lab-console__aside">{dictionary.lab.noRequests}</span>
+        )
+      }
+      {
+        hosts.length > 0 && (
+          <span class="lab-console__aside">{hosts.join(' · ')}</span>
+        )
+      }
+    </p>
+  </header>
+
+  <div class="lab-console__body">
+    {
+      hasPanel && (
+        <aside class="lab-panel" aria-label={dictionary.lab.setup}>
+          {data.steps.length > 0 && (
+            <section class="lab-panel__block">
+              <h3>
+                <span aria-hidden="true" set:html={icon.step} />
+                {dictionary.lab.steps}
+              </h3>
+              <ol class="lab-steps">
+                {data.steps.map((step) => (
+                  <li>
+                    <strong>{step.label}</strong>
+                    {step.detail && <span>{step.detail}</span>}
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
+
+          {data.requires.length > 0 && (
+            <section
+              class="lab-panel__block"
+              data-lab-requirements
+              data-unsupported={dictionary.lab.unsupported}
+            >
+              <h3>
+                <span aria-hidden="true" set:html={icon.requirement} />
+                {dictionary.lab.requirements}
+              </h3>
+              <ul class="lab-requirements">
+                {data.requires.map((capability) => (
+                  <li data-capability={capability}>
+                    <span
+                      class="lab-requirements__mark"
+                      aria-hidden="true"
+                      set:html={icon.pending}
+                    />
+                    {getArchiveLabel('capability', capability, locale)}
+                    <span class="lab-requirements__state" />
+                  </li>
+                ))}
+              </ul>
+              <p class="lab-panel__alert" role="status" hidden />
+              <script
+                type="application/json"
+                data-lab-capability-labels
+                set:html={JSON.stringify({
+                  states: capabilityStates,
+                  icons: stateIcons,
+                })}
+              />
+            </section>
+          )}
+
+          {data.downloads.length > 0 && (
+            <section class="lab-panel__block">
+              <h3>
+                <span aria-hidden="true" set:html={icon.download} />
+                {dictionary.lab.downloads}
+              </h3>
+              <ul class="lab-downloads">
+                {data.downloads.map((download) => (
+                  <li>
+                    <span>{download.label}</span>
+                    <b>{formatBytes(download.bytes, locale)}</b>
+                  </li>
+                ))}
+              </ul>
+              <p class="lab-panel__note">
+                {formatBytes(totalBytes, locale)} · {dictionary.lab.firstRun}
+              </p>
+            </section>
+          )}
+        </aside>
+      )
+    }
+
+    <div class="lab-stage">
+      <slot />
+    </div>
+  </div>
+</section>
+
+<script>
+  import { probeCapabilities } from '@/lib/capabilities'
+
+  // Declared requirements are the server's promise; this turns them into a
+  // verdict about the visitor's actual browser. Without JS the list still
+  // reads as the declared requirements, which is why nothing here is a
+  // precondition for using the page.
+  const block = document.querySelector<HTMLElement>('[data-lab-requirements]')
+  const labelNode = block?.querySelector<HTMLScriptElement>(
+    '[data-lab-capability-labels]',
+  )
+
+  if (block && labelNode) {
+    const { states, icons } = JSON.parse(labelNode.textContent ?? '{}') as {
+      states: Record<string, string>
+      icons: Record<string, string>
+    }
+    const items = [
+      ...block.querySelectorAll<HTMLLIElement>('li[data-capability]'),
+    ]
+    let missing = 0
+
+    for (const item of items) {
+      const result = probeCapabilities(item.dataset.capability ?? '')
+      item.dataset.state = result
+      const mark = item.querySelector<HTMLElement>('.lab-requirements__mark')
+      if (mark) mark.innerHTML = icons[result] ?? ''
+      const state = item.querySelector<HTMLElement>('.lab-requirements__state')
+      if (state) state.textContent = states[result] ?? ''
+      if (result === 'missing') missing += 1
+    }
+
+    if (missing > 0) {
+      const alert = block.querySelector<HTMLElement>('.lab-panel__alert')
+      if (alert) {
+        alert.textContent = block.dataset.unsupported ?? ''
+        alert.hidden = false
+      }
+    }
+  }
+</script>

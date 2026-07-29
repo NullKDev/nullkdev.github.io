@@ -1,0 +1,22 @@
+---
+import { getArchiveLabel } from '@/i18n/archive'
+import type { Locale } from '@/i18n'
+import { getLifecycleTone } from '@/lib/status'
+
+interface Props {
+  /** A lifecycle value from any collection; the tone is derived from it. */
+  lifecycle: string
+  locale: Locale
+  size?: 'sm' | 'md'
+}
+
+const { lifecycle, locale, size = 'md' } = Astro.props
+---
+
+<span
+  class:list={['status-chip', size === 'sm' && 'status-chip--sm']}
+  data-tone={getLifecycleTone(lifecycle)}
+>
+  <span class="status-chip__dot" aria-hidden="true"></span>
+  {getArchiveLabel('lifecycle', lifecycle, locale)}
+</span>

@@ -1,0 +1,44 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { getTopicLabel } from '@/data/taxonomy'
+import { getDictionary, type Locale } from '@/i18n'
+
+interface Props {
+  entry: CollectionEntry<'lab'>
+  locale: Locale
+}
+
+const { entry, locale } = Astro.props
+const dictionary = getDictionary(locale)
+const data = entry.data
+
+// Every column here is optional. A text transform declares inputs and
+// outputs; a camera experiment or an emulator declares neither, and the
+// block disappears instead of rendering empty headings.
+const columns = [
+  { key: 'accepts', label: dictionary.lab.accepts, items: data.inputs },
+  { key: 'returns', label: dictionary.lab.returns, items: data.outputs },
+  {
+    key: 'built',
+    label: dictionary.lab.builtWith,
+    items: data.technologies.map((id) => getTopicLabel(id, locale)),
+  },
+].filter((column) => column.items.length > 0)
+---
+
+{
+  columns.length > 0 && (
+    <section class="lab-spec" aria-label={dictionary.lab.specification}>
+      {columns.map((column) => (
+        <div class="lab-spec__column" data-column={column.key}>
+          <h2>{column.label}</h2>
+          <ul>
+            {column.items.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </section>
+  )
+}

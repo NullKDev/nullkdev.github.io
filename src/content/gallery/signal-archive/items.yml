@@ -1,0 +1,54 @@
+- id: signal-mark
+  order: 1
+  type: image
+  src: /gallery/signal-archive/signal-mark.svg
+  format: svg
+  dimensions:
+    - 32
+    - 32
+  origin: derived
+  rights: First-party site asset
+  provenance: Authored for the 2026 nullKdev archive redesign
+  alt:
+    en: Circular signal mark crossed by horizontal and vertical coordinate lines.
+    es: Marca circular de señal cruzada por líneas de coordenadas horizontales y verticales.
+  caption:
+    en: Identity reduced to a center point, range ring, and coordinate axes.
+    es: Identidad reducida a un punto central, anillo de alcance y ejes de coordenadas.
+  lqip: data:image/webp;base64,UklGRvAAAABXRUJQVlA4WAoAAAAQAAAADwAADwAAQUxQSIAAAAABcBXbttrsVwdhAxGACooe+BkKuchnTNxXiqdCUEJETABLu+6koJJ3J6U/kskGrdmadCAQj17YGr9Xr4Eoogl3JaAEWJ3PChAF7lvr6Pz5nCKtOxucaRYoAdTpqAABqLZhQxQBh7znmzZEawiM1yM1u97BxAx7pXSdFC5THYelAVZQOCBKAAAAUAIAnQEqEAAQAAPAYCWwNsAUEt/8UAbwAETAAP7rqBcThQFRBE/Be1AozOkXPetjF8K9leK8MvRzrThi8T21bXBkvJUssljlUAA=
+- id: field-grid
+  order: 2
+  type: image
+  src: /gallery/signal-archive/field-grid.svg
+  format: svg
+  dimensions:
+    - 64
+    - 64
+  origin: derived
+  rights: First-party site asset
+  provenance: Authored for the 2026 nullKdev archive redesign
+  alt:
+    en: Modular square field grid with a dashed observation ring at its center.
+    es: Cuadrícula modular con un anillo de observación discontinuo en el centro.
+  caption:
+    en: The coordinate field behind the archive surfaces.
+    es: El campo de coordenadas detrás de las superficies del archivo.
+  lqip: data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAACwAQCdASoQABAAA8BgJZzuHJ6gCAAAAP7wppfOiLJ1607Wr50XKPdrkBJltdgCAAA=
+- id: orbit-divider
+  order: 3
+  type: image
+  src: /gallery/signal-archive/orbit-divider.svg
+  format: svg
+  dimensions:
+    - 720
+    - 240
+  origin: derived
+  rights: First-party site asset
+  provenance: Authored for the 2026 nullKdev archive redesign
+  alt:
+    en: Two elliptical orbits crossing a central signal with two offset points.
+    es: Dos órbitas elípticas cruzan una señal central con dos puntos desplazados.
+  caption:
+    en: A study for connecting artifacts without turning the archive into a dashboard.
+    es: Un estudio para conectar artefactos sin convertir el archivo en un dashboard.
+  lqip: data:image/webp;base64,UklGRlIAAABXRUJQVlA4WAoAAAAQAAAADwAABAAAQUxQSBIAAAABD/DA/4iIIJBNdvPkc4jof+hWUDggGgAAAFABAJ0BKhAABQADwGAlnAAEAAAA/vEpACAA
