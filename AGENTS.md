@@ -16,6 +16,7 @@ bun run format         # Format (no semicolons, single quotes); format:check ver
 bun run lint           # ESLint over src, tests, scripts, configs
 bun run gallery:scan   # Stub items.yml records for new gallery assets
 bun run commits:check  # Verify commit subjects follow the convention
+bun run banners:check  # Verify every banner is 1200x630
 ```
 
 `bun run build` is a chain, and a failure in any link fails the build:
@@ -103,6 +104,29 @@ Two independent mechanisms; do not mix them.
 - Dark mode via `data-theme` on `<html>`; tokens in `src/styles/global.css`.
 - Anything that looks actionable must work completely and be keyboard-operable,
   or it is omitted.
+
+## Banners
+
+**Author every banner at exactly 1200x630**, in `public/banners/`. SVG preferred;
+PNG accepted. `bun run banners:check` enforces it and the build fails otherwise.
+
+That size is the Open Graph card, so one file is both the banner and the social
+preview — authoring at any other size means a second asset to keep in sync.
+
+**Displayed at 2.5:1**, centre-cropped. The band that survives is **y=75..555**:
+anything that must stay legible — a title, a logo, a number — belongs inside it.
+The validator prints those coordinates so it is a number, not a memory.
+
+The display ratio is the single token `--banner-ratio` in `src/styles/global.css`,
+read by every banner surface: the entry hero, the featured note, the note rows,
+the home cards, the work and lab cards. Put the ratio on the **`<img>`**, never
+on the wrapper — `height: 100%` against an auto-height parent is indefinite, so
+the image falls back to its intrinsic ratio and sizes the box it was supposed to
+fit inside. That is how one image ended up rendering at 3.76:1 on desktop,
+2.35:1 at 900px and 1.90:1 on a phone.
+
+Never introduce a second banner shape. If a surface needs a different crop, it
+needs a different token with a written reason, not a local `aspect-ratio`.
 
 ## Branching
 

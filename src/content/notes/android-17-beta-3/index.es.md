@@ -10,7 +10,7 @@ maturity: archived
 publishedAt: 2026-03-27
 updatedAt: 2026-07-23
 topics: [android, kotlin, platform-apis]
-featuredRank: 4
+featuredRank: 7
 image: /banners/android-17-beta-3.svg
 imageAlt: Banner de Android 17 Beta 3 — estabilidad de plataforma alcanzada.
 links:
@@ -23,6 +23,10 @@ documents: []
 protection: { mode: public }
 kind: article
 lifecycle: archived
+supersededBy: android-17-stable
+series:
+  id: android-17
+  order: 1
 citations:
   - title: Android 17 Beta 3
     url: https://android-developers.googleblog.com/2026/03/the-third-beta-of-android-17.html

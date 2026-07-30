@@ -208,7 +208,9 @@
 .card-cover img {
   display: block;
   width: 100%;
-  height: clamp(7rem, 14vw, 10rem);
+  /* Banner, not free-form media: same ratio as every other banner surface. */
+  aspect-ratio: var(--banner-ratio);
+  height: auto;
   object-fit: cover;
   border-bottom: 1px solid var(--line);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
@@ -411,14 +413,17 @@
 }
 .home-card__thumb {
   margin: 0;
-  aspect-ratio: 16 / 9;
   border-bottom: 1px solid var(--line);
   background: var(--surface);
 }
 .home-card__thumb img {
   display: block;
   width: 100%;
-  height: 100%;
+  /* On the image, not the figure: `height: 100%` against an auto-height parent
+     is indefinite, so the image fell back to its intrinsic ratio and sized the
+     box it was meant to fill. */
+  aspect-ratio: var(--banner-ratio);
+  height: auto;
   object-fit: cover;
 }
 .home-card__body {
@@ -859,7 +864,10 @@
 .note-feature__banner img {
   display: block;
   width: 100%;
-  height: clamp(7rem, 14vw, 11rem);
+  /* Same ratio as every other banner surface. This was a clamped height, which
+     made it a fourth shape for the same source images. */
+  aspect-ratio: var(--banner-ratio);
+  height: auto;
   border-bottom: 1px solid var(--line);
   object-fit: cover;
   background: var(--surface);
@@ -1065,7 +1073,9 @@
 .note-row__thumb img {
   display: block;
   width: 100%;
-  height: var(--thumb-h, 9rem);
+  /* Banner, not free-form media: same ratio as every other banner surface. */
+  aspect-ratio: var(--banner-ratio);
+  height: auto;
   object-fit: cover;
 }
 /* The aspect still tells you what kind of thing this is. */
@@ -1433,14 +1443,14 @@
 /* Banner / preview — real image or an on-brand generated cover. */
 .wc-banner {
   position: relative;
-  aspect-ratio: 16 / 9;
   border-bottom: 1px solid var(--line);
   background: var(--surface);
 }
 .wc-banner img {
   display: block;
   width: 100%;
-  height: 100%;
+  aspect-ratio: var(--banner-ratio);
+  height: auto;
   object-fit: cover;
 }
 .wc-body {
@@ -2134,8 +2144,13 @@
 .entry-banner img {
   display: block;
   width: 100%;
+  /* Fixed shape at every width. `height: auto` with `max-height` produced
+     three different crops of the same image — 3.76:1 at 1440px, 2.35:1 at
+     900px, 1.90:1 at 390px — so a banner composed on desktop lost half its
+     artwork and one composed on mobile overflowed the fold. One ratio means
+     the reserved box never changes and nothing shifts while the image loads. */
+  aspect-ratio: var(--banner-ratio);
   height: auto;
-  max-height: 22rem;
   object-fit: cover;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
