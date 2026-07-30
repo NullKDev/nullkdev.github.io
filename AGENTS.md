@@ -152,6 +152,20 @@ dark artwork on Spanish light-theme pages.
 both themes — only the ground and the type invert: deep surface with light type,
 pale surface with dark type. A banner stays recognisably the same object.
 
+**A light ground is slate, never near-white.** It was `#F8FAFC`, which measures
+**1.05:1** against the `#ffffff` card and **1.01:1** against the page — the
+banner's own corner was the surface behind it, so it read as a drawing floating
+on the card instead of an object sitting on it. `#E2E8F0` is 1.23:1: an edge
+without a frame. Measure a new ground against `--surface-raised` before shipping
+it; "it looks light" is not the test.
+
+**Every colour a banner uses is measured, in both themes.** One accent serves
+dark and light, so it has to clear **3:1 on all four grounds** — dark base, dark
+deep, light base, light tint. Emerald `#059669` cleared three and failed its own
+light tint at 2.94:1; `#00875A` clears all four. Type follows the same rule:
+light meta is `#55617A`, the site's `--ink-muted`, because `#64748B` on slate is
+3.86:1 and only passes as large text.
+
 An `<img>` cannot read `data-theme`, so `EntryPage` passes `--banner-light` on
 the figure and CSS swaps the rendered file with `content:`. That keeps it an
 image — alt text and the reserved box survive, which a `background-image` would

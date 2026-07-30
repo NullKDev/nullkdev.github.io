@@ -40,6 +40,25 @@ the registry.
 token and a written reason. Applying the ratio to a wrapper, where `height: 100%`
 against an auto-height parent is indefinite and the image sizes the box instead.
 
+## 2026-07-30 — Banner colour is measured against the surface it lands on
+
+**Decided.** Every colour in a banner spec is checked with a contrast ratio
+before it ships: the light ground against `--surface-raised`, the type against
+the ground and against the deepest corner of the gradient, and each accent
+against all four grounds it can appear on — dark base, dark deep, light ground,
+light tint.
+
+**Why.** The light surface was `#F8FAFC`, which measures 1.05:1 against the
+`#ffffff` card and 1.01:1 against the page. The banner had no edge; its corner
+*was* the surface behind it, so the artwork read as floating on the card. The
+100-level tints had the same problem at 1.13–1.23:1 — a colour present in the
+file and absent on screen. Measuring also caught what looking could not: emerald
+`#059669` clears 3:1 on three grounds and fails its own light tint at 2.94:1.
+
+**Rules out.** Picking a banner ground because it looks light, or an accent
+because it looks visible in one theme. A single accent serving both themes is
+what makes four measurements mandatory rather than one.
+
 ## 2026-07-30 — Commits, changelog and releases are one system
 
 **Decided.** `type(scope): description` verified in CI on commits and PR titles;

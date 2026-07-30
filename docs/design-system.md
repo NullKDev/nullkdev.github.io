@@ -139,6 +139,28 @@ same object in both, not two designs. `EntryPage` sets `--banner-light` and CSS
 swaps the file with `content:`, because an `<img>` cannot read `data-theme` and a
 `background-image` would drop the alt text.
 
+### The light ground is measured, not eyeballed
+
+| Role | Value | Measured against |
+|---|---|---|
+| Light ground | `#E2E8F0` | 1.23:1 vs the `#ffffff` card, 1.19:1 vs the page |
+| Light title | `#0F172A` | 14.5:1 |
+| Light subtitle | `#475569` | 6.2:1 |
+| Light meta | `#55617A` (`--ink-muted`) | 5.0:1 on the ground, 4.2:1 in the deepest tinted corner |
+| Accent | one per family | ≥3:1 on **all four** grounds |
+
+A near-white ground has no edge. `#F8FAFC` measures **1.05:1** against the card
+it sits on and **1.01:1** against the page: the banner's corner *was* the surface
+behind it, and the artwork read as floating rather than contained. The fix is a
+real slate, not a border.
+
+Because one accent serves both themes, it has to survive four backgrounds — dark
+base, dark deep, light ground, light tint. Emerald `#059669` cleared three and
+failed its own light tint at **2.94:1**, under the 3:1 a graphic needs, so the
+family moved to `#00875A`. The tints in `PALETTE` are 200-level for the same
+reason the ground is slate: the 100-level ones measured 1.13–1.23:1 against a
+white card, which is a colour that exists in the file and not on screen.
+
 Two constraints that are easy to violate:
 
 **The ratio belongs on the `<img>`, not the wrapper.** `height: 100%` against an
