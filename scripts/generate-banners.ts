@@ -47,7 +47,18 @@ const escape = (value: string): string =>
    the shadows are identical, so the banner is recognisably the same object.
 
    An `<img>` cannot read `data-theme`, so both variants are emitted and CSS
-   swaps them per entry through `--banner-light`. */
+   swaps them per entry through `--banner-light`.
+
+   The light ground is slate, not near-white. It was `#F8FAFC`, which measures
+   1.05:1 against the `#ffffff` card and 1.01:1 against the `#fafbfc` page — the
+   banner's corner *was* the surface behind it, so it read as a drawing floating
+   on the card rather than as an object sitting on it. `#E2E8F0` is 1.23:1 and
+   1.19:1: a visible edge without a heavy frame.
+
+   Type darkens to match. `#64748B` on that ground is 3.86:1, which only passes
+   because the meta line is large text; `#55617A` — the site's own `--ink-muted`
+   — is 5.04:1 on the ground and 4.17:1 in the deepest tinted corner, so it
+   clears AA outright wherever the gradient lands. */
 const SURFACE = {
   dark: {
     from: '#0F172A',
@@ -58,12 +69,12 @@ const SURFACE = {
     shadow: 0.55,
   },
   light: {
-    from: '#F8FAFC',
+    from: '#E2E8F0',
     title: '#0F172A',
     subtitle: '#475569',
-    meta: '#64748B',
+    meta: '#55617A',
     structure: '#475569',
-    shadow: 0.18,
+    shadow: 0.22,
   },
 } as const
 

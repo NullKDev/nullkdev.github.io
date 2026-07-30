@@ -53,13 +53,23 @@ export interface BannerSpec {
 
 /* Four palettes, one per subject family, so a reader recognises the shape of a
    post before reading its title. Indigo is the site accent and stays with the
-   archive's own subjects. */
+   archive's own subjects.
+
+   `pale` is the far corner of the light gradient and carries the family colour
+   there. The 100-level tints it started with measured 1.13–1.23:1 against the
+   white card — the tint was present in the file and invisible on screen. These
+   sit at 1.28–1.49:1: still calm, but the corner is legibly emerald or red.
+
+   Emerald moved from `#059669` because at that value the accent measured
+   2.94:1 on its own light tint, under the 3:1 a graphic needs. `#00875A` clears
+   3:1 on all four grounds — light ground, light tint, dark ground, dark deep —
+   which is what keeping one accent across both themes actually requires. */
 const PALETTE = {
-  ai: { accent: '#7C3AED', deep: '#2A1E3B', pale: '#EDE9FE' },
-  android: { accent: '#059669', deep: '#0B2B22', pale: '#D1FAE5' },
-  warning: { accent: '#DC2626', deep: '#3B1E1E', pale: '#FEE2E2' },
-  web: { accent: '#2563EB', deep: '#12233F', pale: '#DBEAFE' },
-  archive: { accent: '#4F46E5', deep: '#1E1B4B', pale: '#E0E7FF' },
+  ai: { accent: '#7C3AED', deep: '#2A1E3B', pale: '#DDD6FE' },
+  android: { accent: '#00875A', deep: '#0B2B22', pale: '#A7F3D0' },
+  warning: { accent: '#DC2626', deep: '#3B1E1E', pale: '#FECACA' },
+  web: { accent: '#2563EB', deep: '#12233F', pale: '#BFDBFE' },
+  archive: { accent: '#4F46E5', deep: '#1E1B4B', pale: '#C7D2FE' },
 } as const
 
 export const banners: readonly BannerSpec[] = [

@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Work banner — things that shipped.">
   <defs>
     <linearGradient id="bg-work-light" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#F8FAFC"/>
-      <stop offset="100%" stop-color="#E0E7FF"/>
+      <stop offset="0%" stop-color="#E2E8F0"/>
+      <stop offset="100%" stop-color="#C7D2FE"/>
     </linearGradient>
     <radialGradient id="glow-work-light" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#4F46E5" stop-opacity="0.072"/>
+      <stop offset="0%" stop-color="#4F46E5" stop-opacity="0.08800000000000001"/>
       <stop offset="100%" stop-color="#4F46E5" stop-opacity="0"/>
     </radialGradient>
     <filter id="lift-work-light" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#4F46E5" flood-opacity="0.09"/>
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#4F46E5" flood-opacity="0.11"/>
     </filter>
   </defs>
   <rect width="1200" height="630" fill="url(#bg-work-light)"/>
@@ -28,5 +28,5 @@
   <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#4F46E5">ARCHIVE · WORK</text>
   <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#0F172A">Things that</text>
   <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#475569">shipped</text>
-  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">Source · releases · downloadable artifacts</text>
+  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#55617A">Source · releases · downloadable artifacts</text>
 </svg>

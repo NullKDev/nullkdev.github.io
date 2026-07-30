@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Chandra OCR banner — what an 85.9% score leaves out.">
   <defs>
     <linearGradient id="bg-chandra-ocr-light" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#F8FAFC"/>
-      <stop offset="100%" stop-color="#EDE9FE"/>
+      <stop offset="0%" stop-color="#E2E8F0"/>
+      <stop offset="100%" stop-color="#DDD6FE"/>
     </linearGradient>
     <radialGradient id="glow-chandra-ocr-light" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.072"/>
+      <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.08800000000000001"/>
       <stop offset="100%" stop-color="#7C3AED" stop-opacity="0"/>
     </radialGradient>
     <filter id="lift-chandra-ocr-light" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#7C3AED" flood-opacity="0.09"/>
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#7C3AED" flood-opacity="0.11"/>
     </filter>
   </defs>
   <rect width="1200" height="630" fill="url(#bg-chandra-ocr-light)"/>
@@ -30,5 +30,5 @@
   <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#7C3AED">OCR · BENCHMARKS</text>
   <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#0F172A">What an 85.9%</text>
   <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#475569">score leaves out</text>
-  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">Chandra 2 · olmOCR · RealDocBench</text>
+  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#55617A">Chandra 2 · olmOCR · RealDocBench</text>
 </svg>
