@@ -17,19 +17,22 @@ bun run lint           # ESLint over src, tests, scripts, configs
 bun run gallery:scan   # Stub items.yml records for new gallery assets
 bun run commits:check  # Verify commit subjects follow the convention
 bun run banners:check  # Verify every banner is 1200x630
+bun run banners:build  # Regenerate every banner + its PNG social preview
 ```
 
 `bun run build` is a chain, and a failure in any link fails the build:
 
 ```
 private:generate → astro check → astro build → gallery:copy → private:copy
-  → private:scan → csp:apply → performance:check → links:check → metadata:check
+  → private:scan → banners:check → csp:apply → performance:check
+  → links:check → metadata:check
 ```
 
 That means a green build already proves: types check, no private content leaked,
-per-route gzip budgets hold, no broken internal links, metadata / RSS / sitemap /
-JSON-LD / hreflang are all valid, and every page carries a CSP whose script
-hashes match the bytes that shipped.
+every banner is 1200×630, per-route gzip budgets hold, no broken internal links,
+metadata / RSS / sitemap / JSON-LD / hreflang are all valid — including that each
+page shares its own image — and every page carries a CSP whose script hashes
+match the bytes that shipped.
 
 ## Package manager
 
@@ -105,42 +108,116 @@ Two independent mechanisms; do not mix them.
 - Anything that looks actionable must work completely and be keyboard-operable,
   or it is omitted.
 
-## Banners
+## Images, icons, and banners
 
-**Banners are declared, not drawn.** Add a spec to `src/data/banners.ts` and run
-`bun run banners:build`. It emits the SVG the site renders **and** the PNG social
-previews use — X, LinkedIn, Slack and WhatsApp render *nothing* for an SVG
-`og:image`, so both outputs are required.
+### Never draw an icon
 
-Artwork comes from the icon registry (`src/lib/icons.ts`). A banner can only use
-marks the site already ships; if one is missing, extend the registry rather than
-hand-drawing. `simple-icons:android` was already there while a banner carried a
-hand-drawn robot.
+Every mark comes from `src/lib/icons.ts`, which resolves **Lucide** (interface)
+and **Simple Icons** (brand) at build time. Both packs are devDependencies and
+nothing ships to the browser.
+
+- **Never write an inline `<svg>`** in a component. Map it in the registry and
+  render with `<Icon>` / `renderIcon()`.
+- **Never hand-draw artwork that a pack already has.** `simple-icons:android`
+  was already in the registry while a banner carried a hand-drawn robot.
+- If the mark you need is missing, **extend the registry** — one file to change
+  if the icon set is ever swapped. That is the whole reason it exists.
+- Unicode glyphs are not icons. A screen reader announces them.
+
+### Banners are declared, not drawn
+
+Add a spec to `src/data/banners.ts`, run `bun run banners:build`. One source,
+two outputs, both required:
+
+| Output | Consumer |
+|---|---|
+| `public/banners/<slug>.svg` | what the site renders |
+| `public/og/banners/<slug>.png` | what social scrapers render |
+
+The PNG is not optional. **X, Facebook, LinkedIn, Slack and WhatsApp render
+nothing at all for an SVG `og:image`** — a preview pointing at the SVG is worse
+than a generic one.
 
 The identity card (`public/og/signal-archive.png`) is generated from `brand` by
-the same script — it spent months advertising `<nullKdev/>` and the previous
-site's sections because nobody rebuilt it.
+the same script. It spent months advertising `<nullKdev/>` and the previous
+site's sections because it was hand-drawn and nobody rebuilt it.
 
-Everything is 1200x630. `bun run banners:check` enforces it and the build fails
-otherwise.
+### One size, one ratio, no exceptions
 
-That size is the Open Graph card, so one file is both the banner and the social
-preview — authoring at any other size means a second asset to keep in sync.
+**1200×630**, always. `bun run banners:check` enforces it and fails the build
+otherwise. That is the Open Graph card size, so one file is both the banner and
+the social preview; any other size means a second asset to keep in sync.
 
-**Displayed at 2.5:1**, centre-cropped. The band that survives is **y=75..555**:
-anything that must stay legible — a title, a logo, a number — belongs inside it.
+**Displayed at 2.5:1, centre-cropped. The band that survives is y=75..555.**
+Anything that must stay legible — a title, a number, a mark — belongs inside it.
 The validator prints those coordinates so it is a number, not a memory.
 
-The display ratio is the single token `--banner-ratio` in `src/styles/global.css`,
-read by every banner surface: the entry hero, the featured note, the note rows,
-the home cards, the work and lab cards. Put the ratio on the **`<img>`**, never
-on the wrapper — `height: 100%` against an auto-height parent is indefinite, so
-the image falls back to its intrinsic ratio and sizes the box it was supposed to
-fit inside. That is how one image ended up rendering at 3.76:1 on desktop,
-2.35:1 at 900px and 1.90:1 on a phone.
+The display ratio is one token, `--banner-ratio` in `src/styles/global.css`,
+read by every banner surface: entry hero, featured note, note rows, home cards,
+work and lab cards.
 
-Never introduce a second banner shape. If a surface needs a different crop, it
-needs a different token with a written reason, not a local `aspect-ratio`.
+**Put the ratio on the `<img>`, never on the wrapper.** `height: 100%` against
+an auto-height parent is indefinite, so the image falls back to its intrinsic
+ratio and sizes the box it was supposed to fit inside. That is how one image
+rendered at 3.76:1 on desktop, 2.35:1 at 900px and 1.90:1 on a phone — with
+`getComputedStyle` reporting the correct value the entire time.
+
+Never introduce a second banner shape. A surface that needs a different crop
+needs a new token with a written reason, not a local `aspect-ratio`.
+
+Gallery media is **not** a banner. Photographs and video keep their own shapes;
+forcing 2.5:1 on a portrait photo would be wrong.
+
+## Sharing and search
+
+### A shared link must describe what was shared
+
+An entry's preview is **its own banner**. Only the home page, About, and the
+section indexes fall back to the identity card.
+
+`EntryPage` derives the social image from `entry.data.image`, swapping
+`/banners/<slug>.svg` for `/og/banners/<slug>.png`. `check-built-metadata.ts`
+asserts it: every page needs an absolute `.png` under `SITE_URL`, and a page
+showing a banner must share **that** banner.
+
+That assertion used to say the opposite — every page had to carry the one shared
+card — which is what kept previews generic. **If a metadata rule blocks a
+correct change, the rule is what to fix.**
+
+### Budgets
+
+| | Target | Why |
+|---|---|---|
+| `<title>` | ≤ 60 chars total | Search results truncate. The `— CarlosDev` suffix costs 12, so an entry title has ~48 |
+| `description` | 50–160 chars | Under 50 gives a search engine nothing; over 160 is cut |
+| Title and description | Unique per language | Two pages describing themselves identically is duplicate content |
+| Every indexable page | Structured data | `Article` / `TechArticle` for entries, `CollectionPage` for indexes and filters, `WebPage` for reference pages, `WebSite` + `Person` for home |
+
+A title does not have to restate its parent. Subpost titles concatenated the
+parent and reached 153 characters; the relationship is already carried by the
+breadcrumb, the canonical URL and the JSON-LD.
+
+Filter and paginated pages must name their filter and their page number, or
+`/notes/type/note/` describes itself exactly as `/notes/` does.
+
+`SITE_URL` resolves in `site.config.mjs` and is the **only** place the origin is
+written. It was hardcoded in six, one of them inside a regex, and `robots.txt`
+kept pointing at a domain the rest of the build had already left.
+
+## Verifying your own work
+
+The rules above exist because each one was broken and the breakage was not
+visible without measurement.
+
+- **Check exit codes, not output.** Piping a build to `/dev/null` and then
+  reading `dist/` will happily show you a stale result from a build that failed.
+- **Measure the rendered box, not the declared value.** `getComputedStyle` said
+  `1200 / 480` while the element rendered at 1.89:1.
+- **Prove a gate fires** by pushing it past the real number and watching it fail.
+  A threshold nobody has seen reject anything is decoration.
+- **A comment between component attributes is invalid** in `.astro`; a
+  `{/* … */}` there fails with a misleading `ts(1002)`. Explanations belong in
+  the frontmatter, on the const the attribute reads.
 
 ## Branching
 
@@ -267,7 +344,7 @@ Portfolio backup reference: [`backup/PROJECT_ANALYSIS.md`](backup/PROJECT_ANALYS
 | [DESIGN.md](DESIGN.md) | The visual direction and why it replaced the previous one | Any question about how it should look |
 
 **Two rules that are load-bearing, repeated here so they are not missed:**
-- Never write an inline `<svg>` in a component — map it in `src/lib/icons.ts` and render with `<Icon>` / `renderIcon()`. The registry maps intent to a **Lucide** (interface) or **Simple Icons** (brand) icon, resolved at build; both packs are devDependencies and nothing ships to the browser.
+- Never write an inline `<svg>` in a component, and never hand-draw artwork a pack already has — see [Images, icons, and banners](#images-icons-and-banners).
 - `src/components/ui/` belongs to shadcn; project components go in `src/components/primitives/`.
 
 ## Content protection
