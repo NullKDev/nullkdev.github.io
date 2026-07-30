@@ -3,7 +3,7 @@ entryId: notes-pretext
 locale: en
 translationKey: pretext
 slug: pretext-text-layout
-title: "Pretext: the 15 kb library that bypasses your browser's most expensive operation"
+title: "Pretext: skip the browser's most expensive operation"
 summary: Measure text once with a canvas font oracle, then lay out lines with pure arithmetic — no DOM reads, no reflow. A four-part series with two live demos.
 visibility: public
 maturity: growing

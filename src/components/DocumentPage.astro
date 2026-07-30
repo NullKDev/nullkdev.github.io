@@ -29,11 +29,18 @@ const counterpartPath = await getDocumentCounterpartPath(entry, document)
 const adjacent = await getAdjacentDocuments(entry, document)
 const relationships = await getDocumentRelationships(document)
 const { Content, headings } = await render(document)
+
+/* Just the subpost. Concatenating the parent title produced 153-character
+   <title> elements that a search result truncates into uselessness — "How
+   pretext works: two phases… — Pretext: the 15 kb library that…". The
+   relationship is already carried by the breadcrumb, the canonical URL and the
+   JSON-LD; the title does not need to restate it. */
+const documentTitle = pageTitle(document.data.title)
 ---
 
 <Layout
   locale={locale}
-  title={pageTitle(`${document.data.title} — ${entry.data.title}`)}
+  title={documentTitle}
   description={document.data.summary}
   counterpartPath={counterpartPath}
   jsonLd={{

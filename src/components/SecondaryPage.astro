@@ -25,6 +25,21 @@ const topics: Map<string, ArchiveEntry[]> =
   section === 'tags' ? await getTopicIndex(locale) : new Map()
 const title = dictionary.secondary[section]
 const description = dictionary.secondary[`${section}Description`]
+
+/* These are reference pages about the site itself, so `WebPage` rather than
+   `CollectionPage`: they describe, they do not list records. */
+const pageJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: title,
+  description,
+  inLanguage: locale,
+  isPartOf: {
+    '@type': 'WebSite',
+    name: brand.name,
+    url: Astro.site?.toString(),
+  },
+}
 ---
 
 <Layout
@@ -32,6 +47,7 @@ const description = dictionary.secondary[`${section}Description`]
   title={pageTitle(title)}
   description={description}
   counterpartPath={locale === 'en' ? `/es/${section}/` : `/${section}/`}
+  jsonLd={pageJsonLd}
 >
   <main class="secondary-page">
     <header class="index-heading">

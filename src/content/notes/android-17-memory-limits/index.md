@@ -3,7 +3,7 @@ entryId: notes-android-17-memory-limits
 locale: en
 translationKey: android-17-memory-limits
 slug: android-17-memory-limits
-title: 'Android 17 kills your process with no stack trace. Here is how to find out it happened'
+title: 'Android 17 kills your process with no stack trace'
 summary: Per-app memory limits are cgroup limits an OEM configures, you cannot query them at runtime, and the kill leaves no crash log.
 visibility: public
 maturity: stable

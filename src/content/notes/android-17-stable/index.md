@@ -3,7 +3,7 @@ entryId: notes-android-17-stable
 locale: en
 translationKey: android-17-stable
 slug: android-17-stable
-title: 'Android 17 is stable: the four changes that break on targetSdk 37'
+title: 'Android 17: four changes that break on targetSdk 37'
 summary: From Beta 3 to the June 16 release — what landed, and the behaviour changes that stay dormant until you bump targetSdk to 37.
 visibility: public
 maturity: stable

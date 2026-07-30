@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content'
-import { pageTitle } from '@/data/brand'
+import { brand, pageTitle } from '@/data/brand'
 import ArchiveCard from '@/components/ArchiveCard.astro'
 import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
 import GalleryIndex from '@/components/gallery/GalleryIndex.astro'
@@ -37,6 +37,23 @@ const workDomains = isWork
         taxonomy.domains[id as keyof typeof taxonomy.domains]?.[locale] ?? id,
     )
   : []
+
+/* A list page is a `CollectionPage`, not an `Article`. Without it these
+   surfaces carried no structured data at all — 44 indexable pages, most of
+   them the topic and type filters that exist precisely to be found. */
+const collectionJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: dictionary.nav[domain],
+  description: dictionary.section[domain],
+  inLanguage: locale,
+  isPartOf: {
+    '@type': 'WebSite',
+    name: brand.name,
+    url: Astro.site?.toString(),
+  },
+  numberOfItems: entries.length,
+}
 ---
 
 {isLab && <LabIndex locale={locale} entries={labEntries} />}
@@ -50,6 +67,7 @@ const workDomains = isWork
       title={pageTitle(dictionary.nav[domain])}
       description={dictionary.section[domain]}
       counterpartPath={locale === 'en' ? `/es/${domain}/` : `/${domain}/`}
+      jsonLd={collectionJsonLd}
     >
       {isWork ? (
         <main class="archive-index archive-index--work">

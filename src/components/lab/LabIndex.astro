@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content'
-import { pageTitle } from '@/data/brand'
+import { brand, pageTitle } from '@/data/brand'
 import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
 import LabCard from '@/components/lab/LabCard.astro'
 import { getTopicLabel } from '@/data/taxonomy'
@@ -56,6 +56,22 @@ const executionNote =
     : `${total - networked} ${dictionary.lab.localCount} · ${networked} ${dictionary.lab.networkCount}`
 
 const entryWord = total === 1 ? dictionary.lab.entry : dictionary.lab.entries
+
+/* Same `CollectionPage` treatment as the other index surfaces — Lab and
+   Gallery render through their own components, which is how they were the last
+   two indexable pages left without structured data. */
+const collectionJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: dictionary.nav.lab,
+  description: dictionary.section.lab,
+  inLanguage: locale,
+  isPartOf: {
+    '@type': 'WebSite',
+    name: brand.name,
+    url: Astro.site?.toString(),
+  },
+}
 ---
 
 <Layout
@@ -63,6 +79,7 @@ const entryWord = total === 1 ? dictionary.lab.entry : dictionary.lab.entries
   title={pageTitle(dictionary.nav.lab)}
   description={dictionary.section.lab}
   counterpartPath={locale === 'en' ? '/es/lab/' : '/lab/'}
+  jsonLd={collectionJsonLd}
 >
   <main class="lab-index">
     <header class="lab-head">

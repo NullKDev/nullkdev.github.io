@@ -3,7 +3,7 @@ entryId: notes-pretext-es
 locale: es
 translationKey: pretext
 slug: pretext-layout-de-texto
-title: 'Pretext: la librería de 15 kb que esquiva la operación más cara del navegador'
+title: 'Pretext: esquivar la operación más cara del navegador'
 summary: Prepara las métricas del texto una vez y compón las líneas con aritmética pura, sin lecturas del DOM ni reflow. Serie de cuatro partes con dos demos en vivo.
 visibility: public
 maturity: growing
