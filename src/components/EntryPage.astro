@@ -11,6 +11,7 @@ import GalleryItems from '@/components/gallery/GalleryItems.astro'
 import RelatedLab from '@/components/lab/RelatedLab.astro'
 import { render } from 'astro:content'
 import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import { bannerStyle, getBannerSources } from '@/lib/banners'
 import Layout from '@/layouts/Layout.astro'
 import {
   getAdjacentEntries,
@@ -103,34 +104,10 @@ const tableOfContents = [
   ]),
 ]
 
-/* A shared card told every reader the same thing about a page they had not
-   opened yet — and it still advertised the previous site's sections. When an
-   entry has a banner, that banner IS the preview: the same artwork, the same
-   title, already sized 1200x630.
-
-   The PNG, not the SVG. X, LinkedIn, Slack and WhatsApp render no image at all
-   for an SVG `og:image`, which is worse than a generic one. `banners:build`
-   rasterises every banner into public/og/banners/ for exactly this. */
-const bannerSlug = entry.data.image?.match(/\/banners\/([^/]+)\.svg$/)?.[1]
-
-/* The banner is copy, so it is localised like every other string on the page.
-   `banners:build` emits four files per banner — two locales x two surfaces —
-   and the entry's own `image` names the base. */
-const bannerVariant = (suffix: string) =>
-  bannerSlug
-    ? `/banners/${bannerSlug}${locale === 'es' ? '-es' : ''}${suffix}.svg`
-    : undefined
-
-const bannerDark = bannerVariant('')
-const socialImage = bannerSlug
-  ? `/og/banners/${bannerSlug}${locale === 'es' ? '-es' : ''}.png`
-  : undefined
-
-/* An `<img>` cannot read `data-theme`, so both surfaces ship and CSS swaps the
-   rendered one through this property. `content` keeps the element an image —
-   alt text and the reserved box survive the swap, which a background-image
-   would lose. */
-const lightBanner = bannerVariant('-light')
+/* One derivation for every surface that renders a banner — see
+   `src/lib/banners.ts` for why it does not live here. */
+const banner = getBannerSources(entry.data.image, locale)
+const socialImage = banner?.social
 
 const published = entry.data.publishedAt
 const updated = entry.data.updatedAt ?? entry.data.publishedAt
@@ -176,7 +153,7 @@ const jsonLd = {
   description={entry.data.summary}
   counterpartPath={counterpartPath}
   image={socialImage}
-  imageAlt={socialImage ? entry.data.imageAlt : undefined}
+  imageAlt={banner ? entry.data.imageAlt : undefined}
   jsonLd={jsonLd}
 >
   <main
@@ -281,14 +258,9 @@ const jsonLd = {
 
     {
       entry.data.image && (
-        <figure
-          class="entry-banner"
-          style={
-            lightBanner ? `--banner-light: url(${lightBanner})` : undefined
-          }
-        >
+        <figure class="entry-banner" style={bannerStyle(banner)}>
           <img
-            src={bannerDark ?? entry.data.image}
+            src={banner?.dark ?? entry.data.image}
             alt={entry.data.imageAlt ?? ''}
             width="1200"
             height="630"

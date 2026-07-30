@@ -2142,8 +2142,16 @@
   margin: 2.25rem 0 0;
 }
 /* Light theme gets the light-ground variant of the same banner: same accent,
-   same artwork, same shadows — only the surface and the type invert. */
-:root[data-theme='light'] .entry-banner img {
+   same artwork, same shadows — only the surface and the type invert.
+
+   Every banner surface, not just the entry hero. Wiring this to one component
+   left the five card surfaces rendering the dark artwork in light theme. */
+:root[data-theme='light'] .entry-banner img,
+:root[data-theme='light'] .card-cover img,
+:root[data-theme='light'] .home-card__thumb img,
+:root[data-theme='light'] .note-row__thumb img,
+:root[data-theme='light'] .wc-banner img,
+:root[data-theme='light'] .note-feature__banner img {
   content: var(--banner-light);
 }
 

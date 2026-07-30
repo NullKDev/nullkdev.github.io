@@ -1,4 +1,5 @@
 ---
+import { bannerStyle, getBannerSources } from '@/lib/banners'
 import { getDictionary, type Locale } from '@/i18n'
 import { getEntryDomain, getEntryPath, type ArchiveEntry } from '@/lib/content'
 import { getTopicLabel } from '@/data/taxonomy'
@@ -14,14 +15,16 @@ const { entry, locale, index = 0 } = Astro.props
 const dictionary = getDictionary(locale)
 const domain = getEntryDomain(entry)
 const date = entry.data.updatedAt ?? entry.data.publishedAt
+
+const banner = getBannerSources(entry.data.image, locale)
 ---
 
 <article class="archive-card">
   {
     entry.data.image && (
-      <figure class="card-cover">
+      <figure class="card-cover" style={bannerStyle(banner)}>
         <img
-          src={entry.data.image}
+          src={banner?.dark ?? entry.data.image}
           alt={entry.data.imageAlt ?? ''}
           width="640"
           height="220"

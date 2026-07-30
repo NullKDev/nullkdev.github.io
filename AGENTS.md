@@ -142,6 +142,12 @@ Four files per banner — two locales × two surfaces:
 in the spec — an English banner on a Spanish page is the same failure as an
 English heading.
 
+**Never derive banner paths in a component.** `src/lib/banners.ts` owns it:
+`getBannerSources(image, locale)` returns the dark, light and social variants,
+and `bannerStyle()` produces the `--banner-light` the CSS swap reads. Writing
+that inline fixed the entry hero and left five card surfaces rendering English
+dark artwork on Spanish light-theme pages.
+
 **Two surfaces, one identity.** Accent, artwork and shadows are identical in
 both themes — only the ground and the type invert: deep surface with light type,
 pale surface with dark type. A banner stays recognisably the same object.
