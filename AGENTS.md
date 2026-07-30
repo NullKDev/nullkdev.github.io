@@ -1,26 +1,25 @@
 # AGENTS.md
 
-A bilingual static archive: **Work** (things that shipped), **Lab** (things that
-run in your browser), **Notes** (things that are read), **Gallery** (things that
-are kept). Astro 7, Bun, GitHub Pages.
+Bilingual static archive. **Work** (shipped), **Lab** (runs in the browser),
+**Notes** (read), **Gallery** (kept). Astro 7 · Bun · GitHub Pages.
+
+`CLAUDE.md` is a symlink to this file. Document once, here.
 
 ## Commands
 
 ```bash
-bun run dev            # Dev server on http://localhost:4321
-bun run build          # Full pipeline — see below
-bun run test           # Vitest
-bun run test:content   # Content-integrity project only
-bun run test:e2e       # Playwright
-bun run format         # Format (no semicolons, single quotes); format:check verifies
-bun run lint           # ESLint over src, tests, scripts, configs
-bun run gallery:scan   # Stub items.yml records for new gallery assets
-bun run commits:check  # Verify commit subjects follow the convention
-bun run banners:check  # Verify every banner is 1200x630
-bun run banners:build  # Regenerate every banner + its PNG social preview
+bun run dev            # http://localhost:4321
+bun run build          # full pipeline; any link failing fails the build
+bun run test           # Vitest          · test:content, test:e2e, test:coverage
+bun run lint           # ESLint          · format / format:check for Prettier
+bun run commits:check  # commit subjects · also `-- --title "<pr title>"`
+bun run banners:build  # regenerate every banner SVG + PNG
+bun run banners:check  # every banner is 1200x630
+bun run gallery:scan   # stub items.yml records for new gallery assets
+bun run audit          # dependency advisories
 ```
 
-`bun run build` is a chain, and a failure in any link fails the build:
+Build chain:
 
 ```
 private:generate → astro check → astro build → gallery:copy → private:copy
@@ -28,352 +27,273 @@ private:generate → astro check → astro build → gallery:copy → private:co
   → links:check → metadata:check
 ```
 
-That means a green build already proves: types check, no private content leaked,
-every banner is 1200×630, per-route gzip budgets hold, no broken internal links,
-metadata / RSS / sitemap / JSON-LD / hreflang are all valid — including that each
-page shares its own image — and every page carries a CSP whose script hashes
-match the bytes that shipped.
+A green build proves: types, no leaked private content, banners 1200×630,
+gzip budgets, no broken internal links, valid metadata/RSS/sitemap/JSON-LD/
+hreflang, every page sharing its own image, and a CSP whose hashes match the
+shipped bytes.
 
-## Package manager
-
-**Bun**, exclusively. The lockfile is `bun.lock`. There is no `pnpm-lock.yaml`
-and no `patches/` directory.
+**Bun only.** Lockfile is `bun.lock`.
 
 ## Architecture
 
-Content is data; pages are projections of it. Nothing in between invents facts.
+Content is data; pages are projections. Nothing in between invents facts.
 
 ```
-src/content/**            typed records (the source of truth)
+src/content/**            typed records (source of truth)
   → src/content.config.ts Zod schemas — the contract
-  → src/lib/*.ts          derivation only, no rendering
-  → src/components/       presentation only, no fetching
+  → src/lib/*.ts          derivation only
+  → src/components/       presentation only
   → src/pages/            routing only
 ```
 
-Four rules hold this together:
+| Rule | |
+|---|---|
+| Pages never call `getCollection()` | reads go through `src/lib/content.ts` |
+| Components never fetch | they take typed entries as props |
+| Derived values live in `src/lib/` | never inline in a component |
+| Never hand-enter a count or a claim | derive it from validated records |
 
-1. **Pages never call `getCollection()`.** Reads go through `src/lib/content.ts`.
-2. **Components never fetch.** They take typed entries as props.
-3. **Derived values live in `src/lib/`**, never inline in a component.
-4. **Never hand-enter a count or a claim.** Every number is derived from
-   validated records at build time.
+`@/*` maps to `src/*`. Use it for every internal import.
 
-Full detail in [docs/architecture.md](docs/architecture.md).
+Detail: [docs/architecture.md](docs/architecture.md).
 
-### Content collections
+### Collections
 
-Six, in `src/content.config.ts`: `work`, `lab`, `notes`, `gallery`,
-`galleryItems`, `documents`. The last two are sidecars — subposts and gallery
-assets — joined to their parent rather than routed on their own.
+Six in `src/content.config.ts`: `work`, `lab`, `notes`, `gallery`,
+`galleryItems`, `documents`. The last two are sidecars joined to a parent, not
+routed on their own.
 
 **Read [docs/content-schema.md](docs/content-schema.md) before adding a field.**
-It explains the three status axes (`visibility` / `maturity` / `lifecycle`) that
-must never be merged, and why each collection is shaped the way it is.
+The three status axes — `visibility` / `maturity` / `lifecycle` — must never be
+merged.
+
+Notes frontmatter that is easy to get wrong:
+
+| Field | Accepts |
+|---|---|
+| `maturity` | `seed` · `growing` · `stable` · `archived` |
+| `lifecycle` | `current` · `superseded` · `archived` |
+| `summary` | ≤180 chars. **Quote it if it contains `": "`** or the YAML fails |
+| `featuredRank` | unique per domain **and** locale; the integrity check enforces it |
+| `series` | `{ id, order }` — renders prev/next navigation across sibling posts |
+| `topics` | ids from `src/data/taxonomy.ts` only |
 
 ### Routing
 
-File-based under `src/pages/`. EN unprefixed, ES under `/es`.
-Most sections are one index plus one detail route; **Notes owns its own routes**
-because its type filter, topic filter, and pagination are all real URLs
+File-based under `src/pages/`. EN unprefixed, ES under `/es`. Notes owns its own
+routes because its filters and pagination are real URLs
 (`/notes/type/<kind>/2/`). Legacy `/blog/*`, `/projects/*`, `/photos/*`,
-`/tools/*` paths still build as compatibility pages that point at the current
-record — they are not live sections.
-
-### Path alias
-
-`@/*` maps to `src/*`. Always use it for internal imports.
+`/tools/*` build as `noindex` compatibility pages — not live sections.
 
 ## i18n
 
-Two independent mechanisms; do not mix them.
+Two mechanisms; never mix them.
 
-1. **Content** — one record per locale, `index.md` and `index.es.md`, linked by
-   `translationKey`. Slugs are genuinely translated
-   (`/es/lab/calculadora-subred/`). A missing translation stays missing:
-   English never renders under a `/es` URL, and `hreflang` is emitted only for
-   real reciprocal counterparts.
-2. **UI strings** — `src/i18n/en.ts` and `es.ts`, identical shape, enforced by
-   the `Dictionary` type. Controlled-vocabulary labels (lifecycle, kinds,
-   origins, capabilities) live in `src/i18n/archive.ts`. Always add a key to
-   both files.
+1. **Content** — one record per locale, `index.md` / `index.es.md`, linked by
+   `translationKey`. Slugs are translated. A missing translation stays missing:
+   English never renders under `/es`, and `hreflang` is emitted only for real
+   reciprocal counterparts.
+2. **UI strings** — `src/i18n/en.ts` and `es.ts`, identical shape enforced by
+   `Dictionary`. Controlled vocabulary in `src/i18n/archive.ts`. Always add the
+   key to both.
 
 ## Conventions
 
 - Prettier: no semicolons, single quotes, organised imports.
-- React only where something genuinely runs in the browser (the Lab workbench,
-  protected-content unlock). Always with a hydration directive and a no-JS
-  fallback.
+- React only where something genuinely runs in the browser, always with a
+  hydration directive and a no-JS fallback.
 - Dark mode via `data-theme` on `<html>`; tokens in `src/styles/global.css`.
-- Anything that looks actionable must work completely and be keyboard-operable,
-  or it is omitted.
+- Anything that looks actionable works completely and is keyboard-operable, or
+  it is omitted.
+- `src/components/ui/` belongs to shadcn; project components go in
+  `src/components/primitives/`.
 
-## Images, icons, and banners
+## Icons
 
-### Never draw an icon
+Every mark resolves from `src/lib/icons.ts` — Lucide (interface) and Simple
+Icons (brand), resolved at build, nothing shipped to the browser.
 
-Every mark comes from `src/lib/icons.ts`, which resolves **Lucide** (interface)
-and **Simple Icons** (brand) at build time. Both packs are devDependencies and
-nothing ships to the browser.
+- **Never write an inline `<svg>`.** Map it in the registry, render with
+  `<Icon>` / `renderIcon()`.
+- **Never hand-draw what a pack already has.** Check the registry first.
+- Missing mark → **extend the registry**, so swapping icon sets stays one edit.
+- Unicode glyphs are not icons; screen readers announce them.
 
-- **Never write an inline `<svg>`** in a component. Map it in the registry and
-  render with `<Icon>` / `renderIcon()`.
-- **Never hand-draw artwork that a pack already has.** `simple-icons:android`
-  was already in the registry while a banner carried a hand-drawn robot.
-- If the mark you need is missing, **extend the registry** — one file to change
-  if the icon set is ever swapped. That is the whole reason it exists.
-- Unicode glyphs are not icons. A screen reader announces them.
+## Banners
 
-### Banners are declared, not drawn
-
-Add a spec to `src/data/banners.ts`, run `bun run banners:build`. One source,
-two outputs, both required:
+Declared, not drawn. Add a spec to `src/data/banners.ts`, run
+`bun run banners:build`. Artwork comes from the icon registry.
 
 | Output | Consumer |
 |---|---|
-| `public/banners/<slug>.svg` | what the site renders |
-| `public/og/banners/<slug>.png` | what social scrapers render |
+| `public/banners/<slug>.svg` | the site |
+| `public/og/banners/<slug>.png` | social scrapers |
 
-The PNG is not optional. **X, Facebook, LinkedIn, Slack and WhatsApp render
-nothing at all for an SVG `og:image`** — a preview pointing at the SVG is worse
-than a generic one.
+Both are required: **X, Facebook, LinkedIn, Slack and WhatsApp render nothing
+for an SVG `og:image`.** The identity card `public/og/signal-archive.png` is
+generated from `brand` by the same script — never hand-edit it.
 
-The identity card (`public/og/signal-archive.png`) is generated from `brand` by
-the same script. It spent months advertising `<nullKdev/>` and the previous
-site's sections because it was hand-drawn and nobody rebuilt it.
+**Constraints**
 
-### One size, one ratio, no exceptions
-
-**1200×630**, always. `bun run banners:check` enforces it and fails the build
-otherwise. That is the Open Graph card size, so one file is both the banner and
-the social preview; any other size means a second asset to keep in sync.
-
-**Displayed at 2.5:1, centre-cropped. The band that survives is y=75..555.**
-Anything that must stay legible — a title, a number, a mark — belongs inside it.
-The validator prints those coordinates so it is a number, not a memory.
-
-The display ratio is one token, `--banner-ratio` in `src/styles/global.css`,
-read by every banner surface: entry hero, featured note, note rows, home cards,
-work and lab cards.
-
-**Put the ratio on the `<img>`, never on the wrapper.** `height: 100%` against
-an auto-height parent is indefinite, so the image falls back to its intrinsic
-ratio and sizes the box it was supposed to fit inside. That is how one image
-rendered at 3.76:1 on desktop, 2.35:1 at 900px and 1.90:1 on a phone — with
-`getComputedStyle` reporting the correct value the entire time.
-
-Never introduce a second banner shape. A surface that needs a different crop
-needs a new token with a written reason, not a local `aspect-ratio`.
-
-Gallery media is **not** a banner. Photographs and video keep their own shapes;
-forcing 2.5:1 on a portrait photo would be wrong.
+- **1200×630**, always. `banners:check` fails the build otherwise. It is the
+  Open Graph size, so one file serves both jobs.
+- **Displayed 2.5:1, centre-cropped. Safe band: y=75..555.** Anything that must
+  stay legible goes inside it.
+- Display ratio is one token, `--banner-ratio` in `src/styles/global.css`.
+- **Put the ratio on the `<img>`, never the wrapper.** `height: 100%` against an
+  auto-height parent is indefinite; the image falls back to its intrinsic ratio
+  and sizes the box it should fit inside.
+- Never add a second banner shape. A different crop needs a new token with a
+  written reason, not a local `aspect-ratio`.
+- Gallery media is not a banner — photos and video keep their own shapes.
 
 ## Sharing and search
 
-### A shared link must describe what was shared
+An entry's preview is **its own banner**. Only home, About and the section
+indexes use the identity card. `EntryPage` swaps `/banners/<slug>.svg` for
+`/og/banners/<slug>.png`; `check-built-metadata.ts` asserts it.
 
-An entry's preview is **its own banner**. Only the home page, About, and the
-section indexes fall back to the identity card.
+| Budget | Target |
+|---|---|
+| `<title>` | ≤60 chars total — the `— CarlosDev` suffix costs 12, leaving ~48 |
+| `description` | 50–160 chars |
+| Title + description | unique per language |
+| Every indexable page | structured data: `Article`/`TechArticle` for entries, `CollectionPage` for indexes and filters, `WebPage` for reference pages, `WebSite`+`Person` for home |
 
-`EntryPage` derives the social image from `entry.data.image`, swapping
-`/banners/<slug>.svg` for `/og/banners/<slug>.png`. `check-built-metadata.ts`
-asserts it: every page needs an absolute `.png` under `SITE_URL`, and a page
-showing a banner must share **that** banner.
-
-That assertion used to say the opposite — every page had to carry the one shared
-card — which is what kept previews generic. **If a metadata rule blocks a
-correct change, the rule is what to fix.**
-
-### Budgets
-
-| | Target | Why |
-|---|---|---|
-| `<title>` | ≤ 60 chars total | Search results truncate. The `— CarlosDev` suffix costs 12, so an entry title has ~48 |
-| `description` | 50–160 chars | Under 50 gives a search engine nothing; over 160 is cut |
-| Title and description | Unique per language | Two pages describing themselves identically is duplicate content |
-| Every indexable page | Structured data | `Article` / `TechArticle` for entries, `CollectionPage` for indexes and filters, `WebPage` for reference pages, `WebSite` + `Person` for home |
-
-A title does not have to restate its parent. Subpost titles concatenated the
-parent and reached 153 characters; the relationship is already carried by the
-breadcrumb, the canonical URL and the JSON-LD.
-
-Filter and paginated pages must name their filter and their page number, or
-`/notes/type/note/` describes itself exactly as `/notes/` does.
-
-`SITE_URL` resolves in `site.config.mjs` and is the **only** place the origin is
-written. It was hardcoded in six, one of them inside a regex, and `robots.txt`
-kept pointing at a domain the rest of the build had already left.
+- A title never restates its parent; the breadcrumb, canonical URL and JSON-LD
+  already carry the relationship.
+- Filter and paginated pages must name their filter and page number.
+- `SITE_URL` resolves in `site.config.mjs` and is the **only** place the origin
+  is written.
 
 ## Verifying your own work
 
-The rules above exist because each one was broken and the breakage was not
-visible without measurement.
+Every rule above exists because something broke invisibly.
 
-- **Check exit codes, not output.** Piping a build to `/dev/null` and then
-  reading `dist/` will happily show you a stale result from a build that failed.
-- **Measure the rendered box, not the declared value.** `getComputedStyle` said
-  `1200 / 480` while the element rendered at 1.89:1.
-- **Prove a gate fires** by pushing it past the real number and watching it fail.
-  A threshold nobody has seen reject anything is decoration.
-- **A comment between component attributes is invalid** in `.astro`; a
-  `{/* … */}` there fails with a misleading `ts(1002)`. Explanations belong in
-  the frontmatter, on the const the attribute reads.
+- **Check exit codes, not output.** A build piped to `/dev/null` leaves a stale
+  `dist/` that reads as success.
+- **Measure the rendered box, not the declared value.** `getComputedStyle` can
+  report the value you set while the element renders at another.
+- **Prove a gate fires** by pushing it past the real number and watching it
+  fail. An untested threshold is decoration.
+- **A `{/* … */}` between component attributes is invalid** in `.astro` and
+  fails with a misleading `ts(1002)`. Put the explanation in the frontmatter.
+- **If a check blocks a correct change, fix the check.** A metadata assertion
+  once forced every page to share the same preview image.
 
 ## Branching
 
-GitHub Flow, with one long-lived integration branch:
-
 ```
-feat/… · fix/…  ──PR──▶  dev  ──PR──▶  main  ──▶  deploys + releases
+feat/… · fix/…  ──PR──▶  dev  ──PR──▶  main  ──▶  deploy + release
 ```
 
-- **`main` publishes.** Every push to it deploys to GitHub Pages, and cuts a
-  release if the version in `package.json` has no tag yet. Never commit to it
-  directly.
-- **`dev` integrates.** Feature and fix branches open pull requests into `dev`;
-  `dev` opens one into `main`. `dev` is permanent — do not delete it.
-- **Branches are short-lived and named after the work**, prefixed with the same
-  type as their commits: `feat/`, `fix/`, `refactor/`, `ci/`, `docs/`. Delete
-  them once merged; the branch was scaffolding, the commits are the record.
-- **Dependabot targets `dev`**, not the default branch, so dependency bumps take
-  the same path as everything else.
+- **`main` publishes.** Never commit to it directly.
+- **`dev` integrates** and is permanent. Do not delete it.
+- Branches are short-lived and prefixed with their commit type: `feat/`, `fix/`,
+  `refactor/`, `ci/`, `docs/`. Delete once merged.
+- Dependabot targets `dev`.
 
-CI verifies pull requests and pushes to `main` only. A push to `dev` is not
-verified on its own: while the `dev → main` pull request is open both events
-fire and every job would run twice, and GitHub already builds the pull-request
-event against the merge result rather than the branch tip.
+CI verifies pull requests and pushes to `main` only — GitHub builds the
+`pull_request` event against the merge result, so verifying `dev` pushes as well
+would double every job.
 
-## Commits, changelog, releases
-
-One commit format, verified in CI on every pull request:
+## Commits
 
 ```
 type(scope): description
 ```
 
-`bun run commits:check` runs the same check locally. The rules live in
-`scripts/check-commit-messages.ts` and are unit-tested — read that file rather
-than guessing from examples.
+Verified in CI on every PR **and on the PR title** (a squash merge takes its
+subject from the title). Rules live in `scripts/check-commit-messages.ts` and are
+unit-tested; run `bun run commits:check` before pushing.
 
-| | |
+| Part | Requirement |
 |---|---|
-| **type** | Required, lowercase, from the list below |
-| **scope** | Optional. Lowercase, may contain `-` and `/` — `(lab)`, `(notes)`, `(lib/protection)` |
-| **`!`** | Before the colon, marks a breaking change: `feat(content)!: …` |
-| **description** | Required, ≥10 chars, lowercase, no trailing period |
-| **whole subject** | ≤72 chars, so it survives `git log --oneline` |
-
-**Types**, derived from this repository's own history rather than a generic
-list. `security` is not part of Conventional Commits; it is kept because the
-distinction between hardening and a bug fix is worth making here.
+| type | required, lowercase, from the list below |
+| scope | optional, lowercase, `-` and `/` allowed — `(lab)`, `(lib/protection)` |
+| `!` | before the colon, marks breaking: `feat(content)!: …` |
+| description | required, ≥10 chars, lowercase, no trailing period |
+| subject | ≤72 chars |
 
 `feat` · `fix` · `perf` · `refactor` · `security` · `docs` · `style` · `test` ·
 `build` · `ci` · `chore` · `revert`
 
-If no type fits, the change is probably two changes.
+`security` is not standard Conventional Commits; it is kept because the
+distinction from a bug fix matters here. If no type fits, it is two changes.
 
-Merge and revert subjects are exempt — git and GitHub generate them. The check
-only reads the commits a pull request **adds**: 28 commits predate the
-convention, and rewriting published history to satisfy a linter would cost more
-than the inconsistency.
+Merge and revert subjects are exempt. The check reads only the commits a PR
+adds — earlier history predates the convention.
 
-The pull request title is checked too, because a squash merge takes its subject
-from the title.
+## Changelog and releases
 
-### Changelog
+`CHANGELOG.md` is hand-written. Add your line under `## [Unreleased]` **in the
+pull request**, not at release time.
 
-`CHANGELOG.md` is hand-written and curated. Add your line under
-`## [Unreleased]` as part of the pull request — not at release time.
+- Only `feat`, `fix`, `perf`, `security`, and `refactor`/`build` with observable
+  impact earn a line. `style`, `test`, `ci`, `docs`, `chore` do not — that
+  curation is the reason it is not generated.
+- An unreleased feature is **one** entry; later corrections fold into it. Once
+  shipped in a version, a later fix earns its own line.
+- Categories: `Agregado` · `Corregido` · `Rendimiento` · `Cambiado` ·
+  `Seguridad` · `Eliminado`. Only non-empty ones appear.
 
-Only `feat`, `fix`, `perf`, `security`, and `refactor`/`build` **with observable
-impact** earn an entry. `style`, `test`, `ci`, `docs`, `chore` and pure refactors
-do not. That curation is the whole point of maintaining it by hand instead of
-generating it from the log.
-
-An unreleased feature is **one** entry. While it lives under `## [Unreleased]`,
-later corrections fold into that same line referencing every commit — no second
-_Corregido_ bullet. Once the feature has shipped in a published version, a later
-fix earns its own line.
-
-Categories, in Spanish, mapped to the types above: `Agregado` · `Corregido` ·
-`Rendimiento` · `Cambiado` · `Seguridad` · `Eliminado`. Only the ones with
-content appear.
-
-### Releases
-
-`release.yml` publishes when `main` moves **and** `version` in `package.json`
-has no tag yet. The version bump is the trigger, not the merge — a version that
-increments on housekeeping stops meaning anything.
-
-Notes are generated from commit subjects and grouped into the same Spanish
-categories, which is exactly why the commit format is enforced: this is what
-consumes it. The generated notes are the complete record; `CHANGELOG.md` stays
-the curated one. Publishing mentions `@NullKDev`, and a mention emails every
-account with read access — that is the notification, with no extra secret and no
-third-party service.
-
-To cut a release: move `## [Unreleased]` to `## [x.y.z] — YYYY-MM-DD`, open an
-empty `## [Unreleased]` above it, bump `version` in `package.json`, and merge.
-
-## Skills
-
-Match by file context and task, and invoke before working:
-
-| Skill | Use it for |
-|---|---|
-| `astro` | `.astro` files, content collections, loaders, SSG routing |
-| `impeccable` | Any design, redesign, audit, or polish of a surface |
-| `accessibility` | WCAG 2.2 work; the project targets AA |
-| `tailwind-css-patterns` | Tailwind v4 styling over the token layer |
-| `seo` | Meta tags, sitemap, structured data |
-| `typescript-advanced-types` | Schema and generic type work |
-| `vitest` · `playwright-best-practices` | Unit and end-to-end tests |
-
-## Docs
-
-Portfolio backup reference: [`backup/PROJECT_ANALYSIS.md`](backup/PROJECT_ANALYSIS.md). Consult it for the backup project's screens, UI states, architecture, content, integrations, risks, and migration priorities.
-
-| Page | Description | Read it when |
-|------|-------------|--------------|
-| [docs/architecture.md](docs/architecture.md) | Layers, directory map, the rules that keep them | Adding a page, a lib module, or a component |
-| [docs/design-system.md](docs/design-system.md) | Tokens, type, the icon registry, primitives, per-section identity | Building or restyling any UI |
-| [docs/content-schema.md](docs/content-schema.md) | What each collection models and **why** — the three status axes, per-collection rationale, integrity rules | Adding an entry or a frontmatter field, or wondering why a field exists |
-| [docs/decisions.md](docs/decisions.md) | Decision log — what was chosen, why, and what it rules out | Before revisiting a settled question |
-| [docs/foundation.md](docs/foundation.md) | Toolchain, aliases, build pipeline | Changing config or the pipeline |
-| [PRODUCT.md](PRODUCT.md) | Users, purpose, binding product principles | Any question about what the site is for |
-| [DESIGN.md](DESIGN.md) | The visual direction and why it replaced the previous one | Any question about how it should look |
-
-**Two rules that are load-bearing, repeated here so they are not missed:**
-- Never write an inline `<svg>` in a component, and never hand-draw artwork a pack already has — see [Images, icons, and banners](#images-icons-and-banners).
-- `src/components/ui/` belongs to shadcn; project components go in `src/components/primitives/`.
+**To release:** move `## [Unreleased]` to `## [x.y.z] — YYYY-MM-DD`, open an
+empty `## [Unreleased]` above, bump `version` in `package.json`, merge to
+`main`. `release.yml` publishes only when that version has no tag — the bump is
+the trigger, not the merge. Notes are generated from commit subjects, which is
+what the commit format exists for.
 
 ## Content protection
 
-Entries can be gated with `protection: { mode: 'encrypted', keyId, ... }` in
-frontmatter. The pipeline lives in `src/lib/protection/` and the
-`private:generate` / `private:copy` / `private:scan` scripts.
+`protection: { mode: 'encrypted', keyId, … }` in frontmatter; pipeline in
+`src/lib/protection/` plus the `private:*` scripts.
 
-**This is a deterrent, not authorization.** The host is static: there is no
-server to check a password against, so protected content is public but
-obfuscated. Any copy describing it must say so. `private:scan` fails the build
-if plaintext leaks into `dist/`.
+**A deterrent, not authorization.** A static host has nothing to check a
+password against, so protected content is public but obfuscated. Any copy
+describing it must say so. `private:scan` fails the build if plaintext reaches
+`dist/`.
 
-## Security posture
+## Security
 
-- Never commit secrets; build secrets must not reach HTML, JS, source maps, or logs.
+- Never commit secrets. Build secrets must not reach HTML, JS, source maps or
+  logs.
 - PBKDF2 at 600,000 iterations, salted, stored as `base64(salt):hash`.
 - CSP is emitted by `src/layouts/Layout.astro` and **sealed after the build** by
-  `scripts/apply-csp.ts`, which hashes every inline script that actually shipped.
-  Never hand-maintain those hashes — several are content-derived and would rot.
-- `script-src` is `'self'` plus hashes. `'unsafe-inline'` is used for styles only.
-- **Google Analytics is the only third-party origin, and only when
-  `PUBLIC_GOOGLE_ANALYTICS_ID` is set.** `scripts/apply-csp.ts` widens the
-  allowlist solely in that case, so a fork or a local build reaches nothing.
-- Any *other* third-party request is blocked by the CSP and the feature visibly
-  fails. Bundle the dependency instead of widening the allowlist — that is the
-  policy working, not a bug in it.
-- GitHub Pages cannot set response headers, so `frame-ancestors`, HSTS,
-  `X-Content-Type-Options` and `Permissions-Policy` are **not available**. A
-  `_headers` file does nothing here. See [SECURITY.md](SECURITY.md).
-- `bun run audit` for dependency advisories; `bun run build` for type and leak checks.
-- Workflow changes must pass `actionlint` and `zizmor`; actions are pinned to SHAs.
+  `scripts/apply-csp.ts`, which hashes the inline scripts that shipped. Never
+  hand-maintain those hashes.
+- `script-src` is `'self'` plus hashes. `'unsafe-inline'` is styles only.
+- **Google Analytics is the only third-party origin**, and only when
+  `PUBLIC_GOOGLE_ANALYTICS_ID` is set. Any other third-party request is blocked
+  and the feature visibly fails — bundle the dependency instead of widening the
+  allowlist.
+- GitHub Pages cannot set response headers: `frame-ancestors`, HSTS,
+  `X-Content-Type-Options` and `Permissions-Policy` are unavailable, and a
+  `_headers` file does nothing. See [SECURITY.md](SECURITY.md).
+- Workflows must pass `actionlint` and `zizmor`; actions are pinned to SHAs.
+
+## Skills
+
+Invoke before working, matched by file and task.
+
+| Skill | For |
+|---|---|
+| `astro` | `.astro`, content collections, loaders, SSG routing |
+| `impeccable` | any design, redesign, audit or polish |
+| `accessibility` | WCAG 2.2; the project targets AA |
+| `tailwind-css-patterns` | Tailwind v4 over the token layer |
+| `seo` | meta tags, sitemap, structured data |
+| `typescript-advanced-types` | schema and generic type work |
+| `vitest` · `playwright-best-practices` | unit and end-to-end tests |
+
+## Docs
+
+| Page | Read it when |
+|---|---|
+| [docs/architecture.md](docs/architecture.md) | adding a page, lib module or component |
+| [docs/design-system.md](docs/design-system.md) | building or restyling any UI |
+| [docs/content-schema.md](docs/content-schema.md) | adding an entry or a frontmatter field |
+| [docs/decisions.md](docs/decisions.md) | before revisiting a settled question |
+| [docs/foundation.md](docs/foundation.md) | changing config or the pipeline |
+| [PRODUCT.md](PRODUCT.md) | what the site is for |
+| [DESIGN.md](DESIGN.md) | how it should look |
+| [SECURITY.md](SECURITY.md) | reporting or reasoning about a vulnerability |

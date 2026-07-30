@@ -114,6 +114,35 @@ accident; do not converge them.
 | **Notes** | Card grid (3-up at 1440px), colour + icon + distinct structure per `kind`; type and topic filters, pagination, and search are real routes over the whole collection | The form of the writing is the organising idea, and this is where a reader browses longest |
 | **Gallery** | Contact-sheet cards built from real contents; detail splits into a bento of pieces and a list of files/links | A collection card should look like what it holds |
 
+## Banners
+
+Declared in `src/data/banners.ts`, rendered by `scripts/generate-banners.ts`.
+Never hand-drawn: artwork comes from the icon registry, so a banner can only use
+marks the site already ships.
+
+| | |
+|---|---|
+| Authored size | **1200×630** — the Open Graph card, so one file is both banner and social preview |
+| Display ratio | **2.5:1**, one token `--banner-ratio`, centre-cropped |
+| Safe band | **y=75..555** — anything that must stay legible lives here |
+| Outputs | `public/banners/<slug>.svg` for the site, `public/og/banners/<slug>.png` for scrapers |
+
+Two constraints that are easy to violate:
+
+**The ratio belongs on the `<img>`, not the wrapper.** `height: 100%` against an
+auto-height parent is indefinite, so the image falls back to its intrinsic ratio
+and sizes the box it was meant to fit inside — producing a different crop at
+every breakpoint while `getComputedStyle` reports the value you set.
+
+**PNG is not optional.** X, Facebook, LinkedIn, Slack and WhatsApp render nothing
+for an SVG `og:image`.
+
+Every banner surface reads the same token: entry hero, featured note, note rows,
+home cards, work and lab cards. Gallery media is not a banner — photographs keep
+their own shapes.
+
+`bun run banners:check` enforces the size and fails the build otherwise.
+
 ## Note types
 
 `--kind-article | -note | -guide | -paper | -decision | -reference` in

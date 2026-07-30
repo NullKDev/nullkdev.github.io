@@ -86,7 +86,19 @@ Registered in `package.json` and chained into `bun run build`.
 | `gallery:copy` | Publishes `src/content/gallery/*/assets/` to `dist/gallery/<collection>/` |
 | `private:generate` · `private:copy` · `private:scan` | Encrypted-content pipeline and leak scan |
 | `performance:check` | Per-route gzip budgets for total, JS, CSS, images, fonts |
-| `links:check` · `metadata:check` | Built-link crawl, and metadata/RSS/sitemap/JSON-LD/hreflang checks |
+| `banners:build` · `banners:check` | Renders every banner from `src/data/banners.ts` into SVG + PNG; verifies all are 1200×630 |
+| `csp:apply` | Seals each page's CSP with SHA-256 hashes of the inline scripts that actually shipped |
+| `links:check` · `metadata:check` | Built-link crawl, and metadata/RSS/sitemap/JSON-LD/hreflang checks — including that every page shares its own image |
+| `commits:check` | Commit subjects and PR titles against the convention (not chained into the build; runs in CI and locally) |
+
+### One origin — `site.config.mjs`
+
+The site origin resolves in exactly one module: `SITE_URL` from the environment,
+else `http://localhost:4321` under `astro dev`, else production. Astro's `site`,
+the JSON-LD manifest URLs, `robots.txt` and the metadata checker all read it.
+
+It was previously hardcoded in six places, one inside a regex, which is how
+`robots.txt` kept advertising a domain the rest of the build had already left.
 
 ## Route families
 
