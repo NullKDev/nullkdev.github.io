@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-04-04
 updatedAt: 2026-07-23
 topics: [android, kotlin, architecture, design-patterns]
-featuredRank: 2
+featuredRank: 5
 image: /banners/gof-patterns-android.svg
 imageAlt: Eight Gang-of-Four patterns mapped to Android architecture concerns.
 links: []

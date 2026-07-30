@@ -10,7 +10,7 @@ maturity: growing
 publishedAt: 2026-04-01
 updatedAt: 2026-07-23
 topics: [android, kotlin, compose, architecture]
-featuredRank: 1
+featuredRank: 4
 image: /banners/remote-compose.svg
 imageAlt: Banner de Remote Compose — un documento Compose serializado renderizado por un player en el dispositivo.
 links:

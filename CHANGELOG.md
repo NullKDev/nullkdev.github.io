@@ -51,7 +51,21 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ## [Unreleased]
 
-_Nada todavía._
+### Agregado
+
+- Tres notas nuevas, en ambos idiomas: Chandra 2 y lo que un puntaje de benchmark
+  no dice, Android 17 estable y los cuatro cambios que rompen en `targetSdk 37`, y
+  los límites de memoria de Android 17 que matan el proceso sin stack trace. Las
+  tres de Android quedan encadenadas como serie con la nota de la Beta 3, que ahora
+  apunta a la estable en vez de terminar en un callejón sin salida.
+
+### Corregido
+
+- Los banners se renderizaban con tres proporciones distintas según el ancho de
+  pantalla — 3.76:1 en desktop, 1.90:1 en teléfono — porque `height: auto` peleaba
+  con `max-height`. Había seis tratamientos para las mismas imágenes. Ahora hay un
+  solo token, el ratio va en el `img` y no en el wrapper, y un validador en el build
+  exige que todo banner sea 1200×630. Encontró uno de 640×360 en su primera corrida.
 
 ## [0.1.0] — 2026-07-29
 
