@@ -22,7 +22,7 @@ import sharp from 'sharp'
 
 import { brand } from '../src/data/brand'
 import { banners, type BannerSpec } from '../src/data/banners'
-import { renderIcon } from '../src/lib/icons'
+import { renderArt } from './banner-art'
 
 const SVG_DIRECTORY = 'public/banners'
 const PNG_DIRECTORY = 'public/og/banners'
@@ -30,55 +30,72 @@ const PNG_DIRECTORY = 'public/og/banners'
 const WIDTH = 1200
 const HEIGHT = 630
 
-/* Displayed at 2.5:1 and centre-cropped, so only y=75..555 survives. Every
-   element below is placed inside that band — see `scripts/check-banners.ts`,
-   which prints the same bounds. */
-const SAFE_TOP = 75
-const SAFE_BOTTOM = 555
-
 const escape = (value: string): string =>
   value.replace(/[<>&]/g, (character) =>
     character === '<' ? '&lt;' : character === '>' ? '&gt;' : '&amp;',
   )
 
-/**
- * Lifts a registry icon into banner scale.
- *
- * Icons are authored on a 24-unit grid; the banner wants ~300px of artwork. The
- * inner `<svg>` is unwrapped to its body so the transform applies to the paths
- * rather than nesting a viewport that would clip them.
- */
-const artwork = (spec: BannerSpec): string => {
-  const source = renderIcon(spec.icon, 24)
-  const body = source.replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '')
-  const scale = 13 // 24 * 13 = 312px, comfortably inside the safe band
-  const x = 760
-  const y = SAFE_TOP + (SAFE_BOTTOM - SAFE_TOP - 24 * scale) / 2
+/* Two surfaces, one identity.
 
-  return (
-    `<g opacity="0.13" transform="translate(${x} ${y.toFixed(0)}) scale(${scale})" ` +
-    `fill="none" stroke="${spec.accent}" stroke-width="1.4" ` +
-    `stroke-linecap="round" stroke-linejoin="round">${body}</g>`
-  )
-}
+   A banner keeps its colour, its depth and its personality in both themes —
+   what changes is the ground it sits on. Dark theme: a deep surface with light
+   type. Light theme: a pale surface with dark type. The accent, the artwork and
+   the shadows are identical, so the banner is recognisably the same object.
 
-export const renderBanner = (spec: BannerSpec): string => {
-  const id = spec.slug.replace(/[^a-z0-9]/g, '')
+   An `<img>` cannot read `data-theme`, so both variants are emitted and CSS
+   swaps them per entry through `--banner-light`. */
+const SURFACE = {
+  dark: {
+    from: '#0F172A',
+    title: '#F8FAFC',
+    subtitle: '#94A3B8',
+    meta: '#64748B',
+    structure: '#94A3B8',
+    shadow: 0.55,
+  },
+  light: {
+    from: '#F8FAFC',
+    title: '#0F172A',
+    subtitle: '#475569',
+    meta: '#64748B',
+    structure: '#475569',
+    shadow: 0.18,
+  },
+} as const
+
+export type Surface = keyof typeof SURFACE
+
+export const renderBanner = (
+  spec: BannerSpec,
+  surface: Surface = 'dark',
+): string => {
+  const s = SURFACE[surface]
+  const id = `${spec.slug.replace(/[^a-z0-9]/g, '')}-${surface}`
+  const accent = spec.accent
+  const deep = surface === 'dark' ? spec.deep : spec.pale
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" fill="none" role="img" aria-label="${escape(spec.alt)}">
   <defs>
     <linearGradient id="bg-${id}" x1="0" y1="0" x2="${WIDTH}" y2="${HEIGHT}" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#0F172A"/>
-      <stop offset="100%" stop-color="${spec.deep}"/>
+      <stop offset="0%" stop-color="${s.from}"/>
+      <stop offset="100%" stop-color="${deep}"/>
     </linearGradient>
+    <radialGradient id="glow-${id}" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="${accent}" stop-opacity="${s.shadow * 0.4}"/>
+      <stop offset="100%" stop-color="${accent}" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="lift-${id}" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="${accent}" flood-opacity="${s.shadow * 0.5}"/>
+    </filter>
   </defs>
   <rect width="${WIDTH}" height="${HEIGHT}" fill="url(#bg-${id})"/>
-${artwork(spec)}
-  <rect x="96" y="150" width="76" height="4" rx="2" fill="${spec.accent}"/>
-  <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="${spec.accent}">${escape(spec.kicker.toUpperCase())}</text>
-  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#F8FAFC">${escape(spec.title[0])}</text>
-  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#94A3B8">${escape(spec.title[1])}</text>
-  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">${escape(spec.meta)}</text>
+  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-${id})"/>
+<g filter="url(#lift-${id})">${renderArt(spec.art, accent, s.structure)}</g>
+  <rect x="96" y="150" width="76" height="4" rx="2" fill="${accent}"/>
+  <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="${accent}">${escape(spec.kicker.toUpperCase())}</text>
+  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="${s.title}">${escape(spec.title[0])}</text>
+  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="${s.subtitle}">${escape(spec.title[1])}</text>
+  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="${s.meta}">${escape(spec.meta)}</text>
 </svg>
 `
 }
@@ -114,8 +131,15 @@ if (import.meta.main) {
   await mkdir(PNG_DIRECTORY, { recursive: true })
 
   for (const spec of banners) {
-    const svg = renderBanner(spec)
+    /* Both surfaces ship: an `<img>` cannot read `data-theme`, so CSS picks
+       between them per entry. The dark one is also what gets rasterised — a
+       social feed has no theme to follow. */
+    const svg = renderBanner(spec, 'dark')
     await writeFile(`${SVG_DIRECTORY}/${spec.slug}.svg`, svg)
+    await writeFile(
+      `${SVG_DIRECTORY}/${spec.slug}-light.svg`,
+      renderBanner(spec, 'light'),
+    )
 
     /* `density` matters: sharp rasterises SVG through librsvg at 72dpi by
        default, which would render a 1200-unit viewBox far smaller than 1200px

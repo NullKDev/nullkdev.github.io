@@ -122,12 +122,28 @@ Icons (brand), resolved at build, nothing shipped to the browser.
 ## Banners
 
 Declared, not drawn. Add a spec to `src/data/banners.ts`, run
-`bun run banners:build`. Artwork comes from the icon registry.
+`bun run banners:build`.
 
-| Output | Consumer |
+**Artwork is a motif, not an icon.** `scripts/banner-art.ts` draws the *subject*
+— a page parsed into structure, memory past a ceiling, a release reaching its
+last stop. A lone registry icon is a category badge: it says which section the
+post is filed under and nothing about the post. Registry marks appear **inside**
+a motif, at content scale, never floating in a corner.
+
+| Output | Used by |
 |---|---|
-| `public/banners/<slug>.svg` | the site |
+| `public/banners/<slug>.svg` | the site, dark theme |
+| `public/banners/<slug>-light.svg` | the site, light theme |
 | `public/og/banners/<slug>.png` | social scrapers |
+
+**Two surfaces, one identity.** Accent, artwork and shadows are identical in
+both themes — only the ground and the type invert: deep surface with light type,
+pale surface with dark type. A banner stays recognisably the same object.
+
+An `<img>` cannot read `data-theme`, so `EntryPage` passes `--banner-light` on
+the figure and CSS swaps the rendered file with `content:`. That keeps it an
+image — alt text and the reserved box survive, which a `background-image` would
+lose.
 
 Both are required: **X, Facebook, LinkedIn, Slack and WhatsApp render nothing
 for an SVG `og:image`.** The identity card `public/og/signal-archive.png` is

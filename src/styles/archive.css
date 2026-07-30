@@ -2141,6 +2141,12 @@
 .entry-banner {
   margin: 2.25rem 0 0;
 }
+/* Light theme gets the light-ground variant of the same banner: same accent,
+   same artwork, same shadows — only the surface and the type invert. */
+:root[data-theme='light'] .entry-banner img {
+  content: var(--banner-light);
+}
+
 .entry-banner img {
   display: block;
   width: 100%;

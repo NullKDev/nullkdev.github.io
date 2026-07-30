@@ -1,4 +1,4 @@
-import type { IconName } from '@/lib/icons'
+import type { Motif } from '../../scripts/banner-art'
 
 /**
  * Every banner, declared rather than drawn.
@@ -22,11 +22,19 @@ export interface BannerSpec {
   readonly title: readonly [string, string]
   /** Monospaced footnote — the specifics a reader can verify. */
   readonly meta: string
-  /** Mark from `src/lib/icons.ts`, drawn oversized and faint on the right. */
-  readonly icon: IconName
-  /** Accent and the deep corner the background gradient runs into. */
+  /**
+   * Composition drawn on the right half. A motif shows the SUBJECT — a page
+   * parsed into structure, memory past a ceiling — because a lone icon reads
+   * as a category badge and says nothing about the post.
+   */
+  readonly art: Motif
+  /**
+   * Accent stays identical in both themes — it is the banner's identity. Only
+   * the ground changes: `deep` in dark, `pale` in light.
+   */
   readonly accent: string
   readonly deep: string
+  readonly pale: string
   /** Alt text. Describes the banner, not the article. */
   readonly alt: string
 }
@@ -35,11 +43,11 @@ export interface BannerSpec {
    post before reading its title. Indigo is the site accent and stays with the
    archive's own subjects. */
 const PALETTE = {
-  ai: { accent: '#A78BFA', deep: '#2A1E3B' },
-  android: { accent: '#34D399', deep: '#0B2B22' },
-  warning: { accent: '#F87171', deep: '#3B1E1E' },
-  web: { accent: '#60A5FA', deep: '#12233F' },
-  archive: { accent: '#818CF8', deep: '#1E1B4B' },
+  ai: { accent: '#7C3AED', deep: '#2A1E3B', pale: '#EDE9FE' },
+  android: { accent: '#059669', deep: '#0B2B22', pale: '#D1FAE5' },
+  warning: { accent: '#DC2626', deep: '#3B1E1E', pale: '#FEE2E2' },
+  web: { accent: '#2563EB', deep: '#12233F', pale: '#DBEAFE' },
+  archive: { accent: '#4F46E5', deep: '#1E1B4B', pale: '#E0E7FF' },
 } as const
 
 export const banners: readonly BannerSpec[] = [
@@ -48,7 +56,7 @@ export const banners: readonly BannerSpec[] = [
     kicker: 'OCR · Benchmarks',
     title: ['What an 85.9%', 'score leaves out'],
     meta: 'Chandra 2 · olmOCR · RealDocBench',
-    icon: 'paper',
+    art: 'document-parse',
     ...PALETTE.ai,
     alt: 'Chandra OCR banner — what an 85.9% score leaves out.',
   },
@@ -57,7 +65,7 @@ export const banners: readonly BannerSpec[] = [
     kicker: 'Android 17 · API 37',
     title: ['Stable, six', 'weeks in'],
     meta: 'Beta 3 → Beta 4 → 16 Jun 2026',
-    icon: 'android',
+    art: 'release-train',
     ...PALETTE.android,
     alt: 'Android 17 stable banner — stable, six weeks in.',
   },
@@ -66,7 +74,7 @@ export const banners: readonly BannerSpec[] = [
     kicker: 'Android 17 · Memory',
     title: ['Killed with no', 'stack trace'],
     meta: 'cgroup memory.high · MemoryLimiter:AnonSwap',
-    icon: 'warning',
+    art: 'memory-ceiling',
     ...PALETTE.warning,
     alt: 'Android 17 memory limits banner — killed with no stack trace.',
   },
@@ -75,7 +83,7 @@ export const banners: readonly BannerSpec[] = [
     kicker: 'Android 17 · Beta 3',
     title: ['Platform', 'stability'],
     meta: 'API 37 locked · 27 Mar 2026',
-    icon: 'android',
+    art: 'api-locked',
     ...PALETTE.android,
     alt: 'Android 17 Beta 3 banner — platform stability reached.',
   },
@@ -84,7 +92,7 @@ export const banners: readonly BannerSpec[] = [
     kicker: 'Android · Architecture',
     title: ['Eight patterns,', 'four rules'],
     meta: 'Observer · Proxy · Adapter · Strategy',
-    icon: 'decision',
+    art: 'pattern-pairs',
     ...PALETTE.android,
     alt: 'Design patterns banner — eight patterns, four rules.',
   },
@@ -93,7 +101,7 @@ export const banners: readonly BannerSpec[] = [
     kicker: 'Web · Layout',
     title: ['Measuring text', 'without reflow'],
     meta: 'Canvas oracle · 500× faster layout()',
-    icon: 'note',
+    art: 'text-measure',
     ...PALETTE.web,
     alt: 'Pretext banner — measuring text without reflow.',
   },
@@ -102,7 +110,7 @@ export const banners: readonly BannerSpec[] = [
     kicker: 'Android · Compose',
     title: ['UI that crosses', 'the process line'],
     meta: 'Remote Compose · remote-player-view',
-    icon: 'external',
+    art: 'process-bridge',
     ...PALETTE.android,
     alt: 'Remote Compose banner — UI that crosses the process line.',
   },
@@ -111,7 +119,7 @@ export const banners: readonly BannerSpec[] = [
     kicker: 'Archive · Work',
     title: ['Things that', 'shipped'],
     meta: 'Source · releases · downloadable artifacts',
-    icon: 'archive',
+    art: 'shipped-stack',
     ...PALETTE.archive,
     alt: 'Work banner — things that shipped.',
   },

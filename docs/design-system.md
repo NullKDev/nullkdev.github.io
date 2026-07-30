@@ -125,7 +125,18 @@ marks the site already ships.
 | Authored size | **1200×630** — the Open Graph card, so one file is both banner and social preview |
 | Display ratio | **2.5:1**, one token `--banner-ratio`, centre-cropped |
 | Safe band | **y=75..555** — anything that must stay legible lives here |
-| Outputs | `public/banners/<slug>.svg` for the site, `public/og/banners/<slug>.png` for scrapers |
+| Outputs | `<slug>.svg` (dark theme) · `<slug>-light.svg` (light theme) · `og/banners/<slug>.png` (scrapers) |
+| Artwork | a motif from `scripts/banner-art.ts`, not a lone icon |
+
+**Artwork draws the subject.** A single registry icon reads as a category badge
+— it names the section, not the post. Motifs compose primitives into something
+that carries an idea, and registry marks sit inside them at content scale.
+
+**Two surfaces, one identity.** The accent, the composition and the shadows are
+identical across themes; only the ground and the type invert. The banner is the
+same object in both, not two designs. `EntryPage` sets `--banner-light` and CSS
+swaps the file with `content:`, because an `<img>` cannot read `data-theme` and a
+`background-image` would drop the alt text.
 
 Two constraints that are easy to violate:
 

@@ -1,21 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Pretext banner — measuring text without reflow.">
   <defs>
-    <linearGradient id="bg-pretext-dark" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#0F172A"/>
-      <stop offset="100%" stop-color="#12233F"/>
+    <linearGradient id="bg-pretext-light" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#DBEAFE"/>
     </linearGradient>
-    <radialGradient id="glow-pretext-dark" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#2563EB" stop-opacity="0.22000000000000003"/>
+    <radialGradient id="glow-pretext-light" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2563EB" stop-opacity="0.072"/>
       <stop offset="100%" stop-color="#2563EB" stop-opacity="0"/>
     </radialGradient>
-    <filter id="lift-pretext-dark" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#2563EB" flood-opacity="0.275"/>
+    <filter id="lift-pretext-light" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#2563EB" flood-opacity="0.09"/>
     </filter>
   </defs>
-  <rect width="1200" height="630" fill="url(#bg-pretext-dark)"/>
-  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-pretext-dark)"/>
-<g filter="url(#lift-pretext-dark)">
-    <rect x="706" y="168" width="300" height="14" rx="7" fill="#94A3B8" opacity="0.32"/><rect x="706" y="208" width="254" height="14" rx="7" fill="#94A3B8" opacity="0.32"/><rect x="706" y="248" width="300" height="14" rx="7" fill="#94A3B8" opacity="0.32"/><rect x="706" y="288" width="254" height="14" rx="7" fill="#94A3B8" opacity="0.32"/><rect x="706" y="328" width="180" height="14" rx="7" fill="#94A3B8" opacity="0.32"/>
+  <rect width="1200" height="630" fill="url(#bg-pretext-light)"/>
+  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-pretext-light)"/>
+<g filter="url(#lift-pretext-light)">
+    <rect x="706" y="168" width="300" height="14" rx="7" fill="#475569" opacity="0.32"/><rect x="706" y="208" width="254" height="14" rx="7" fill="#475569" opacity="0.32"/><rect x="706" y="248" width="300" height="14" rx="7" fill="#475569" opacity="0.32"/><rect x="706" y="288" width="254" height="14" rx="7" fill="#475569" opacity="0.32"/><rect x="706" y="328" width="180" height="14" rx="7" fill="#475569" opacity="0.32"/>
     <path d="M700 152 H1030" stroke="#2563EB" stroke-width="2" opacity="0.5"/>
     <path d="M706 146 v13" stroke="#2563EB" stroke-width="2" opacity="0.5"/><path d="M760 146 v13" stroke="#2563EB" stroke-width="2" opacity="0.5"/><path d="M814 146 v13" stroke="#2563EB" stroke-width="2" opacity="0.5"/><path d="M868 146 v13" stroke="#2563EB" stroke-width="2" opacity="0.5"/><path d="M922 146 v13" stroke="#2563EB" stroke-width="2" opacity="0.5"/><path d="M976 146 v13" stroke="#2563EB" stroke-width="2" opacity="0.5"/><path d="M1030 146 v13" stroke="#2563EB" stroke-width="2" opacity="0.5"/>
     <rect x="1048" y="196" width="82" height="150" rx="10" fill="#2563EB" opacity="0.14"/>
@@ -25,7 +25,7 @@
     <rect x="706" y="372" width="180" height="14" rx="7" fill="#2563EB" opacity="0.6"/></g>
   <rect x="96" y="150" width="76" height="4" rx="2" fill="#2563EB"/>
   <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#2563EB">WEB · LAYOUT</text>
-  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#F8FAFC">Measuring text</text>
-  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#94A3B8">without reflow</text>
+  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#0F172A">Measuring text</text>
+  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#475569">without reflow</text>
   <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">Canvas oracle · 500× faster layout()</text>
 </svg>

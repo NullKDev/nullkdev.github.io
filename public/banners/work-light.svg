@@ -1,32 +1,32 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Work banner — things that shipped.">
   <defs>
-    <linearGradient id="bg-work-dark" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#0F172A"/>
-      <stop offset="100%" stop-color="#1E1B4B"/>
+    <linearGradient id="bg-work-light" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#E0E7FF"/>
     </linearGradient>
-    <radialGradient id="glow-work-dark" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#4F46E5" stop-opacity="0.22000000000000003"/>
+    <radialGradient id="glow-work-light" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#4F46E5" stop-opacity="0.072"/>
       <stop offset="100%" stop-color="#4F46E5" stop-opacity="0"/>
     </radialGradient>
-    <filter id="lift-work-dark" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#4F46E5" flood-opacity="0.275"/>
+    <filter id="lift-work-light" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#4F46E5" flood-opacity="0.09"/>
     </filter>
   </defs>
-  <rect width="1200" height="630" fill="url(#bg-work-dark)"/>
-  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-work-dark)"/>
-<g filter="url(#lift-work-dark)">
-    <rect x="758" y="278" width="340" height="126" rx="12" fill="none" stroke="#94A3B8" stroke-width="2.5" opacity="0.26"/>
-    <rect x="730" y="240" width="340" height="126" rx="12" fill="none" stroke="#94A3B8" stroke-width="2.5" opacity="0.4"/>
+  <rect width="1200" height="630" fill="url(#bg-work-light)"/>
+  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-work-light)"/>
+<g filter="url(#lift-work-light)">
+    <rect x="758" y="278" width="340" height="126" rx="12" fill="none" stroke="#475569" stroke-width="2.5" opacity="0.26"/>
+    <rect x="730" y="240" width="340" height="126" rx="12" fill="none" stroke="#475569" stroke-width="2.5" opacity="0.4"/>
     <rect x="702" y="202" width="340" height="126" rx="12" fill="#4F46E5" opacity="0.13"/>
     <rect x="702" y="202" width="340" height="126" rx="12" fill="none" stroke="#4F46E5" stroke-width="2.5" opacity="0.8"/>
     <rect x="728" y="230" width="196" height="11" rx="5.5" fill="#4F46E5" opacity="0.5"/><rect x="728" y="256" width="134" height="11" rx="5.5" fill="#4F46E5" opacity="0.3"/><rect x="728" y="282" width="172" height="11" rx="5.5" fill="#4F46E5" opacity="0.3"/>
     <circle cx="1042" cy="202" r="34" fill="#4F46E5" opacity="0.2"/>
     <circle cx="1042" cy="202" r="34" fill="none" stroke="#4F46E5" stroke-width="2.5"/>
     <g transform="translate(1024 184) scale(1.5)" opacity="0.95" fill="none" stroke="#4F46E5" stroke-width="1.13" stroke-linecap="round" stroke-linejoin="round"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></g></g>
-    <rect x="702" y="438" width="250" height="10" rx="5" fill="#94A3B8" opacity="0.2"/></g>
+    <rect x="702" y="438" width="250" height="10" rx="5" fill="#475569" opacity="0.2"/></g>
   <rect x="96" y="150" width="76" height="4" rx="2" fill="#4F46E5"/>
   <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#4F46E5">ARCHIVE · WORK</text>
-  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#F8FAFC">Things that</text>
-  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#94A3B8">shipped</text>
+  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#0F172A">Things that</text>
+  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#475569">shipped</text>
   <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">Source · releases · downloadable artifacts</text>
 </svg>

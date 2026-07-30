@@ -114,6 +114,12 @@ const tableOfContents = [
 const bannerSlug = entry.data.image?.match(/\/banners\/([^/]+)\.svg$/)?.[1]
 const socialImage = bannerSlug ? `/og/banners/${bannerSlug}.png` : undefined
 
+/* An `<img>` cannot read `data-theme`, so both surfaces ship and CSS swaps the
+   rendered one through this property. `content` keeps the element an image —
+   alt text and the reserved box survive the swap, which a background-image
+   would lose. */
+const lightBanner = bannerSlug ? `/banners/${bannerSlug}-light.svg` : undefined
+
 const published = entry.data.publishedAt
 const updated = entry.data.updatedAt ?? entry.data.publishedAt
 const role = 'role' in entry.data ? entry.data.role : undefined
@@ -263,7 +269,12 @@ const jsonLd = {
 
     {
       entry.data.image && (
-        <figure class="entry-banner">
+        <figure
+          class="entry-banner"
+          style={
+            lightBanner ? `--banner-light: url(${lightBanner})` : undefined
+          }
+        >
           <img
             src={entry.data.image}
             alt={entry.data.imageAlt ?? ''}
