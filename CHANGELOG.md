@@ -51,6 +51,10 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ## [Unreleased]
 
+_Nada todavía._
+
+## [0.2.0] — 2026-07-29
+
 ### Agregado
 
 - Tres notas nuevas, en ambos idiomas: Chandra 2 y lo que un puntaje de benchmark
