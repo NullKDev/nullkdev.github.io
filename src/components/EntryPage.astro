@@ -103,6 +103,17 @@ const tableOfContents = [
   ]),
 ]
 
+/* A shared card told every reader the same thing about a page they had not
+   opened yet — and it still advertised the previous site's sections. When an
+   entry has a banner, that banner IS the preview: the same artwork, the same
+   title, already sized 1200x630.
+
+   The PNG, not the SVG. X, LinkedIn, Slack and WhatsApp render no image at all
+   for an SVG `og:image`, which is worse than a generic one. `banners:build`
+   rasterises every banner into public/og/banners/ for exactly this. */
+const bannerSlug = entry.data.image?.match(/\/banners\/([^/]+)\.svg$/)?.[1]
+const socialImage = bannerSlug ? `/og/banners/${bannerSlug}.png` : undefined
+
 const published = entry.data.publishedAt
 const updated = entry.data.updatedAt ?? entry.data.publishedAt
 const role = 'role' in entry.data ? entry.data.role : undefined
@@ -146,6 +157,8 @@ const jsonLd = {
   title={pageTitle(entry.data.title)}
   description={entry.data.summary}
   counterpartPath={counterpartPath}
+  image={socialImage}
+  imageAlt={socialImage ? entry.data.imageAlt : undefined}
   jsonLd={jsonLd}
 >
   <main

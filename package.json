@@ -34,7 +34,8 @@
     "csp:apply": "bun scripts/apply-csp.ts",
     "audit": "bun audit --audit-level=high --ignore=GHSA-mh99-v99m-4gvg",
     "commits:check": "bun scripts/check-commit-messages.ts",
-    "banners:check": "bun scripts/check-banners.ts"
+    "banners:check": "bun scripts/check-banners.ts",
+    "banners:build": "bun scripts/generate-banners.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^7.0.5",

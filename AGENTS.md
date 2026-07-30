@@ -107,8 +107,22 @@ Two independent mechanisms; do not mix them.
 
 ## Banners
 
-**Author every banner at exactly 1200x630**, in `public/banners/`. SVG preferred;
-PNG accepted. `bun run banners:check` enforces it and the build fails otherwise.
+**Banners are declared, not drawn.** Add a spec to `src/data/banners.ts` and run
+`bun run banners:build`. It emits the SVG the site renders **and** the PNG social
+previews use — X, LinkedIn, Slack and WhatsApp render *nothing* for an SVG
+`og:image`, so both outputs are required.
+
+Artwork comes from the icon registry (`src/lib/icons.ts`). A banner can only use
+marks the site already ships; if one is missing, extend the registry rather than
+hand-drawing. `simple-icons:android` was already there while a banner carried a
+hand-drawn robot.
+
+The identity card (`public/og/signal-archive.png`) is generated from `brand` by
+the same script — it spent months advertising `<nullKdev/>` and the previous
+site's sections because nobody rebuilt it.
+
+Everything is 1200x630. `bun run banners:check` enforces it and the build fails
+otherwise.
 
 That size is the Open Graph card, so one file is both the banner and the social
 preview — authoring at any other size means a second asset to keep in sync.

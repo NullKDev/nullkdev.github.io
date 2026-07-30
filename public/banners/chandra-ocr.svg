@@ -1,22 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Chandra OCR banner — benchmark scores and what they omit">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Chandra OCR banner — what an 85.9% score leaves out.">
   <defs>
-    <linearGradient id="ch-bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+    <linearGradient id="bg-chandraocr" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#0F172A"/>
-      <stop offset="100%" stop-color="2A1E3B"/>
-    </linearGradient>
-    <linearGradient id="ch-accent" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#A78BFA"/>
-      <stop offset="100%" stop-color="#6D28D9"/>
+      <stop offset="100%" stop-color="#2A1E3B"/>
     </linearGradient>
   </defs>
-  <rect width="1200" height="630" fill="url(#ch-bg)"/>
-
-  <!-- Safe band: y=75..555. Nothing legible may leave it. -->
-  <g opacity="0.10"><rect x="700" y="130" width="400" height="380" rx="14" fill="#A78BFA"/><rect x="740" y="180" width="300" height="14" rx="7" fill="#0F172A"/><rect x="740" y="220" width="230" height="14" rx="7" fill="#0F172A"/><rect x="740" y="260" width="290" height="14" rx="7" fill="#0F172A"/><rect x="740" y="320" width="140" height="120" rx="8" fill="#0F172A"/><rect x="900" y="320" width="140" height="120" rx="8" fill="#0F172A"/></g>
-
-  <rect x="96" y="150" width="76" height="4" rx="2" fill="url(#ch-accent)"/>
+  <rect width="1200" height="630" fill="url(#bg-chandraocr)"/>
+<g opacity="0.13" transform="translate(760 159) scale(13)" fill="none" stroke="#A78BFA" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"><path d="M15 12h-5m5-4h-5m9 9V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/></g></g>
+  <rect x="96" y="150" width="76" height="4" rx="2" fill="#A78BFA"/>
   <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#A78BFA">OCR · BENCHMARKS</text>
-  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#F8FAFC">What an 85.9%</text>
-  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#94A3B8">score leaves out</text>
+  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#F8FAFC">What an 85.9%</text>
+  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#94A3B8">score leaves out</text>
   <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">Chandra 2 · olmOCR · RealDocBench</text>
 </svg>

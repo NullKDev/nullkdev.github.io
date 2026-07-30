@@ -1,36 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Built software artifact">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Work banner — things that shipped.">
   <defs>
-    <linearGradient id="wkbg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0b1220"/>
-      <stop offset="1" stop-color="#101c34"/>
+    <linearGradient id="bg-work" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E1B4B"/>
     </linearGradient>
-    <radialGradient id="wkg1" cx="14%" cy="8%" r="62%">
-      <stop offset="0" stop-color="#4f46e5" stop-opacity="0.40"/>
-      <stop offset="1" stop-color="#4f46e5" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="wkg2" cx="92%" cy="104%" r="60%">
-      <stop offset="0" stop-color="#059669" stop-opacity="0.34"/>
-      <stop offset="1" stop-color="#059669" stop-opacity="0"/>
-    </radialGradient>
-    <pattern id="wkdots" width="16" height="16" patternUnits="userSpaceOnUse">
-      <circle cx="1.5" cy="1.5" r="1.5" fill="#8a97b5" fill-opacity="0.16"/>
-    </pattern>
   </defs>
-  <!-- Authored at 640x360; scaled to the canonical 1200x630 without redrawing.
-       1.875 fills the width; the 22.5px lift centres the extra height. -->
-  <g transform="translate(0,-22.5) scale(1.875)">
-  <rect width="640" height="360" fill="url(#wkbg)"/>
-  <rect width="640" height="360" fill="url(#wkdots)"/>
-  <rect width="640" height="360" fill="url(#wkg1)"/>
-  <rect width="640" height="360" fill="url(#wkg2)"/>
-  <!-- stacked module panels -->
-  <rect x="246" y="150" width="220" height="104" rx="14" fill="#161f31" stroke="#2a3550" stroke-width="1"/>
-  <rect x="220" y="126" width="220" height="104" rx="14" fill="#1a2436" stroke="#33405f" stroke-width="1"/>
-  <rect x="194" y="102" width="220" height="104" rx="14" fill="#1e293e" stroke="#3c4a6c" stroke-width="1"/>
-  <rect x="194" y="102" width="220" height="7" rx="3.5" fill="#4f46e5"/>
-  <rect x="214" y="132" width="70" height="9" rx="4.5" fill="#54628a"/>
-  <rect x="214" y="150" width="120" height="9" rx="4.5" fill="#3a4766"/>
-  <rect x="214" y="168" width="96" height="9" rx="4.5" fill="#3a4766"/>
-  <rect x="372" y="168" width="22" height="22" rx="6" fill="#059669"/>
-  </g>
+  <rect width="1200" height="630" fill="url(#bg-work)"/>
+<g opacity="0.13" transform="translate(760 159) scale(13)" fill="none" stroke="#818CF8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8m-10 4h4"/></g></g>
+  <rect x="96" y="150" width="76" height="4" rx="2" fill="#818CF8"/>
+  <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#818CF8">ARCHIVE · WORK</text>
+  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#F8FAFC">Things that</text>
+  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#94A3B8">shipped</text>
+  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">Source · releases · downloadable artifacts</text>
 </svg>

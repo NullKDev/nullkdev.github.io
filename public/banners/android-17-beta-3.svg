@@ -1,41 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
-  <rect width="1200" height="630" fill="#0F172A"/>
-  <rect x="0" y="0" width="1200" height="630" fill="url(#bg-grad)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Android 17 Beta 3 banner — platform stability reached.">
   <defs>
-    <linearGradient id="bg-grad" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+    <linearGradient id="bg-android17beta3" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#0F172A"/>
-      <stop offset="100%" stop-color="#1E293B"/>
-    </linearGradient>
-    <linearGradient id="android-grad" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
-      <stop offset="0%" stop-color="#34D399"/>
-      <stop offset="100%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#0B2B22"/>
     </linearGradient>
   </defs>
-  <!-- Android robot body -->
-  <rect x="460" y="270" width="280" height="220" rx="30" fill="url(#android-grad)" opacity="0.15"/>
-  <!-- Android head -->
-  <ellipse cx="600" cy="210" rx="100" ry="90" fill="url(#android-grad)" opacity="0.15"/>
-  <!-- Antenna left -->
-  <line x1="540" y1="130" x2="510" y2="100" stroke="#34D399" stroke-width="8" stroke-linecap="round" opacity="0.6"/>
-  <circle cx="508" cy="98" r="8" fill="#34D399" opacity="0.6"/>
-  <!-- Antenna right -->
-  <line x1="660" y1="130" x2="690" y2="100" stroke="#34D399" stroke-width="8" stroke-linecap="round" opacity="0.6"/>
-  <circle cx="692" cy="98" r="8" fill="#34D399" opacity="0.6"/>
-  <!-- Eyes -->
-  <circle cx="565" cy="215" r="14" fill="#34D399" opacity="0.8"/>
-  <circle cx="635" cy="215" r="14" fill="#34D399" opacity="0.8"/>
-  <!-- Arms -->
-  <rect x="380" y="280" width="70" height="30" rx="15" fill="url(#android-grad)" opacity="0.15"/>
-  <rect x="750" y="280" width="70" height="30" rx="15" fill="url(#android-grad)" opacity="0.15"/>
-  <!-- Text: Android 17 -->
-  <text x="600" y="430" text-anchor="middle" font-family="system-ui, sans-serif" font-size="72" font-weight="800" fill="#F8FAFC" letter-spacing="-2">Android 17</text>
-  <text x="600" y="490" text-anchor="middle" font-family="system-ui, sans-serif" font-size="32" font-weight="400" fill="#34D399" letter-spacing="4">BETA 3 · API LEVEL 37</text>
-  <!-- Badge -->
-  <rect x="460" y="525" width="280" height="44" rx="22" fill="#34D399" opacity="0.15"/>
-  <text x="600" y="553" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" font-weight="600" fill="#34D399">Platform Stability Reached</text>
-  <!-- Decorative circles -->
-  <circle cx="100" cy="100" r="80" fill="#34D399" opacity="0.04"/>
-  <circle cx="1100" cy="530" r="100" fill="#34D399" opacity="0.04"/>
-  <circle cx="150" cy="520" r="60" fill="#3B82F6" opacity="0.04"/>
-  <circle cx="1050" cy="100" r="70" fill="#3B82F6" opacity="0.04"/>
+  <rect width="1200" height="630" fill="url(#bg-android17beta3)"/>
+<g opacity="0.13" transform="translate(760 159) scale(13)" fill="none" stroke="#34D399" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" d="M18.44 5.559q-1.015 1.748-2.028 3.498q-.055-.023-.111-.043a12.1 12.1 0 0 0-8.68.033C7.537 8.897 5.868 6.026 5.6 5.56a1 1 0 0 0-.141-.19a1.104 1.104 0 0 0-1.768 1.298c1.947 3.37-.096-.216 1.948 3.36c.017.03-.495.263-1.393 1.017C2.9 12.176.452 14.772 0 18.99h24a11.7 11.7 0 0 0-.746-3.068a12.1 12.1 0 0 0-2.74-4.184a12 12 0 0 0-2.131-1.687c.66-1.122 1.312-2.256 1.965-3.385a1.11 1.11 0 0 0-.008-1.12a1.1 1.1 0 0 0-.852-.532c-.522-.054-.939.313-1.049.545m-.04 8.46c.395.593.324 1.331-.156 1.65c-.48.32-1.188.1-1.582-.493s-.324-1.33.156-1.65c.473-.316 1.182-.11 1.582.494m-11.193-.492c.48.32.55 1.058.156 1.65c-.394.593-1.103.815-1.584.495c-.48-.32-.55-1.058-.156-1.65c.4-.603 1.109-.811 1.584-.495"/></g>
+  <rect x="96" y="150" width="76" height="4" rx="2" fill="#34D399"/>
+  <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#34D399">ANDROID 17 · BETA 3</text>
+  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#F8FAFC">Platform</text>
+  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#94A3B8">stability</text>
+  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">API 37 locked · 27 Mar 2026</text>
 </svg>
