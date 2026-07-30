@@ -3,7 +3,7 @@ entryId: notes-chandra-ocr-es
 locale: es
 translationKey: chandra-ocr
 slug: chandra-ocr-puntajes-benchmark
-title: 'Chandra 2 saca 85.9% en olmOCR. Un paper que lo evaluó dice que ese número no sobrevive a tus documentos'
+title: 'Lo que el 85.9% de Chandra no te dice'
 summary: 'Un modelo abierto de 5B le gana a Gemini y GPT-5 Mini en OCR. Dos cosas que el leaderboard omite: quién escribió el benchmark y qué permite la licencia.'
 visibility: public
 maturity: stable

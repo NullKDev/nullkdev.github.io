@@ -3,7 +3,7 @@ entryId: notes-remote-compose
 locale: en
 translationKey: remote-compose
 slug: remote-compose
-title: 'Remote Compose: server-driven UI comes to Android the right way'
+title: 'Remote Compose: server-driven UI on Android'
 summary: Google's first-party server-driven UI for Android — a serialized document built on the JVM and rendered by an on-device player, and how it differs from JSON SDUI.
 visibility: public
 maturity: growing

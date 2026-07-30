@@ -3,7 +3,7 @@ entryId: notes-android-17-memory-limits-es
 locale: es
 translationKey: android-17-memory-limits
 slug: android-17-limites-memoria
-title: 'Android 17 mata tu proceso sin stack trace. Así te enterás de que pasó'
+title: 'Android 17 mata tu proceso sin stack trace'
 summary: Los límites de memoria por app son límites de cgroup que configura el fabricante, no se pueden consultar en runtime, y la muerte no deja crash log.
 visibility: public
 maturity: stable

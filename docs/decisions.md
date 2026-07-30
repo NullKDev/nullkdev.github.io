@@ -8,6 +8,73 @@ Format: what was decided · why · what it rules out.
 
 ---
 
+## 2026-07-30 — A shared link shows what was shared
+
+**Decided.** An entry's social preview is its own banner; only home, About and
+the section indexes fall back to the identity card. Banners are authored at
+1200×630 and rasterised to PNG, because X, Facebook, LinkedIn, Slack and
+WhatsApp render nothing at all for an SVG `og:image`.
+
+**Why.** Every page advertised the same card, which still carried the previous
+brand and section names. The blocker was not the missing prop: the metadata
+checker *asserted* that every page use the shared image, so the correct change
+could not pass the build. When a check enforces the wrong thing, the check is
+the defect.
+
+**Rules out.** A single shared card. Authoring banners at any other size — the
+same file has to serve as both banner and Open Graph image. Pointing a preview
+at an SVG.
+
+## 2026-07-30 — One banner shape, declared not drawn
+
+**Decided.** Banners are specs in `src/data/banners.ts` rendered by one script,
+with artwork taken from the icon registry. One display ratio for every surface,
+held in `--banner-ratio`, with the aspect ratio applied to the `<img>`.
+
+**Why.** Six different treatments existed for the same images, and one banner
+rendered at 3.76:1 on desktop, 2.35:1 at 900px and 1.90:1 on a phone. Separately,
+a hand-drawn Android robot shipped while `simple-icons:android` was already in
+the registry.
+
+**Rules out.** Hand-drawn banner artwork. A second banner shape without a new
+token and a written reason. Applying the ratio to a wrapper, where `height: 100%`
+against an auto-height parent is indefinite and the image sizes the box instead.
+
+## 2026-07-30 — Banner colour is measured against the surface it lands on
+
+**Decided.** Every colour in a banner spec is checked with a contrast ratio
+before it ships: the light ground against `--surface-raised`, the type against
+the ground and against the deepest corner of the gradient, and each accent
+against all four grounds it can appear on — dark base, dark deep, light ground,
+light tint.
+
+**Why.** The light surface was `#F8FAFC`, which measures 1.05:1 against the
+`#ffffff` card and 1.01:1 against the page. The banner had no edge; its corner
+*was* the surface behind it, so the artwork read as floating on the card. The
+100-level tints had the same problem at 1.13–1.23:1 — a colour present in the
+file and absent on screen. Measuring also caught what looking could not: emerald
+`#059669` clears 3:1 on three grounds and fails its own light tint at 2.94:1.
+
+**Rules out.** Picking a banner ground because it looks light, or an accent
+because it looks visible in one theme. A single accent serving both themes is
+what makes four measurements mandatory rather than one.
+
+## 2026-07-30 — Commits, changelog and releases are one system
+
+**Decided.** `type(scope): description` verified in CI on commits and PR titles;
+a hand-curated `CHANGELOG.md`; releases triggered by a version bump rather than a
+merge, with notes generated from commit subjects.
+
+**Why.** The generated notes are only readable if the subjects are disciplined,
+so the format is not style — it is the input. Releasing on every merge would
+increment the version for housekeeping, and a number that moves for nothing
+stops meaning anything. The changelog stays hand-written because the curation —
+excluding `chore`, `style`, `ci`, `docs` — is the entire value; generated, it is
+a `git log` with extra steps.
+
+**Rules out.** Free-form subjects. Auto-generating the changelog. Releasing on
+merge. Enforcing the convention over history that predates it.
+
 ## 2026-07-26 — The public name is CarlosDev; the address stays nullkdev
 
 **Decided.** The wordmark, page titles, feed and `og:site_name` read

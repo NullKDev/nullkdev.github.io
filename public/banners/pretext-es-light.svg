@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Banner de Pretext — medir texto sin reflow.">
+  <defs>
+    <linearGradient id="bg-pretext-es-light" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E2E8F0"/>
+      <stop offset="100%" stop-color="#BFDBFE"/>
+    </linearGradient>
+    <radialGradient id="glow-pretext-es-light" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2563EB" stop-opacity="0.08800000000000001"/>
+      <stop offset="100%" stop-color="#2563EB" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="lift-pretext-es-light" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#2563EB" flood-opacity="0.11"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg-pretext-es-light)"/>
+  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-pretext-es-light)"/>
+<g filter="url(#lift-pretext-es-light)">
+    <rect x="706" y="168" width="300" height="14" rx="7" fill="#475569" opacity="0.32"/><rect x="706" y="208" width="254" height="14" rx="7" fill="#475569" opacity="0.32"/><rect x="706" y="248" width="300" height="14" rx="7" fill="#475569" opacity="0.32"/><rect x="706" y="288" width="254" height="14" rx="7" fill="#475569" opacity="0.32"/><rect x="706" y="328" width="180" height="14" rx="7" fill="#475569" opacity="0.32"/>
+    <path d="M700 152 H1030" stroke="#2563EB" stroke-width="2" opacity="0.5"/>
+    <path d="M706 146 v13" stroke="#2563EB" stroke-width="2" opacity="0.5"/><path d="M760 146 v13" stroke="#2563EB" stroke-width="2" opacity="0.5"/><path d="M814 146 v13" stroke="#2563EB" stroke-width="2" opacity="0.5"/><path d="M868 146 v13" stroke="#2563EB" stroke-width="2" opacity="0.5"/><path d="M922 146 v13" stroke="#2563EB" stroke-width="2" opacity="0.5"/><path d="M976 146 v13" stroke="#2563EB" stroke-width="2" opacity="0.5"/><path d="M1030 146 v13" stroke="#2563EB" stroke-width="2" opacity="0.5"/>
+    <rect x="1048" y="196" width="82" height="150" rx="10" fill="#2563EB" opacity="0.14"/>
+    <rect x="1048" y="196" width="82" height="150" rx="10" fill="none" stroke="#2563EB" stroke-width="2.5" opacity="0.7"/>
+    <rect x="1062" y="218" width="54" height="9" rx="4.5" fill="#2563EB" opacity="0.55"/><rect x="1062" y="238" width="36" height="9" rx="4.5" fill="#2563EB" opacity="0.4"/>
+    <g transform="translate(1076 292) scale(1.0833333333333333)" opacity="0.9" fill="none" stroke="#2563EB" stroke-width="1.57" stroke-linecap="round" stroke-linejoin="round"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M20 6L9 17l-5-5"/></g>
+    <rect x="706" y="372" width="180" height="14" rx="7" fill="#2563EB" opacity="0.6"/></g>
+  <rect x="96" y="150" width="76" height="4" rx="2" fill="#2563EB"/>
+  <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#2563EB">WEB · MAQUETADO</text>
+  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#0F172A">Medir texto</text>
+  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#475569">sin reflow</text>
+  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#55617A">Oráculo Canvas · layout() 500× más rápido</text>
+</svg>

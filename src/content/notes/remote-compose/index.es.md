@@ -3,7 +3,7 @@ entryId: notes-remote-compose-es
 locale: es
 translationKey: remote-compose
 slug: composicion-remota
-title: 'Remote Compose: UI server-driven en Android, por fin de la manera correcta'
+title: 'Remote Compose: UI server-driven en Android'
 summary: La UI server-driven oficial de Google para Android — un documento serializado que crea la JVM y renderiza un player en el dispositivo, frente al SDUI con JSON.
 visibility: public
 maturity: growing

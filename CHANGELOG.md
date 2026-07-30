@@ -51,7 +51,37 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ## [Unreleased]
 
-_Nada todavía._
+## [0.3.0] — 2026-07-30
+
+### Corregido
+
+- Al compartir el link de una nota, la preview ahora muestra el banner de esa
+  nota en vez de una tarjeta genérica que además seguía diciendo `<nullKdev/>`.
+  El bloqueo no era solo que faltara pasarlo: el propio validador de metadata
+  exigía que toda página usara la misma imagen. Los banners se rasterizan a PNG
+  porque X, LinkedIn y WhatsApp no renderizan SVG en `og:image`.
+- `/notes/type/note/` tenía el mismo título y la misma descripción que `/notes/`
+  en el mismo idioma — contenido duplicado que un buscador no puede separar. De
+  15 descripciones idénticas a ninguna repetida.
+- Los títulos de subposts concatenaban el del padre y llegaban a 153 caracteres.
+
+### Cambiado
+
+- Los banners se declaran en un manifiesto y se generan con `banners:build`,
+  tomando el arte del registro de iconos en vez de dibujarlo. La tarjeta de
+  identidad se genera desde `brand`, así que no puede volver a quedarse con la
+  marca vieja. Cada banner dibuja ahora su tema — una página convertida en
+  estructura, memoria pasando un techo — en vez de un solo icono, que funciona
+  como insignia de categoría y no dice nada del post. Se emiten cuatro SVG por
+  banner, idioma × tema: el texto está traducido y el fondo se adapta, mientras
+  el acento, el arte y las sombras se mantienen idénticos para que sea el mismo
+  objeto en ambos temas. La derivación de rutas vive en `src/lib/banners.ts`;
+  escribirla dentro de un componente dejaba cinco superficies de tarjeta
+  mostrando arte inglés y oscuro en páginas en español con tema claro. El fondo
+  claro es plomo y no casi-blanco: `#F8FAFC` medía 1.05:1 contra la tarjeta que
+  lo contiene, así que el banner no tenía borde y el arte parecía flotar.
+- Structured data en todas las páginas indexables: `CollectionPage` en índices y
+  filtros, `WebPage` en las de referencia, `WebSite` + `Person` en la home.
 
 ## [0.2.0] — 2026-07-29
 

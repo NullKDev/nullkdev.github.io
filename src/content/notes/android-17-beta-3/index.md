@@ -3,7 +3,7 @@ entryId: notes-android-17-beta-3
 locale: en
 translationKey: android-17-beta-3
 slug: android-17-beta-3
-title: 'Android 17 Beta 3: platform stability reached — what developers need to know'
+title: 'Android 17 Beta 3: platform stability reached'
 summary: A full breakdown of API 37 at platform stability — every notable new API, breaking change, and what to do right now.
 visibility: public
 maturity: archived

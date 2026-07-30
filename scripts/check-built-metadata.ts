@@ -35,12 +35,44 @@ for (const file of htmlFiles) {
   if (!/<meta name="description" content="[^"]+"/.test(html)) {
     failures.push(`${file}: missing description`)
   }
-  if (
-    !html.includes(
-      `<meta property="og:image" content="${SITE_URL}/og/signal-archive.png"`,
+  /* Was: every page must carry the one shared card. That assertion is what
+     kept previews generic — an entry could not advertise its own banner without
+     failing the build. Now: every page must carry SOME absolute PNG under this
+     origin, and an entry with a banner must carry THAT banner.
+
+     PNG is not a style preference. X, LinkedIn, Slack and WhatsApp render
+     nothing for an SVG `og:image`. */
+  const socialImage = /<meta property="og:image" content="([^"]+)"/.exec(
+    html,
+  )?.[1]
+  if (!socialImage) {
+    failures.push(`${file}: missing social image`)
+  } else if (!socialImage.startsWith(`${SITE_URL}/`)) {
+    failures.push(`${file}: social image is not absolute under ${SITE_URL}`)
+  } else if (!socialImage.endsWith('.png')) {
+    failures.push(
+      `${file}: social image is ${socialImage.split('.').pop()}, not png — scrapers will render nothing`,
     )
-  ) {
-    failures.push(`${file}: missing PNG social image`)
+  }
+
+  const banner =
+    /<meta property="og:image" content="[^"]*"[\s\S]{0,400}?class="entry-banner"/.test(
+      html,
+    )
+  if (banner) {
+    const declared =
+      /<figure class="entry-banner">\s*<img\s+src="\/banners\/([^"]+)\.svg"/.exec(
+        html,
+      )?.[1]
+    if (
+      declared &&
+      socialImage &&
+      !socialImage.endsWith(`/og/banners/${declared}.png`)
+    ) {
+      failures.push(
+        `${file}: shows banner "${declared}" but shares ${socialImage} — the preview should be the banner`,
+      )
+    }
   }
   if (!/<link rel="alternate" hreflang="(?:en|es)"/.test(html)) {
     failures.push(`${file}: missing hreflang`)

@@ -138,6 +138,17 @@ bun run test
 bun run test:content
 bun run test:coverage
 bun run gallery:scan
+bun run banners:check
+bun run commits:check
+bun run audit
 bun run build
 bun run test:e2e
+```
+
+`bun run build` is a chain; a failure in any link fails the build:
+
+```
+private:generate → astro check → astro build → gallery:copy → private:copy
+  → private:scan → banners:check → csp:apply → performance:check
+  → links:check → metadata:check
 ```

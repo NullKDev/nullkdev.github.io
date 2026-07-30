@@ -3,6 +3,8 @@ import HomeCard from '@/components/HomeCard.astro'
 import ModelShowcase from '@/components/hero/ModelShowcase.astro'
 import { getDictionary, getLocalizedPath, type Locale } from '@i18n/index'
 import Layout from '@layouts/Layout.astro'
+import { about } from '@/data/about'
+import { brand } from '@/data/brand'
 import { buttonVariants } from '@ui/button'
 import { getTopicLabel } from '@/data/taxonomy'
 import { getHomeSections, getTopicIndex } from '@/lib/content'
@@ -25,6 +27,20 @@ const tagsPath = getLocalizedPath('/tags', locale)
   title={dictionary.meta.title}
   description={dictionary.meta.description}
   counterpartPath={locale === 'en' ? '/es/' : '/'}
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: brand.name,
+    url: Astro.site?.toString(),
+    inLanguage: locale,
+    description: dictionary.meta.description,
+    author: {
+      '@type': 'Person',
+      name: about[locale].name,
+      jobTitle: about[locale].role,
+      url: new URL(locale === 'en' ? '/about/' : '/es/about/', Astro.site).href,
+    },
+  }}
 >
   <main>
     <section class="hero" aria-labelledby="home-title">

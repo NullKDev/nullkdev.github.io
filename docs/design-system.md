@@ -114,6 +114,69 @@ accident; do not converge them.
 | **Notes** | Card grid (3-up at 1440px), colour + icon + distinct structure per `kind`; type and topic filters, pagination, and search are real routes over the whole collection | The form of the writing is the organising idea, and this is where a reader browses longest |
 | **Gallery** | Contact-sheet cards built from real contents; detail splits into a bento of pieces and a list of files/links | A collection card should look like what it holds |
 
+## Banners
+
+Declared in `src/data/banners.ts`, rendered by `scripts/generate-banners.ts`.
+Never hand-drawn: artwork comes from the icon registry, so a banner can only use
+marks the site already ships.
+
+| | |
+|---|---|
+| Authored size | **1200×630** — the Open Graph card, so one file is both banner and social preview |
+| Display ratio | **2.5:1**, one token `--banner-ratio`, centre-cropped |
+| Safe band | **y=75..555** — anything that must stay legible lives here |
+| Outputs | four SVG per banner (locale × theme) plus one PNG per locale for scrapers |
+| Copy | localised — `copy: { en, es }` in the spec |
+| Artwork | a motif from `scripts/banner-art.ts`, not a lone icon |
+
+**Artwork draws the subject.** A single registry icon reads as a category badge
+— it names the section, not the post. Motifs compose primitives into something
+that carries an idea, and registry marks sit inside them at content scale.
+
+**Two surfaces, one identity.** The accent, the composition and the shadows are
+identical across themes; only the ground and the type invert. The banner is the
+same object in both, not two designs. `EntryPage` sets `--banner-light` and CSS
+swaps the file with `content:`, because an `<img>` cannot read `data-theme` and a
+`background-image` would drop the alt text.
+
+### The light ground is measured, not eyeballed
+
+| Role | Value | Measured against |
+|---|---|---|
+| Light ground | `#E2E8F0` | 1.23:1 vs the `#ffffff` card, 1.19:1 vs the page |
+| Light title | `#0F172A` | 14.5:1 |
+| Light subtitle | `#475569` | 6.2:1 |
+| Light meta | `#55617A` (`--ink-muted`) | 5.0:1 on the ground, 4.2:1 in the deepest tinted corner |
+| Accent | one per family | ≥3:1 on **all four** grounds |
+
+A near-white ground has no edge. `#F8FAFC` measures **1.05:1** against the card
+it sits on and **1.01:1** against the page: the banner's corner *was* the surface
+behind it, and the artwork read as floating rather than contained. The fix is a
+real slate, not a border.
+
+Because one accent serves both themes, it has to survive four backgrounds — dark
+base, dark deep, light ground, light tint. Emerald `#059669` cleared three and
+failed its own light tint at **2.94:1**, under the 3:1 a graphic needs, so the
+family moved to `#00875A`. The tints in `PALETTE` are 200-level for the same
+reason the ground is slate: the 100-level ones measured 1.13–1.23:1 against a
+white card, which is a colour that exists in the file and not on screen.
+
+Two constraints that are easy to violate:
+
+**The ratio belongs on the `<img>`, not the wrapper.** `height: 100%` against an
+auto-height parent is indefinite, so the image falls back to its intrinsic ratio
+and sizes the box it was meant to fit inside — producing a different crop at
+every breakpoint while `getComputedStyle` reports the value you set.
+
+**PNG is not optional.** X, Facebook, LinkedIn, Slack and WhatsApp render nothing
+for an SVG `og:image`.
+
+Every banner surface reads the same token: entry hero, featured note, note rows,
+home cards, work and lab cards. Gallery media is not a banner — photographs keep
+their own shapes.
+
+`bun run banners:check` enforces the size and fails the build otherwise.
+
 ## Note types
 
 `--kind-article | -note | -guide | -paper | -decision | -reference` in

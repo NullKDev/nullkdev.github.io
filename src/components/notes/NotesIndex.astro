@@ -1,6 +1,6 @@
 ---
 import type { Page } from 'astro'
-import { pageTitle } from '@/data/brand'
+import { brand, pageTitle } from '@/data/brand'
 import type { CollectionEntry } from 'astro:content'
 import NoteRow from '@/components/notes/NoteRow.astro'
 import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
@@ -47,19 +47,61 @@ const topicLabel = topic ? getTopicLabel(topic, locale) : undefined
 // justify featuring anything else.
 const rows = page.data
 
-const title = topicLabel
-  ? pageTitle(`${topicLabel} — ${dictionary.nav.notes}`)
+/* Title and description have to name the filter and the page, or the index,
+   every type filter and every paginated slice describe themselves identically.
+   `/notes/type/note/` rendered "Notes" — the same title AND the same
+   description as `/notes/` itself, in the same language, which is a duplicate
+   a search engine has no way to tell apart.
+
+   The kind label is qualified rather than used alone: the plural of `note` is
+   literally "Notes", so it collided with the section name. */
+const filterLabel = topicLabel
+  ? topicLabel
   : kind
-    ? pageTitle(getArchiveLabel('noteKindPlural', kind, locale))
-    : pageTitle(dictionary.nav.notes)
+    ? getArchiveLabel('noteKindPlural', kind, locale)
+    : undefined
+
+const pageSuffix =
+  page.currentPage > 1 ? ` — ${dictionary.notes.page} ${page.currentPage}` : ''
+
+const title = pageTitle(
+  filterLabel && filterLabel !== dictionary.nav.notes
+    ? `${filterLabel} — ${dictionary.nav.notes}${pageSuffix}`
+    : filterLabel
+      ? `${dictionary.nav.notes}: ${filterLabel.toLowerCase()}${pageSuffix}`
+      : `${dictionary.nav.notes}${pageSuffix}`,
+)
+
+const description = filterLabel
+  ? `${filterLabel} — ${dictionary.section.notes}`
+  : dictionary.section.notes
+
 const countWord =
   all.length === 1 ? dictionary.notes.entry : dictionary.notes.entries
+
+/* A list page is a `CollectionPage`, not an `Article`. Without it these
+   surfaces carried no structured data at all — 44 indexable pages, most of
+   them the topic and type filters that exist precisely to be found. */
+const collectionJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: title,
+  description,
+  inLanguage: locale,
+  isPartOf: {
+    '@type': 'WebSite',
+    name: brand.name,
+    url: Astro.site?.toString(),
+  },
+  numberOfItems: page.total,
+}
 ---
 
 <Layout
   locale={locale}
   title={title}
-  description={dictionary.section.notes}
+  description={description}
+  jsonLd={collectionJsonLd}
   counterpartPath={locale === 'en'
     ? `/es${viewPath}`
     : viewPath.replace('/es', '')}

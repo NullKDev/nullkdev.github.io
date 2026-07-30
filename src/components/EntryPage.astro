@@ -11,6 +11,7 @@ import GalleryItems from '@/components/gallery/GalleryItems.astro'
 import RelatedLab from '@/components/lab/RelatedLab.astro'
 import { render } from 'astro:content'
 import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import { bannerStyle, getBannerSources } from '@/lib/banners'
 import Layout from '@/layouts/Layout.astro'
 import {
   getAdjacentEntries,
@@ -103,6 +104,11 @@ const tableOfContents = [
   ]),
 ]
 
+/* One derivation for every surface that renders a banner — see
+   `src/lib/banners.ts` for why it does not live here. */
+const banner = getBannerSources(entry.data.image, locale)
+const socialImage = banner?.social
+
 const published = entry.data.publishedAt
 const updated = entry.data.updatedAt ?? entry.data.publishedAt
 const role = 'role' in entry.data ? entry.data.role : undefined
@@ -146,6 +152,8 @@ const jsonLd = {
   title={pageTitle(entry.data.title)}
   description={entry.data.summary}
   counterpartPath={counterpartPath}
+  image={socialImage}
+  imageAlt={banner ? entry.data.imageAlt : undefined}
   jsonLd={jsonLd}
 >
   <main
@@ -250,12 +258,12 @@ const jsonLd = {
 
     {
       entry.data.image && (
-        <figure class="entry-banner">
+        <figure class="entry-banner" style={bannerStyle(banner)}>
           <img
-            src={entry.data.image}
+            src={banner?.dark ?? entry.data.image}
             alt={entry.data.imageAlt ?? ''}
             width="1200"
-            height="480"
+            height="630"
             loading="eager"
             decoding="async"
           />

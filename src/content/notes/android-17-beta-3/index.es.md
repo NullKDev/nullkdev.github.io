@@ -3,7 +3,7 @@ entryId: notes-android-17-beta-3-es
 locale: es
 translationKey: android-17-beta-3
 slug: android-17-beta-3
-title: 'Android 17 Beta 3: estabilidad de plataforma alcanzada — todo lo que necesitas saber'
+title: 'Android 17 Beta 3: estabilidad de plataforma'
 summary: Análisis completo de API 37 en estabilidad de plataforma — cada API nueva, cambio de comportamiento y qué hacer ahora.
 visibility: public
 maturity: archived

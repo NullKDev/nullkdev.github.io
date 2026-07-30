@@ -1,67 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
-  <rect width="1200" height="630" fill="#0F172A"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Remote Compose banner — UI that crosses the process line.">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+    <linearGradient id="bg-remote-compose" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#0F172A"/>
-      <stop offset="100%" stop-color="#1E1B4B"/>
+      <stop offset="100%" stop-color="#0B2B22"/>
     </linearGradient>
-    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
-      <stop offset="0%" stop-color="#818CF8"/>
-      <stop offset="100%" stop-color="#4F46E5"/>
-    </linearGradient>
-    <linearGradient id="teal" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
-      <stop offset="0%" stop-color="#34D399"/>
-      <stop offset="100%" stop-color="#059669"/>
-    </linearGradient>
+    <radialGradient id="glow-remote-compose" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00875A" stop-opacity="0.22000000000000003"/>
+      <stop offset="100%" stop-color="#00875A" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="lift-remote-compose" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#00875A" flood-opacity="0.275"/>
+    </filter>
   </defs>
-  <rect width="1200" height="630" fill="url(#bg)"/>
-
-  <!-- Server box -->
-  <rect x="120" y="210" width="220" height="210" rx="16" fill="#818CF8" opacity="0.1" stroke="#818CF8" stroke-width="1.5" stroke-opacity="0.3"/>
-  <text x="230" y="282" text-anchor="middle" font-family="monospace" font-size="13" fill="#818CF8" opacity="0.7">remote-creation</text>
-  <rect x="150" y="295" width="160" height="12" rx="4" fill="#818CF8" opacity="0.25"/>
-  <rect x="150" y="315" width="120" height="12" rx="4" fill="#818CF8" opacity="0.18"/>
-  <rect x="150" y="335" width="140" height="12" rx="4" fill="#818CF8" opacity="0.18"/>
-  <text x="230" y="385" text-anchor="middle" font-family="system-ui" font-size="14" font-weight="600" fill="#818CF8" opacity="0.8">Server / JVM</text>
-
-  <!-- Arrow -->
-  <line x1="345" y1="315" x2="490" y2="315" stroke="#4F46E5" stroke-width="2" stroke-dasharray="6 4" opacity="0.6"/>
-  <polygon points="488,308 500,315 488,322" fill="#4F46E5" opacity="0.6"/>
-  <!-- Document label -->
-  <rect x="365" y="285" width="110" height="24" rx="6" fill="#4F46E5" opacity="0.15"/>
-  <text x="420" y="301" text-anchor="middle" font-family="monospace" font-size="11" fill="#818CF8">.document</text>
-
-  <!-- Player box -->
-  <rect x="500" y="210" width="220" height="210" rx="16" fill="#34D399" opacity="0.08" stroke="#34D399" stroke-width="1.5" stroke-opacity="0.3"/>
-  <text x="610" y="282" text-anchor="middle" font-family="monospace" font-size="13" fill="#34D399" opacity="0.7">remote-player</text>
-  <!-- UI sketch inside player -->
-  <rect x="530" y="298" width="160" height="90" rx="8" fill="#34D399" opacity="0.08"/>
-  <rect x="540" y="308" width="80" height="10" rx="3" fill="#34D399" opacity="0.3"/>
-  <rect x="540" y="325" width="140" height="8" rx="3" fill="#34D399" opacity="0.2"/>
-  <rect x="540" y="339" width="110" height="8" rx="3" fill="#34D399" opacity="0.2"/>
-  <rect x="540" y="358" width="60" height="22" rx="6" fill="#34D399" opacity="0.25"/>
-  <text x="610" y="413" text-anchor="middle" font-family="system-ui" font-size="14" font-weight="600" fill="#34D399" opacity="0.8">Android Client</text>
-
-  <!-- Arrow right -->
-  <line x1="725" y1="315" x2="860" y2="315" stroke="#34D399" stroke-width="2" opacity="0.4"/>
-  <polygon points="858,308 870,315 858,322" fill="#34D399" opacity="0.4"/>
-
-  <!-- Phone -->
-  <rect x="870" y="185" width="170" height="260" rx="20" fill="#1E293B" stroke="#334155" stroke-width="1.5"/>
-  <rect x="880" y="210" width="150" height="210" rx="8" fill="#0F172A"/>
-  <!-- UI on phone -->
-  <rect x="892" y="222" width="90" height="12" rx="4" fill="#818CF8" opacity="0.6"/>
-  <rect x="892" y="242" width="126" height="8" rx="3" fill="#475569" opacity="0.6"/>
-  <rect x="892" y="258" width="100" height="8" rx="3" fill="#475569" opacity="0.4"/>
-  <rect x="892" y="278" width="126" height="60" rx="8" fill="#1E293B"/>
-  <rect x="892" y="348" width="60" height="24" rx="6" fill="#4F46E5" opacity="0.7"/>
-  <circle cx="945" cy="194" r="5" fill="#334155"/>
-
-  <!-- Main title -->
-  <text x="600" y="512" text-anchor="middle" font-family="system-ui, sans-serif" font-size="60" font-weight="800" fill="#F8FAFC" letter-spacing="-1">Remote Compose</text>
-  <text x="600" y="565" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" font-weight="400" fill="#818CF8">Server-Driven UI for Android · alpha07</text>
-
-  <!-- Decorations -->
-  <circle cx="80" cy="560" r="60" fill="#4F46E5" opacity="0.05"/>
-  <circle cx="1130" cy="80" r="80" fill="#34D399" opacity="0.04"/>
+  <rect width="1200" height="630" fill="url(#bg-remote-compose)"/>
+  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-remote-compose)"/>
+<g filter="url(#lift-remote-compose)">
+    <rect x="700" y="164" width="176" height="252" rx="16" fill="none" stroke="#94A3B8" stroke-width="2.5" opacity="0.4"/>
+    <rect x="954" y="164" width="176" height="252" rx="16" fill="#00875A" opacity="0.1"/>
+    <rect x="954" y="164" width="176" height="252" rx="16" fill="none" stroke="#00875A" stroke-width="2.5" opacity="0.7"/>
+    <rect x="724" y="194" width="128" height="11" rx="5.5" fill="#94A3B8" opacity="0.26"/><rect x="724" y="226" width="128" height="11" rx="5.5" fill="#94A3B8" opacity="0.26"/><rect x="724" y="258" width="128" height="11" rx="5.5" fill="#94A3B8" opacity="0.26"/><rect x="724" y="290" width="82" height="11" rx="5.5" fill="#94A3B8" opacity="0.26"/>
+    <g transform="translate(1000 200) scale(3.5)" opacity="0.85" fill="none" stroke="#00875A" stroke-width="0.49" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" d="M18.44 5.559q-1.015 1.748-2.028 3.498q-.055-.023-.111-.043a12.1 12.1 0 0 0-8.68.033C7.537 8.897 5.868 6.026 5.6 5.56a1 1 0 0 0-.141-.19a1.104 1.104 0 0 0-1.768 1.298c1.947 3.37-.096-.216 1.948 3.36c.017.03-.495.263-1.393 1.017C2.9 12.176.452 14.772 0 18.99h24a11.7 11.7 0 0 0-.746-3.068a12.1 12.1 0 0 0-2.74-4.184a12 12 0 0 0-2.131-1.687c.66-1.122 1.312-2.256 1.965-3.385a1.11 1.11 0 0 0-.008-1.12a1.1 1.1 0 0 0-.852-.532c-.522-.054-.939.313-1.049.545m-.04 8.46c.395.593.324 1.331-.156 1.65c-.48.32-1.188.1-1.582-.493s-.324-1.33.156-1.65c.473-.316 1.182-.11 1.582.494m-11.193-.492c.48.32.55 1.058.156 1.65c-.394.593-1.103.815-1.584.495c-.48-.32-.55-1.058-.156-1.65c.4-.603 1.109-.811 1.584-.495"/></g>
+    <rect x="978" y="312" width="128" height="11" rx="5.5" fill="#00875A" opacity="0.42"/><rect x="978" y="342" width="128" height="11" rx="5.5" fill="#00875A" opacity="0.42"/><rect x="978" y="372" width="78" height="11" rx="5.5" fill="#00875A" opacity="0.42"/>
+    <path d="M876 290 H954" stroke="#00875A" stroke-width="3.5" stroke-dasharray="10 8"/>
+    <path d="M934 277 l18 13 -18 13" fill="none" stroke="#00875A" stroke-width="3.5"/>
+    <rect x="700" y="442" width="176" height="9" rx="4.5" fill="#94A3B8" opacity="0.2"/></g>
+  <rect x="96" y="150" width="76" height="4" rx="2" fill="#00875A"/>
+  <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#00875A">ANDROID · COMPOSE</text>
+  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#F8FAFC">UI that crosses</text>
+  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#94A3B8">the process line</text>
+  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">Remote Compose · remote-player-view</text>
 </svg>
