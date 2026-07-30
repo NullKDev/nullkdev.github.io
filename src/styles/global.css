@@ -46,6 +46,13 @@
 :root {
   color-scheme: light;
   /* Dev-tunable knobs (see DesignPanel). Defaults = shipped design. */
+  /* One shape for every banner, on every surface and at every width: the
+     entry hero, the featured-note card and the work card all read this. The
+     source images are authored at 1200x630 so they double as social cards;
+     displayed at 2.5:1 they are centre-cropped, which is why anything that has
+     to stay legible belongs in the middle band of the artwork. */
+  --banner-ratio: 1200 / 480;
+
   --ui-scale: 1;
   --display-mult: 1;
   --density: 1;
