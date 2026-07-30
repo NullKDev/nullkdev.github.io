@@ -1,20 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Android 17 stable banner — stable, six weeks in.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Banner de Android 17 estable — estable, seis semanas después.">
   <defs>
-    <linearGradient id="bg-android-17-stable" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+    <linearGradient id="bg-android-17-stable-es" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#0F172A"/>
       <stop offset="100%" stop-color="#0B2B22"/>
     </linearGradient>
-    <radialGradient id="glow-android-17-stable" cx="50%" cy="50%" r="50%">
+    <radialGradient id="glow-android-17-stable-es" cx="50%" cy="50%" r="50%">
       <stop offset="0%" stop-color="#059669" stop-opacity="0.22000000000000003"/>
       <stop offset="100%" stop-color="#059669" stop-opacity="0"/>
     </radialGradient>
-    <filter id="lift-android-17-stable" x="-30%" y="-30%" width="160%" height="160%">
+    <filter id="lift-android-17-stable-es" x="-30%" y="-30%" width="160%" height="160%">
       <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#059669" flood-opacity="0.275"/>
     </filter>
   </defs>
-  <rect width="1200" height="630" fill="url(#bg-android-17-stable)"/>
-  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-android-17-stable)"/>
-<g filter="url(#lift-android-17-stable)">
+  <rect width="1200" height="630" fill="url(#bg-android-17-stable-es)"/>
+  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-android-17-stable-es)"/>
+<g filter="url(#lift-android-17-stable-es)">
     <path d="M726 292 H1010" stroke="#94A3B8" stroke-width="3" opacity="0.4"/>
     <circle cx="736" cy="292" r="14" fill="none" stroke="#94A3B8" stroke-width="3" opacity="0.55"/>
     <circle cx="876" cy="292" r="14" fill="none" stroke="#94A3B8" stroke-width="3" opacity="0.55"/>
@@ -28,7 +28,7 @@
     <rect x="700" y="206" width="130" height="10" rx="5" fill="#94A3B8" opacity="0.16"/></g>
   <rect x="96" y="150" width="76" height="4" rx="2" fill="#059669"/>
   <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#059669">ANDROID 17 · API 37</text>
-  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#F8FAFC">Stable, six</text>
-  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#94A3B8">weeks in</text>
-  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">Beta 3 → Beta 4 → 16 Jun 2026</text>
+  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#F8FAFC">Estable, seis</text>
+  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#94A3B8">semanas después</text>
+  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">Beta 3 → Beta 4 → 16 jun 2026</text>
 </svg>

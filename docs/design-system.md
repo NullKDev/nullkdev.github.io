@@ -125,7 +125,8 @@ marks the site already ships.
 | Authored size | **1200×630** — the Open Graph card, so one file is both banner and social preview |
 | Display ratio | **2.5:1**, one token `--banner-ratio`, centre-cropped |
 | Safe band | **y=75..555** — anything that must stay legible lives here |
-| Outputs | `<slug>.svg` (dark theme) · `<slug>-light.svg` (light theme) · `og/banners/<slug>.png` (scrapers) |
+| Outputs | four SVG per banner (locale × theme) plus one PNG per locale for scrapers |
+| Copy | localised — `copy: { en, es }` in the spec |
 | Artwork | a motif from `scripts/banner-art.ts`, not a lone icon |
 
 **Artwork draws the subject.** A single registry icon reads as a category badge

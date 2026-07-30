@@ -1,20 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Remote Compose banner — UI that crosses the process line.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Banner de Remote Compose — UI que cruza el límite de proceso.">
   <defs>
-    <linearGradient id="bg-remote-compose-light" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+    <linearGradient id="bg-remote-compose-es-light" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#F8FAFC"/>
       <stop offset="100%" stop-color="#D1FAE5"/>
     </linearGradient>
-    <radialGradient id="glow-remote-compose-light" cx="50%" cy="50%" r="50%">
+    <radialGradient id="glow-remote-compose-es-light" cx="50%" cy="50%" r="50%">
       <stop offset="0%" stop-color="#059669" stop-opacity="0.072"/>
       <stop offset="100%" stop-color="#059669" stop-opacity="0"/>
     </radialGradient>
-    <filter id="lift-remote-compose-light" x="-30%" y="-30%" width="160%" height="160%">
+    <filter id="lift-remote-compose-es-light" x="-30%" y="-30%" width="160%" height="160%">
       <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#059669" flood-opacity="0.09"/>
     </filter>
   </defs>
-  <rect width="1200" height="630" fill="url(#bg-remote-compose-light)"/>
-  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-remote-compose-light)"/>
-<g filter="url(#lift-remote-compose-light)">
+  <rect width="1200" height="630" fill="url(#bg-remote-compose-es-light)"/>
+  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-remote-compose-es-light)"/>
+<g filter="url(#lift-remote-compose-es-light)">
     <rect x="700" y="164" width="176" height="252" rx="16" fill="none" stroke="#475569" stroke-width="2.5" opacity="0.4"/>
     <rect x="954" y="164" width="176" height="252" rx="16" fill="#059669" opacity="0.1"/>
     <rect x="954" y="164" width="176" height="252" rx="16" fill="none" stroke="#059669" stroke-width="2.5" opacity="0.7"/>
@@ -26,7 +26,7 @@
     <rect x="700" y="442" width="176" height="9" rx="4.5" fill="#475569" opacity="0.2"/></g>
   <rect x="96" y="150" width="76" height="4" rx="2" fill="#059669"/>
   <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#059669">ANDROID · COMPOSE</text>
-  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#0F172A">UI that crosses</text>
-  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#475569">the process line</text>
+  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#0F172A">UI que cruza</text>
+  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#475569">el límite de proceso</text>
   <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">Remote Compose · remote-player-view</text>
 </svg>

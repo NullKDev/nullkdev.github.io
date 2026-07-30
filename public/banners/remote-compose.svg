@@ -1,20 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Remote Compose banner — UI that crosses the process line.">
   <defs>
-    <linearGradient id="bg-remotecompose-dark" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+    <linearGradient id="bg-remote-compose" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#0F172A"/>
       <stop offset="100%" stop-color="#0B2B22"/>
     </linearGradient>
-    <radialGradient id="glow-remotecompose-dark" cx="50%" cy="50%" r="50%">
+    <radialGradient id="glow-remote-compose" cx="50%" cy="50%" r="50%">
       <stop offset="0%" stop-color="#059669" stop-opacity="0.22000000000000003"/>
       <stop offset="100%" stop-color="#059669" stop-opacity="0"/>
     </radialGradient>
-    <filter id="lift-remotecompose-dark" x="-30%" y="-30%" width="160%" height="160%">
+    <filter id="lift-remote-compose" x="-30%" y="-30%" width="160%" height="160%">
       <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#059669" flood-opacity="0.275"/>
     </filter>
   </defs>
-  <rect width="1200" height="630" fill="url(#bg-remotecompose-dark)"/>
-  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-remotecompose-dark)"/>
-<g filter="url(#lift-remotecompose-dark)">
+  <rect width="1200" height="630" fill="url(#bg-remote-compose)"/>
+  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-remote-compose)"/>
+<g filter="url(#lift-remote-compose)">
     <rect x="700" y="164" width="176" height="252" rx="16" fill="none" stroke="#94A3B8" stroke-width="2.5" opacity="0.4"/>
     <rect x="954" y="164" width="176" height="252" rx="16" fill="#059669" opacity="0.1"/>
     <rect x="954" y="164" width="176" height="252" rx="16" fill="none" stroke="#059669" stroke-width="2.5" opacity="0.7"/>

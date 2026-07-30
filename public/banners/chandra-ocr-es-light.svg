@@ -1,20 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Chandra OCR banner — what an 85.9% score leaves out.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Banner de Chandra OCR — lo que un puntaje de 85.9% deja afuera.">
   <defs>
-    <linearGradient id="bg-chandra-ocr-light" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+    <linearGradient id="bg-chandra-ocr-es-light" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#F8FAFC"/>
       <stop offset="100%" stop-color="#EDE9FE"/>
     </linearGradient>
-    <radialGradient id="glow-chandra-ocr-light" cx="50%" cy="50%" r="50%">
+    <radialGradient id="glow-chandra-ocr-es-light" cx="50%" cy="50%" r="50%">
       <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.072"/>
       <stop offset="100%" stop-color="#7C3AED" stop-opacity="0"/>
     </radialGradient>
-    <filter id="lift-chandra-ocr-light" x="-30%" y="-30%" width="160%" height="160%">
+    <filter id="lift-chandra-ocr-es-light" x="-30%" y="-30%" width="160%" height="160%">
       <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#7C3AED" flood-opacity="0.09"/>
     </filter>
   </defs>
-  <rect width="1200" height="630" fill="url(#bg-chandra-ocr-light)"/>
-  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-chandra-ocr-light)"/>
-<g filter="url(#lift-chandra-ocr-light)">
+  <rect width="1200" height="630" fill="url(#bg-chandra-ocr-es-light)"/>
+  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-chandra-ocr-es-light)"/>
+<g filter="url(#lift-chandra-ocr-es-light)">
     <rect x="700" y="130" width="180" height="240" rx="10" fill="none" stroke="#475569" stroke-width="2" opacity="0.5"/>
     <rect x="720" y="156" width="140" height="9" rx="4.5" fill="#475569" opacity="0.35"/><rect x="720" y="182" width="140" height="9" rx="4.5" fill="#475569" opacity="0.35"/><rect x="720" y="208" width="90" height="9" rx="4.5" fill="#475569" opacity="0.35"/><rect x="720" y="234" width="140" height="9" rx="4.5" fill="#475569" opacity="0.35"/><rect x="720" y="260" width="140" height="9" rx="4.5" fill="#475569" opacity="0.35"/><rect x="720" y="286" width="90" height="9" rx="4.5" fill="#475569" opacity="0.35"/>
     <path d="M900 250 h44" stroke="#7C3AED" stroke-width="2" opacity="0.8"/>
@@ -28,7 +28,7 @@
     <g transform="translate(1096 340) scale(0.9166666666666666)" opacity="0.9" fill="none" stroke="#7C3AED" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M20 6L9 17l-5-5"/></g></g>
   <rect x="96" y="150" width="76" height="4" rx="2" fill="#7C3AED"/>
   <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#7C3AED">OCR · BENCHMARKS</text>
-  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#0F172A">What an 85.9%</text>
-  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#475569">score leaves out</text>
+  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#0F172A">Lo que un 85.9%</text>
+  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#475569">deja afuera</text>
   <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">Chandra 2 · olmOCR · RealDocBench</text>
 </svg>

@@ -130,11 +130,17 @@ last stop. A lone registry icon is a category badge: it says which section the
 post is filed under and nothing about the post. Registry marks appear **inside**
 a motif, at content scale, never floating in a corner.
 
+Four files per banner — two locales × two surfaces:
+
 | Output | Used by |
 |---|---|
-| `public/banners/<slug>.svg` | the site, dark theme |
-| `public/banners/<slug>-light.svg` | the site, light theme |
-| `public/og/banners/<slug>.png` | social scrapers |
+| `<slug>.svg` · `<slug>-light.svg` | English page, dark / light theme |
+| `<slug>-es.svg` · `<slug>-es-light.svg` | Spanish page, dark / light theme |
+| `og/banners/<slug>.png` · `<slug>-es.png` | social scrapers, per locale |
+
+**Banner copy is localised** like every other string. Declare `copy: { en, es }`
+in the spec — an English banner on a Spanish page is the same failure as an
+English heading.
 
 **Two surfaces, one identity.** Accent, artwork and shadows are identical in
 both themes — only the ground and the type invert: deep surface with light type,

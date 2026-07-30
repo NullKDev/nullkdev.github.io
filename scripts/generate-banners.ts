@@ -21,7 +21,11 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import sharp from 'sharp'
 
 import { brand } from '../src/data/brand'
-import { banners, type BannerSpec } from '../src/data/banners'
+import {
+  banners,
+  type BannerLocale,
+  type BannerSpec,
+} from '../src/data/banners'
 import { renderArt } from './banner-art'
 
 const SVG_DIRECTORY = 'public/banners'
@@ -65,16 +69,28 @@ const SURFACE = {
 
 export type Surface = keyof typeof SURFACE
 
+/** `<slug>`, `<slug>-light`, `<slug>-es`, `<slug>-es-light`. */
+export const bannerFile = (
+  slug: string,
+  locale: BannerLocale,
+  surface: Surface,
+): string =>
+  [slug, locale === 'es' ? 'es' : '', surface === 'light' ? 'light' : '']
+    .filter(Boolean)
+    .join('-')
+
 export const renderBanner = (
   spec: BannerSpec,
+  locale: BannerLocale = 'en',
   surface: Surface = 'dark',
 ): string => {
   const s = SURFACE[surface]
-  const id = `${spec.slug.replace(/[^a-z0-9]/g, '')}-${surface}`
+  const c = spec.copy[locale]
+  const id = bannerFile(spec.slug, locale, surface).replace(/[^a-z0-9-]/g, '')
   const accent = spec.accent
   const deep = surface === 'dark' ? spec.deep : spec.pale
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" fill="none" role="img" aria-label="${escape(spec.alt)}">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" fill="none" role="img" aria-label="${escape(c.alt)}">
   <defs>
     <linearGradient id="bg-${id}" x1="0" y1="0" x2="${WIDTH}" y2="${HEIGHT}" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="${s.from}"/>
@@ -92,10 +108,10 @@ export const renderBanner = (
   <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-${id})"/>
 <g filter="url(#lift-${id})">${renderArt(spec.art, accent, s.structure)}</g>
   <rect x="96" y="150" width="76" height="4" rx="2" fill="${accent}"/>
-  <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="${accent}">${escape(spec.kicker.toUpperCase())}</text>
-  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="${s.title}">${escape(spec.title[0])}</text>
-  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="${s.subtitle}">${escape(spec.title[1])}</text>
-  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="${s.meta}">${escape(spec.meta)}</text>
+  <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="${accent}">${escape(c.kicker.toUpperCase())}</text>
+  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="${s.title}">${escape(c.title[0])}</text>
+  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="${s.subtitle}">${escape(c.title[1])}</text>
+  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="${s.meta}">${escape(c.meta)}</text>
 </svg>
 `
 }
@@ -131,23 +147,29 @@ if (import.meta.main) {
   await mkdir(PNG_DIRECTORY, { recursive: true })
 
   for (const spec of banners) {
-    /* Both surfaces ship: an `<img>` cannot read `data-theme`, so CSS picks
-       between them per entry. The dark one is also what gets rasterised — a
-       social feed has no theme to follow. */
-    const svg = renderBanner(spec, 'dark')
-    await writeFile(`${SVG_DIRECTORY}/${spec.slug}.svg`, svg)
-    await writeFile(
-      `${SVG_DIRECTORY}/${spec.slug}-light.svg`,
-      renderBanner(spec, 'light'),
-    )
+    /* Four files per banner: two locales × two surfaces. An `<img>` cannot
+       read `data-theme`, so CSS picks the surface; the locale is picked by the
+       page that renders it. */
+    for (const locale of ['en', 'es'] as const) {
+      const dark = renderBanner(spec, locale, 'dark')
+      await writeFile(
+        `${SVG_DIRECTORY}/${bannerFile(spec.slug, locale, 'dark')}.svg`,
+        dark,
+      )
+      await writeFile(
+        `${SVG_DIRECTORY}/${bannerFile(spec.slug, locale, 'light')}.svg`,
+        renderBanner(spec, locale, 'light'),
+      )
 
-    /* `density` matters: sharp rasterises SVG through librsvg at 72dpi by
-       default, which would render a 1200-unit viewBox far smaller than 1200px
-       and then upscale it into mush. */
-    await sharp(Buffer.from(svg), { density: 144 })
-      .resize(WIDTH, HEIGHT, { fit: 'fill' })
-      .png({ compressionLevel: 9 })
-      .toFile(`${PNG_DIRECTORY}/${spec.slug}.png`)
+      /* `density` matters: sharp rasterises SVG through librsvg at 72dpi by
+         default, which would render a 1200-unit viewBox far smaller than
+         1200px and then upscale it into mush. A social feed has no theme to
+         follow, so the dark surface is the one that ships. */
+      await sharp(Buffer.from(dark), { density: 144 })
+        .resize(WIDTH, HEIGHT, { fit: 'fill' })
+        .png({ compressionLevel: 9 })
+        .toFile(`${PNG_DIRECTORY}/${bannerFile(spec.slug, locale, 'dark')}.png`)
+    }
   }
 
   const identity = renderIdentity()

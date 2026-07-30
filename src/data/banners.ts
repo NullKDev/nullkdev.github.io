@@ -1,5 +1,7 @@
 import type { Motif } from '../../scripts/banner-art'
 
+export type BannerLocale = 'en' | 'es'
+
 /**
  * Every banner, declared rather than drawn.
  *
@@ -16,12 +18,24 @@ import type { Motif } from '../../scripts/banner-art'
 export interface BannerSpec {
   /** File stem in `public/banners/`, and the name posts reference. */
   readonly slug: string
-  /** Small monospaced line above the title. Kept short; it is set in caps. */
-  readonly kicker: string
-  /** Two display lines. The second is set in a muted tone. */
-  readonly title: readonly [string, string]
-  /** Monospaced footnote — the specifics a reader can verify. */
-  readonly meta: string
+  /**
+   * Copy, per locale. A banner sits above the article it belongs to, so an
+   * English banner on a Spanish page is the same failure as an English heading
+   * would be — the site is bilingual down to its artwork.
+   */
+  readonly copy: Record<
+    BannerLocale,
+    {
+      /** Small monospaced line above the title. Set in caps. */
+      readonly kicker: string
+      /** Two display lines. The second is set in a muted tone. */
+      readonly title: readonly [string, string]
+      /** Monospaced footnote — specifics a reader can verify. */
+      readonly meta: string
+      /** Describes the banner, not the article. */
+      readonly alt: string
+    }
+  >
   /**
    * Composition drawn on the right half. A motif shows the SUBJECT — a page
    * parsed into structure, memory past a ceiling — because a lone icon reads
@@ -35,8 +49,6 @@ export interface BannerSpec {
   readonly accent: string
   readonly deep: string
   readonly pale: string
-  /** Alt text. Describes the banner, not the article. */
-  readonly alt: string
 }
 
 /* Four palettes, one per subject family, so a reader recognises the shape of a
@@ -53,74 +65,154 @@ const PALETTE = {
 export const banners: readonly BannerSpec[] = [
   {
     slug: 'chandra-ocr',
-    kicker: 'OCR · Benchmarks',
-    title: ['What an 85.9%', 'score leaves out'],
-    meta: 'Chandra 2 · olmOCR · RealDocBench',
+    copy: {
+      en: {
+        kicker: 'OCR · Benchmarks',
+        title: ['What an 85.9%', 'score leaves out'],
+        meta: 'Chandra 2 · olmOCR · RealDocBench',
+        alt: 'Chandra OCR banner — what an 85.9% score leaves out.',
+      },
+      es: {
+        kicker: 'OCR · Benchmarks',
+        title: ['Lo que un 85.9%', 'deja afuera'],
+        meta: 'Chandra 2 · olmOCR · RealDocBench',
+        alt: 'Banner de Chandra OCR — lo que un puntaje de 85.9% deja afuera.',
+      },
+    },
     art: 'document-parse',
     ...PALETTE.ai,
-    alt: 'Chandra OCR banner — what an 85.9% score leaves out.',
   },
   {
     slug: 'android-17-stable',
-    kicker: 'Android 17 · API 37',
-    title: ['Stable, six', 'weeks in'],
-    meta: 'Beta 3 → Beta 4 → 16 Jun 2026',
+    copy: {
+      en: {
+        kicker: 'Android 17 · API 37',
+        title: ['Stable, six', 'weeks in'],
+        meta: 'Beta 3 → Beta 4 → 16 Jun 2026',
+        alt: 'Android 17 stable banner — stable, six weeks in.',
+      },
+      es: {
+        kicker: 'Android 17 · API 37',
+        title: ['Estable, seis', 'semanas después'],
+        meta: 'Beta 3 → Beta 4 → 16 jun 2026',
+        alt: 'Banner de Android 17 estable — estable, seis semanas después.',
+      },
+    },
     art: 'release-train',
     ...PALETTE.android,
-    alt: 'Android 17 stable banner — stable, six weeks in.',
   },
   {
     slug: 'android-17-memory-limits',
-    kicker: 'Android 17 · Memory',
-    title: ['Killed with no', 'stack trace'],
-    meta: 'cgroup memory.high · MemoryLimiter:AnonSwap',
+    copy: {
+      en: {
+        kicker: 'Android 17 · Memory',
+        title: ['Killed with no', 'stack trace'],
+        meta: 'cgroup memory.high · MemoryLimiter:AnonSwap',
+        alt: 'Android 17 memory limits banner — killed with no stack trace.',
+      },
+      es: {
+        kicker: 'Android 17 · Memoria',
+        title: ['Muerto sin', 'stack trace'],
+        meta: 'cgroup memory.high · MemoryLimiter:AnonSwap',
+        alt: 'Banner de límites de memoria en Android 17 — muerto sin stack trace.',
+      },
+    },
     art: 'memory-ceiling',
     ...PALETTE.warning,
-    alt: 'Android 17 memory limits banner — killed with no stack trace.',
   },
   {
     slug: 'android-17-beta-3',
-    kicker: 'Android 17 · Beta 3',
-    title: ['Platform', 'stability'],
-    meta: 'API 37 locked · 27 Mar 2026',
+    copy: {
+      en: {
+        kicker: 'Android 17 · Beta 3',
+        title: ['Platform', 'stability'],
+        meta: 'API 37 locked · 27 Mar 2026',
+        alt: 'Android 17 Beta 3 banner — platform stability reached.',
+      },
+      es: {
+        kicker: 'Android 17 · Beta 3',
+        title: ['Estabilidad de', 'plataforma'],
+        meta: 'API 37 bloqueada · 27 mar 2026',
+        alt: 'Banner de Android 17 Beta 3 — estabilidad de plataforma alcanzada.',
+      },
+    },
     art: 'api-locked',
     ...PALETTE.android,
-    alt: 'Android 17 Beta 3 banner — platform stability reached.',
   },
   {
     slug: 'gof-patterns-android',
-    kicker: 'Android · Architecture',
-    title: ['Eight patterns,', 'four rules'],
-    meta: 'Observer · Proxy · Adapter · Strategy',
+    copy: {
+      en: {
+        kicker: 'Android · Architecture',
+        title: ['Eight patterns,', 'four rules'],
+        meta: 'Observer · Proxy · Adapter · Strategy',
+        alt: 'Design patterns banner — eight patterns, four rules.',
+      },
+      es: {
+        kicker: 'Android · Arquitectura',
+        title: ['Ocho patrones,', 'cuatro reglas'],
+        meta: 'Observer · Proxy · Adapter · Strategy',
+        alt: 'Banner de patrones de diseño — ocho patrones, cuatro reglas.',
+      },
+    },
     art: 'pattern-pairs',
     ...PALETTE.android,
-    alt: 'Design patterns banner — eight patterns, four rules.',
   },
   {
     slug: 'pretext',
-    kicker: 'Web · Layout',
-    title: ['Measuring text', 'without reflow'],
-    meta: 'Canvas oracle · 500× faster layout()',
+    copy: {
+      en: {
+        kicker: 'Web · Layout',
+        title: ['Measuring text', 'without reflow'],
+        meta: 'Canvas oracle · 500× faster layout()',
+        alt: 'Pretext banner — measuring text without reflow.',
+      },
+      es: {
+        kicker: 'Web · Maquetado',
+        title: ['Medir texto', 'sin reflow'],
+        meta: 'Oráculo Canvas · layout() 500× más rápido',
+        alt: 'Banner de Pretext — medir texto sin reflow.',
+      },
+    },
     art: 'text-measure',
     ...PALETTE.web,
-    alt: 'Pretext banner — measuring text without reflow.',
   },
   {
     slug: 'remote-compose',
-    kicker: 'Android · Compose',
-    title: ['UI that crosses', 'the process line'],
-    meta: 'Remote Compose · remote-player-view',
+    copy: {
+      en: {
+        kicker: 'Android · Compose',
+        title: ['UI that crosses', 'the process line'],
+        meta: 'Remote Compose · remote-player-view',
+        alt: 'Remote Compose banner — UI that crosses the process line.',
+      },
+      es: {
+        kicker: 'Android · Compose',
+        title: ['UI que cruza', 'el límite de proceso'],
+        meta: 'Remote Compose · remote-player-view',
+        alt: 'Banner de Remote Compose — UI que cruza el límite de proceso.',
+      },
+    },
     art: 'process-bridge',
     ...PALETTE.android,
-    alt: 'Remote Compose banner — UI that crosses the process line.',
   },
   {
     slug: 'work',
-    kicker: 'Archive · Work',
-    title: ['Things that', 'shipped'],
-    meta: 'Source · releases · downloadable artifacts',
+    copy: {
+      en: {
+        kicker: 'Archive · Work',
+        title: ['Things that', 'shipped'],
+        meta: 'Source · releases · downloadable artifacts',
+        alt: 'Work banner — things that shipped.',
+      },
+      es: {
+        kicker: 'Archivo · Trabajo',
+        title: ['Cosas que', 'se publicaron'],
+        meta: 'Código · releases · artefactos descargables',
+        alt: 'Banner de Trabajo — cosas que se publicaron.',
+      },
+    },
     art: 'shipped-stack',
     ...PALETTE.archive,
-    alt: 'Work banner — things that shipped.',
   },
 ]

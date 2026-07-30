@@ -112,13 +112,25 @@ const tableOfContents = [
    for an SVG `og:image`, which is worse than a generic one. `banners:build`
    rasterises every banner into public/og/banners/ for exactly this. */
 const bannerSlug = entry.data.image?.match(/\/banners\/([^/]+)\.svg$/)?.[1]
-const socialImage = bannerSlug ? `/og/banners/${bannerSlug}.png` : undefined
+
+/* The banner is copy, so it is localised like every other string on the page.
+   `banners:build` emits four files per banner — two locales x two surfaces —
+   and the entry's own `image` names the base. */
+const bannerVariant = (suffix: string) =>
+  bannerSlug
+    ? `/banners/${bannerSlug}${locale === 'es' ? '-es' : ''}${suffix}.svg`
+    : undefined
+
+const bannerDark = bannerVariant('')
+const socialImage = bannerSlug
+  ? `/og/banners/${bannerSlug}${locale === 'es' ? '-es' : ''}.png`
+  : undefined
 
 /* An `<img>` cannot read `data-theme`, so both surfaces ship and CSS swaps the
    rendered one through this property. `content` keeps the element an image —
    alt text and the reserved box survive the swap, which a background-image
    would lose. */
-const lightBanner = bannerSlug ? `/banners/${bannerSlug}-light.svg` : undefined
+const lightBanner = bannerVariant('-light')
 
 const published = entry.data.publishedAt
 const updated = entry.data.updatedAt ?? entry.data.publishedAt
@@ -276,10 +288,10 @@ const jsonLd = {
           }
         >
           <img
-            src={entry.data.image}
+            src={bannerDark ?? entry.data.image}
             alt={entry.data.imageAlt ?? ''}
             width="1200"
-            height="480"
+            height="630"
             loading="eager"
             decoding="async"
           />
