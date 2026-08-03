@@ -62,30 +62,13 @@ este repo usa de verdad — no las genéricas del estándar.
   decide por columna y no por celda: marcada celda por celda, el encabezado
   queda a la izquierda y deja de rotular lo que tiene debajo. Aplica a todo el
   archivo, incluidos los posts escritos antes.
-- El alto de un diagrama ya no puede dominar la página: lo decide un motor de
-  layout, y el de arquitectura salía de 829px. El panel del visor está topado y
-  el diagrama se redibujó para que el argumento entre en una sola vista. El
-  visor abre siempre al 100% —el tamaño con el que mermaid dibujó, y el único
-  que se sabe legible—; ajustar al ancho ahora agranda o achica según haga
-  falta, en vez de negarse a achicar y no hacer nada justo en los diagramas
-  anchos, que son los que más piden ese botón.
-- El visor de diagramas vive en un módulo compartido, así que un subpost leído
-  en su propia URL tiene los mismos controles que la entrada que lo embebe.
-  Antes el mismo diagrama era ampliable en un lado y fijo en el otro.
-- Los diagramas ahora tienen visor con zoom. Mermaid escalaba el dibujo entero
-  para que entrara en la pantalla: en 390px llevaba un diagrama de 651px al 47%
-  y las etiquetas de 12px a menos de 6. Ahora conserva su tamaño, el panel
-  scrollea y hay controles de acercar, alejar y ajustar al ancho —con marcas del
-  registro de iconos y textos del diccionario, operables por teclado y con área
-  táctil de 44px—. Sin JavaScript el diagrama sigue siendo una figura enmarcada
-  y desplazable. El zoom sobrevive al cambio de tema: mermaid redibuja y
-  reemplaza el `<svg>`, así que el visor vuelve a tomarlo en vez de seguir
-  midiendo un elemento ya desconectado.
-- Los diagramas de mermaid usaban su paleta propia —amarillo y lavanda— sobre un
-  sitio índigo y pizarra. Ahora se dibujan con los tokens del sitio, así que
-  siguen el cambio de tema. Las etiquetas de flecha conservan la métrica de
-  mermaid a propósito: el `foreignObject` se congela al medir, y cambiarle el
-  cuerpo tipográfico después recorta el texto hasta dejar la caja vacía.
+- Los diagramas de mermaid quedan desactivados por ahora. Se dibujan con los
+  tokens del sitio y hay un visor compartido con zoom, teclado y área táctil de
+  44px, pero el tamaño que produce el motor de layout no entra bien en una
+  columna de lectura: cada arreglo cambiaba un alto excesivo por un ancho
+  excesivo. La fuente de cada diagrama queda comentada en su lugar y el detalle
+  de lo medido está en el issue #24, así que retomarlo es descomentar un bloque,
+  no reinvestigar.
 
 ### Agregado
 
@@ -100,8 +83,7 @@ este repo usa de verdad — no las genéricas del estándar.
   medición publicada a la mitad. La comparación de precisión se dibuja con un
   componente nuevo, `BenchmarkBars`, que codifica el valor como longitud para
   que la brecha se vea antes de leer las cifras, sin dejar de ser una tabla real
-  para un lector de pantalla; y un diagrama muestra qué mitad de la herramienta
-  es auditable y cuál está detrás de la puerta de acceso.
+  para un lector de pantalla.
 
 ## [0.3.0] — 2026-07-30
 

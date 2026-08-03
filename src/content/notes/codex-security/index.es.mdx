@@ -89,20 +89,7 @@ la orquestación. Lo que está cerrado es aquello que decide si un hallazgo es u
 hallazgo. Podés leer cada línea de cómo se recolecta, se trocea y se envía tu
 código. No podés leer, ejecutar ni auditar la parte que razona sobre él.
 
-```mermaid
-flowchart TB
-  subgraph abierto ["TU MAQUINA · APACHE 2.0"]
-    direction TB
-    repo[Tu repositorio] --> cli[CLI codex-security]
-  end
-
-  subgraph cerrado ["OPENAI · RESTRINGIDO"]
-    model[Razonamiento gpt-5.6-sol]
-  end
-
-  cli -- tu codigo --> model
-  model -- veredictos --> out[Hallazgos + codigo fuente]
-```
+{/* Diagrama de arquitectura retirado — en pausa en el issue #24, con su fuente. */}
 
 Esa distinción importa más que la discusión de licencias a la que suele
 reducirse. Significa que la propiedad interesante de esta herramienta — su

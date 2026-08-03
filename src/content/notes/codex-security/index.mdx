@@ -87,20 +87,7 @@ orchestration. What is closed is the thing that decides whether a finding is a
 finding. You can read every line of how your code is gathered, chunked and
 submitted. You cannot read, run or audit the part that reasons about it.
 
-```mermaid
-flowchart TB
-  subgraph open ["YOUR MACHINE · APACHE 2.0"]
-    direction TB
-    repo[Your repository] --> cli[codex-security CLI]
-  end
-
-  subgraph closed ["OPENAI · GATED"]
-    model[gpt-5.6-sol reasoning]
-  end
-
-  cli -- your code --> model
-  model -- verdicts --> out[Findings + source excerpts]
-```
+{/* Architecture diagram removed — parked in issue #24, with its source. */}
 
 That distinction matters more than the licence argument it usually gets reduced
 to. It means the interesting property of this tool — its judgement — is not

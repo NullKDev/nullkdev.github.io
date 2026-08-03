@@ -58,13 +58,7 @@ did not fully cover the target" — and scans report coverage as `complete`,
 `partial` or `unknown`. A job that treats `2` as infrastructure flake and retries
 will happily paper over a scan that silently examined a fraction of your code.
 
-```mermaid
-flowchart TB
-  scan[Scan runs] --> code{Exit code}
-  code -- 0 --> pass[Policy satisfied · merge]
-  code -- 1 --> findings[Findings at threshold · review]
-  code -- 2 --> hold[No evidence either way · hold the gate]
-```
+{/* Exit-code diagram removed — parked in issue #24, with its source. */}
 
 <Callout type="warn" title="Exit code 2 is not a pass">
   Treat `2` as an **unknown result**. If you are gating merges, an incomplete
