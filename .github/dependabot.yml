@@ -35,4 +35,11 @@ updates:
     schedule:
       interval: weekly
       day: monday
+    groups:
+      # init and analyze read the same config and refuse to run at different
+      # versions: "Loaded a configuration file for version X, but running
+      # version Y". Bumped separately, each PR moves one line and every CodeQL
+      # run fails until the other lands. They are one dependency, not two.
+      codeql-action:
+        patterns: [github/codeql-action*]
     labels: [dependencies, ci]
