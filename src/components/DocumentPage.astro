@@ -15,6 +15,7 @@ import {
 } from '@/lib/content'
 import { getTopicLabel } from '@/data/taxonomy'
 import { getArchiveLabel } from '@/i18n/archive'
+import DiagramControls from '@/components/primitives/DiagramControls.astro'
 import Icon from '@/components/primitives/Icon.astro'
 
 interface Props {
@@ -53,6 +54,7 @@ const documentTitle = pageTitle(document.data.title)
   }}
 >
   <main class="entry-page document-page">
+    <DiagramControls locale={locale} />
     <nav class="breadcrumbs" aria-label={dictionary.archive.breadcrumb}>
       <a href={getLocalizedPath(`/${domain}`, locale)}
         >{dictionary.nav[domain]}</a
@@ -173,3 +175,12 @@ const documentTitle = pageTitle(document.data.title)
     >
   </main>
 </Layout>
+
+<script>
+  import { mountDiagramViewers } from '@/lib/diagram-viewer'
+
+  // A subpost read on its own URL gets the same diagram viewer as the entry
+  // that inlines it; without this the identical diagram is zoomable in one
+  // place and fixed in the other.
+  mountDiagramViewers()
+</script>

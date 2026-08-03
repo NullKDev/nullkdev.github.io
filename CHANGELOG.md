@@ -62,6 +62,16 @@ este repo usa de verdad — no las genéricas del estándar.
   decide por columna y no por celda: marcada celda por celda, el encabezado
   queda a la izquierda y deja de rotular lo que tiene debajo. Aplica a todo el
   archivo, incluidos los posts escritos antes.
+- El alto de un diagrama ya no puede dominar la página: lo decide un motor de
+  layout, y el de arquitectura salía de 829px. El panel del visor está topado y
+  el diagrama se redibujó para que el argumento entre en una sola vista. El
+  visor abre siempre al 100% —el tamaño con el que mermaid dibujó, y el único
+  que se sabe legible—; ajustar al ancho ahora agranda o achica según haga
+  falta, en vez de negarse a achicar y no hacer nada justo en los diagramas
+  anchos, que son los que más piden ese botón.
+- El visor de diagramas vive en un módulo compartido, así que un subpost leído
+  en su propia URL tiene los mismos controles que la entrada que lo embebe.
+  Antes el mismo diagrama era ampliable en un lado y fijo en el otro.
 - Los diagramas ahora tienen visor con zoom. Mermaid escalaba el dibujo entero
   para que entrara en la pantalla: en 390px llevaba un diagrama de 651px al 47%
   y las etiquetas de 12px a menos de 6. Ahora conserva su tamaño, el panel

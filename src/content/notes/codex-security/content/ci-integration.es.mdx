@@ -59,6 +59,14 @@ cubrió del todo el objetivo» — y los escaneos reportan cobertura como
 infraestructura y reintente va a tapar alegremente un escaneo que examinó en
 silencio una fracción de tu código.
 
+```mermaid
+flowchart TB
+  scan[Corre el escaneo] --> code{Codigo de salida}
+  code -- 0 --> pass[Politica cumplida · merge]
+  code -- 1 --> findings[Hallazgos en el umbral · revisar]
+  code -- 2 --> hold[Sin evidencia · retener la puerta]
+```
+
 <Callout type="warn" title="El código 2 no es un aprobado">
   Tratá el `2` como **resultado desconocido**. Si estás bloqueando merges, un
   escaneo incompleto retiene la puerta igual que un hallazgo — no tenés

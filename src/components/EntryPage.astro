@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content'
 import { pageTitle } from '@/data/brand'
 import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
+import DiagramControls from '@/components/primitives/DiagramControls.astro'
 import Icon from '@/components/primitives/Icon.astro'
 import StatusChip from '@/components/primitives/StatusChip.astro'
 import LabConsole from '@/components/lab/LabConsole.astro'
@@ -167,47 +168,7 @@ const jsonLd = {
         ? entry.data.translationKey
         : undefined}
   >
-    {
-      /* Cloned by the diagram viewer. Authored here rather than built in the
-        script so the marks come from the icon registry and the labels from the
-        dictionary — a client-side toolbar would have neither. */
-    }
-    <template data-diagram-controls>
-      <div
-        class="diagram__bar"
-        role="group"
-        aria-label={dictionary.archive.diagram}
-      >
-        <button
-          type="button"
-          class="diagram__button"
-          data-zoom="out"
-          aria-label={dictionary.archive.zoomOut}
-          title={dictionary.archive.zoomOut}
-        >
-          <Icon name="minus" size={16} />
-        </button>
-        <button
-          type="button"
-          class="diagram__button"
-          data-zoom="in"
-          aria-label={dictionary.archive.zoomIn}
-          title={dictionary.archive.zoomIn}
-        >
-          <Icon name="plus" size={16} />
-        </button>
-        <button
-          type="button"
-          class="diagram__button"
-          data-zoom="fit"
-          aria-label={dictionary.archive.zoomReset}
-          title={dictionary.archive.zoomReset}
-        >
-          <Icon name="fitWidth" size={16} />
-        </button>
-        <span class="diagram__readout" data-zoom-readout></span>
-      </div>
-    </template>
+    <DiagramControls locale={locale} />
     <div class="read-progress" aria-hidden="true">
       <span data-read-progress></span>
     </div>
@@ -708,6 +669,7 @@ const jsonLd = {
 </Layout>
 
 <script>
+  import { mountDiagramViewers } from '@/lib/diagram-viewer'
   import { markRead } from '@/lib/reading-log'
 
   // Opening a note records it locally so the index can show what is left.
@@ -810,115 +772,7 @@ const jsonLd = {
     targets.forEach((target) => observer.observe(target))
   }
 
-  // Diagram viewer. Mermaid draws at a fixed intrinsic size, so a diagram is
-  // either wider than the column on a phone or narrower than it on a desktop.
-  // Letting it scale to fit solves the first by shrinking 12px labels to six,
-  // so instead the pane scrolls and the reader zooms. Progressive enhancement:
-  // without this script the diagram is still a scrollable, readable figure.
-  const diagrams = document.querySelectorAll<HTMLElement>(
-    '.entry-page .prose .mermaid',
-  )
-  const controls = document.querySelector<HTMLTemplateElement>(
-    '[data-diagram-controls]',
-  )
-  if (diagrams.length > 0 && controls) {
-    const MIN = 0.4
-    const MAX = 3
-    /* Upscaling to fill a wide column is fine; blowing a small diagram up to
-       fill an ultrawide one is not, so the fit stops at a readable ceiling. */
-    const FIT_CEILING = 1.5
-
-    const widthOf = (element: SVGElement) => {
-      const viewBox = element.getAttribute('viewBox')?.split(/\s+/).map(Number)
-      return viewBox?.[2] ?? element.getBoundingClientRect().width
-    }
-
-    const enhance = (node: HTMLElement) => {
-      let svg = node.querySelector('svg')
-      if (!svg || node.closest('.diagram')) return false
-
-      let intrinsic = widthOf(svg)
-      if (!intrinsic) return false
-
-      const figure = document.createElement('figure')
-      figure.className = 'diagram'
-      node.replaceWith(figure)
-
-      const pane = document.createElement('div')
-      pane.className = 'diagram__pane'
-      // Focusable so the diagram can be scrolled from the keyboard.
-      pane.tabIndex = 0
-      pane.appendChild(node)
-
-      const bar = controls.content.firstElementChild?.cloneNode(true) as
-        HTMLElement | undefined
-      if (!bar) return false
-      const readout = bar.querySelector<HTMLElement>('[data-zoom-readout]')
-
-      let zoom = 1
-      const apply = () => {
-        if (!svg) return
-        svg.style.maxWidth = 'none'
-        svg.style.width = `${Math.round(intrinsic * zoom)}px`
-        svg.style.height = 'auto'
-        if (readout) readout.textContent = `${Math.round(zoom * 100)}%`
-      }
-      const set = (next: number) => {
-        zoom = Math.min(MAX, Math.max(MIN, Number(next.toFixed(2))))
-        apply()
-      }
-      /* Fit means fill the column when the drawing is smaller than it, and
-         stay at full size when it is bigger — shrinking below 100% is the one
-         thing that made the labels unreadable in the first place. */
-      const fit = () => {
-        const available = pane.clientWidth - 48
-        set(
-          available > intrinsic
-            ? Math.min(FIT_CEILING, available / intrinsic)
-            : 1,
-        )
-      }
-
-      const steps: Record<string, () => void> = {
-        out: () => set(zoom - 0.2),
-        in: () => set(zoom + 0.2),
-        fit,
-      }
-      bar.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach((item) => {
-        const step = steps[item.dataset.zoom ?? '']
-        if (step) item.addEventListener('click', step)
-      })
-
-      figure.append(pane, bar)
-      fit()
-
-      /* Toggling the theme makes mermaid redraw and swap in a brand-new <svg>.
-         Without re-acquiring it the controls keep sizing a detached element:
-         the readout still counts up and the diagram never moves. Comparing
-         identity is what keeps `apply()` from retriggering this forever. */
-      new MutationObserver(() => {
-        const current = node.querySelector('svg')
-        if (!current || current === svg) return
-        svg = current
-        intrinsic = widthOf(current) || intrinsic
-        apply()
-      }).observe(node, { childList: true, subtree: true })
-
-      return true
-    }
-
-    /* Mermaid renders on the client, so the <svg> does not exist yet when this
-       runs — enhancing straight away silently found nothing and left every
-       diagram plain. Each block is enhanced now if it is already drawn, and
-       watched until it is otherwise. */
-    diagrams.forEach((node) => {
-      if (enhance(node)) return
-      const observer = new MutationObserver(() => {
-        if (enhance(node)) observer.disconnect()
-      })
-      observer.observe(node, { childList: true, subtree: true })
-    })
-  }
+  mountDiagramViewers()
 
   // Figures & lightbox: promote standalone markdown images to <figure> with a
   // caption from their alt text, and open any zoomable image in a lightbox.

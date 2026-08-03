@@ -96,6 +96,11 @@ export default defineConfig({
         fontFamily: 'Switzer, ui-sans-serif, system-ui, sans-serif',
         flowchart: {
           curve: 'basis',
+          // Mermaid's 50px default leaves a diagram mostly empty space, which
+          // is what made a five-node flow 829px tall. Tighter ranks keep the
+          // same drawing inside the viewer without scrolling it.
+          rankSpacing: 36,
+          nodeSpacing: 36,
           // Mermaid otherwise caps the SVG at its intrinsic width and scales the
           // whole drawing down to fit narrow screens — at 390px that took a
           // 651px diagram to 47%, and 12px labels with it. Sizing is handled in

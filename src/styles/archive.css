@@ -2523,6 +2523,11 @@
   background: var(--surface-raised);
 }
 .prose .diagram__pane {
+  /* A diagram is drawn by a layout engine, so its height is whatever the graph
+     happens to need — the architecture flowchart came out 829px and pushed the
+     article off the screen. Capping the pane means no diagram can dominate the
+     page, however it grows later; the reader scrolls or zooms out instead. */
+  max-height: min(70vh, 32rem);
   overflow: auto;
   /* Centred while the drawing fits, flush left once it overflows: plain
      `center` would push the start of a wide diagram out of reach. */

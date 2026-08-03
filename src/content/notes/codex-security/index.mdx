@@ -89,17 +89,17 @@ submitted. You cannot read, run or audit the part that reasons about it.
 
 ```mermaid
 flowchart TB
-  subgraph closed ["OPENAI · GATED, NOT AUDITABLE"]
-    gate{Access gate} -- approved --> model[gpt-5.6-sol reasoning]
+  subgraph open ["YOUR MACHINE · APACHE 2.0"]
+    direction TB
+    repo[Your repository] --> cli[codex-security CLI]
   end
 
-  subgraph open ["YOUR MACHINE · APACHE 2.0, AUDITABLE"]
-    repo[Repository on disk] --> cli[codex-security CLI]
-    out[Findings and source excerpts]
+  subgraph closed ["OPENAI · GATED"]
+    model[gpt-5.6-sol reasoning]
   end
 
-  cli -- your code --> gate
-  model -- verdicts --> out
+  cli -- your code --> model
+  model -- verdicts --> out[Findings + source excerpts]
 ```
 
 That distinction matters more than the licence argument it usually gets reduced
