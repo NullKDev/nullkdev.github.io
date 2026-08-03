@@ -94,7 +94,15 @@ export default defineConfig({
       enableLog: false,
       mermaidConfig: {
         fontFamily: 'Switzer, ui-sans-serif, system-ui, sans-serif',
-        flowchart: { curve: 'basis' },
+        flowchart: {
+          curve: 'basis',
+          // Mermaid otherwise caps the SVG at its intrinsic width and scales the
+          // whole drawing down to fit narrow screens — at 390px that took a
+          // 651px diagram to 47%, and 12px labels with it. Sizing is handled in
+          // the viewer instead, which zooms on request and scrolls otherwise,
+          // so type never falls below what it was drawn at.
+          useMaxWidth: false,
+        },
       },
     }),
     react(),

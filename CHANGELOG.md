@@ -62,6 +62,15 @@ este repo usa de verdad — no las genéricas del estándar.
   decide por columna y no por celda: marcada celda por celda, el encabezado
   queda a la izquierda y deja de rotular lo que tiene debajo. Aplica a todo el
   archivo, incluidos los posts escritos antes.
+- Los diagramas ahora tienen visor con zoom. Mermaid escalaba el dibujo entero
+  para que entrara en la pantalla: en 390px llevaba un diagrama de 651px al 47%
+  y las etiquetas de 12px a menos de 6. Ahora conserva su tamaño, el panel
+  scrollea y hay controles de acercar, alejar y ajustar al ancho —con marcas del
+  registro de iconos y textos del diccionario, operables por teclado y con área
+  táctil de 44px—. Sin JavaScript el diagrama sigue siendo una figura enmarcada
+  y desplazable. El zoom sobrevive al cambio de tema: mermaid redibuja y
+  reemplaza el `<svg>`, así que el visor vuelve a tomarlo en vez de seguir
+  midiendo un elemento ya desconectado.
 - Los diagramas de mermaid usaban su paleta propia —amarillo y lavanda— sobre un
   sitio índigo y pizarra. Ahora se dibujan con los tokens del sitio, así que
   siguen el cambio de tema. Las etiquetas de flecha conservan la métrica de

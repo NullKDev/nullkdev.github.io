@@ -53,6 +53,8 @@ const registry = {
   check: 'lucide:check',
   cross: 'lucide:x',
   minus: 'lucide:minus',
+  plus: 'lucide:plus',
+  fitWidth: 'lucide:scan',
 
   // Record apparatus — the blocks under an entry
   outcomes: 'lucide:target',
