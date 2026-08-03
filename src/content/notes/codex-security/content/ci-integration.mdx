@@ -18,6 +18,8 @@ evidence: []
 protection: { mode: public }
 ---
 
+import Callout from '@/components/mdx/Callout.astro'
+
 The [main article](/notes/codex-security-precision-gap/) argues that precision is
 the number nobody published. This companion assumes you decided to adopt anyway —
 which is reasonable — and covers the part that determines whether the rollout
@@ -56,9 +58,12 @@ did not fully cover the target" — and scans report coverage as `complete`,
 `partial` or `unknown`. A job that treats `2` as infrastructure flake and retries
 will happily paper over a scan that silently examined a fraction of your code.
 
-Treat `2` as _unknown result_, never as _pass_. If you are gating merges, an
-incomplete scan should hold the gate exactly as a finding would, because you have
-no evidence either way.
+<Callout type="warn" title="Exit code 2 is not a pass">
+  Treat `2` as an **unknown result**. If you are gating merges, an incomplete
+  scan holds the gate exactly as a finding would — you have no evidence either
+  way, and a retry that swallows it converts "we did not look" into "we found
+  nothing".
+</Callout>
 
 ## Start in report-only mode
 

@@ -18,6 +18,8 @@ evidence: []
 protection: { mode: public }
 ---
 
+import Callout from '@/components/mdx/Callout.astro'
+
 El [artículo principal](/es/notes/codex-security-brecha-precision/) sostiene que
 la precisión es el número que nadie publicó. Este complemento asume que decidiste
 adoptarlo igual — lo cual es razonable — y cubre la parte que determina si la
@@ -57,9 +59,12 @@ cubrió del todo el objetivo» — y los escaneos reportan cobertura como
 infraestructura y reintente va a tapar alegremente un escaneo que examinó en
 silencio una fracción de tu código.
 
-Tratá el `2` como _resultado desconocido_, nunca como _aprobado_. Si estás
-bloqueando merges, un escaneo incompleto debería retener la puerta igual que un
-hallazgo, porque no tenés evidencia en ninguna dirección.
+<Callout type="warn" title="El código 2 no es un aprobado">
+  Tratá el `2` como **resultado desconocido**. Si estás bloqueando merges, un
+  escaneo incompleto retiene la puerta igual que un hallazgo — no tenés
+  evidencia en ninguna dirección, y un reintento que se lo traga convierte «no
+  miramos» en «no encontramos nada».
+</Callout>
 
 ## Empezá en modo solo-reporte
 

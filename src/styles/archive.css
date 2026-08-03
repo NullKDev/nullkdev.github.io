@@ -2314,6 +2314,203 @@
 .prose [data-zoomable]:hover {
   filter: brightness(0.97);
 }
+/* Tables.
+   Markdown gives a bare <table>, which renders as unpadded browser default:
+   columns collide, numbers sit in proportional type, and nothing separates the
+   header from the data. The wrapper and the numeric marks come from
+   scripts/rehype-tables.mjs, because table syntax carries no attributes.
+
+   The wrapper is what scrolls. A wide table inside prose would otherwise widen
+   the page and send the whole article sideways. */
+.prose [data-table] {
+  margin: 2rem 0;
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  /* Fades in from the right only while there is more table to reach. */
+  background:
+    linear-gradient(to right, var(--surface-raised) 30%, transparent),
+    linear-gradient(to left, var(--surface-raised) 30%, transparent) 100% 0,
+    radial-gradient(
+      farthest-side at 0 50%,
+      color-mix(in srgb, var(--ink) 12%, transparent),
+      transparent
+    ),
+    radial-gradient(
+        farthest-side at 100% 50%,
+        color-mix(in srgb, var(--ink) 12%, transparent),
+        transparent
+      )
+      100% 0;
+  background-repeat: no-repeat;
+  background-size:
+    3rem 100%,
+    3rem 100%,
+    0.85rem 100%,
+    0.85rem 100%;
+  background-attachment: local, local, scroll, scroll;
+}
+.prose [data-table]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.94em;
+  line-height: 1.5;
+}
+.prose thead th {
+  padding: 0 0.95rem 0.6rem;
+  border-bottom: 2px solid var(--line-strong);
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.prose tbody td {
+  padding: 0.7rem 0.95rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: baseline;
+}
+.prose tbody tr:last-child td {
+  border-bottom: 0;
+}
+.prose tbody tr {
+  transition: background-color 140ms ease;
+}
+.prose tbody tr:hover {
+  background: color-mix(in srgb, var(--accent-soft) 42%, transparent);
+}
+/* The first column is the row's label, so it carries the weight the eye needs
+   to find its way back after reading across. */
+.prose tbody td:first-child {
+  color: var(--ink);
+  font-weight: 520;
+}
+.prose thead th:first-child,
+.prose tbody td:first-child {
+  padding-left: 0;
+}
+.prose thead th:last-child,
+.prose tbody td:last-child {
+  padding-right: 0;
+}
+/* Measurements: mono with tabular figures, aligned right so a column of
+   numbers can be compared by scanning down it rather than reading each one. */
+.prose [data-numeric] {
+  font-family: 'IBM Plex Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+.prose tbody td[data-numeric] {
+  color: var(--ink);
+  font-size: 0.92em;
+}
+.prose table code {
+  white-space: nowrap;
+}
+.prose table :where(p, ul, ol) {
+  margin: 0;
+}
+
+/* Benchmark comparison: bar as the reading, number as the proof.
+   Inherits the prose table rules above and adds the plot. */
+.prose .benchmark {
+  margin: 2rem 0;
+}
+.prose .benchmark table {
+  table-layout: fixed;
+}
+.prose .benchmark th[scope='row'] {
+  padding: 0.62rem 0.95rem 0.62rem 0;
+  border-bottom: 1px solid var(--line);
+  font-weight: 520;
+  text-align: left;
+  vertical-align: baseline;
+}
+.prose .benchmark tbody tr:last-child :where(th, td) {
+  border-bottom: 0;
+}
+.prose .benchmark td {
+  width: 56%;
+  padding: 0.62rem 0 0.62rem 0.95rem;
+  border-bottom: 1px solid var(--line);
+}
+.prose .benchmark__label {
+  display: block;
+  color: var(--ink);
+}
+.prose .benchmark__note {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+.prose .benchmark__plot {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.prose .benchmark__track {
+  flex: 1;
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 9%, transparent);
+}
+.prose .benchmark__fill {
+  display: block;
+  width: var(--fill);
+  height: 100%;
+  border-radius: inherit;
+  /* Every bar is the same neutral until the prose singles one out; colouring
+     them all would imply a ranking the measurement does not make. */
+  background: color-mix(in srgb, var(--ink-muted) 62%, transparent);
+}
+.prose .benchmark [data-emphasis] .benchmark__fill {
+  background: var(--accent);
+}
+.prose .benchmark [data-emphasis] .benchmark__label {
+  color: var(--accent);
+}
+.prose .benchmark__value {
+  flex-shrink: 0;
+  min-width: 3.4ch;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.prose .benchmark figcaption {
+  margin-top: 0.85rem;
+  text-align: left;
+}
+.prose .benchmark__scale {
+  display: block;
+  margin-top: 0.2rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .prose .benchmark__fill {
+    animation: benchmark-grow 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+@keyframes benchmark-grow {
+  from {
+    width: 0;
+  }
+  to {
+    width: var(--fill);
+  }
+}
+
 /* Mermaid diagrams: a centered, framed figure that tracks the theme via the
    integration's autoTheme (data-theme on <html>). */
 .prose pre.mermaid,
@@ -2337,6 +2534,66 @@
 .prose .mermaid svg {
   max-width: 100%;
   height: auto;
+}
+/* Mermaid ships its own palette — pale yellow clusters, lavender nodes — and
+   injects it as an id-scoped <style> inside the SVG, which no external selector
+   can outrank. Overriding it is the only way a diagram reads as part of this
+   site rather than a screenshot from another one, and driving it from the
+   tokens means both themes follow the toggle with one set of rules. */
+.prose .mermaid svg :where(.node) :where(rect, polygon, circle, path) {
+  fill: var(--surface) !important;
+  stroke: var(--line-strong) !important;
+  stroke-width: 1.5px !important;
+}
+.prose .mermaid svg :where(.nodeLabel, .nodeLabel p) {
+  color: var(--ink) !important;
+  fill: var(--ink) !important;
+}
+/* Groups are context, so they sit behind the nodes: no fill, a hairline edge. */
+.prose .mermaid svg .cluster rect {
+  fill: color-mix(in srgb, var(--accent-soft) 30%, transparent) !important;
+  stroke: var(--line) !important;
+  stroke-width: 1px !important;
+}
+/* The group labels carry the diagram's argument — which half you can audit and
+   which you cannot. Mermaid sets them smaller than the node text, which inverts
+   the hierarchy, so they are restored to the weight the point deserves.
+   Sizing sits on the outer node ONLY: mermaid nests a <p> inside the label, and
+   an `em` on both compounds to roughly half the intended size. */
+.prose .mermaid svg :where(.cluster-label, .cluster-label p) {
+  color: var(--ink) !important;
+  fill: var(--ink) !important;
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-weight: 600 !important;
+}
+.prose .mermaid svg :where(.cluster-label, .cluster-label p) {
+  /* rem, not em: mermaid nests a <p> inside the label and an em on both
+     compounds to about half the intended size. */
+  font-size: 0.78rem !important;
+}
+/* The arrows are the structure the diagram exists to show, so they carry the
+   accent — the one place a flowchart earns colour. */
+.prose .mermaid svg .flowchart-link {
+  stroke: color-mix(in srgb, var(--accent) 72%, var(--line-strong)) !important;
+  stroke-width: 1.6px !important;
+}
+.prose .mermaid svg :where(marker path, .arrowMarkerPath) {
+  fill: color-mix(in srgb, var(--accent) 72%, var(--line-strong)) !important;
+  stroke: none !important;
+}
+/* Edge labels get colour only — deliberately no size or family override.
+   Mermaid measures each label and freezes the <foreignObject> to that box, so
+   restyling the type afterwards overflows a container that cannot grow and the
+   text is clipped away to an empty chip. Metrics belong to mermaid here. */
+.prose .mermaid svg :where(.edgeLabel, .edgeLabel p) {
+  color: var(--ink-muted) !important;
+  fill: var(--ink-muted) !important;
+  background: var(--surface-raised) !important;
+}
+.prose .mermaid svg :where(.edgeLabel rect, .labelBkg) {
+  fill: var(--surface-raised) !important;
+  background: var(--surface-raised) !important;
+  opacity: 1 !important;
 }
 /* Image lightbox overlay. */
 .lightbox {

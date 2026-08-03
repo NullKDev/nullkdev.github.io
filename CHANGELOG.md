@@ -51,6 +51,23 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ## [Unreleased]
 
+### Cambiado
+
+- Las tablas de los posts se renderizaban con el estilo por defecto del
+  navegador: sin padding, columnas pegadas y ocupando la mitad del ancho de la
+  columna de texto. Ahora hay estilo propio, y un plugin de build las envuelve
+  en un contenedor que scrollea solo —así una tabla ancha no manda de costado a
+  toda la página— y detecta las columnas numéricas para pasarlas a mono con
+  cifras tabulares alineadas a la derecha, encabezado incluido. La alineación se
+  decide por columna y no por celda: marcada celda por celda, el encabezado
+  queda a la izquierda y deja de rotular lo que tiene debajo. Aplica a todo el
+  archivo, incluidos los posts escritos antes.
+- Los diagramas de mermaid usaban su paleta propia —amarillo y lavanda— sobre un
+  sitio índigo y pizarra. Ahora se dibujan con los tokens del sitio, así que
+  siguen el cambio de tema. Las etiquetas de flecha conservan la métrica de
+  mermaid a propósito: el `foreignObject` se congela al medir, y cambiarle el
+  cuerpo tipográfico después recorta el texto hasta dejar la caja vacía.
+
 ### Agregado
 
 - Nota nueva sobre Codex Security, el escáner de vulnerabilidades que OpenAI
@@ -61,7 +78,11 @@ este repo usa de verdad — no las genéricas del estándar.
   salida, política de severidad, techo de costo y el directorio de salida, que
   contiene fragmentos de código fuente y no debe quedar dentro del repositorio.
   Trae un motivo de banner nuevo, `unmeasured-half`, para el sujeto de una
-  medición publicada a la mitad.
+  medición publicada a la mitad. La comparación de precisión se dibuja con un
+  componente nuevo, `BenchmarkBars`, que codifica el valor como longitud para
+  que la brecha se vea antes de leer las cifras, sin dejar de ser una tabla real
+  para un lector de pantalla; y un diagrama muestra qué mitad de la herramienta
+  es auditable y cuál está detrás de la puerta de acceso.
 
 ## [0.3.0] — 2026-07-30
 

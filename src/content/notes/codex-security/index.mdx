@@ -53,6 +53,9 @@ citations:
     accessedAt: 2026-08-03
 ---
 
+import BenchmarkBars from '@/components/mdx/BenchmarkBars.astro'
+import Callout from '@/components/mdx/Callout.astro'
+
 On 29 July 2026, OpenAI released **Codex Security** — a CLI and TypeScript SDK
 for finding, validating and fixing vulnerabilities — under Apache 2.0. It had
 been running since March as a research preview under the name Aardvark, and the
@@ -83,6 +86,21 @@ backlash. What is Apache 2.0 is the CLI, the SDK, the Docker harness and the
 orchestration. What is closed is the thing that decides whether a finding is a
 finding. You can read every line of how your code is gathered, chunked and
 submitted. You cannot read, run or audit the part that reasons about it.
+
+```mermaid
+flowchart TB
+  subgraph closed ["OPENAI · GATED, NOT AUDITABLE"]
+    gate{Access gate} -- approved --> model[gpt-5.6-sol reasoning]
+  end
+
+  subgraph open ["YOUR MACHINE · APACHE 2.0, AUDITABLE"]
+    repo[Repository on disk] --> cli[codex-security CLI]
+    out[Findings and source excerpts]
+  end
+
+  cli -- your code --> gate
+  model -- verdicts --> out
+```
 
 That distinction matters more than the licence argument it usually gets reduced
 to. It means the interesting property of this tool — its judgement — is not
@@ -131,14 +149,25 @@ specifically to catch tools that pattern-match their way to high recall.
 
 The precision results:
 
-| Scanner           | Category             | Precision |
-| ----------------- | -------------------- | --------- |
-| Claude Sonnet 4.6 | General-purpose LLM  | 0.785     |
-| Gemini 3.1 Pro    | General-purpose LLM  | 0.774     |
-| SonarQube         | Rule-based SAST      | 0.611     |
-| SecLab Agent      | Security-specialised | 0.605     |
-| Snyk              | Rule-based SAST      | 0.282     |
-| Semgrep           | Rule-based SAST      | 0.205     |
+<BenchmarkBars
+  label="Scanner"
+  metric="Precision"
+  scale="1.0 = every finding is real · 0.0 = every finding is noise"
+  caption="Precision on RealVuln, 26 vulnerable Python repositories, 796 hand-labelled findings."
+  rows={[
+    { label: 'Claude Sonnet 4.6', note: 'General-purpose LLM', value: 0.785 },
+    { label: 'Gemini 3.1 Pro', note: 'General-purpose LLM', value: 0.774 },
+    { label: 'SonarQube', note: 'Rule-based SAST', value: 0.611 },
+    { label: 'SecLab Agent', note: 'Security-specialised', value: 0.605 },
+    { label: 'Snyk', note: 'Rule-based SAST', value: 0.282 },
+    {
+      label: 'Semgrep',
+      note: 'Rule-based SAST — the incumbent',
+      value: 0.205,
+      emphasis: true,
+    },
+  ]}
+/>
 
 I expected this table to indict the LLMs. It does the opposite. **General-purpose
 models were roughly three times more precise than the rule-based SAST tools the
@@ -215,12 +244,14 @@ its results, evaluate it before requesting access, or continue using it if the
 terms change. The scanning intelligence is a hosted dependency with a gate in
 front of it.
 
-One caveat the docs raise and most coverage skipped: scan output contains
-**source excerpts and vulnerability details**. The output directory is a
-sensitive artifact. If you point it inside the repository, you will eventually
-commit a file that describes exactly how to exploit your own product. Keep it
-outside the tree with a retention policy — the wiring is in the
-[CI integration companion](/notes/codex-security-precision-gap/ci-integration/).
+<Callout type="warn" title="Scan output is a sensitive artifact">
+  A caveat the docs raise and most coverage skipped: results contain **source
+  excerpts and vulnerability details**. Point `--output-dir` inside the
+  repository and you will eventually commit a file describing exactly how to
+  exploit your own product. Keep it outside the tree, with a retention policy —
+  the wiring is in the [CI integration
+  companion](/notes/codex-security-precision-gap/ci-integration/).
+</Callout>
 
 ## What I would actually do
 

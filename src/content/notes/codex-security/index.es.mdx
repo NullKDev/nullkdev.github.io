@@ -53,6 +53,9 @@ citations:
     accessedAt: 2026-08-03
 ---
 
+import BenchmarkBars from '@/components/mdx/BenchmarkBars.astro'
+import Callout from '@/components/mdx/Callout.astro'
+
 El 29 de julio de 2026, OpenAI publicó **Codex Security** — un CLI y un SDK de
 TypeScript para encontrar, validar y corregir vulnerabilidades — bajo licencia
 Apache 2.0. Venía funcionando desde marzo como research preview con el nombre
@@ -85,6 +88,21 @@ reacción en contra. Lo que es Apache 2.0 es el CLI, el SDK, el arnés de Docker
 la orquestación. Lo que está cerrado es aquello que decide si un hallazgo es un
 hallazgo. Podés leer cada línea de cómo se recolecta, se trocea y se envía tu
 código. No podés leer, ejecutar ni auditar la parte que razona sobre él.
+
+```mermaid
+flowchart TB
+  subgraph cerrado ["OPENAI · RESTRINGIDO, NO AUDITABLE"]
+    gate{Puerta de acceso} -- aprobado --> model[Razonamiento gpt-5.6-sol]
+  end
+
+  subgraph abierto ["TU MAQUINA · APACHE 2.0, AUDITABLE"]
+    repo[Repositorio en disco] --> cli[CLI codex-security]
+    out[Hallazgos y fragmentos de codigo]
+  end
+
+  cli -- tu codigo --> gate
+  model -- veredictos --> out
+```
 
 Esa distinción importa más que la discusión de licencias a la que suele
 reducirse. Significa que la propiedad interesante de esta herramienta — su
@@ -133,14 +151,29 @@ coincidencia de patrones.
 
 Los resultados de precisión:
 
-| Escáner           | Categoría                  | Precisión |
-| ----------------- | -------------------------- | --------- |
-| Claude Sonnet 4.6 | LLM de propósito general   | 0,785     |
-| Gemini 3.1 Pro    | LLM de propósito general   | 0,774     |
-| SonarQube         | SAST basado en reglas      | 0,611     |
-| SecLab Agent      | Especializado en seguridad | 0,605     |
-| Snyk              | SAST basado en reglas      | 0,282     |
-| Semgrep           | SAST basado en reglas      | 0,205     |
+<BenchmarkBars
+  label="Escáner"
+  metric="Precisión"
+  scale="1.0 = todo hallazgo es real · 0.0 = todo hallazgo es ruido"
+  caption="Precisión en RealVuln, 26 repositorios Python vulnerables, 796 hallazgos etiquetados a mano."
+  rows={[
+    {
+      label: 'Claude Sonnet 4.6',
+      note: 'LLM de propósito general',
+      value: 0.785,
+    },
+    { label: 'Gemini 3.1 Pro', note: 'LLM de propósito general', value: 0.774 },
+    { label: 'SonarQube', note: 'SAST basado en reglas', value: 0.611 },
+    { label: 'SecLab Agent', note: 'Especializado en seguridad', value: 0.605 },
+    { label: 'Snyk', note: 'SAST basado en reglas', value: 0.282 },
+    {
+      label: 'Semgrep',
+      note: 'SAST basado en reglas — el titular actual',
+      value: 0.205,
+      emphasis: true,
+    },
+  ]}
+/>
 
 Yo esperaba que esta tabla condenara a los LLM. Hace lo contrario. **Los modelos
 de propósito general fueron aproximadamente tres veces más precisos que las
@@ -221,13 +254,15 @@ reproducir sus resultados, evaluarlo antes de pedir acceso, ni seguir usándolo 
 cambian los términos. La inteligencia de escaneo es una dependencia hospedada con
 una puerta delante.
 
-Una advertencia que la documentación plantea y que la cobertura pasó por alto: la
-salida del escaneo contiene **fragmentos de código fuente y detalles de las
-vulnerabilidades**. El directorio de salida es un artefacto sensible. Si lo
-apuntás dentro del repositorio, tarde o temprano vas a commitear un archivo que
-describe exactamente cómo explotar tu propio producto. Mantenelo fuera del árbol
-y con una política de retención — el cableado está en el
-[complemento sobre integración con CI](/es/notes/codex-security-brecha-precision/integracion-ci/).
+<Callout type="warn" title="La salida del escaneo es un artefacto sensible">
+  Una advertencia que la documentación plantea y que la cobertura pasó por alto:
+  los resultados contienen **fragmentos de código fuente y detalles de las
+  vulnerabilidades**. Si apuntás `--output-dir` dentro del repositorio, tarde o
+  temprano vas a commitear un archivo que describe exactamente cómo explotar tu
+  propio producto. Mantenelo fuera del árbol y con una política de retención —
+  el cableado está en el [complemento sobre integración con
+  CI](/es/notes/codex-security-brecha-precision/integracion-ci/).
+</Callout>
 
 ## Qué haría yo
 

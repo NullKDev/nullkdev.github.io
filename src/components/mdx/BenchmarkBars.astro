@@ -1,0 +1,89 @@
+---
+// Authoring component for .mdx entries: a measured comparison where the bar is
+// the reading and the number is the proof.
+//
+// A markdown table of six decimals makes the reader do the arithmetic to see
+// that one scanner is three times another. Encoding the value as length makes
+// that gap visible before the numbers are read, which is the entire point of
+// quoting the benchmark.
+//
+// The markup stays a real <table>: the bar is decoration layered on top of the
+// data, never a replacement for it, so a screen reader gets label and value in
+// a proper row. Styles live in src/styles/archive.css (.benchmark).
+interface Row {
+  readonly label: string
+  /** Measured value, on the same scale as `max`. */
+  readonly value: number
+  /** Short qualifier — the category, the source, the caveat. */
+  readonly note?: string
+  /** Draws the row in the accent. For the row the surrounding prose argues about. */
+  readonly emphasis?: boolean
+}
+
+interface Props {
+  /** Column heading for the labels. */
+  readonly label: string
+  /** Column heading for the measurements. */
+  readonly metric: string
+  readonly rows: readonly Row[]
+  /** Top of the scale. Bars are drawn against this, never against the maximum
+      observed value, which would exaggerate small differences. */
+  readonly max?: number
+  /** Names what the scale means, so a bar length is interpretable. */
+  readonly scale?: string
+  readonly caption?: string
+}
+
+const { label, metric, rows, max = 1, scale, caption } = Astro.props
+
+const decimals = Math.max(
+  ...rows.map((row) => {
+    const [, fraction = ''] = String(row.value).split('.')
+    return fraction.length
+  }),
+)
+
+const format = (value: number) => value.toFixed(decimals)
+---
+
+<figure class="benchmark">
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">{label}</th>
+        <th scope="col" data-numeric>{metric}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((row) => (
+          <tr data-emphasis={row.emphasis ? '' : undefined}>
+            <th scope="row">
+              <span class="benchmark__label">{row.label}</span>
+              {row.note && <span class="benchmark__note">{row.note}</span>}
+            </th>
+            <td data-numeric>
+              <span class="benchmark__plot">
+                <span class="benchmark__track" aria-hidden="true">
+                  <span
+                    class="benchmark__fill"
+                    style={`--fill:${Math.max(0, Math.min(1, row.value / max)) * 100}%`}
+                  />
+                </span>
+                <span class="benchmark__value">{format(row.value)}</span>
+              </span>
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+  {
+    (scale || caption) && (
+      <figcaption>
+        {caption}
+        {scale && <span class="benchmark__scale">{scale}</span>}
+      </figcaption>
+    )
+  }
+</figure>
