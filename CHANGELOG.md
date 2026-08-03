@@ -51,6 +51,18 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ## [Unreleased]
 
+### Agregado
+
+- Nota nueva sobre Codex Security, el escáner de vulnerabilidades que OpenAI
+  liberó bajo Apache 2.0: el 92% que se publicó es recall, y la precisión —la
+  métrica que decide si los hallazgos son usables— nunca se reportó. Se contrasta
+  con los benchmarks independientes RealVuln y el de LLM de frontera, que miden
+  justamente eso. Incluye un subpost operativo sobre integrarlo a CI: códigos de
+  salida, política de severidad, techo de costo y el directorio de salida, que
+  contiene fragmentos de código fuente y no debe quedar dentro del repositorio.
+  Trae un motivo de banner nuevo, `unmeasured-half`, para el sujeto de una
+  medición publicada a la mitad.
+
 ## [0.3.0] — 2026-07-30
 
 ### Corregido

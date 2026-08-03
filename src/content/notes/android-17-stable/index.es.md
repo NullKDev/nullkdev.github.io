@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-07-29
 updatedAt: 2026-07-29
 topics: [android, kotlin, platform-apis, security]
-featuredRank: 2
+featuredRank: 3
 image: /banners/android-17-stable.svg
 imageAlt: Banner de Android 17 estable — estable, seis semanas después.
 links:

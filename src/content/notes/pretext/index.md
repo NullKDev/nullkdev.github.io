@@ -10,7 +10,7 @@ maturity: growing
 publishedAt: 2026-04-04
 updatedAt: 2026-07-23
 topics: [javascript, performance, typography, web]
-featuredRank: 6
+featuredRank: 7
 image: /banners/pretext.svg
 imageAlt: Pretext series banner — layout reflow versus cached arithmetic layout.
 links:

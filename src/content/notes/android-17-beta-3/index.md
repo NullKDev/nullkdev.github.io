@@ -10,7 +10,7 @@ maturity: archived
 publishedAt: 2026-03-27
 updatedAt: 2026-07-23
 topics: [android, kotlin, platform-apis]
-featuredRank: 7
+featuredRank: 8
 image: /banners/android-17-beta-3.svg
 imageAlt: Android 17 Beta 3 banner — platform stability reached.
 links:

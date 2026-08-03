@@ -1,0 +1,195 @@
+---
+parentDomain: notes
+parentId: notes-codex-security-es
+documentId: ci-integration
+locale: es
+translationKey: codex-security-ci-integration
+slug: integracion-ci
+title: 'Integrar Codex Security a CI sin bloquear a todo el mundo'
+summary: 'Códigos de salida, política de severidad, techos de costo y el problema del directorio de salida — el detalle operativo de adoptar un escáner con IA.'
+order: 1
+visibility: public
+maturity: stable
+publishedAt: 2026-08-03
+updatedAt: 2026-08-03
+topics: [security, developer-tools]
+references: []
+evidence: []
+protection: { mode: public }
+---
+
+El [artículo principal](/es/notes/codex-security-brecha-precision/) sostiene que
+la precisión es el número que nadie publicó. Este complemento asume que decidiste
+adoptarlo igual — lo cual es razonable — y cubre la parte que determina si la
+implementación sobrevive al contacto con tu equipo.
+
+Todo lo que sigue proviene de la referencia publicada del CLI. Nada de esto es
+una afirmación de benchmark.
+
+## Requisitos
+
+Node.js 22 o superior, y **Python 3.10 o superior** — la dependencia de Python no
+es opcional y hace falta para escanear y exportar, algo que sorprende a quien
+asume que un paquete de npm es autocontenido.
+
+La autenticación es inicio de sesión con ChatGPT para personas y una variable de
+entorno para automatización: `OPENAI_API_KEY`, `CODEX_API_KEY` o
+`CODEX_ACCESS_TOKEN`. Usá `--auth api-key` en CI para que una sesión interactiva
+vieja no cambie en silencio con qué identidad corre un pipeline. Para máquinas sin
+interfaz existe `login --device-auth`.
+
+## Los códigos de salida son la superficie de integración
+
+Esta es la parte que conviene resolver primero, porque todo lo demás en tu
+pipeline se apoya en ella.
+
+| Código | Significado                                                   |
+| ------ | ------------------------------------------------------------- |
+| `0`    | Completado, y la política se cumplió                          |
+| `1`    | Hallazgos en o por encima del umbral de severidad configurado |
+| `2`    | Error de entrada o ejecución, **o cobertura incompleta**      |
+| `130`  | Interrumpido (Ctrl-C)                                         |
+| `143`  | Terminado (SIGTERM)                                           |
+
+El que te va a morder es el `2`. Mezcla «la herramienta falló» con «el escaneo no
+cubrió del todo el objetivo» — y los escaneos reportan cobertura como
+`complete`, `partial` o `unknown`. Un job que trate el `2` como fallo de
+infraestructura y reintente va a tapar alegremente un escaneo que examinó en
+silencio una fracción de tu código.
+
+Tratá el `2` como _resultado desconocido_, nunca como _aprobado_. Si estás
+bloqueando merges, un escaneo incompleto debería retener la puerta igual que un
+hallazgo, porque no tenés evidencia en ninguna dirección.
+
+## Empezá en modo solo-reporte
+
+`--fail-on-severity` acepta `critical`, `high`, `medium` o `low`, y es el
+interruptor que convierte un escáner en un bloqueante.
+
+No lo actives el primer día. Ejecutá el escaneo, exportá los hallazgos y dejá que
+el pipeline pase igual mientras medís cuánto de la salida es real. Es la misma
+medición de precisión que propone el artículo principal, solo que no te cuesta
+nada extra porque el escaneo ya está corriendo.
+
+```bash
+npx @openai/codex-security scan . \
+  --output-dir "$RUNNER_TEMP/codex-security" \
+  --max-cost 5
+```
+
+Cuando tengas algunas semanas de datos, subí la puerta de arriba hacia abajo.
+Primero `critical`. La primera experiencia de nadie con una herramienta de
+seguridad nueva debería ser un release bloqueado por un hallazgo de severidad
+media en un archivo que no tocó.
+
+## Escaneá el diff, no el mundo, en los pull requests
+
+Los escaneos de repositorio completo son para ejecuciones programadas. En un pull
+request, escaneá lo que cambió:
+
+```bash
+npx @openai/codex-security scan . --diff "origin/${BASE_REF}"
+```
+
+`--working-tree` cubre cambios preparados y sin preparar en local, e
+`install-hook` integra la misma verificación a un hook de pre-commit. Ojo: los
+escaneos de diff y working-tree requieren que el argumento del repositorio sea la
+raíz del worktree de git — pasar un subdirectorio falla en vez de acotar.
+
+`--mode deep` hace una revisión más amplia pero **no admite objetivos de diff ni
+working-tree**. El modo profundo es un job nocturno o semanal contra el
+repositorio entero, no algo que pongas en el camino al merge.
+
+## El costo es un flag de primera clase, y eso es una advertencia
+
+`--max-cost` toma una cifra en dólares. La existencia de ese flag te dice que la
+configuración por defecto — `gpt-5.6-sol` con esfuerzo `xhigh` — es lo bastante
+cara como para que escanear sin límite sea un riesgo real.
+
+Leé con atención la salvedad documentada: **las solicitudes ya en curso pueden
+terminar por encima del límite.** Es un techo con desborde, no un corte duro.
+Ponelo por debajo de lo que estás dispuesto a gastar de verdad.
+
+Los cinco niveles de esfuerzo — `minimal`, `low`, `medium`, `high`, `xhigh` — son
+la otra palanca. `xhigh` es el valor por defecto, lo que significa que la
+configuración de fábrica es la más cara. Un escaneo de diff por pull request con
+esfuerzo menor, más un escaneo profundo nocturno en `xhigh`, es la forma en la
+que va a terminar la mayoría de los equipos.
+
+Para trabajo sobre muchas repos, `bulk-scan` toma un CSV con columnas `id`,
+`repository` y `revision`, y corre con `--workers 4` por defecto. Subilo a
+conciencia; el techo de costo es por escaneo, no por ejecución masiva.
+
+## El directorio de salida es un artefacto sensible
+
+Los resultados del escaneo contienen **fragmentos de código fuente y detalles de
+las vulnerabilidades**. Eso es un archivo que describe cómo explotar tu producto,
+en prosa, con código.
+
+Tres consecuencias:
+
+- **Escribilo fuera del repositorio.** Un `--output-dir` apuntando a cualquier
+  lugar dentro del árbol de trabajo es la forma en que ese archivo termina
+  commiteado. Usá el directorio temporal del runner.
+- **No lo publiques como artefacto de CI público.** En un repositorio público,
+  los artefactos de build los puede descargar cualquiera.
+- **Dale una política de retención,** que la documentación recomienda de forma
+  explícita.
+
+Exportá a SARIF para los tableros — `export --format sarif` — y dejá que la
+plataforma de seguridad guarde el detalle bajo su propio control de acceso, en
+lugar de dejar copias en el almacenamiento de CI.
+
+```bash
+npx @openai/codex-security export \
+  --format sarif \
+  --output-dir "$RUNNER_TEMP/codex-security"
+```
+
+## Separá encontrar, validar y corregir
+
+`scan`, `validate` y `patch` son comandos distintos, y mantenerlos distintos es
+el instinto correcto.
+
+`validate` vuelve a verificar hallazgos candidatos contra el código actual, que es
+lo que querés al triar un backlog — un hallazgo levantado hace tres semanas puede
+estar ya corregido. `patch` genera la remediación. Ninguno de los dos debería
+correr sin supervisión en el camino al merge. Un parche generado es una
+propuesta; necesita la misma revisión que cualquier otro cambio, y probablemente
+más, porque llega con una afirmación implícita de corrección en seguridad.
+
+`scans compare` y `scans match` comparan resultados entre ejecuciones, que es
+cómo respondés «¿este pull request introdujo algo nuevo?» sin releer todo el
+backlog.
+
+## Registrá los falsos positivos como corresponde
+
+`findings false-positive` marca un hallazgo como no aplicable con una razón
+escrita, y la decisión persiste entre escaneos futuros **sin suprimir la regla
+subyacente**.
+
+Usalo, y exigí que la razón sea real. La alternativa — equipos deshabilitando
+categorías enteras de reglas para acallar el ruido — es la forma en que una
+organización se queda ciega ante una clase completa de vulnerabilidad mientras su
+tablero sigue en verde.
+
+`--knowledge-base` acepta documentos de arquitectura y modelo de amenazas. Si
+tenés un modelo de amenazas escrito, esta es la entrada de mayor palanca
+disponible: es la diferencia entre un escáner que marca cada llamada de
+deserialización y uno que sabe cuáles de ellas son alcanzables desde un límite no
+confiable.
+
+## Una primera implementación razonable
+
+1. Escaneos de diff en modo solo-reporte sobre pull requests, sin puerta de
+   severidad, salida al temporal del runner, `--max-cost` bajo.
+2. Escaneo profundo semanal del repositorio completo, resultados exportados a
+   SARIF.
+3. Después de un mes, contá hallazgos confirmados sobre hallazgos totales. Ese es
+   tu número de precisión, sobre tu código.
+4. Activá `--fail-on-severity critical` solo si esa razón lo justifica.
+5. Alimentá el modelo de amenazas vía `--knowledge-base` y medí si la razón
+   mejora.
+
+El paso 3 es el que la gente saltea, y es el único que te dice si algo del resto
+valió la pena.

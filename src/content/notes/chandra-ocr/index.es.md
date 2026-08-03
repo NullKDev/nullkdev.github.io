@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-07-29
 updatedAt: 2026-07-29
 topics: [ai, architecture, performance]
-featuredRank: 1
+featuredRank: 2
 image: /banners/chandra-ocr.svg
 imageAlt: Banner de Chandra OCR — lo que un puntaje de 85.9% deja afuera.
 links:

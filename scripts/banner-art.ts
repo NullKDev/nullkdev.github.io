@@ -24,6 +24,7 @@ export type Motif =
   | 'text-measure'
   | 'process-bridge'
   | 'shipped-stack'
+  | 'unmeasured-half'
 
 interface Ink {
   /** Full-strength accent, for the one element that should be read first. */
@@ -167,6 +168,20 @@ const motifs: Record<Motif, (ink: Ink) => string> = {
     <circle cx="1042" cy="202" r="34" fill="none" stroke="${accent}" stroke-width="2.5"/>
     ${icon('release', 1024, 184, 36, accent, 0.95)}
     ${line(702, 438, 250, muted, 0.2, 10)}`,
+
+  /* A findings list beside the pair of numbers that describes it. One dial is
+     drawn and labelled; the other is an empty dashed ring. The post is about a
+     measurement that was published with half of itself missing, so the missing
+     half is the loudest shape in the composition — absence drawn, not implied. */
+  'unmeasured-half': ({ accent, muted }) => `
+    <rect x="700" y="150" width="286" height="286" rx="16" fill="none" stroke="${muted}" stroke-width="2.5" opacity="0.4"/>
+    ${[0, 1, 2, 3, 4].map((i) => line(724, 184 + i * 52, i === 1 ? 168 : 238 - (i % 2) * 44, i === 1 ? accent : muted, i === 1 ? 0.7 : 0.24, 12)).join('')}
+    ${icon('check', 910, 230, 26, accent, 0.95)}
+    <circle cx="1064" cy="222" r="50" fill="${accent}" opacity="0.16"/>
+    <circle cx="1064" cy="222" r="50" fill="none" stroke="${accent}" stroke-width="3"/>
+    ${icon('shield', 1040, 198, 48, accent, 0.95)}
+    <circle cx="1064" cy="372" r="50" fill="none" stroke="${accent}" stroke-width="3" stroke-dasharray="9 10" opacity="0.45"/>
+    ${icon('search', 1040, 348, 48, accent, 0.3)}`,
 }
 
 export const renderArt = (

@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-07-29
 updatedAt: 2026-07-29
 topics: [android, kotlin, performance, platform-apis]
-featuredRank: 3
+featuredRank: 4
 image: /banners/android-17-memory-limits.svg
 imageAlt: Banner de límites de memoria en Android 17 — muerto sin stack trace.
 links:

@@ -225,4 +225,23 @@ export const banners: readonly BannerSpec[] = [
     art: 'shipped-stack',
     ...PALETTE.archive,
   },
+  {
+    slug: 'codex-security',
+    copy: {
+      en: {
+        kicker: 'AppSec · Benchmarks',
+        title: ['The number they', 'did not publish'],
+        meta: '92% recall · precision unreported',
+        alt: 'Codex Security banner — the number they did not publish.',
+      },
+      es: {
+        kicker: 'AppSec · Benchmarks',
+        title: ['El número que', 'no publicaron'],
+        meta: '92% de recall · precisión sin reportar',
+        alt: 'Banner de Codex Security — el número que no publicaron.',
+      },
+    },
+    art: 'unmeasured-half',
+    ...PALETTE.warning,
+  },
 ]
