@@ -84,6 +84,15 @@ este repo usa de verdad — no las genéricas del estándar.
   componente nuevo, `BenchmarkBars`, que codifica el valor como longitud para
   que la brecha se vea antes de leer las cifras, sin dejar de ser una tabla real
   para un lector de pantalla.
+- La nota de Android 17 estable pasa de cuatro cambios que rompen en targetSdk 37
+  a ocho, verificados contra la documentación oficial: se suman el audio en
+  background —que exige un foreground service con capacidades while-in-use, no
+  `MediaSessionService` como suele repetirse—, la reflection sobre la plataforma
+  (`static final` y el `MessageQueue` sin locks, cuyo `mMessages` ahora siempre
+  es null y rompe Espresso y Robolectric), la retención de tres horas de los SMS
+  con OTP y el angostamiento de contactos. Se agrega además el GC generacional de
+  ART, que es el único de la tanda que llega sin subir targetSdk. El título decía
+  «cuatro» y contaba mal, así que ahora nombra el criterio en vez de la cantidad.
 
 ## [0.3.0] — 2026-07-30
 
