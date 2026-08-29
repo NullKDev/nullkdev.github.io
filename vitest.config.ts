@@ -14,6 +14,13 @@ export default defineConfig({
       '@data': new URL('./src/data', import.meta.url).pathname,
       '@assets': new URL('./src/assets', import.meta.url).pathname,
       '@hooks': new URL('./src/hooks', import.meta.url).pathname,
+      /* Astro's virtual module does not exist outside a build, so Vite
+         cannot resolve it and vi.mock never gets a turn. The stub is what
+         makes a lib module that reads a collection testable. */
+      'astro:content': new URL(
+        './tests/stubs/astro-content.ts',
+        import.meta.url,
+      ).pathname,
     },
   },
   test: {
@@ -58,9 +65,11 @@ export default defineConfig({
          statistic, it is readable private content. The content module
          validates the schemas every page is projected from.
 
-         src/lib/notes.ts is still uncovered. It is a thin read over
-         `getCollection`, like src/lib/content.ts which is already excluded —
-         left in the numbers rather than excluded, so the gap stays visible. */
+         src/lib/diagram-viewer.ts is still uncovered. It is browser-only
+         DOM code behind a feature that is currently switched off (issue #24),
+         and it is left in the numbers rather than excluded, so the gap stays
+         visible. Excluding a shipped module to make an average look better is
+         how a gate becomes decoration. */
       thresholds: {
         statements: 84,
         branches: 76,
