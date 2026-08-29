@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Banner del Model Hardware Standard — una superficie de driver, no MCP.">
+  <defs>
+    <linearGradient id="bg-model-hardware-standard-es" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#2A1E3B"/>
+    </linearGradient>
+    <radialGradient id="glow-model-hardware-standard-es" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.22000000000000003"/>
+      <stop offset="100%" stop-color="#7C3AED" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="lift-model-hardware-standard-es" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#7C3AED" flood-opacity="0.275"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg-model-hardware-standard-es)"/>
+  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-model-hardware-standard-es)"/>
+<g filter="url(#lift-model-hardware-standard-es)">
+    <rect x="700" y="158" width="128" height="46" rx="8" fill="none" stroke="#94A3B8" stroke-width="2.5" opacity="0.4"/>
+                <path d="M828 181 H932" stroke="#94A3B8" stroke-width="2" opacity="0.26"/>
+                <circle cx="846" cy="181" r="4.5" fill="#7C3AED" opacity="0.75"/>
+                <circle cx="864" cy="181" r="4.5" fill="#7C3AED" opacity="0.35"/><rect x="700" y="236" width="96" height="62" rx="8" fill="none" stroke="#94A3B8" stroke-width="2.5" opacity="0.4"/>
+                <path d="M796 267 H932" stroke="#94A3B8" stroke-width="2" opacity="0.26"/>
+                <circle cx="814" cy="267" r="4.5" fill="#7C3AED" opacity="0.75"/>
+                <circle cx="832" cy="267" r="4.5" fill="#7C3AED" opacity="0.35"/><rect x="700" y="314" width="150" height="38" rx="8" fill="none" stroke="#94A3B8" stroke-width="2.5" opacity="0.4"/>
+                <path d="M850 333 H932" stroke="#94A3B8" stroke-width="2" opacity="0.26"/>
+                <circle cx="868" cy="333" r="4.5" fill="#7C3AED" opacity="0.75"/>
+                <circle cx="886" cy="333" r="4.5" fill="#7C3AED" opacity="0.35"/><rect x="700" y="392" width="112" height="54" rx="8" fill="none" stroke="#94A3B8" stroke-width="2.5" opacity="0.4"/>
+                <path d="M812 419 H932" stroke="#94A3B8" stroke-width="2" opacity="0.26"/>
+                <circle cx="830" cy="419" r="4.5" fill="#7C3AED" opacity="0.75"/>
+                <circle cx="848" cy="419" r="4.5" fill="#7C3AED" opacity="0.35"/>
+    <rect x="932" y="150" width="14" height="320" rx="7" fill="#7C3AED" opacity="0.9"/>
+    <path d="M946 300 H990" stroke="#7C3AED" stroke-width="3.5" stroke-dasharray="10 8"/>
+    <path d="M974 287 l16 13 -16 13" fill="none" stroke="#7C3AED" stroke-width="3.5"/>
+    <rect x="1000" y="222" width="130" height="156" rx="14" fill="#7C3AED" opacity="0.13"/>
+    <rect x="1000" y="222" width="130" height="156" rx="14" fill="none" stroke="#7C3AED" stroke-width="2.5" opacity="0.8"/>
+    <g transform="translate(1032 252) scale(2.75)" opacity="0.95" fill="none" stroke="#7C3AED" stroke-width="0.62" stroke-linecap="round" stroke-linejoin="round"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"><path d="M12 20v2m0-20v2m5 16v2m0-20v2M2 12h2m-2 5h2M2 7h2m16 5h2m-2 5h2M20 7h2M7 20v2M7 2v2"/><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="8" height="8" x="8" y="8" rx="1"/></g></g>
+    <rect x="1018" y="342" width="94" height="10" rx="5" fill="#7C3AED" opacity="0.45"/></g>
+  <rect x="96" y="150" width="76" height="4" rx="2" fill="#7C3AED"/>
+  <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#7C3AED">MHS · RESEARCH PREVIEW</text>
+  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#F8FAFC">Una superficie</text>
+  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#94A3B8">de driver, no MCP</text>
+  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">27 ago 2026 · read/write · model-agnostic</text>
+</svg>

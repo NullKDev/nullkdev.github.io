@@ -1,6 +1,7 @@
 export const taxonomy = {
   topics: {
     accessibility: { en: 'Accessibility', es: 'Accesibilidad' },
+    ai: { en: 'AI', es: 'IA' },
     android: { en: 'Android', es: 'Android' },
     architecture: { en: 'Architecture', es: 'Arquitectura' },
     compose: { en: 'Compose', es: 'Compose' },

@@ -74,6 +74,25 @@ const PALETTE = {
 
 export const banners: readonly BannerSpec[] = [
   {
+    slug: 'model-hardware-standard',
+    copy: {
+      en: {
+        kicker: 'MHS · Research preview',
+        title: ['One driver', 'surface, not MCP'],
+        meta: '27 Aug 2026 · read/write · model-agnostic',
+        alt: 'Model Hardware Standard banner — one driver surface, not MCP.',
+      },
+      es: {
+        kicker: 'MHS · Research preview',
+        title: ['Una superficie', 'de driver, no MCP'],
+        meta: '27 ago 2026 · read/write · model-agnostic',
+        alt: 'Banner del Model Hardware Standard — una superficie de driver, no MCP.',
+      },
+    },
+    art: 'standard-bus',
+    ...PALETTE.ai,
+  },
+  {
     slug: 'chandra-ocr',
     copy: {
       en: {
