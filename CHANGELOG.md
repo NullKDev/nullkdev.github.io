@@ -117,6 +117,17 @@ este repo usa de verdad — no las genéricas del estándar.
   idiomas en vez de «AI» e «IA». Se agrega a `taxonomy.topics`, con lo que la
   nota de Chandra OCR queda bien rotulada también.
 
+### Seguridad
+
+- Se cierran cinco advisories high en dependencias transitivas
+  (`brace-expansion`, `nanoid`, `js-yaml`). Los parches ya estaban dentro del
+  rango que permiten sus paquetes padre; el lockfile había quedado rancio, y por
+  eso `bun update` no reportaba nada mientras el árbol seguía en las versiones
+  vulnerables. Volver a resolverlo alcanza: `package.json` no se toca y ninguna
+  dependencia directa cambia de major. Esto además destraba el despliegue —
+  `build` depende de `[verify, audit, e2e]`, así que un `audit` en rojo venía
+  saltándose el deploy de Pages desde el 30 de julio.
+
 ## [0.3.0] — 2026-07-30
 
 ### Corregido
