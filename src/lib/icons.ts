@@ -96,6 +96,11 @@ const registry = {
      in between — so the three distribution marks stay one visual family. */
   android: 'simple-icons:android',
 
+  /* A programmable instrument — the thing on the far side of a driver.
+     Generic on purpose: the same mark has to stand for a microscope, a
+     liquid handler and a robotic arm without favouring any of them. */
+  device: 'lucide:cpu',
+
   // Theme toggle
   sun: 'lucide:sun',
   moon: 'lucide:moon',

@@ -25,6 +25,7 @@ export type Motif =
   | 'process-bridge'
   | 'shipped-stack'
   | 'unmeasured-half'
+  | 'standard-bus'
 
 interface Ink {
   /** Full-strength accent, for the one element that should be read first. */
@@ -182,6 +183,37 @@ const motifs: Record<Motif, (ink: Ink) => string> = {
     ${icon('shield', 1040, 198, 48, accent, 0.95)}
     <circle cx="1064" cy="372" r="50" fill="none" stroke="${accent}" stroke-width="3" stroke-dasharray="9 10" opacity="0.45"/>
     ${icon('search', 1040, 348, 48, accent, 0.3)}`,
+
+  /* Four instruments of deliberately different shapes, each reduced to the
+     same two ports, all hanging off one spine. The subject is not the devices
+     and not the agent — it is the collapse of N bespoke translators into one
+     surface, so the spine is the only solid shape in the composition. */
+  'standard-bus': ({ accent, muted }) => {
+    const rigs = [
+      { w: 128, h: 46 },
+      { w: 96, h: 62 },
+      { w: 150, h: 38 },
+      { w: 112, h: 54 },
+    ]
+    return `
+    ${rigs
+      .map(({ w, h }, i) => {
+        const y = 158 + i * 78
+        const mid = y + h / 2
+        return `<rect x="700" y="${y}" width="${w}" height="${h}" rx="8" fill="none" stroke="${muted}" stroke-width="2.5" opacity="0.4"/>
+                <path d="M${700 + w} ${mid} H932" stroke="${muted}" stroke-width="2" opacity="0.26"/>
+                <circle cx="${700 + w + 18}" cy="${mid}" r="4.5" fill="${accent}" opacity="0.75"/>
+                <circle cx="${700 + w + 36}" cy="${mid}" r="4.5" fill="${accent}" opacity="0.35"/>`
+      })
+      .join('')}
+    <rect x="932" y="150" width="14" height="320" rx="7" fill="${accent}" opacity="0.9"/>
+    <path d="M946 300 H990" stroke="${accent}" stroke-width="3.5" stroke-dasharray="10 8"/>
+    <path d="M974 287 l16 13 -16 13" fill="none" stroke="${accent}" stroke-width="3.5"/>
+    <rect x="1000" y="222" width="130" height="156" rx="14" fill="${accent}" opacity="0.13"/>
+    <rect x="1000" y="222" width="130" height="156" rx="14" fill="none" stroke="${accent}" stroke-width="2.5" opacity="0.8"/>
+    ${icon('device', 1032, 252, 66, accent, 0.95)}
+    ${line(1018, 342, 94, accent, 0.45, 10)}`
+  },
 }
 
 export const renderArt = (

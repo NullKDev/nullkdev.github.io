@@ -93,6 +93,29 @@ este repo usa de verdad — no las genéricas del estándar.
   con OTP y el angostamiento de contactos. Se agrega además el GC generacional de
   ART, que es el único de la tanda que llega sin subir targetSdk. El título decía
   «cuatro» y contaba mal, así que ahora nombra el criterio en vez de la cantidad.
+- Nota nueva sobre el Model Hardware Standard, el estándar de hardware que
+  Anthropic abrió en research preview el 27 de agosto. Corrige el encuadre que
+  se repitió en toda la cobertura —«MCP para hardware»—: el anuncio dice que MHS
+  es model-agnostic y que MCP es una de tres vías de acceso, junto a una CLI y a
+  code file APIs, así que no está construido sobre MCP ni compromete con el
+  stack de Anthropic. Separa lo anunciado de la extrapolación: los partners son
+  laboratorios e instrumentos, y SCADA, PLC y MES no aparecen en ninguna parte.
+  Toma como evidencia los números de QuEra —58% a 99.3% de éxito en recuperación
+  de láser, 150 s a 0.9–14 s— en lugar del rango de integración, cuyos propios
+  casos de respaldo tardaron ocho horas y una semana. Deja explícito que es un
+  preview cerrado, que el sitio del estándar no publica la especificación y que
+  el open source todavía no tiene fecha. Trae un motivo de banner nuevo,
+  `standard-bus`, para el sujeto de N traductores a medida colapsados en una
+  superficie, y una marca nueva en el registro de iconos, `device`, para el
+  instrumento programable del otro lado del driver. Queda en `featuredRank: 1` y
+  el resto del archivo de notas corre un lugar.
+
+### Corregido
+
+- El topic `ai` se usaba en las notas pero solo existía como dominio, no como
+  topic, así que `getTopicLabel` caía al fallback y lo rotulaba «Ai» en los dos
+  idiomas en vez de «AI» e «IA». Se agrega a `taxonomy.topics`, con lo que la
+  nota de Chandra OCR queda bien rotulada también.
 
 ## [0.3.0] — 2026-07-30
 
