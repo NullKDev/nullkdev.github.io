@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content'
 import { pageTitle } from '@/data/brand'
 import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
+import DiagramControls from '@/components/primitives/DiagramControls.astro'
 import Icon from '@/components/primitives/Icon.astro'
 import StatusChip from '@/components/primitives/StatusChip.astro'
 import LabConsole from '@/components/lab/LabConsole.astro'
@@ -167,6 +168,7 @@ const jsonLd = {
         ? entry.data.translationKey
         : undefined}
   >
+    <DiagramControls locale={locale} />
     <div class="read-progress" aria-hidden="true">
       <span data-read-progress></span>
     </div>
@@ -667,6 +669,7 @@ const jsonLd = {
 </Layout>
 
 <script>
+  import { mountDiagramViewers } from '@/lib/diagram-viewer'
   import { markRead } from '@/lib/reading-log'
 
   // Opening a note records it locally so the index can show what is left.
@@ -768,6 +771,8 @@ const jsonLd = {
     )
     targets.forEach((target) => observer.observe(target))
   }
+
+  mountDiagramViewers()
 
   // Figures & lightbox: promote standalone markdown images to <figure> with a
   // caption from their alt text, and open any zoomable image in a lightbox.

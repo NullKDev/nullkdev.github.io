@@ -53,6 +53,8 @@ const registry = {
   check: 'lucide:check',
   cross: 'lucide:x',
   minus: 'lucide:minus',
+  plus: 'lucide:plus',
+  fitWidth: 'lucide:scan',
 
   // Record apparatus — the blocks under an entry
   outcomes: 'lucide:target',
@@ -93,6 +95,11 @@ const registry = {
   /* Stands for a build handed straight to the user as an APK, with no store
      in between — so the three distribution marks stay one visual family. */
   android: 'simple-icons:android',
+
+  /* A programmable instrument — the thing on the far side of a driver.
+     Generic on purpose: the same mark has to stand for a microscope, a
+     liquid handler and a robotic arm without favouring any of them. */
+  device: 'lucide:cpu',
 
   // Theme toggle
   sun: 'lucide:sun',

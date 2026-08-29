@@ -74,6 +74,25 @@ const PALETTE = {
 
 export const banners: readonly BannerSpec[] = [
   {
+    slug: 'model-hardware-standard',
+    copy: {
+      en: {
+        kicker: 'MHS · Research preview',
+        title: ['One driver', 'surface, not MCP'],
+        meta: '27 Aug 2026 · read/write · model-agnostic',
+        alt: 'Model Hardware Standard banner — one driver surface, not MCP.',
+      },
+      es: {
+        kicker: 'MHS · Research preview',
+        title: ['Una superficie', 'de driver, no MCP'],
+        meta: '27 ago 2026 · read/write · model-agnostic',
+        alt: 'Banner del Model Hardware Standard — una superficie de driver, no MCP.',
+      },
+    },
+    art: 'standard-bus',
+    ...PALETTE.ai,
+  },
+  {
     slug: 'chandra-ocr',
     copy: {
       en: {
@@ -224,5 +243,24 @@ export const banners: readonly BannerSpec[] = [
     },
     art: 'shipped-stack',
     ...PALETTE.archive,
+  },
+  {
+    slug: 'codex-security',
+    copy: {
+      en: {
+        kicker: 'AppSec · Benchmarks',
+        title: ['The number they', 'did not publish'],
+        meta: '92% recall · precision unreported',
+        alt: 'Codex Security banner — the number they did not publish.',
+      },
+      es: {
+        kicker: 'AppSec · Benchmarks',
+        title: ['El número que', 'no publicaron'],
+        meta: '92% de recall · precisión sin reportar',
+        alt: 'Banner de Codex Security — el número que no publicaron.',
+      },
+    },
+    art: 'unmeasured-half',
+    ...PALETTE.warning,
   },
 ]

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Banner de Codex Security — el número que no publicaron.">
+  <defs>
+    <linearGradient id="bg-codex-security-es" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#3B1E1E"/>
+    </linearGradient>
+    <radialGradient id="glow-codex-security-es" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#DC2626" stop-opacity="0.22000000000000003"/>
+      <stop offset="100%" stop-color="#DC2626" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="lift-codex-security-es" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#DC2626" flood-opacity="0.275"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg-codex-security-es)"/>
+  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-codex-security-es)"/>
+<g filter="url(#lift-codex-security-es)">
+    <rect x="700" y="150" width="286" height="286" rx="16" fill="none" stroke="#94A3B8" stroke-width="2.5" opacity="0.4"/>
+    <rect x="724" y="184" width="238" height="12" rx="6" fill="#94A3B8" opacity="0.24"/><rect x="724" y="236" width="168" height="12" rx="6" fill="#DC2626" opacity="0.7"/><rect x="724" y="288" width="238" height="12" rx="6" fill="#94A3B8" opacity="0.24"/><rect x="724" y="340" width="194" height="12" rx="6" fill="#94A3B8" opacity="0.24"/><rect x="724" y="392" width="238" height="12" rx="6" fill="#94A3B8" opacity="0.24"/>
+    <g transform="translate(910 230) scale(1.0833333333333333)" opacity="0.95" fill="none" stroke="#DC2626" stroke-width="1.57" stroke-linecap="round" stroke-linejoin="round"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M20 6L9 17l-5-5"/></g>
+    <circle cx="1064" cy="222" r="50" fill="#DC2626" opacity="0.16"/>
+    <circle cx="1064" cy="222" r="50" fill="none" stroke="#DC2626" stroke-width="3"/>
+    <g transform="translate(1040 198) scale(2)" opacity="0.95" fill="none" stroke="#DC2626" stroke-width="0.85" stroke-linecap="round" stroke-linejoin="round"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></g>
+    <circle cx="1064" cy="372" r="50" fill="none" stroke="#DC2626" stroke-width="3" stroke-dasharray="9 10" opacity="0.45"/>
+    <g transform="translate(1040 348) scale(2)" opacity="0.3" fill="none" stroke="#DC2626" stroke-width="0.85" stroke-linecap="round" stroke-linejoin="round"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"><path d="m21 21l-4.34-4.34"/><circle cx="11" cy="11" r="8"/></g></g></g>
+  <rect x="96" y="150" width="76" height="4" rx="2" fill="#DC2626"/>
+  <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#DC2626">APPSEC · BENCHMARKS</text>
+  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#F8FAFC">El número que</text>
+  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="#94A3B8">no publicaron</text>
+  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">92% de recall · precisión sin reportar</text>
+</svg>

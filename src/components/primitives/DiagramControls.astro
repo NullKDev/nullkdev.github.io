@@ -1,0 +1,46 @@
+---
+// Toolbar for the diagram viewer, cloned per diagram by
+// `src/lib/diagram-viewer.ts`.
+//
+// It lives in the markup rather than in the script so its marks come from the
+// icon registry and its labels from the locale dictionary. A toolbar assembled
+// in the browser would have neither, and would ship Unicode glyphs that a
+// screen reader reads aloud.
+import Icon from '@/components/primitives/Icon.astro'
+import { getDictionary, type Locale } from '@/i18n'
+
+interface Props {
+  locale: Locale
+}
+const { locale } = Astro.props
+const dictionary = getDictionary(locale)
+
+const buttons = [
+  { action: 'out', icon: 'minus', label: dictionary.archive.zoomOut },
+  { action: 'in', icon: 'plus', label: dictionary.archive.zoomIn },
+  { action: 'fit', icon: 'fitWidth', label: dictionary.archive.zoomReset },
+] as const
+---
+
+<template data-diagram-controls>
+  <div
+    class="diagram__bar"
+    role="group"
+    aria-label={dictionary.archive.diagram}
+  >
+    {
+      buttons.map(({ action, icon, label }) => (
+        <button
+          type="button"
+          class="diagram__button"
+          data-zoom={action}
+          aria-label={label}
+          title={label}
+        >
+          <Icon name={icon} size={16} />
+        </button>
+      ))
+    }
+    <span class="diagram__readout" data-zoom-readout></span>
+  </div>
+</template>

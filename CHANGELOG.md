@@ -51,6 +51,83 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ## [Unreleased]
 
+### Cambiado
+
+- Las tablas de los posts se renderizaban con el estilo por defecto del
+  navegador: sin padding, columnas pegadas y ocupando la mitad del ancho de la
+  columna de texto. Ahora hay estilo propio, y un plugin de build las envuelve
+  en un contenedor que scrollea solo —así una tabla ancha no manda de costado a
+  toda la página— y detecta las columnas numéricas para pasarlas a mono con
+  cifras tabulares alineadas a la derecha, encabezado incluido. La alineación se
+  decide por columna y no por celda: marcada celda por celda, el encabezado
+  queda a la izquierda y deja de rotular lo que tiene debajo. Aplica a todo el
+  archivo, incluidos los posts escritos antes.
+- Los diagramas de mermaid quedan desactivados por ahora. Se dibujan con los
+  tokens del sitio y hay un visor compartido con zoom, teclado y área táctil de
+  44px, pero el tamaño que produce el motor de layout no entra bien en una
+  columna de lectura: cada arreglo cambiaba un alto excesivo por un ancho
+  excesivo. La fuente de cada diagrama queda comentada en su lugar y el detalle
+  de lo medido está en el issue #24, así que retomarlo es descomentar un bloque,
+  no reinvestigar.
+
+### Agregado
+
+- Nota nueva sobre Codex Security, el escáner de vulnerabilidades que OpenAI
+  liberó bajo Apache 2.0: el 92% que se publicó es recall, y la precisión —la
+  métrica que decide si los hallazgos son usables— nunca se reportó. Se contrasta
+  con los benchmarks independientes RealVuln y el de LLM de frontera, que miden
+  justamente eso. Incluye un subpost operativo sobre integrarlo a CI: códigos de
+  salida, política de severidad, techo de costo y el directorio de salida, que
+  contiene fragmentos de código fuente y no debe quedar dentro del repositorio.
+  Trae un motivo de banner nuevo, `unmeasured-half`, para el sujeto de una
+  medición publicada a la mitad. La comparación de precisión se dibuja con un
+  componente nuevo, `BenchmarkBars`, que codifica el valor como longitud para
+  que la brecha se vea antes de leer las cifras, sin dejar de ser una tabla real
+  para un lector de pantalla.
+- La nota de Android 17 estable pasa de cuatro cambios que rompen en targetSdk 37
+  a ocho, verificados contra la documentación oficial: se suman el audio en
+  background —que exige un foreground service con capacidades while-in-use, no
+  `MediaSessionService` como suele repetirse—, la reflection sobre la plataforma
+  (`static final` y el `MessageQueue` sin locks, cuyo `mMessages` ahora siempre
+  es null y rompe Espresso y Robolectric), la retención de tres horas de los SMS
+  con OTP y el angostamiento de contactos. Se agrega además el GC generacional de
+  ART, que es el único de la tanda que llega sin subir targetSdk. El título decía
+  «cuatro» y contaba mal, así que ahora nombra el criterio en vez de la cantidad.
+- Nota nueva sobre el Model Hardware Standard, el estándar de hardware que
+  Anthropic abrió en research preview el 27 de agosto. Corrige el encuadre que
+  se repitió en toda la cobertura —«MCP para hardware»—: el anuncio dice que MHS
+  es model-agnostic y que MCP es una de tres vías de acceso, junto a una CLI y a
+  code file APIs, así que no está construido sobre MCP ni compromete con el
+  stack de Anthropic. Separa lo anunciado de la extrapolación: los partners son
+  laboratorios e instrumentos, y SCADA, PLC y MES no aparecen en ninguna parte.
+  Toma como evidencia los números de QuEra —58% a 99.3% de éxito en recuperación
+  de láser, 150 s a 0.9–14 s— en lugar del rango de integración, cuyos propios
+  casos de respaldo tardaron ocho horas y una semana. Deja explícito que es un
+  preview cerrado, que el sitio del estándar no publica la especificación y que
+  el open source todavía no tiene fecha. Trae un motivo de banner nuevo,
+  `standard-bus`, para el sujeto de N traductores a medida colapsados en una
+  superficie, y una marca nueva en el registro de iconos, `device`, para el
+  instrumento programable del otro lado del driver. Queda en `featuredRank: 1` y
+  el resto del archivo de notas corre un lugar.
+
+### Corregido
+
+- El topic `ai` se usaba en las notas pero solo existía como dominio, no como
+  topic, así que `getTopicLabel` caía al fallback y lo rotulaba «Ai» en los dos
+  idiomas en vez de «AI» e «IA». Se agrega a `taxonomy.topics`, con lo que la
+  nota de Chandra OCR queda bien rotulada también.
+
+### Seguridad
+
+- Se cierran cinco advisories high en dependencias transitivas
+  (`brace-expansion`, `nanoid`, `js-yaml`). Los parches ya estaban dentro del
+  rango que permiten sus paquetes padre; el lockfile había quedado rancio, y por
+  eso `bun update` no reportaba nada mientras el árbol seguía en las versiones
+  vulnerables. Volver a resolverlo alcanza: `package.json` no se toca y ninguna
+  dependencia directa cambia de major. Esto además destraba el despliegue —
+  `build` depende de `[verify, audit, e2e]`, así que un `audit` en rojo venía
+  saltándose el deploy de Pages desde el 30 de julio.
+
 ## [0.3.0] — 2026-07-30
 
 ### Corregido

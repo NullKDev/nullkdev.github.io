@@ -5,6 +5,7 @@ import sitemap from '@astrojs/sitemap'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'astro/config'
 import mermaid from 'astro-mermaid'
+import hastTables from './scripts/hast-tables.mjs'
 import {
   createReadStream,
   existsSync,
@@ -93,7 +94,20 @@ export default defineConfig({
       enableLog: false,
       mermaidConfig: {
         fontFamily: 'Switzer, ui-sans-serif, system-ui, sans-serif',
-        flowchart: { curve: 'basis' },
+        flowchart: {
+          curve: 'basis',
+          // Mermaid's 50px default leaves a diagram mostly empty space, which
+          // is what made a five-node flow 829px tall. Tighter ranks keep the
+          // same drawing inside the viewer without scrolling it.
+          rankSpacing: 36,
+          nodeSpacing: 36,
+          // Mermaid otherwise caps the SVG at its intrinsic width and scales the
+          // whole drawing down to fit narrow screens — at 390px that took a
+          // 651px diagram to 47%, and 12px labels with it. Sizing is handled in
+          // the viewer instead, which zooms on request and scrolls otherwise,
+          // so type never falls below what it was drawn at.
+          useMaxWidth: false,
+        },
       },
     }),
     react(),
@@ -115,6 +129,23 @@ export default defineConfig({
     routing: { prefixDefaultLocale: false },
   },
   markdown: {
+    /* Wraps every table in its own scroll container and marks numeric columns,
+       neither of which markdown table syntax can express. See the module.
+
+       This option is deprecated in Astro 7, and the replacements were both
+       measured against it rather than assumed:
+
+       - `processor: satteri({ hastPlugins })` is the native path and silences
+         the warning, but Sätteri only renders `.md`. MDX keeps its own unified
+         pipeline, so every `.mdx` entry silently lost the treatment — verified
+         as 0 wrappers on a page that had 2.
+       - `mdx({ rehypePlugins })` is deprecated as well and did not apply.
+
+       Reaching a clean log would mean moving the whole site onto the unified
+       processor: a different renderer for 168 pages in exchange for one table
+       fix. The deprecated option works on both `.md` and `.mdx` today, so it
+       stays until the Sätteri and MDX pipelines converge. */
+    rehypePlugins: [hastTables],
     shikiConfig: {
       themes: {
         light: 'github-light',
