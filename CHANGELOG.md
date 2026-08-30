@@ -51,24 +51,7 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ## [Unreleased]
 
-### Cambiado
-
-- Las tablas de los posts se renderizaban con el estilo por defecto del
-  navegador: sin padding, columnas pegadas y ocupando la mitad del ancho de la
-  columna de texto. Ahora hay estilo propio, y un plugin de build las envuelve
-  en un contenedor que scrollea solo —así una tabla ancha no manda de costado a
-  toda la página— y detecta las columnas numéricas para pasarlas a mono con
-  cifras tabulares alineadas a la derecha, encabezado incluido. La alineación se
-  decide por columna y no por celda: marcada celda por celda, el encabezado
-  queda a la izquierda y deja de rotular lo que tiene debajo. Aplica a todo el
-  archivo, incluidos los posts escritos antes.
-- Los diagramas de mermaid quedan desactivados por ahora. Se dibujan con los
-  tokens del sitio y hay un visor compartido con zoom, teclado y área táctil de
-  44px, pero el tamaño que produce el motor de layout no entra bien en una
-  columna de lectura: cada arreglo cambiaba un alto excesivo por un ancho
-  excesivo. La fuente de cada diagrama queda comentada en su lugar y el detalle
-  de lo medido está en el issue #24, así que retomarlo es descomentar un bloque,
-  no reinvestigar.
+## [0.4.0] — 2026-08-30
 
 ### Agregado
 
@@ -116,6 +99,25 @@ este repo usa de verdad — no las genéricas del estándar.
   topic, así que `getTopicLabel` caía al fallback y lo rotulaba «Ai» en los dos
   idiomas en vez de «AI» e «IA». Se agrega a `taxonomy.topics`, con lo que la
   nota de Chandra OCR queda bien rotulada también.
+
+### Cambiado
+
+- Las tablas de los posts se renderizaban con el estilo por defecto del
+  navegador: sin padding, columnas pegadas y ocupando la mitad del ancho de la
+  columna de texto. Ahora hay estilo propio, y un plugin de build las envuelve
+  en un contenedor que scrollea solo —así una tabla ancha no manda de costado a
+  toda la página— y detecta las columnas numéricas para pasarlas a mono con
+  cifras tabulares alineadas a la derecha, encabezado incluido. La alineación se
+  decide por columna y no por celda: marcada celda por celda, el encabezado
+  queda a la izquierda y deja de rotular lo que tiene debajo. Aplica a todo el
+  archivo, incluidos los posts escritos antes.
+- Los diagramas de mermaid quedan desactivados por ahora. Se dibujan con los
+  tokens del sitio y hay un visor compartido con zoom, teclado y área táctil de
+  44px, pero el tamaño que produce el motor de layout no entra bien en una
+  columna de lectura: cada arreglo cambiaba un alto excesivo por un ancho
+  excesivo. La fuente de cada diagrama queda comentada en su lugar y el detalle
+  de lo medido está en el issue #24, así que retomarlo es descomentar un bloque,
+  no reinvestigar.
 
 ### Seguridad
 
