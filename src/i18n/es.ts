@@ -22,8 +22,7 @@ export const es = {
     skip: 'Saltar al contenido',
     language: 'Ver en inglés',
     theme: 'Cambiar tema de color',
-    themeToDark: 'Cambiar al tema oscuro',
-    themeToLight: 'Cambiar al tema claro',
+    themeDark: 'Tema oscuro',
   },
   home: {
     eyebrow: 'Desarrollador de software · Lima, Perú',
@@ -118,6 +117,8 @@ export const es = {
     read: 'Leída',
     revised: 'Revisada desde que la leíste',
     jumpTo: 'Filtro',
+    searchError:
+      'No se pudo cargar la búsqueda. Los filtros por tipo y tema siguen funcionando.',
     pagination: 'Paginación',
     filter: 'Filtrar por tipo',
   },
@@ -133,7 +134,7 @@ export const es = {
     rights: 'Derechos',
     provenance: 'Procedencia',
     prompt: 'Prompt',
-    seed: 'Seed',
+    seed: 'Semilla {seed}',
     collection: 'colección',
     collections: 'colecciones',
     page: 'página',

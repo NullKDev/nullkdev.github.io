@@ -19,146 +19,11 @@ const accents = [
   { name: 'Amber', value: '#e8a85a' },
   { name: 'Rose', value: '#ec5a86' },
 ]
----
 
-{
-  import.meta.env.DEV && (
-    <div class="dp-root">
-      <button
-        class="dp-tab"
-        type="button"
-        data-dp-open
-        aria-label="Open design tuner"
-        aria-haspopup="dialog"
-      >
-        <span aria-hidden="true">◐</span>
-        <span class="dp-tab-text">design</span>
-      </button>
-
-      <dialog class="dp-drawer" data-dp aria-label="Design tuner">
-        <header class="dp-head">
-          <strong>Design tuner</strong>
-          <span class="dp-badge">dev only</span>
-          <button
-            class="dp-x"
-            type="button"
-            data-dp-close
-            aria-label="Close design tuner"
-          >
-            ×
-          </button>
-        </header>
-
-        <div class="dp-body">
-          <section class="dp-group">
-            <p class="dp-legend">Typography &amp; layout</p>
-
-            <label class="dp-field">
-              <span class="dp-field-head">
-                Text size <output data-dp-out="--ui-scale">1.00</output>
-              </span>
-              <input
-                type="range"
-                data-dp-var="--ui-scale"
-                min="0.85"
-                max="1.2"
-                step="0.01"
-                value="1"
-              />
-            </label>
-
-            <label class="dp-field">
-              <span class="dp-field-head">
-                Heading emphasis{' '}
-                <output data-dp-out="--display-mult">1.00</output>
-              </span>
-              <input
-                type="range"
-                data-dp-var="--display-mult"
-                min="0.8"
-                max="1.25"
-                step="0.01"
-                value="1"
-              />
-            </label>
-
-            <label class="dp-field">
-              <span class="dp-field-head">
-                Density <output data-dp-out="--density">1.00</output>
-              </span>
-              <input
-                type="range"
-                data-dp-var="--density"
-                min="0.75"
-                max="1.25"
-                step="0.01"
-                value="1"
-              />
-            </label>
-
-            <label class="dp-field">
-              <span class="dp-field-head">
-                Corner radius{' '}
-                <output data-dp-out="--radius-lg" data-dp-unit="px">
-                  8
-                </output>
-              </span>
-              <input
-                type="range"
-                data-dp-var="--radius-lg"
-                data-dp-unit="px"
-                min="0"
-                max="20"
-                step="1"
-                value="8"
-              />
-            </label>
-          </section>
-
-          <section class="dp-group">
-            <p class="dp-legend">Accent</p>
-            <div class="dp-swatches">
-              {accents.map((accent) => (
-                <button
-                  class="dp-swatch"
-                  type="button"
-                  data-dp-accent={accent.value}
-                  style={`--sw:${accent.value}`}
-                  aria-label={accent.name}
-                  title={accent.name}
-                />
-              ))}
-            </div>
-            <label class="dp-field dp-field-inline">
-              <span class="dp-field-head">Custom</span>
-              <input type="color" data-dp-accent-input value="#ee7954" />
-            </label>
-          </section>
-
-          <section class="dp-group">
-            <p class="dp-legend">Effects</p>
-            <label class="dp-toggle">
-              <input type="checkbox" data-dp-fx="glass" checked />
-              <span>Glass blur</span>
-            </label>
-            <label class="dp-toggle">
-              <input type="checkbox" data-dp-fx="motion" checked />
-              <span>Motion</span>
-            </label>
-          </section>
-        </div>
-
-        <footer class="dp-foot">
-          <button class="dp-reset" type="button" data-dp-reset>
-            Reset to defaults
-          </button>
-        </footer>
-      </dialog>
-    </div>
-  )
-}
-
-<style>
+/* Inline and inside the DEV gate, so none of the tuner's styles reach the
+   production stylesheet the way a component style block would. Kept as a
+   string because CSS braces inside a template expression parse as code. */
+const styles = `
   .dp-tab {
     position: fixed;
     z-index: 90;
@@ -360,9 +225,6 @@ const accents = [
     border-color: var(--accent);
     color: var(--accent);
   }
-</style>
-
-<style is:global>
   /* Effect toggles driven by the dev tuner. */
   :root[data-fx-motion='off'] *,
   :root[data-fx-motion='off'] *::before,
@@ -371,7 +233,148 @@ const accents = [
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
-</style>
+`
+---
+
+{
+  import.meta.env.DEV && (
+    <>
+      <style is:inline set:html={styles} />
+      <div class="dp-root">
+        <button
+          class="dp-tab"
+          type="button"
+          data-dp-open
+          aria-label="Open design tuner"
+          aria-haspopup="dialog"
+        >
+          <span aria-hidden="true">◐</span>
+          <span class="dp-tab-text">design</span>
+        </button>
+
+        <dialog class="dp-drawer" data-dp aria-label="Design tuner">
+          <header class="dp-head">
+            <strong>Design tuner</strong>
+            <span class="dp-badge">dev only</span>
+            <button
+              class="dp-x"
+              type="button"
+              data-dp-close
+              aria-label="Close design tuner"
+            >
+              ×
+            </button>
+          </header>
+
+          <div class="dp-body">
+            <section class="dp-group">
+              <p class="dp-legend">Typography &amp; layout</p>
+
+              <label class="dp-field">
+                <span class="dp-field-head">
+                  Text size <output data-dp-out="--ui-scale">1.00</output>
+                </span>
+                <input
+                  type="range"
+                  data-dp-var="--ui-scale"
+                  min="0.85"
+                  max="1.2"
+                  step="0.01"
+                  value="1"
+                />
+              </label>
+
+              <label class="dp-field">
+                <span class="dp-field-head">
+                  Heading emphasis{' '}
+                  <output data-dp-out="--display-mult">1.00</output>
+                </span>
+                <input
+                  type="range"
+                  data-dp-var="--display-mult"
+                  min="0.8"
+                  max="1.25"
+                  step="0.01"
+                  value="1"
+                />
+              </label>
+
+              <label class="dp-field">
+                <span class="dp-field-head">
+                  Density <output data-dp-out="--density">1.00</output>
+                </span>
+                <input
+                  type="range"
+                  data-dp-var="--density"
+                  min="0.75"
+                  max="1.25"
+                  step="0.01"
+                  value="1"
+                />
+              </label>
+
+              <label class="dp-field">
+                <span class="dp-field-head">
+                  Corner radius{' '}
+                  <output data-dp-out="--radius-lg" data-dp-unit="px">
+                    8
+                  </output>
+                </span>
+                <input
+                  type="range"
+                  data-dp-var="--radius-lg"
+                  data-dp-unit="px"
+                  min="0"
+                  max="20"
+                  step="1"
+                  value="8"
+                />
+              </label>
+            </section>
+
+            <section class="dp-group">
+              <p class="dp-legend">Accent</p>
+              <div class="dp-swatches">
+                {accents.map((accent) => (
+                  <button
+                    class="dp-swatch"
+                    type="button"
+                    data-dp-accent={accent.value}
+                    style={`--sw:${accent.value}`}
+                    aria-label={accent.name}
+                    title={accent.name}
+                  />
+                ))}
+              </div>
+              <label class="dp-field dp-field-inline">
+                <span class="dp-field-head">Custom</span>
+                <input type="color" data-dp-accent-input value="#ee7954" />
+              </label>
+            </section>
+
+            <section class="dp-group">
+              <p class="dp-legend">Effects</p>
+              <label class="dp-toggle">
+                <input type="checkbox" data-dp-fx="glass" checked />
+                <span>Glass blur</span>
+              </label>
+              <label class="dp-toggle">
+                <input type="checkbox" data-dp-fx="motion" checked />
+                <span>Motion</span>
+              </label>
+            </section>
+          </div>
+
+          <footer class="dp-foot">
+            <button class="dp-reset" type="button" data-dp-reset>
+              Reset to defaults
+            </button>
+          </footer>
+        </dialog>
+      </div>
+    </>
+  )
+}
 
 <script>
   const STORAGE_KEY = 'nullkdev-design-tune'
@@ -386,7 +389,9 @@ const accents = [
   const drawer = document.querySelector<HTMLDialogElement>('[data-dp]')
   const openButton = document.querySelector<HTMLButtonElement>('[data-dp-open]')
 
-  if (drawer && openButton) {
+  // The markup only exists in dev; gating on the same constant lets the
+  // production build drop the tuner's code instead of shipping it inert.
+  if (import.meta.env.DEV && drawer && openButton) {
     const ranges = [
       ...document.querySelectorAll<HTMLInputElement>('input[data-dp-var]'),
     ]

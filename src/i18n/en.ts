@@ -20,8 +20,7 @@ export const en = {
     skip: 'Skip to content',
     language: 'View in Spanish',
     theme: 'Change color theme',
-    themeToDark: 'Switch to dark theme',
-    themeToLight: 'Switch to light theme',
+    themeDark: 'Dark theme',
   },
   home: {
     eyebrow: 'Software developer · Lima, Perú',
@@ -116,6 +115,8 @@ export const en = {
     read: 'Read',
     revised: 'Revised since you read it',
     jumpTo: 'Filter',
+    searchError:
+      'Search could not load. The type and topic filters below still work.',
     pagination: 'Pagination',
     filter: 'Filter by type',
   },
@@ -131,7 +132,7 @@ export const en = {
     rights: 'Rights',
     provenance: 'Provenance',
     prompt: 'Prompt',
-    seed: 'Seed',
+    seed: 'Seed {seed}',
     collection: 'collection',
     collections: 'collections',
     page: 'page',

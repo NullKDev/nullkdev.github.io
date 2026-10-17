@@ -14,9 +14,11 @@ const { locale, pathname, counterpartPath } = Astro.props
 const dictionary = getDictionary(locale)
 const otherLocale = locale === 'en' ? 'es' : 'en'
 const sections = ['work', 'lab', 'notes', 'gallery', 'about'] as const
-const currentSection = sections.find((section) =>
-  pathname.includes(`/${section}`),
-)
+/* Matched on a whole path segment: a substring test would mark Work current
+   on any URL that merely contains "/work", such as a slug beginning with it. */
+const segments = pathname.split('/').filter(Boolean)
+const firstSegment = segments[0] === 'es' ? segments[1] : segments[0]
+const currentSection = sections.find((section) => section === firstSegment)
 const localeFallback = getLocalizedPath(
   currentSection ? `/${currentSection}/` : '/',
   otherLocale,
@@ -37,7 +39,7 @@ const localeFallback = getLocalizedPath(
       sections.map((section) => (
         <a
           href={getLocalizedPath(`/${section}`, locale)}
-          aria-current={pathname.includes(`/${section}`) ? 'page' : undefined}
+          aria-current={currentSection === section ? 'page' : undefined}
         >
           {dictionary.nav[section]}
         </a>
@@ -49,10 +51,8 @@ const localeFallback = getLocalizedPath(
       class="icon-control"
       type="button"
       data-theme-toggle
-      aria-label={dictionary.nav.themeToDark}
+      aria-label={dictionary.nav.themeDark}
       aria-pressed="false"
-      data-label-light={dictionary.nav.themeToLight}
-      data-label-dark={dictionary.nav.themeToDark}
       ><span
         class="theme-icon-light"
         aria-hidden="true"
@@ -102,7 +102,7 @@ const localeFallback = getLocalizedPath(
       sections.map((section) => (
         <a
           href={getLocalizedPath(`/${section}`, locale)}
-          aria-current={pathname.includes(`/${section}`) ? 'page' : undefined}
+          aria-current={currentSection === section ? 'page' : undefined}
         >
           {dictionary.nav[section]}
         </a>
@@ -141,16 +141,13 @@ const localeFallback = getLocalizedPath(
   const themeButton = document.querySelector<HTMLButtonElement>(
     '[data-theme-toggle]',
   )
+  // A toggle button: the label names the setting ("Dark theme") and never
+  // changes; `aria-pressed` alone carries whether it is on. Swapping the label
+  // as well announced the state twice, once as the opposite of the other.
   const syncThemeButton = () => {
     if (!themeButton) return
     const dark = document.documentElement.dataset.theme === 'dark'
     themeButton.setAttribute('aria-pressed', String(dark))
-    themeButton.setAttribute(
-      'aria-label',
-      dark
-        ? (themeButton.dataset.labelLight ?? '')
-        : (themeButton.dataset.labelDark ?? ''),
-    )
   }
   if (themeButton) {
     syncThemeButton()

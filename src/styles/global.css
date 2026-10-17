@@ -1,4 +1,9 @@
 @import 'tailwindcss';
+
+/* `dark:` utilities follow the site's own theme switch, not the OS: the
+   toggle writes `data-theme` on <html>, and a reader who picked light on a
+   dark-mode system must not get dark-variant styles. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 @font-face {
   font-family: 'Switzer';
   src: url('/fonts/switzer-variable.woff2') format('woff2');
@@ -1033,6 +1038,33 @@ main {
   }
   .stack-list a span:first-of-type {
     grid-column: 1;
+  }
+}
+
+/* Without scripting the drawer and the theme toggle cannot work, so they are
+   not offered at all — something that looks actionable has to be. The plain
+   section links are the navigation instead, wrapping onto their own row on a
+   narrow screen rather than disappearing behind a button that does nothing. */
+@media (scripting: none) {
+  .menu-control,
+  [data-theme-toggle] {
+    display: none;
+  }
+
+  .desktop-nav {
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 0.25rem;
+  }
+}
+
+@media (scripting: none) and (max-width: 760px) {
+  .desktop-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: flex-start;
+    column-gap: 1.25rem;
+    padding-bottom: 0.5rem;
   }
 }
 

@@ -66,6 +66,8 @@ const registry = {
   shield: 'lucide:shield',
 
   archive: 'lucide:archive',
+  // Marks a featured record; always beside the word it stands for.
+  star: 'lucide:star',
   search: 'lucide:search',
   feed: 'lucide:rss',
 

@@ -1567,6 +1567,10 @@
   font-size: 0.72rem;
   line-height: 1;
 }
+/* Filled, as the glyph it replaces was: a featured star is a solid badge. */
+.wc-featured__mark svg {
+  fill: currentColor;
+}
 .wc-title-row {
   display: flex;
   flex-wrap: wrap;
@@ -5009,7 +5013,13 @@ html[data-js='true'] .lab-nojs-fallback {
   background: var(--surface);
   padding: 0.6rem;
 }
-.gallery-sheet__contact img:first-child {
+/* `astro:assets` wraps each thumbnail in a picture element; letting it
+   dissolve keeps the image itself as the grid item. */
+.gallery-sheet__contact picture {
+  display: contents;
+}
+.gallery-sheet__contact > img:first-child,
+.gallery-sheet__contact > picture:first-child img {
   grid-row: span 2;
   padding: 1rem;
 }
@@ -5127,6 +5137,9 @@ html[data-js='true'] .lab-nojs-fallback {
   width: 100%;
   height: 100%;
   cursor: zoom-in;
+}
+.gallery-piece__open picture {
+  display: contents;
 }
 .gallery-piece__open img,
 .gallery-piece__open video {
