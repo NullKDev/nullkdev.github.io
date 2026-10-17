@@ -288,8 +288,11 @@
    Home — the archive grouped by section: each area keeps its own
    identity accent, shows up to three compact cards, and links out.
    ================================================================ */
+/* `minmax(0, 1fr)`, not the implicit `auto` column: an auto track grows to
+   its content's minimum, and a card shelf's minimum is three cards wide. */
 .home-sections {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: clamp(2.75rem, 5vw, 4.5rem);
   margin-bottom: clamp(4rem, 8vw, 6.5rem);
 }
@@ -351,10 +354,15 @@
   --domain: var(--domain-gallery);
 }
 
+/* Three cards of at most 20.5rem, left-aligned. The cap sits on the shelf,
+   not the track: with a fixed 20.5rem maximum the track count was decided at
+   the maximum, so a 1024px tablet fitted two cards and left a third of the
+   row empty. Flexible tracks are counted at their minimum instead, and 16.5rem
+   keeps an 820px tablet at two roomy cards rather than three cramped ones. */
 .home-domain-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15.5rem, 20.5rem));
-  justify-content: start;
+  grid-template-columns: repeat(auto-fill, minmax(16.5rem, 1fr));
+  max-width: calc(3 * 20.5rem + 2 * 1rem);
   gap: 1rem;
 }
 

@@ -846,6 +846,13 @@ html:has(.lightbox[open]) {
 .heading-anchor:focus-visible {
   opacity: 1;
 }
+/* A touch screen has no hover to reveal it, and a tap on an invisible mark is
+   a surprise: there it stays visible, in the muted ink it already has. */
+@media (hover: none) {
+  .heading-anchor {
+    opacity: 1;
+  }
+}
 .heading-anchor:hover {
   color: var(--accent);
 }

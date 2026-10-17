@@ -219,6 +219,16 @@ este repo usa de verdad — no las genéricas del estándar.
 - En `astro dev`, la CSP ya no bloquea los scripts que inician las islas de
   React, así que las herramientas del Lab y las demos funcionan al
   desarrollar. La política publicada no cambia.
+- Ajustes de diseño adaptable encontrados al recorrer cada tipo de página en
+  móvil, tablet y escritorio, en los dos temas
+  (`tests/e2e/responsive.spec.ts`). En pantallas táctiles, el enlace propio de
+  cada encabezado de sección queda visible: antes solo aparecía al pasar el
+  mouse, así que en el teléfono era un objetivo táctil invisible. En el índice
+  de notas, los temas que pasan a una segunda línea ya no superponen sus áreas
+  táctiles con los de la línea anterior. En la portada, los estantes de
+  tarjetas usan el ancho disponible en tablet: a 1024 px caben tres tarjetas en
+  lugar de dos con un tercio de la fila vacío, y a 820 px quedan dos tarjetas
+  holgadas.
 
 ### Rendimiento
 
