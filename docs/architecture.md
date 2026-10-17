@@ -77,7 +77,7 @@ derive the same value, it belongs here.
 | `structured-data.ts` | Every page's schema.org JSON-LD: `Article`/`TechArticle` for entries and subposts (with author and banner image), `CollectionPage`, `WebPage`, `WebSite`, `Person` |
 | `entry-enhancements.ts` · `diagram-viewer.ts` | Browser-side reading tools for long-form pages, mounted once through `mountEntryEnhancements()` |
 | `about.ts` | Career derivation — years of practice from `careerStart`, position periods and durations. **No figure on the About page is typed by hand** |
-| `gallery.ts` | `isMedia` / `isFile` type guards — `Array.filter` does not narrow a discriminated union |
+| `gallery.ts` | `isMedia` / `isFile` type guards (`Array.filter` does not narrow a discriminated union); `summarizeGallery` sheets and totals for the index (read through `getGallerySheets` in `content.ts`); `resolveGalleryImage` maps an `items.yml` path to its imported raster so `astro:assets` can resize it |
 | `archive-routes.ts` · `rss.ts` · `protection/` | Path building, feed ordering, and the encrypted-content pipeline |
 
 ### Build scripts — `scripts/`
@@ -87,7 +87,7 @@ Registered in `package.json` and chained into `bun run build`.
 | Script | Does |
 |---|---|
 | `gallery:scan` | Appends `items.yml` stubs for new assets with machine-known facts (size, format, dimensions, `lqip`); backfills placeholders |
-| `gallery:copy` | Publishes `src/content/gallery/*/assets/` to `dist/gallery/<collection>/` |
+| `gallery:copy` | Publishes `src/content/gallery/*/assets/` to `dist/gallery/<collection>/`. Pages display rasters through `astro:assets` (AVIF/WebP at several widths); the copy serves what links to the authored path — files, videos, vectors, an entry's `image` |
 | `private:generate` · `private:copy` · `private:scan` | Encrypted-content pipeline and leak scan |
 | `performance:check` | Per-route gzip budgets for total, JS, CSS, images, fonts |
 | `banners:build` · `banners:check` | Renders every banner from `src/data/banners.ts` into SVG + PNG; verifies all are 1200×630 |

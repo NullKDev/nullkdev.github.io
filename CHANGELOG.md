@@ -70,6 +70,27 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ### Corregido
 
+- Sin JavaScript, el encabezado ya no ofrece controles que no funcionan: el
+  botón de menú y el de tema se ocultan, y bajo 760 px los enlaces de sección
+  quedan visibles en su propia fila en lugar de esconderse detrás de un botón
+  inerte. La sección actual se reconoce por segmento de ruta, no por
+  subcadena. El botón de tema es un interruptor con nombre fijo ("Tema
+  oscuro") y `aria-pressed`; antes también cambiaba su nombre y anunciaba el
+  estado dos veces. Las utilidades `dark:` de Tailwind siguen el tema elegido
+  en el sitio (`data-theme`) y no el del sistema operativo.
+- La búsqueda de Notas maneja los errores: si el índice no carga, lo dice en
+  pantalla y lo anuncia, y el archivo sigue visible; se descarga una sola vez
+  aunque se escriba rápido, y una respuesta tardía ya no muestra resultados de
+  una búsqueda que se borró. Los resultados se anuncian en una región viva que
+  existe desde el inicio, y cada uno indica sus minutos de lectura con unidad.
+  Los enlaces "Más antiguas" y "Más recientes" de la paginación llevan la barra
+  final y ya no pasan por una redirección.
+- El visor de la Galería detiene el video al cerrarse y no cambia de pieza
+  cuando las flechas se usan en los controles del video; la semilla de una
+  imagen generada se muestra traducida. La marca de "Destacado" en las
+  tarjetas de Trabajo sale del registro de íconos en lugar de un carácter.
+- El panel de diseño de desarrollo ya no deja sus estilos ni su script en el
+  build de producción (unos 700 bytes gzip menos por página).
 - El logo, el selector de idioma y el botón de menú del encabezado anunciaban
   un nombre accesible que no contenía su texto visible ("Home" para el logo,
   "Open navigation" para un botón que dice "Menu"), lo que incumple WCAG 2.5.3
@@ -92,6 +113,16 @@ este repo usa de verdad — no las genéricas del estándar.
   retiene el foco, se cierra con Escape y devuelve el foco a la imagen que lo
   abrió. Siempre tiene nombre, aunque la imagen no tenga texto alternativo, y
   el botón de cerrar usa el ícono del registro con un área de 44 px.
+
+### Rendimiento
+
+- Las fotos de la Galería pasan por `astro:assets`: se sirven en AVIF y WebP a
+  varios anchos con `srcset`/`sizes` y con dimensiones intrínsecas, en lugar
+  del JPG original. El índice de la Galería baja de ~1,3 MB a ~33 KB de
+  imágenes en el peor caso, y el álbum de San Francisco de ~6,5 MB a ~0,9 MB.
+  El enlace de cada pieza y el visor abren una versión WebP de hasta 2048 px,
+  no el original de cámara. Las miniaturas del índice reservan su espacio, y
+  un video sin póster ya no se muestra como imagen rota.
 
 ### Cambiado
 

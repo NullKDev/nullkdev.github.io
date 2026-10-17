@@ -6,7 +6,12 @@ the parts (what to reach for when building).
 ## Tokens
 
 Defined in `src/styles/global.css` on `:root`, overridden on
-`:root[data-theme='dark']`. Never hardcode a colour in a component.
+`:root[data-theme='dark']`. Never hardcode a colour in a component. Tailwind's
+`dark:` variant is bound to the same attribute (`@custom-variant dark` at the top
+of `global.css`), so it follows the site toggle, never the OS preference.
+
+Controls that need JavaScript are hidden under `@media (scripting: none)`: the
+header drops its menu and theme buttons and shows the section links instead.
 
 | Token | Use |
 |---|---|

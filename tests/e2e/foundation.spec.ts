@@ -41,6 +41,52 @@ const settleTransitions = (page: Page) =>
     ).then(() => undefined),
   )
 
+/* Some requirements are about what must NOT happen over a stretch of time — a
+   clip that must not advance while paused, a model that must not be requested
+   again. A Playwright sleep followed by one sample proves only the last
+   instant. These watch the whole window inside the page instead: every
+   attribute mutation is recorded, every frame's `currentTime` is sampled. */
+const attributeChangesDuring = (
+  locator: ReturnType<Page['locator']>,
+  attribute: string,
+  windowMs: number,
+) =>
+  locator.evaluate(
+    (element, { attribute, windowMs }) =>
+      new Promise<string[]>((resolve) => {
+        const seen: string[] = []
+        const observer = new MutationObserver(() =>
+          seen.push(element.getAttribute(attribute) ?? ''),
+        )
+        observer.observe(element, { attributeFilter: [attribute] })
+        window.setTimeout(() => {
+          observer.disconnect()
+          resolve(seen)
+        }, windowMs)
+      }),
+    { attribute, windowMs },
+  )
+
+const currentTimesDuring = (
+  locator: ReturnType<Page['locator']>,
+  windowMs: number,
+) =>
+  locator.evaluate(
+    (element, windowMs) =>
+      new Promise<number[]>((resolve) => {
+        const media = element as HTMLElement & { currentTime: number }
+        const samples: number[] = []
+        const started = performance.now()
+        const sample = (now: number) => {
+          samples.push(media.currentTime)
+          if (now - started < windowMs) requestAnimationFrame(sample)
+          else resolve(samples)
+        }
+        requestAnimationFrame(sample)
+      }),
+    windowMs,
+  )
+
 test('home initializes and synchronizes theme, locale, fonts, and metadata', async ({
   page,
 }) => {
@@ -69,13 +115,13 @@ test('home initializes and synchronizes theme, locale, fonts, and metadata', asy
   expect(await (await page.request.get('/notes/')).text()).not.toContain(
     'wasm-unsafe-eval',
   )
-  const theme = page.getByRole('button', { name: 'Switch to dark theme' })
+  // A toggle button: one fixed name, and only `aria-pressed` changes.
+  const theme = page.getByRole('button', { name: 'Dark theme', exact: true })
   await expect(theme).toHaveAttribute('aria-pressed', 'false')
   await theme.click()
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
-  await expect(
-    page.getByRole('button', { name: 'Switch to light theme' }),
-  ).toHaveAttribute('aria-pressed', 'true')
+  await expect(theme).toHaveAttribute('aria-pressed', 'true')
+  await expect(theme).toHaveAccessibleName('Dark theme')
 
   await expect.poll(() => fontRequests.length).toBeGreaterThanOrEqual(2)
   expect(
@@ -254,14 +300,18 @@ test('Robot autostarts when persisted type scale makes the hero row taller', asy
     )
     .toBeGreaterThan(0)
 
+  // Each offset gets the same 400 ms it had as a fixed sleep, but as an upper
+  // bound: the step ends as soon as playback starts.
   let started = false
   for (const offset of [0, 30, 60, 90]) {
     await page.evaluate((y) => window.scrollTo(0, y), offset)
-    await page.waitForTimeout(400)
-    if ((await showcase.getAttribute('data-motion')) === 'playing') {
-      started = true
-      break
-    }
+    started = await expect(showcase)
+      .toHaveAttribute('data-motion', 'playing', { timeout: 400 })
+      .then(
+        () => true,
+        () => false,
+      )
+    if (started) break
   }
   expect(started).toBe(true)
 
@@ -299,7 +349,10 @@ test('Robot pauses clips and pending gaps outside strict activity conditions', a
   await expect(showcase).not.toHaveAttribute('data-gap-active', '')
   await expect(showcase).toHaveAttribute('data-motion', 'paused')
   const offscreenAnimation = await showcase.getAttribute('data-animation')
-  await page.waitForTimeout(1100)
+  // Not one clip change during the whole 1.1 s window, not just at its end.
+  expect(
+    await attributeChangesDuring(showcase, 'data-animation', 1100),
+  ).toEqual([])
   await expect(showcase).toHaveAttribute(
     'data-animation',
     offscreenAnimation ?? '',
@@ -332,13 +385,10 @@ test('Robot pauses clips and pending gaps outside strict activity conditions', a
   const hiddenTime = await viewer.evaluate(
     (element) => (element as HTMLElement & { currentTime: number }).currentTime,
   )
-  await page.waitForTimeout(700)
-  expect(
-    await viewer.evaluate(
-      (element) =>
-        (element as HTMLElement & { currentTime: number }).currentTime,
-    ),
-  ).toBeCloseTo(hiddenTime, 2)
+  // Every frame across 700 ms stays on the paused time.
+  for (const time of await currentTimesDuring(viewer, 700)) {
+    expect(time).toBeCloseTo(hiddenTime, 2)
+  }
   await expect(showcase).not.toHaveAttribute('data-gap-active', '')
 
   await page.evaluate(() => {
@@ -364,16 +414,7 @@ test('reduced motion still animates and context loss stops all work', async ({
   // Playback is gated on visibility and WebGL health only — the clip sequence
   // runs the same for every visitor. currentTime restarts at every clip, so
   // two point samples can coincide; sample a window and require movement.
-  const samples: number[] = []
-  for (let i = 0; i < 8; i += 1) {
-    samples.push(
-      await viewer.evaluate(
-        (element) =>
-          (element as HTMLElement & { currentTime: number }).currentTime,
-      ),
-    )
-    await page.waitForTimeout(150)
-  }
+  const samples = await currentTimesDuring(viewer, 1200)
   expect(new Set(samples.map((time) => time.toFixed(2))).size).toBeGreaterThan(
     1,
   )
@@ -405,7 +446,13 @@ test('load failure is honest, stable, and does not retry', async ({ page }) => {
   await expect(showcase).toHaveAttribute('data-motion', 'stopped')
   expect(modelRequests).toHaveLength(1)
   expect(modelRequests[0]).toContain('/models/RobotExpressive.glb')
-  await page.waitForTimeout(1200)
+  // No retry for the whole 1.2 s window: waiting for a second request must
+  // time out.
+  await expect(
+    page.waitForRequest((request) => request.url().endsWith('.glb'), {
+      timeout: 1200,
+    }),
+  ).rejects.toThrow()
   expect(modelRequests).toHaveLength(1)
   await expect(showcase).not.toHaveAttribute('data-gap-active', '')
   browserErrors.set(
@@ -566,7 +613,7 @@ test('@mobile drawer and 44px controls reset native dialog state', async ({
   for (const locator of [
     trigger,
     page.getByRole('link', { name: 'View in Spanish' }),
-    page.getByRole('button', { name: 'Switch to dark theme' }),
+    page.getByRole('button', { name: 'Dark theme', exact: true }),
   ]) {
     const box = await locator.boundingBox()
     expect(box?.width).toBeGreaterThanOrEqual(44)
@@ -829,4 +876,221 @@ test('primary and secondary routes remain accessible in both themes and locales'
     await settleTransitions(page)
     await expectNoAxeViolations(page)
   }
+})
+
+test('without JavaScript the header offers only controls that work', async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    javaScriptEnabled: false,
+    viewport: { width: 390, height: 844 },
+  })
+  const page = await context.newPage()
+  try {
+    await page.goto('/notes/')
+    await expect(page.locator('.menu-control')).toBeHidden()
+    await expect(page.locator('[data-theme-toggle]')).toBeHidden()
+
+    const nav = page.locator('.desktop-nav')
+    await expect(nav).toBeVisible()
+    for (const name of ['Work', 'Lab', 'Notes', 'Gallery', 'About']) {
+      await expect(nav.getByRole('link', { name, exact: true })).toBeVisible()
+    }
+    // Current section is matched on a path segment, so only Notes is marked.
+    await expect(nav.locator('a[aria-current="page"]')).toHaveText(['Notes'])
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      ),
+    ).toBe(true)
+  } finally {
+    await context.close()
+  }
+})
+
+test('notes search finds entries across the archive and announces the count', async ({
+  page,
+}) => {
+  const searchRequests: string[] = []
+  page.on('request', (request) => {
+    if (request.url().includes('notes-search.json'))
+      searchRequests.push(request.url())
+  })
+  await page.goto('/notes/')
+  const search = page.getByRole('searchbox', { name: 'Search notes' })
+  const results = page.locator('[data-notes-results]')
+  const status = page.locator('[data-notes-status]')
+  await expect(status).toHaveAttribute('role', 'status')
+  await expect(status).toBeAttached()
+
+  await search.fill('android')
+  await expect(results).toBeVisible()
+  await expect(page.locator('[data-notes-list] li').first()).toBeVisible()
+  await expect(status).toHaveText(
+    /^\d+ of \d+ entries across the whole archive\.$/,
+  )
+  await expect(
+    page.locator('[data-notes-list] .notes-results__meta').last(),
+  ).toHaveText(/ · \d+ min read$/)
+  await expect(page.locator('.notes-stream')).toBeHidden()
+
+  // A second query reuses the index already fetched.
+  await search.fill('compose')
+  await expect(status).toHaveText(/entries across the whole archive/)
+  expect(searchRequests).toHaveLength(1)
+
+  await search.fill('')
+  await expect(results).toBeHidden()
+  await expect(status).toHaveText('')
+  await expect(page.locator('.notes-stream')).toBeVisible()
+})
+
+test('notes search loads its index once and drops a stale slow response', async ({
+  page,
+}) => {
+  let release: () => void = () => undefined
+  const gate = new Promise<void>((resolve) => (release = resolve))
+  const searchRequests: string[] = []
+  await page.route('**/notes-search.json', async (route) => {
+    searchRequests.push(route.request().url())
+    await gate
+    await route.continue()
+  })
+  // The 120 ms debounce runs on a controlled clock, so each step below fires
+  // exactly when the test says rather than after a guessed sleep.
+  await page.clock.install()
+  await page.goto('/notes/')
+  const search = page.getByRole('searchbox', { name: 'Search notes' })
+  const results = page.locator('[data-notes-results]')
+
+  await search.fill('an')
+  await page.clock.runFor(200)
+  await expect.poll(() => searchRequests.length).toBe(1)
+  // A second debounce fires while the first request is still in flight.
+  await search.fill('android')
+  await page.clock.runFor(200)
+  // Then the field drops below two characters before the index arrives.
+  await search.fill('a')
+  await page.clock.resume()
+  const response = page.waitForResponse('**/notes-search.json')
+  release()
+  await response
+
+  // Nothing renders for a query that is no longer in the field, for the whole
+  // window in which the late index is parsed and handled.
+  expect(await attributeChangesDuring(results, 'hidden', 500)).toEqual([])
+  await expect(results).toBeHidden()
+  await expect(page.locator('.notes-stream')).toBeVisible()
+  expect(searchRequests).toHaveLength(1)
+})
+
+test('notes search failure is visible and announced, and the archive stays', async ({
+  page,
+}) => {
+  await page.route('**/notes-search.json', (route) =>
+    route.fulfill({ status: 500, body: '' }),
+  )
+  await page.goto('/notes/')
+  await page.getByRole('searchbox', { name: 'Search notes' }).fill('android')
+
+  const message =
+    'Search could not load. The type and topic filters below still work.'
+  await expect(page.locator('[data-notes-count]')).toHaveText(message)
+  await expect(page.locator('[data-notes-status]')).toHaveText(message)
+  await expect(page.locator('.notes-stream')).toBeVisible()
+  browserErrors.set(
+    page,
+    (browserErrors.get(page) ?? []).filter(
+      (error) => !error.includes('status of 500'),
+    ),
+  )
+})
+
+test('notes type and topic filters and pagination are real URLs', async ({
+  page,
+}) => {
+  await page.goto('/notes/')
+  const filter = page.getByRole('navigation', { name: 'Filter by type' })
+  await filter.locator('a[data-kind="article"]').click()
+  await expect(page).toHaveURL(/\/notes\/type\/article\/$/)
+  await expect(filter.locator('a[data-kind="article"]')).toHaveAttribute(
+    'aria-current',
+    'page',
+  )
+  await expect(page.locator('.note-row').first()).toBeVisible()
+
+  await page.goto('/notes/topic/android/')
+  await expect(page.locator('.notes-filter__topic')).toBeVisible()
+  await expect(page.locator('.note-row').first()).toBeVisible()
+
+  await page.goto('/notes/')
+  await page.locator('.pagination').getByRole('link', { name: /Older/ }).click()
+  await expect(page).toHaveURL(/\/notes\/2\/$/)
+  await expect(page).toHaveTitle(/2/)
+  await expect(page.locator('.note-row').first()).toBeVisible()
+})
+
+test('Lab topic filter narrows the grid and reports what it shows', async ({
+  page,
+}) => {
+  await page.goto('/lab/')
+  const bar = page.locator('[data-lab-filter]')
+  await expect(bar).toBeVisible()
+  const facets = bar.locator('button[data-facet]:not([data-facet=""])')
+  const facet = facets.first()
+  await facet.click()
+  await expect(facet).toHaveAttribute('aria-pressed', 'true')
+  await expect(bar.locator('button[data-facet=""]')).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  )
+
+  const shown = await page.locator('[data-lab-grid] > li:visible').count()
+  const total = await page.locator('[data-lab-grid] > li').count()
+  await expect(page.locator('[data-lab-status]')).toHaveText(
+    `Showing ${shown} of ${total}.`,
+  )
+
+  await bar.locator('button[data-facet=""]').click()
+  await expect(page.locator('[data-lab-grid] > li:visible')).toHaveCount(total)
+  await expect(page.locator('[data-lab-status]')).toHaveText('')
+})
+
+test('gallery serves resized modern formats and a keyboard-operable viewer', async ({
+  page,
+}) => {
+  await page.goto('/gallery/')
+  const thumb = page.locator('.gallery-sheet__contact picture').first()
+  await expect(thumb.locator('source[type="image/avif"]')).toHaveCount(1)
+  await expect(thumb.locator('source[type="image/webp"]')).toHaveCount(1)
+  await expect(thumb.locator('img')).toHaveAttribute('width', /\d+/)
+  await expect(thumb.locator('img')).toHaveAttribute('height', /\d+/)
+
+  await page.goto('/gallery/san-francisco/')
+  const triggers = page.locator('.gallery-piece__open')
+  const total = await triggers.count()
+  // The no-JS link opens a re-encoded view, never the camera original.
+  await expect(triggers.first()).toHaveAttribute('href', /^\/_astro\/.+\.webp$/)
+
+  await triggers.first().click()
+  const viewer = page.locator('[data-lightbox]')
+  const counter = viewer.locator('[data-lightbox-counter]')
+  await expect(viewer).toBeVisible()
+  await expect(counter).toHaveText(`1 / ${total}`)
+  await expect(viewer.locator('[data-lightbox-media] img')).toHaveAttribute(
+    'src',
+    /\.webp$/,
+  )
+
+  await page.keyboard.press('ArrowRight')
+  await expect(counter).toHaveText(`2 / ${total}`)
+  await page.keyboard.press('ArrowLeft')
+  await expect(counter).toHaveText(`1 / ${total}`)
+  await page.keyboard.press('ArrowLeft')
+  await expect(counter).toHaveText(`${total} / ${total}`)
+
+  await page.keyboard.press('Escape')
+  await expect(viewer).toBeHidden()
+  await expect(viewer.locator('[data-lightbox-media] > *')).toHaveCount(0)
+  await expect(triggers.first()).toBeFocused()
 })
