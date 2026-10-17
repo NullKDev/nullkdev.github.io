@@ -11,6 +11,7 @@ import {
   isCurrent,
 } from '@/lib/about'
 import Layout from '@/layouts/Layout.astro'
+import { buildProfileLd } from '@/lib/structured-data'
 
 interface Props {
   locale: Locale
@@ -52,25 +53,7 @@ const measures = [
   title={pageTitle(dictionary.nav.about)}
   description={metaDescription}
   counterpartPath={locale === 'en' ? '/es/about/' : '/about/'}
-  jsonLd={{
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    name: profile.name,
-    url: Astro.site?.toString(),
-    jobTitle: profile.role,
-    description: `${profile.bio.thesis} ${profile.bio.note}`,
-    ...(current
-      ? { worksFor: { '@type': 'Organization', name: current.org } }
-      : {}),
-    alumniOf: profile.education.map((entry) => ({
-      '@type': 'CollegeOrUniversity',
-      name: entry.issuer,
-    })),
-    knowsAbout: profile.capabilities.flatMap((group) => group.items),
-    sameAs: profile.links
-      .filter((link) => !link.href.startsWith('mailto:'))
-      .map((link) => link.href),
-  }}
+  jsonLd={buildProfileLd({ profile, current, site: Astro.site })}
 >
   <main class="about-page">
     <header class="about-heading">

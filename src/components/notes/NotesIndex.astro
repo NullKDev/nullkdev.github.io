@@ -1,6 +1,6 @@
 ---
 import type { Page } from 'astro'
-import { brand, pageTitle } from '@/data/brand'
+import { pageTitle } from '@/data/brand'
 import type { CollectionEntry } from 'astro:content'
 import NoteRow from '@/components/notes/NoteRow.astro'
 import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
@@ -10,6 +10,7 @@ import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
 import { getTopicLabel } from '@/data/taxonomy'
 import { getArchiveLabel } from '@/i18n/archive'
 import Layout from '@/layouts/Layout.astro'
+import { buildCollectionPageLd } from '@/lib/structured-data'
 import { countByKind, getAvailableKinds, getSupersededBy } from '@/lib/notes'
 
 interface Props {
@@ -82,19 +83,13 @@ const countWord =
 /* A list page is a `CollectionPage`, not an `Article`. Without it these
    surfaces carried no structured data at all — 44 indexable pages, most of
    them the topic and type filters that exist precisely to be found. */
-const collectionJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'CollectionPage',
+const collectionJsonLd = buildCollectionPageLd({
   name: title,
   description,
-  inLanguage: locale,
-  isPartOf: {
-    '@type': 'WebSite',
-    name: brand.name,
-    url: Astro.site?.toString(),
-  },
+  locale,
+  site: Astro.site,
   numberOfItems: page.total,
-}
+})
 ---
 
 <Layout

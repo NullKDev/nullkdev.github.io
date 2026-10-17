@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content'
-import { brand, pageTitle } from '@/data/brand'
+import { pageTitle } from '@/data/brand'
 import ArchiveCard from '@/components/ArchiveCard.astro'
 import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
 import GalleryIndex from '@/components/gallery/GalleryIndex.astro'
@@ -10,6 +10,7 @@ import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
 import { taxonomy } from '@/data/taxonomy'
 import Layout from '@/layouts/Layout.astro'
 import type { ArchiveDomain, ArchiveEntry } from '@/lib/content'
+import { buildCollectionPageLd } from '@/lib/structured-data'
 
 interface Props {
   locale: Locale
@@ -41,19 +42,13 @@ const workDomains = isWork
 /* A list page is a `CollectionPage`, not an `Article`. Without it these
    surfaces carried no structured data at all — 44 indexable pages, most of
    them the topic and type filters that exist precisely to be found. */
-const collectionJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'CollectionPage',
+const collectionJsonLd = buildCollectionPageLd({
   name: dictionary.nav[domain],
   description: dictionary.section[domain],
-  inLanguage: locale,
-  isPartOf: {
-    '@type': 'WebSite',
-    name: brand.name,
-    url: Astro.site?.toString(),
-  },
+  locale,
+  site: Astro.site,
   numberOfItems: entries.length,
-}
+})
 ---
 
 {isLab && <LabIndex locale={locale} entries={labEntries} />}

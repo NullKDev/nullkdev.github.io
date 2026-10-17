@@ -1,11 +1,12 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content'
-import { brand, pageTitle } from '@/data/brand'
+import { pageTitle } from '@/data/brand'
 import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
 import StatusChip from '@/components/primitives/StatusChip.astro'
 import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
 import { getArchiveLabel } from '@/i18n/archive'
 import Layout from '@/layouts/Layout.astro'
+import { buildCollectionPageLd } from '@/lib/structured-data'
 import { getEntryPath } from '@/lib/content'
 import { isMedia } from '@/lib/gallery'
 
@@ -51,18 +52,12 @@ const pieceWord =
 /* Same `CollectionPage` treatment as the other index surfaces — Lab and
    Gallery render through their own components, which is how they were the last
    two indexable pages left without structured data. */
-const collectionJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'CollectionPage',
+const collectionJsonLd = buildCollectionPageLd({
   name: dictionary.nav.gallery,
   description: dictionary.section.gallery,
-  inLanguage: locale,
-  isPartOf: {
-    '@type': 'WebSite',
-    name: brand.name,
-    url: Astro.site?.toString(),
-  },
-}
+  locale,
+  site: Astro.site,
+})
 ---
 
 <Layout

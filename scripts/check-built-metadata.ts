@@ -80,13 +80,36 @@ for (const file of htmlFiles) {
   if (noindex && sitemap.includes(`<loc>${sourceUrl}</loc>`)) {
     failures.push(`${file}: noindex source appears in sitemap`)
   }
+  const structuredData: Record<string, unknown>[] = []
   for (const match of html.matchAll(
     /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g,
   )) {
     try {
-      JSON.parse(match[1])
+      structuredData.push(JSON.parse(match[1]) as Record<string, unknown>)
     } catch {
       failures.push(`${file}: invalid JSON-LD`)
+    }
+  }
+  /* Entries and their subposts are articles with an author — the rule
+     AGENTS.md documents. An entry that shares its banner names that same
+     image, so search and social previews agree. */
+  const longForm = /<main class="entry-page(?: document-page)?"/.test(html)
+  if (longForm && !noindex) {
+    const article = structuredData.find(
+      ({ '@type': type }) => type === 'Article' || type === 'TechArticle',
+    )
+    if (!article) {
+      failures.push(`${file}: entry without Article/TechArticle JSON-LD`)
+    } else {
+      if (!article.author) failures.push(`${file}: article without author`)
+      if (
+        socialImage?.includes('/og/banners/') &&
+        article.image !== socialImage
+      ) {
+        failures.push(
+          `${file}: article image ${String(article.image)} is not the shared banner ${socialImage}`,
+        )
+      }
     }
   }
 }
