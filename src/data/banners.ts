@@ -169,6 +169,63 @@ export const banners: readonly BannerSpec[] = [
     ...PALETTE.android,
   },
   {
+    slug: 'android-4-4-kitkat',
+    copy: {
+      en: {
+        kicker: 'Android 4.4 · API 19',
+        title: ['Android', 'in 512 MB'],
+        meta: 'KitKat · Oct 2013 · Project Svelte',
+        alt: 'Android 4.4 KitKat banner — Android slimmed down to fit 512 MB of RAM.',
+      },
+      es: {
+        kicker: 'Android 4.4 · API 19',
+        title: ['Android', 'en 512 MB'],
+        meta: 'KitKat · oct. 2013 · Project Svelte',
+        alt: 'Banner de Android 4.4 KitKat — Android aligerado para caber en 512 MB de RAM.',
+      },
+    },
+    art: 'memory-ceiling',
+    ...PALETTE.android,
+  },
+  {
+    slug: 'android-5-0-lollipop',
+    copy: {
+      en: {
+        kicker: 'Android 5.0 · API 21',
+        title: ['ART replaces', 'Dalvik'],
+        meta: 'Lollipop · Nov 2014 · ART + Material Design',
+        alt: 'Android 5.0 Lollipop banner — ART replaces Dalvik.',
+      },
+      es: {
+        kicker: 'Android 5.0 · API 21',
+        title: ['ART reemplaza', 'a Dalvik'],
+        meta: 'Lollipop · nov 2014 · ART + Material Design',
+        alt: 'Banner de Android 5.0 Lollipop — ART reemplaza a Dalvik.',
+      },
+    },
+    art: 'process-bridge',
+    ...PALETTE.android,
+  },
+  {
+    slug: 'android-5-1-lollipop',
+    copy: {
+      en: {
+        kicker: 'Android 5.1 · API 22',
+        title: ['Two SIMs,', 'one locked reset'],
+        meta: 'Lollipop · March 2015 · Device Protection',
+        alt: 'Android 5.1 Lollipop banner — multiple SIM cards and a lock that survives a factory reset.',
+      },
+      es: {
+        kicker: 'Android 5.1 · API 22',
+        title: ['Dos SIM,', 'reset bloqueado'],
+        meta: 'Lollipop · marzo de 2015 · Device Protection',
+        alt: 'Banner de Android 5.1 Lollipop — varias tarjetas SIM y un bloqueo que sobrevive al restablecimiento de fábrica.',
+      },
+    },
+    art: 'api-locked',
+    ...PALETTE.android,
+  },
+  {
     slug: 'android-6-marshmallow',
     copy: {
       en: {
@@ -185,6 +242,44 @@ export const banners: readonly BannerSpec[] = [
       },
     },
     art: 'api-locked',
+    ...PALETTE.android,
+  },
+  {
+    slug: 'android-7-0-nougat',
+    copy: {
+      en: {
+        kicker: 'Android 7.0 · API 24',
+        title: ['Two apps,', 'one screen'],
+        meta: 'Nougat · Aug 2016 · Multi-window',
+        alt: 'Android 7.0 Nougat banner — two apps sharing one screen.',
+      },
+      es: {
+        kicker: 'Android 7.0 · API 24',
+        title: ['Dos apps,', 'una pantalla'],
+        meta: 'Nougat · ago 2016 · Multiventana',
+        alt: 'Banner de Android 7.0 Nougat — dos apps que comparten una pantalla.',
+      },
+    },
+    art: 'process-bridge',
+    ...PALETTE.android,
+  },
+  {
+    slug: 'android-7-1-nougat',
+    copy: {
+      en: {
+        kicker: 'Android 7.1 · API 25',
+        title: ['App shortcuts', 'and the Pixel'],
+        meta: 'Nougat · October 2016 · app shortcuts',
+        alt: 'Android 7.1 Nougat banner — app shortcuts from the launcher icon.',
+      },
+      es: {
+        kicker: 'Android 7.1 · API 25',
+        title: ['Accesos directos', 'y el Pixel'],
+        meta: 'Nougat · octubre de 2016 · accesos directos',
+        alt: 'Banner de Android 7.1 Nougat — accesos directos desde el icono del launcher.',
+      },
+    },
+    art: 'release-train',
     ...PALETTE.android,
   },
   {
