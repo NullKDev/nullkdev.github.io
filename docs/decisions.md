@@ -8,6 +8,25 @@ Format: what was decided · why · what it rules out.
 
 ---
 
+## 2026-10-17 — Diagrams are compiled at build, not drawn in the browser
+
+**Decided.** Mermaid fences compile to static SVG during the build with
+`beautiful-mermaid` (pure TypeScript, no DOM), coloured by the site tokens
+through CSS variables. `astro-mermaid` and its ~248 KB client bundle are gone.
+
+**Why.** Client-side Mermaid measures text in the reader's browser: the same
+diagram laid out at 351px in a test browser and past 1,600px in the owner's
+Chrome, and no page code could predict which. Sizing a figure needs its size
+known before it ships. Alternatives were prototyped on the real diagrams:
+`rehype-mermaid` needs a headless browser at build and its shapes are not
+deterministic (roughjs); D2 (`@d2lang/d2`) is deterministic but drew ~50%
+larger, could not embed the variable Switzer face, and needed its colour
+classes remapped. Mermaid 12 itself states it requires a browser.
+
+**Rules out.** Any diagram rendered on the client. Mermaid features
+beautiful-mermaid does not implement — reach for D2 if a diagram ever needs
+them, rather than bringing a browser back into the build.
+
 ## 2026-07-30 — A shared link shows what was shared
 
 **Decided.** An entry's social preview is its own banner; only home, About and

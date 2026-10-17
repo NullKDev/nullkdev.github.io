@@ -55,12 +55,15 @@ este repo usa de verdad — no las genéricas del estándar.
 
 - Vuelven los diagramas de la nota de Codex Security: la arquitectura (qué parte
   corre en tu máquina y cuál queda cerrada en OpenAI) y los códigos de salida en
-  CI. Estaban retirados porque el motor de layout los dibujaba más grandes que
-  la columna. Se rediseñó la forma, no el CSS: un solo grupo con el modelo como
-  nodo punteado para que ninguna flecha cruce un título, y el abanico de salidas
-  en horizontal con etiquetas cortas. Los cuatro, en ambos idiomas, entran al
-  100% en la columna de escritorio y en un viewport de 390px, sin achicar el
-  texto y en los dos temas.
+  CI. Ahora se compilan a SVG estático en el build con `beautiful-mermaid`, en
+  lugar de dibujarse en el navegador del lector: con Mermaid en el cliente, el
+  mismo diagrama medía 351px en un navegador y más de 1.600px en otro. El tamaño
+  se decide en el build: llenan la columna hasta 1,25×, con tope de alto, y
+  nunca se achican por debajo de lo dibujado; un diagrama más ancho que la
+  columna se desplaza dentro de su panel, con controles de zoom. Los colores
+  salen de los tokens del sitio, así que un mismo SVG sigue los dos temas sin
+  redibujarse. Cada diagrama lleva un nombre accesible obligatorio (el build
+  falla sin `title`). Se elimina `astro-mermaid` y sus ~248 KB de JavaScript.
 
 ### Corregido
 
@@ -72,13 +75,12 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ### Seguridad
 
-- Se cierran 34 de 35 advisories (16 high) en dependencias transitivas
+- Se cierran los 35 advisories (16 high) en dependencias transitivas
   (`devalue`, `brace-expansion`, `fast-uri`, `source-map-js`, `smol-toml`,
   `sharp`, `undici`, `dompurify`, entre otras). Como en 0.4.0, los parches ya
   cabían en los rangos de sus paquetes padre y bastó con volver a resolver el
-  lockfile; `package.json` no cambia. El `audit` en rojo bloqueaba todos los PR
-  de Dependabot. Queda un advisory low en `katex`, que `mermaid` fija en
-  `^0.16` y no alcanza la versión corregida.
+  lockfile. El `audit` en rojo bloqueaba todos los PR de Dependabot. El último,
+  en `katex`, se fue con `mermaid` al compilar los diagramas en el build.
 
 ## [0.4.0] — 2026-08-30
 

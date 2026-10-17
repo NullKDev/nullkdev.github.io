@@ -59,11 +59,11 @@ cubrió del todo el objetivo» — y los escaneos reportan cobertura como
 infraestructura y reintente va a tapar alegremente un escaneo que examinó en
 silencio una fracción de tu código.
 
-```mermaid
+```mermaid title="Códigos de salida: 0 significa que la política se cumple, 1 que hay hallazgos en el umbral y 2 que no hay evidencia en ningún sentido"
 flowchart LR
-  code([Salida]) --> pass["<b>0</b> · cumple, merge"]
-  code --> findings["<b>1</b> · hallazgos, revisar"]
-  code --> hold["<b>2</b> · sin evidencia, frenar"]
+  code([Salida]) -- 0 --> pass[Cumple, merge]
+  code -- 1 --> findings[Hallazgos, revisar]
+  code -- 2 --> hold[Sin evidencia, frenar]
 ```
 
 <Callout type="warn" title="El código 2 no es un aprobado">

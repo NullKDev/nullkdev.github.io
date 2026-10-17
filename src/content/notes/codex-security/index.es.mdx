@@ -89,15 +89,13 @@ la orquestación. Lo que está cerrado es aquello que decide si un hallazgo es u
 hallazgo. Podés leer cada línea de cómo se recolecta, se trocea y se envía tu
 código. No podés leer, ejecutar ni auditar la parte que razona sobre él.
 
-```mermaid
+```mermaid title="Arquitectura: tu máquina ejecuta la CLI abierta y envía tu código al modelo cerrado de OpenAI, que devuelve veredictos"
 flowchart TB
   subgraph open ["TU MÁQUINA · APACHE 2.0"]
-    direction TB
     repo[Tu repositorio] --> cli[CLI codex-security]
   end
-  cli -- tu código --> model["<b>OPENAI · CERRADO</b><br>modelo gpt-5.6-sol"]:::gated
-  model -- veredictos --> out[Hallazgos + extractos]
-  classDef gated stroke-dasharray: 5 4
+  cli -- tu código --> gatedModel["<b>OPENAI · CERRADO</b><br>modelo gpt-5.6-sol"]
+  gatedModel -- veredictos --> out[Hallazgos + extractos]
 ```
 
 Esa distinción importa más que la discusión de licencias a la que suele

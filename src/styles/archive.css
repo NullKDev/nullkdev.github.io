@@ -2511,11 +2511,15 @@
   }
 }
 
-/* Diagram viewer. The frame moves here once the enhancement runs, so the pane
-   scrolls and the toolbar sits attached to its own edge rather than floating.
-   Without JavaScript none of this exists and `.mermaid` below is still a
-   framed, scrollable figure — the diagram is readable either way. */
+/* Diagrams, compiled to static SVG at build time by scripts/hast-diagrams.mjs.
+   The plugin knows each drawing's size and writes two custom properties on the
+   figure: `--diagram-width`, the size to show it at (grown up to 1.25×, capped
+   by height), and `--diagram-min`, the size it was drawn at. The SVG fills the
+   column up to the first and never shrinks below the second; a diagram wider
+   than the column scrolls in its pane instead of shrinking its type. */
 .prose .diagram {
+  /* One colour for every connector, so the structure reads as one system. */
+  --diagram-line: color-mix(in srgb, var(--accent) 72%, var(--line-strong));
   margin: 2rem 0;
   overflow: hidden;
   border: 1px solid var(--line);
@@ -2523,34 +2527,49 @@
   background: var(--surface-raised);
 }
 .prose .diagram__pane {
-  /* A diagram is drawn by a layout engine, so its height is whatever the graph
-     happens to need — the architecture flowchart came out 829px and pushed the
-     article off the screen. Capping the pane means no diagram can dominate the
-     page, however it grows later; the reader scrolls or zooms out instead. */
-  max-height: min(70vh, 32rem);
-  overflow: auto;
+  display: flex;
   /* Centred while the drawing fits, flush left once it overflows: plain
      `center` would push the start of a wide diagram out of reach. */
   justify-content: center;
   justify-content: safe center;
+  max-height: min(80vh, 40rem);
+  overflow: auto;
+  /* Narrow sides: the SVG carries its own 12px margin, and every pixel here
+     is one a three-way fan-out needs to fit a 390px phone without scrolling. */
+  padding: 1rem 0.5rem;
 }
 .prose .diagram__pane:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: -2px;
 }
-.prose .diagram .mermaid {
-  margin: 0;
-  border: 0;
-  border-radius: 0;
-  justify-content: center;
-  justify-content: safe center;
-}
-/* The diagram is a flex item, and a flex item shrinks by default: the zoom set
-   an explicit 651px width and the browser handed back 309px on a phone,
-   quietly undoing the whole point of scrolling instead of scaling. */
-.prose .diagram .mermaid svg {
+.prose .diagram__pane > svg {
+  display: block;
   flex-shrink: 0;
-  max-width: none;
+  width: max(var(--diagram-min), min(100%, var(--diagram-width)));
+  height: auto;
+  /* beautiful-mermaid colours every element through these variables. Its own
+     declarations are stripped at build (an inline SVG's <style> would restyle
+     every icon on the page), so they are set here from the site tokens, and
+     one SVG follows both themes with no redraw. */
+  --bg: var(--surface-raised);
+  --_text: var(--ink);
+  --_text-sec: var(--ink-muted);
+  --_text-muted: var(--ink-muted);
+  --_text-faint: color-mix(in srgb, var(--ink) 25%, var(--surface-raised));
+  --_line: var(--diagram-line);
+  --_arrow: var(--diagram-line);
+  --_node-fill: var(--surface);
+  --_node-stroke: var(--line-strong);
+  --_group-fill: color-mix(in srgb, var(--accent-soft) 30%, transparent);
+  --_group-hdr: color-mix(in srgb, var(--accent-soft) 70%, var(--surface));
+  --_inner-stroke: var(--line);
+  --_key-badge: color-mix(in srgb, var(--ink) 10%, var(--surface-raised));
+}
+/* The renderer drops `stroke-dasharray` from classDef, so a node whose id
+   starts with `gated` is dashed here: the convention for the part of a system
+   the reader cannot see into. */
+.prose .diagram__pane > svg g.node[data-id^='gated'] :is(rect, path, polygon) {
+  stroke-dasharray: 5 4;
 }
 .prose .diagram__bar {
   display: flex;
@@ -2592,91 +2611,6 @@
   font-family: 'IBM Plex Mono', monospace;
   font-size: 0.72rem;
   font-variant-numeric: tabular-nums;
-}
-
-/* Mermaid diagrams: a centered, framed figure that tracks the theme via the
-   integration's autoTheme (data-theme on <html>). */
-.prose pre.mermaid,
-.prose .mermaid {
-  display: flex;
-  justify-content: center;
-  margin: 2rem 0;
-  padding: 1.75rem 1.5rem;
-  overflow-x: auto;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  background: var(--surface-raised) !important;
-  font-size: inherit;
-  line-height: inherit;
-}
-/* Suppress the raw-source flash until the SVG is drawn. */
-.prose .mermaid:not(:has(svg)) {
-  min-height: 6rem;
-  color: transparent;
-}
-.prose .mermaid svg {
-  max-width: 100%;
-  height: auto;
-}
-/* Mermaid ships its own palette — pale yellow clusters, lavender nodes — and
-   injects it as an id-scoped <style> inside the SVG, which no external selector
-   can outrank. Overriding it is the only way a diagram reads as part of this
-   site rather than a screenshot from another one, and driving it from the
-   tokens means both themes follow the toggle with one set of rules. */
-.prose .mermaid svg :where(.node) :where(rect, polygon, circle, path) {
-  fill: var(--surface) !important;
-  stroke: var(--line-strong) !important;
-  stroke-width: 1.5px !important;
-}
-.prose .mermaid svg :where(.nodeLabel, .nodeLabel p) {
-  color: var(--ink) !important;
-  fill: var(--ink) !important;
-}
-/* Groups are context, so they sit behind the nodes: no fill, a hairline edge. */
-.prose .mermaid svg .cluster rect {
-  fill: color-mix(in srgb, var(--accent-soft) 30%, transparent) !important;
-  stroke: var(--line) !important;
-  stroke-width: 1px !important;
-}
-/* The group labels carry the diagram's argument — which half you can audit and
-   which you cannot. Mermaid sets them smaller than the node text, which inverts
-   the hierarchy, so they are restored to the weight the point deserves.
-   Sizing sits on the outer node ONLY: mermaid nests a <p> inside the label, and
-   an `em` on both compounds to roughly half the intended size. */
-.prose .mermaid svg :where(.cluster-label, .cluster-label p) {
-  color: var(--ink) !important;
-  fill: var(--ink) !important;
-  font-family: 'IBM Plex Mono', monospace !important;
-  font-weight: 600 !important;
-}
-.prose .mermaid svg :where(.cluster-label, .cluster-label p) {
-  /* rem, not em: mermaid nests a <p> inside the label and an em on both
-     compounds to about half the intended size. */
-  font-size: 0.78rem !important;
-}
-/* The arrows are the structure the diagram exists to show, so they carry the
-   accent — the one place a flowchart earns colour. */
-.prose .mermaid svg .flowchart-link {
-  stroke: color-mix(in srgb, var(--accent) 72%, var(--line-strong)) !important;
-  stroke-width: 1.6px !important;
-}
-.prose .mermaid svg :where(marker path, .arrowMarkerPath) {
-  fill: color-mix(in srgb, var(--accent) 72%, var(--line-strong)) !important;
-  stroke: none !important;
-}
-/* Edge labels get colour only — deliberately no size or family override.
-   Mermaid measures each label and freezes the <foreignObject> to that box, so
-   restyling the type afterwards overflows a container that cannot grow and the
-   text is clipped away to an empty chip. Metrics belong to mermaid here. */
-.prose .mermaid svg :where(.edgeLabel, .edgeLabel p) {
-  color: var(--ink-muted) !important;
-  fill: var(--ink-muted) !important;
-  background: var(--surface-raised) !important;
-}
-.prose .mermaid svg :where(.edgeLabel rect, .labelBkg) {
-  fill: var(--surface-raised) !important;
-  background: var(--surface-raised) !important;
-  opacity: 1 !important;
 }
 /* Image lightbox overlay. */
 .lightbox {

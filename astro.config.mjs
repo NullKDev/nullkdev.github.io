@@ -4,7 +4,7 @@ import react from '@astrojs/react'
 import sitemap from '@astrojs/sitemap'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'astro/config'
-import mermaid from 'astro-mermaid'
+import hastDiagrams from './scripts/hast-diagrams.mjs'
 import hastTables from './scripts/hast-tables.mjs'
 import {
   createReadStream,
@@ -84,38 +84,6 @@ export default defineConfig({
   output: 'static',
   site: SITE_URL,
   integrations: [
-    // Must precede mdx() — it injects a rehype plugin that turns ```mermaid
-    // fences into diagrams before markdown processing runs.
-    mermaid({
-      // autoTheme swaps mermaid's 'default'/'dark' themes off our own
-      // data-theme attribute on <html>, so diagrams track the site toggle.
-      theme: 'default',
-      autoTheme: true,
-      enableLog: false,
-      mermaidConfig: {
-        fontFamily: 'Switzer, ui-sans-serif, system-ui, sans-serif',
-        flowchart: {
-          curve: 'basis',
-          // Mermaid's 50px default leaves a diagram mostly empty space, which
-          // is what made a five-node flow 829px tall. Tighter ranks keep the
-          // same drawing inside the viewer without scrolling it.
-          rankSpacing: 36,
-          nodeSpacing: 24,
-          // Wrap labels at 170px so a fan-out stacks narrow boxes instead of
-          // stretching past a 390px viewport.
-          wrappingWidth: 170,
-          // Clear space under a group title, so an edge leaving the group's
-          // first node never runs through the title text.
-          subGraphTitleMargin: { top: 6, bottom: 10 },
-          // Mermaid otherwise caps the SVG at its intrinsic width and scales the
-          // whole drawing down to fit narrow screens — at 390px that took a
-          // 651px diagram to 47%, and 12px labels with it. Sizing is handled in
-          // the viewer instead, which zooms on request and scrolls otherwise,
-          // so type never falls below what it was drawn at.
-          useMaxWidth: false,
-        },
-      },
-    }),
     react(),
     mdx(),
     sitemap({
@@ -150,8 +118,13 @@ export default defineConfig({
        Reaching a clean log would mean moving the whole site onto the unified
        processor: a different renderer for 168 pages in exchange for one table
        fix. The deprecated option works on both `.md` and `.mdx` today, so it
-       stays until the Sätteri and MDX pipelines converge. */
-    rehypePlugins: [hastTables],
+       stays until the Sätteri and MDX pipelines converge.
+
+       hastDiagrams compiles ```mermaid fences to static SVG; see the module. */
+    rehypePlugins: [hastTables, hastDiagrams],
+    // Shiki runs before the plugins above. Excluding mermaid leaves the fence
+    // as plain `code.language-mermaid` with its `title` meta for hastDiagrams.
+    syntaxHighlight: { type: 'shiki', excludeLangs: ['math', 'mermaid'] },
     shikiConfig: {
       themes: {
         light: 'github-light',

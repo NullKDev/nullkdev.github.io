@@ -225,6 +225,28 @@ and links too, not only images.
 3. For gallery, drop files into `assets/` and run `bun run gallery:scan`.
 4. `bun run test:content`, then `bun run build`.
 
+### Diagrams
+
+A ` ```mermaid ` fence is compiled to static SVG at build time by
+`scripts/hast-diagrams.mjs` (beautiful-mermaid — flowchart, state, sequence,
+class, ER and XY charts). Nothing renders in the reader's browser.
+
+````md
+```mermaid title="Exit codes: 0 passes, 1 has findings, 2 has no evidence"
+flowchart LR
+  code([Exit code]) -- 0 --> pass[Pass, merge]
+```
+````
+
+- **`title="…"` is required** and becomes the accessible name. The build fails
+  without it. Translate it with the rest of the diagram.
+- **A node id starting with `gated` is drawn dashed** — the part of a system
+  the reader cannot inspect. `classDef` colours apply; `stroke-dasharray` in a
+  `classDef` is ignored by the renderer.
+- **Fit the column.** Labels are drawn at 13px and never scaled below it, so a
+  diagram wider than ~330px scrolls on a phone. Prefer `LR` for a fan-out, few
+  nodes, short labels; the prose carries the detail.
+
 ## Adding a field
 
 1. Add it to `content.config.ts` **with a default**, so existing records stay valid.

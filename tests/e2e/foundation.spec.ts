@@ -581,6 +581,60 @@ test('long-form Work and Notes documents do not overflow at 320 or 390px', async
   }
 })
 
+test('diagrams ship as static SVG that fits the column and zooms on request', async ({
+  page,
+}) => {
+  const runtimeRenderers: string[] = []
+  page.on('request', (request) => {
+    if (/mermaid|fonts\.googleapis/.test(request.url()))
+      runtimeRenderers.push(request.url())
+  })
+
+  for (const width of [390, 1280]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/notes/codex-security-precision-gap/ci-integration/')
+    const figure = page.locator('.prose figure.diagram').first()
+    const svg = figure.locator('.diagram__pane > svg')
+
+    await expect(svg).toHaveAttribute('role', 'img')
+    await expect(svg).toHaveAttribute('aria-label', /^Exit codes:/)
+    const fit = await figure.evaluate((element) => {
+      const pane = element.querySelector('.diagram__pane')!
+      const drawn = element.querySelector('svg')!.viewBox.baseVal.width
+      return {
+        overflows: pane.scrollWidth > pane.clientWidth,
+        scale:
+          element.querySelector('svg')!.getBoundingClientRect().width / drawn,
+        page:
+          document.documentElement.scrollWidth -
+          document.documentElement.clientWidth,
+      }
+    })
+    expect(fit.overflows, `pane scrolls at ${width}px`).toBe(false)
+    expect(fit.page, `page overflows at ${width}px`).toBe(0)
+    // Never drawn smaller than authored, never grown past 1.25×.
+    expect(fit.scale).toBeGreaterThanOrEqual(1)
+    expect(fit.scale).toBeLessThanOrEqual(1.25)
+  }
+
+  const figure = page.locator('.prose figure.diagram').first()
+  const svg = figure.locator('.diagram__pane > svg')
+  const readout = figure.locator('[data-zoom-readout]')
+  const fitted = (await svg.boundingBox())!.width
+  await expect(readout).toHaveText('100%')
+  await figure.getByRole('button', { name: 'Zoom in' }).click()
+  await expect(readout).toHaveText('125%')
+  await settleTransitions(page)
+  expect((await svg.boundingBox())!.width).toBeCloseTo(fitted * 1.25, 0)
+  await figure.getByRole('button', { name: 'Fit to width' }).click()
+  await expect(readout).toHaveText('100%')
+  await settleTransitions(page)
+  expect((await svg.boundingBox())!.width).toBeCloseTo(fitted, 0)
+
+  expect(runtimeRenderers).toEqual([])
+  await expectNoAxeViolations(page)
+})
+
 test('legacy routes are noindex canonical compatibility pages without loops', async ({
   page,
   request,

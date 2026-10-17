@@ -87,15 +87,13 @@ orchestration. What is closed is the thing that decides whether a finding is a
 finding. You can read every line of how your code is gathered, chunked and
 submitted. You cannot read, run or audit the part that reasons about it.
 
-```mermaid
+```mermaid title="Architecture: your machine runs the open CLI and sends your code to OpenAI's gated model, which returns verdicts"
 flowchart TB
   subgraph open ["YOUR MACHINE · APACHE 2.0"]
-    direction TB
     repo[Your repository] --> cli[codex-security CLI]
   end
-  cli -- your code --> model["<b>OPENAI · GATED</b><br>gpt-5.6-sol reasoning"]:::gated
-  model -- verdicts --> out[Findings + source excerpts]
-  classDef gated stroke-dasharray: 5 4
+  cli -- your code --> gatedModel["<b>OPENAI · GATED</b><br>gpt-5.6-sol reasoning"]
+  gatedModel -- verdicts --> out[Findings + source excerpts]
 ```
 
 That distinction matters more than the licence argument it usually gets reduced
