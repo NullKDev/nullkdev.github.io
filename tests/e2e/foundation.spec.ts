@@ -619,17 +619,76 @@ test('diagrams ship as static SVG that fits the column and zooms on request', as
 
   const figure = page.locator('.prose figure.diagram').first()
   const svg = figure.locator('.diagram__pane > svg')
+  const pane = figure.locator('.diagram__pane')
   const readout = figure.locator('[data-zoom-readout]')
+  // Where the page sits around the diagram: the pane's height and the
+  // document position of whatever follows the figure.
+  const layout = () =>
+    figure.evaluate((element) => {
+      const viewport = element.querySelector('.diagram__pane')!
+      return {
+        pane: viewport.getBoundingClientRect().height,
+        below:
+          element.nextElementSibling!.getBoundingClientRect().top +
+          window.scrollY,
+      }
+    })
+  // How far each scrollable axis sits from its centre, in pixels.
+  const offCentre = () =>
+    pane.evaluate((element) => ({
+      x: Math.abs(
+        element.scrollLeft - (element.scrollWidth - element.clientWidth) / 2,
+      ),
+      y: Math.abs(
+        element.scrollTop - (element.scrollHeight - element.clientHeight) / 2,
+      ),
+    }))
+
   const fitted = (await svg.boundingBox())!.width
+  const before = await layout()
   await expect(readout).toHaveText('100%')
+
   await figure.getByRole('button', { name: 'Zoom in' }).click()
-  await expect(readout).toHaveText('125%')
+  await figure.getByRole('button', { name: 'Zoom in' }).click()
+  await expect(readout).toHaveText('150%')
   await settleTransitions(page)
-  expect((await svg.boundingBox())!.width).toBeCloseTo(fitted * 1.25, 0)
+  // The viewer rounds to whole pixels.
+  expect(
+    Math.abs((await svg.boundingBox())!.width - fitted * 1.5),
+  ).toBeLessThanOrEqual(1)
+  // The diagram grows inside a fixed window; the article does not move.
+  expect(await layout()).toEqual(before)
+  const centred = await offCentre()
+  expect(centred.x).toBeLessThanOrEqual(2)
+  expect(centred.y).toBeLessThanOrEqual(2)
+
+  // Dragging with a mouse pans the diagram inside the pane.
+  const start = await pane.evaluate((element) => ({
+    left: element.scrollLeft,
+    top: element.scrollTop,
+  }))
+  const box = (await pane.boundingBox())!
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(box.x + box.width / 2 + 20, box.y + box.height / 2 + 15)
+  await page.mouse.up()
+  expect(
+    await pane.evaluate((element) => ({
+      left: element.scrollLeft,
+      top: element.scrollTop,
+    })),
+  ).toEqual({
+    left: Math.max(0, start.left - 20),
+    top: Math.max(0, start.top - 15),
+  })
+
   await figure.getByRole('button', { name: 'Fit to width' }).click()
   await expect(readout).toHaveText('100%')
   await settleTransitions(page)
-  expect((await svg.boundingBox())!.width).toBeCloseTo(fitted, 0)
+  expect(
+    Math.abs((await svg.boundingBox())!.width - fitted),
+  ).toBeLessThanOrEqual(1)
+  expect(await layout()).toEqual(before)
 
   expect(runtimeRenderers).toEqual([])
   await expectNoAxeViolations(page)

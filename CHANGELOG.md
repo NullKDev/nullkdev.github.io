@@ -60,7 +60,10 @@ este repo usa de verdad — no las genéricas del estándar.
   mismo diagrama medía 351px en un navegador y más de 1.600px en otro. El tamaño
   se decide en el build: llenan la columna hasta 1,25×, con tope de alto, y
   nunca se achican por debajo de lo dibujado; un diagrama más ancho que la
-  columna se desplaza dentro de su panel, con controles de zoom. Los colores
+  columna se desplaza dentro de su panel, con controles de zoom. Al hacer zoom,
+  el panel queda como una ventana fija: el diagrama crece adentro, centrado en
+  lo que se estaba mirando y se arrastra con el mouse, sin empujar el resto
+  del artículo. Los colores
   salen de los tokens del sitio, así que un mismo SVG sigue los dos temas sin
   redibujarse. Cada diagrama lleva un nombre accesible obligatorio (el build
   falla sin `title`). Se elimina `astro-mermaid` y sus ~248 KB de JavaScript.

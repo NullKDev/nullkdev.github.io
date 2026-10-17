@@ -2542,11 +2542,25 @@
   outline: 2px solid var(--accent);
   outline-offset: -2px;
 }
+/* Zoomed, the pane is a fixed window the reader drags around (mouse) or
+   scrolls (touch, keyboard). */
+.prose .diagram__pane.is-zoomed {
+  cursor: grab;
+}
+.prose .diagram__pane.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
 .prose .diagram__pane > svg {
   display: block;
   flex-shrink: 0;
   width: max(var(--diagram-min), min(100%, var(--diagram-width)));
   height: auto;
+  /* The viewer re-centres the scroll in the same frame it resizes the
+     drawing. Reduced motion still gives every element a 0.01ms transition,
+     which leaves the old width in place for that frame, so no width here may
+     transition at all. */
+  transition-property: none;
   /* beautiful-mermaid colours every element through these variables. Its own
      declarations are stripped at build (an inline SVG's <style> would restyle
      every icon on the page), so they are set here from the site tokens, and
