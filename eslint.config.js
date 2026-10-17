@@ -34,8 +34,8 @@ export default tseslint.config(
   },
   {
     /* `@/` is the one internal alias. The per-folder prefixes (`@components`,
-       `@lib`, …) were retired from tsconfig.json; this keeps them from coming
-       back through Vitest, which declares its own aliases. */
+       `@lib`, …) were retired from tsconfig.json and vitest.config.ts; this
+       keeps an import from reintroducing them where no resolver would flag it. */
     files: [
       'src/**/*.{ts,tsx,astro}',
       'tests/**/*.{ts,tsx}',
