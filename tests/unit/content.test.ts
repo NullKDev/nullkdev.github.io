@@ -31,6 +31,7 @@ interface EntryShape {
   translationKey?: string
   featuredRank?: number
   publishedAt?: string
+  updatedAt?: string
   visibility?: string
   protection?: string
   references?: { entryId: string; relationship: string }[]
@@ -46,6 +47,7 @@ const entry = ({
   translationKey = slug,
   featuredRank,
   publishedAt = '2026-01-01',
+  updatedAt,
   visibility = 'public',
   protection = 'public',
   references = [],
@@ -63,6 +65,7 @@ const entry = ({
       translationKey,
       featuredRank,
       publishedAt: new Date(publishedAt),
+      updatedAt: updatedAt ? new Date(updatedAt) : undefined,
       visibility,
       protection: { mode: protection },
       references,
@@ -124,7 +127,7 @@ describe('entry domain', () => {
 })
 
 describe('archive listing', () => {
-  it('keeps public entries in the locale, featured first then newest', async () => {
+  it('streams public notes in the locale newest first, ignoring the home rank', async () => {
     seed([
       entry({ slug: 'old', publishedAt: '2025-01-01' }),
       entry({ slug: 'new', publishedAt: '2026-05-01' }),
@@ -135,7 +138,59 @@ describe('archive listing', () => {
     ])
     expect(
       (await getArchiveEntries('notes', 'en')).map(({ data }) => data.slug),
-    ).toEqual(['pinned', 'new', 'old'])
+    ).toEqual(['new', 'old', 'pinned'])
+  })
+
+  it('dates a note by its last update when it has one', async () => {
+    seed([
+      entry({ slug: 'fresh', publishedAt: '2026-03-01' }),
+      entry({
+        slug: 'revised',
+        publishedAt: '2024-01-01',
+        updatedAt: '2026-06-01',
+      }),
+    ])
+    expect(
+      (await getArchiveEntries('notes', 'en')).map(({ data }) => data.slug),
+    ).toEqual(['revised', 'fresh'])
+  })
+
+  it('keeps a series in reading order when its notes share a date', async () => {
+    seed([
+      entry({
+        slug: 'ten',
+        publishedAt: '2026-10-17',
+        series: { id: 'android-versions', order: 11 },
+      }),
+      entry({
+        slug: 'hub',
+        publishedAt: '2026-10-17',
+        series: { id: 'android-versions', order: 1 },
+      }),
+      entry({
+        slug: 'kitkat',
+        publishedAt: '2026-10-17',
+        series: { id: 'android-versions', order: 2 },
+      }),
+    ])
+    expect(
+      (await getArchiveEntries('notes', 'en')).map(({ data }) => data.slug),
+    ).toEqual(['hub', 'kitkat', 'ten'])
+  })
+
+  it('keeps other sections featured first then newest', async () => {
+    seed([
+      entry({ collection: 'lab', slug: 'new', publishedAt: '2026-05-01' }),
+      entry({
+        collection: 'lab',
+        slug: 'pinned',
+        featuredRank: 1,
+        publishedAt: '2024-01-01',
+      }),
+    ])
+    expect(
+      (await getArchiveEntries('lab', 'en')).map(({ data }) => data.slug),
+    ).toEqual(['pinned', 'new'])
   })
 
   it('home sections take the first entries of that same order', async () => {

@@ -121,6 +121,12 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ### Corregido
 
+- El índice de Notas, sus filtros y el RSS ponían primero las ocho notas con
+  `featuredRank` y dejaban detrás todas las demás, aunque fueran más nuevas.
+  Ahora van de la más reciente a la más antigua, contando una revisión
+  (`updatedAt`) como reciente; `featuredRank` solo elige qué destacar en el
+  inicio.
+
 - La navegación de una serie decía «Parte 7 de 6» cuando había notas aún sin
   escribir entre medio: ahora cuenta la posición entre las notas publicadas en
   ese idioma, no el número de orden crudo.

@@ -42,11 +42,33 @@ const sortEntries = (entries: ArchiveEntry[]) =>
     return leftRank - rightRank || dateValue(right) - dateValue(left)
   })
 
+/** Notes of one series published the same day keep their reading order. */
+const seriesOrder = (left: ArchiveEntry, right: ArchiveEntry): number => {
+  const a = 'series' in left.data ? left.data.series : undefined
+  const b = 'series' in right.data ? right.data.series : undefined
+  return a && b && a.id === b.id ? a.order - b.order : 0
+}
+
+const sortNewestFirst = (entries: ArchiveEntry[]) =>
+  entries.toSorted(
+    (left, right) =>
+      dateValue(right) - dateValue(left) || seriesOrder(left, right),
+  )
+
+/**
+ * Notes is a stream: newest first, a revision counting as new. `featuredRank`
+ * picks what the home page shows; it used to order the Notes index too, which
+ * parked every unranked note — the newest included — behind the eight ranked
+ * ones. Work and Lab are inventories, so their featured entries still lead.
+ */
+const sortForDomain = (domain: ArchiveDomain) =>
+  domain === 'notes' ? sortNewestFirst : sortEntries
+
 export const getArchiveEntries = async (
   domain: ArchiveDomain,
   locale: Locale,
 ) =>
-  sortEntries(
+  sortForDomain(domain)(
     (await loadDomain(domain)).filter(
       ({ data }) =>
         data.locale === locale &&
@@ -267,7 +289,11 @@ export const getHomeSections = async (
   Promise.all(
     archiveDomains.map(async (domain) => {
       const all = await getArchiveEntries(domain, locale)
-      return { domain, items: all.slice(0, limit), total: all.length }
+      return {
+        domain,
+        items: sortEntries(all).slice(0, limit),
+        total: all.length,
+      }
     }),
   )
 
