@@ -16,6 +16,14 @@ test.beforeEach(async ({ page }) => {
 
 test.afterEach(({ page }) => expect(browserErrors.get(page) ?? []).toEqual([]))
 
+/* The Robot is ready once model-viewer has parsed the GLB and drawn a frame.
+   Locally that takes ~2–2.6s even with the CPU throttled 4×, but CI runners
+   draw WebGL in software (SwiftShader), which CPU throttling does not model,
+   and the default 5s expect timeout left too little margin: these assertions
+   failed intermittently there. The requirement is that it becomes ready, not
+   that it does so within 5s, so readiness waits get their own budget. */
+const MODEL_READY = { timeout: 15_000 }
+
 const expectNoAxeViolations = async (page: Page) =>
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
 
@@ -127,6 +135,7 @@ test('autonomous Robot hero is unboxed, single-model, and announces readiness', 
   await expect(page.locator('[data-model-showcase]')).toHaveAttribute(
     'data-ready',
     '',
+    MODEL_READY,
   )
   await expect(loader).toHaveAttribute('data-state', 'ready')
   await expect(loader).toContainText('3D model ready.')
@@ -160,7 +169,7 @@ test('Robot runs Idle then Wave then non-repeating allowed random clips', async 
   })
   await page.goto('/')
   const showcase = page.locator('[data-model-showcase]')
-  await expect(showcase).toHaveAttribute('data-ready', '')
+  await expect(showcase).toHaveAttribute('data-ready', '', MODEL_READY)
   const viewer = page.locator('model-viewer')
   expect(
     await viewer.evaluate(
@@ -220,7 +229,7 @@ test('Robot autostarts when persisted type scale makes the hero row taller', asy
   await page.reload()
 
   const showcase = page.locator('[data-model-showcase]')
-  await expect(showcase).toHaveAttribute('data-ready', '')
+  await expect(showcase).toHaveAttribute('data-ready', '', MODEL_READY)
   await expect(showcase).toHaveAttribute('data-animation', 'Idle')
 
   // The hero is taller than the band left by the sticky header, so an
@@ -338,7 +347,7 @@ test('reduced motion still animates and context loss stops all work', async ({
   await page.goto('/')
   const showcase = page.locator('[data-model-showcase]')
   const viewer = page.locator('model-viewer')
-  await expect(showcase).toHaveAttribute('data-ready', '')
+  await expect(showcase).toHaveAttribute('data-ready', '', MODEL_READY)
 
   // Playback is gated on visibility and WebGL health only — the clip sequence
   // runs the same for every visitor. currentTime restarts at every clip, so
@@ -410,6 +419,7 @@ test('@mobile loads only Robot near the viewport without controls or overflow', 
   await expect(page.locator('[data-model-showcase]')).toHaveAttribute(
     'data-ready',
     '',
+    MODEL_READY,
   )
   expect(modelRequests.map((url) => new URL(url).pathname)).toEqual([
     '/models/RobotExpressive.glb',
