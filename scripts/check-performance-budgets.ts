@@ -171,13 +171,13 @@ export const assertRouteBudget = (
   }
 }
 
+/** Per-locale ceiling for `/notes-search.json`, gzip bytes. */
+const SEARCH_INDEX_GZIP = 12_000
+
 // CSS is split per surface (src/styles/sections/*.css), so each route ships
 // the shared sheet plus only its own section CSS. The CSS budgets sit ~25%
 // above what that split ships, so a section stylesheet drifting back into the
 // shared one fails the build instead of passing under the old 30 KB ceiling.
-/** Per-locale ceiling for `/notes-search.json`, gzip bytes. */
-const SEARCH_INDEX_GZIP = 12_000
-
 const routes: Record<string, { file: string; budget: RouteBudget }> = {
   home: {
     // The 3D glass hero (Three.js + R3F + drei) is code-split into a lazy chunk

@@ -5,7 +5,10 @@ import {
   formatBytes,
   getDataHosts,
   getExecutionTone,
+  getLabCardTags,
   getLabFacets,
+  getLabTags,
+  getUbiquitousLabTags,
   getTotalDownloadBytes,
 } from '@/lib/lab'
 import { getLifecycleTone } from '@/lib/status'
@@ -149,15 +152,45 @@ describe('getLabFacets', () => {
     expect(getLabFacets(seven, 'en').map(({ id }) => id)).toContain('web')
   })
 
-  it('prefers declared technologies over topics, counted once per entry', () => {
-    const facets = getLabFacets(
-      [lab(['react', 'react'], ['web']), lab(['wasm']), lab([], ['web'])],
-      'en',
-    )
-    expect(facets).toEqual([
+  it('counts the same tags the filter matches, once per entry', () => {
+    /* Counts used technologies-or-topics while the filter matched the union,
+       so "Web 1" could show three cards. */
+    const tagged = [
+      lab(['react', 'react'], ['web']),
+      lab(['wasm']),
+      lab([], ['web']),
+    ]
+    expect(getLabTags(tagged[0])).toEqual(['react', 'web'])
+    expect(getLabFacets(tagged, 'en')).toEqual([
+      { id: 'web', count: 2, label: 'Web' },
       { id: 'react', count: 1, label: 'React' },
       { id: 'wasm', count: 1, label: 'Wasm' },
-      { id: 'web', count: 1, label: 'Web' },
+    ])
+  })
+})
+
+describe('getLabCardTags', () => {
+  type Lab = Parameters<typeof getLabCardTags>[0]
+  const lab = (technologies: string[], topics: string[] = []) =>
+    ({ data: { technologies, topics } }) as unknown as Lab
+
+  it('leaves out on a card the tags the filter bar leaves out', () => {
+    const entries = [
+      lab([], ['developer-tools', 'json']),
+      lab([], ['developer-tools', 'yaml']),
+      lab([], ['developer-tools', 'dates', 'web']),
+    ]
+    const ubiquitous = getUbiquitousLabTags(entries)
+    expect([...ubiquitous]).toEqual(['developer-tools'])
+    expect(getLabCardTags(entries[2], ubiquitous)).toEqual(['dates', 'web'])
+  })
+
+  it('shows declared technologies first, at most three', () => {
+    const entry = lab(['react', 'wasm', 'webgpu', 'three'], ['web'])
+    expect(getLabCardTags(entry, new Set())).toEqual([
+      'react',
+      'wasm',
+      'webgpu',
     ])
   })
 })

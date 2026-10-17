@@ -43,29 +43,55 @@ const readableCopy = (html: string) =>
     .join(' ')
     .replaceAll(/\s+/g, ' ')
 
+/* Where parts and series name themselves: a navigation's announced label,
+   the kicker above a title, the "Part 2 of 4" line over a part, the series
+   fact and the series navigation. The copy rules below that guard labels run
+   here only — "Documents" is a legitimate relationship label ("Documents →
+   <record>") and a "1/1" can sit in prose. */
+const labelCopy = (html: string) =>
+  [
+    ...[...html.matchAll(/<nav\b[^>]*\baria-label="([^"]*)"/g)].map(
+      (match) => match[1],
+    ),
+    ...[
+      ...html.matchAll(
+        /<(p|dd|nav)\b[^>]*(?:class="[^"]*\b(?:kicker|subpost-index|series-navigation)\b[^"]*"|data-series-position)[^>]*>([\s\S]*?)<\/\1>/g,
+      ),
+    ].map((match) => match[2].replaceAll(/<[^>]+>/g, ' ')),
+  ]
+    .join(' ')
+    .replaceAll(/\s+/g, ' ')
+
 /* Three slips the copy must never ship again: an internal collection name
    ("Documents") as a label, a "1 / 1" count that says nothing, and a series
    printed by its slug instead of its title. */
-const copyRules: { readonly pattern: RegExp; readonly message: string }[] = [
+const copyRules: {
+  readonly pattern: RegExp
+  readonly message: string
+  readonly scope: 'labels' | 'all'
+}[] = [
   {
     pattern: /(?<![\w-])Document(?:s|os)(?![\w-])/,
     message: 'shows the internal collection name "Documents"',
+    scope: 'labels',
   },
   {
     pattern: /(?<![\d/])1 ?\/ ?1(?![\d/])|\b1 (?:of|de) 1\b/,
     message: 'announces a count of one ("1 / 1")',
+    scope: 'labels',
   },
   {
     pattern: new RegExp(`Series?: (?:${seriesIds.join('|')})(?![\\w-])`),
     message: 'prints a series by its raw id',
+    scope: 'all',
   },
 ]
 
 for (const file of htmlFiles) {
   const html = await readFile(file, 'utf8')
-  const copy = readableCopy(html)
-  for (const { pattern, message } of copyRules) {
-    const found = copy.match(pattern)
+  const copy = { labels: labelCopy(html), all: readableCopy(html) }
+  for (const { pattern, message, scope } of copyRules) {
+    const found = copy[scope].match(pattern)
     if (found) failures.push(`${file}: ${message} — "${found[0]}"`)
   }
   const relativePath = relative(dist, file).split(sep).join('/')

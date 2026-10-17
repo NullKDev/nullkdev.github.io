@@ -11,7 +11,7 @@ import {
 } from '@/i18n'
 import { getArchiveLabel } from '@/i18n/archive'
 import Layout from '@/layouts/Layout.astro'
-import { getLabFacets } from '@/lib/lab'
+import { getLabFacets, getLabTags, getUbiquitousLabTags } from '@/lib/lab'
 import { buildCollectionPageLd } from '@/lib/structured-data'
 import '@/styles/global.css'
 import '@/styles/archive.css'
@@ -29,6 +29,7 @@ const total = entries.length
 // Facets come from the records; a tag on nearly every entry is left out
 // because it cannot narrow anything. The rule lives in `getLabFacets`.
 const facets = getLabFacets(entries, locale)
+const ubiquitous = getUbiquitousLabTags(entries)
 
 // Status distribution, in the order a workbench actually reads: what is moving
 // first, what is settled after, what is put away last.
@@ -137,12 +138,8 @@ const collectionJsonLd = buildCollectionPageLd({
       entries.length ? (
         <ul class="lab-grid" data-lab-grid>
           {entries.map((entry) => (
-            <li
-              data-topics={[
-                ...new Set([...entry.data.technologies, ...entry.data.topics]),
-              ].join(' ')}
-            >
-              <LabCard entry={entry} locale={locale} />
+            <li data-topics={getLabTags(entry).join(' ')}>
+              <LabCard entry={entry} locale={locale} ubiquitous={ubiquitous} />
             </li>
           ))}
         </ul>

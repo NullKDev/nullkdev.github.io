@@ -84,7 +84,8 @@ este repo usa de verdad — no las genéricas del estándar.
   a la sección: …"), sin alterar el nombre del encabezado. Cambiar de idioma
   conserva la posición: la sección i en inglés lleva a la sección i en
   español, solo cuando ambas traducciones tienen el mismo esquema (lo verifica
-  una prueba sobre las notas reales); si no, se llega al inicio como antes.
+  una prueba sobre las notas reales); si no, o si el lector está por encima de
+  la primera sección, se llega al inicio.
 - Estilos de impresión: sin cabecera, navegación, índices, banner, barra de
   progreso ni botones de copiar; negro sobre blanco en ambos temas, sin cortar
   bloques de código, figuras ni tablas, y con la URL de cada enlace externo.
@@ -117,9 +118,11 @@ este repo usa de verdad — no las genéricas del estándar.
   tarjetas, en lugar de a `/tags`; los conteos de `/tags` ya no llevan cero a la
   izquierda; la Galería muestra "23 piezas" en lugar de "+18"; el botón de
   Trabajo de la portada usa una flecha y no el ícono de enlace externo; y el
-  filtro del Laboratorio omite temas presentes en el 85% o más de las entradas,
-  que no filtraban nada. El build falla si vuelve a aparecer "Documents", un
-  "1 / 1" o un id de serie en el HTML.
+  filtro del Laboratorio y sus tarjetas omiten temas presentes en el 85% o más
+  de las entradas, que no filtraban nada; cada cifra del filtro cuenta las
+  mismas etiquetas con las que filtra. El build falla si vuelve a aparecer
+  "Documents" o un "1 / 1" en la navegación de partes y series, o un id de
+  serie en el HTML.
 - El español es neutro en todo el contenido: se quitó el voseo (podés, tenés,
   subís, probá…) de las notas, el Laboratorio y Trabajo, y una prueba lo
   detecta en el contenido en español y en `es.ts` (fuera de bloques de código).
@@ -195,7 +198,8 @@ este repo usa de verdad — no las genéricas del estándar.
   el botón de cerrar usa el ícono del registro con un área de 44 px.
 - La búsqueda de Notas encuentra los títulos de sección: el índice incluye los
   encabezados `h2`/`h3` de cada nota con su ancla, y un resultado que solo
-  coincide en un encabezado lleva directo a esa sección ("en § AlarmManager").
+  coincide en un encabezado lleva directo a esa sección ("en la sección
+  AlarmManager"). Los accesos a filtros ignoran tildes, igual que las notas.
   Sin resultados, dice qué se buscó y ofrece limpiar la búsqueda o explorar
   temas; el recuento ya no habla de "todo el archivo", solo de notas. Mientras
   se busca, las pestañas de tipo ocultan sus totales, y queda un único botón
