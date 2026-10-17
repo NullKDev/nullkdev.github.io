@@ -16,6 +16,7 @@
  * carried a hand-drawn robot. A banner can only use marks the site already has,
  * and extending the registry is the way to add one.
  */
+import { readFileSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 
 import sharp from 'sharp'
@@ -26,6 +27,7 @@ import {
   type BannerLocale,
   type BannerSpec,
 } from '../src/data/banners'
+import { renderIcon } from '../src/lib/icons'
 import { renderArt } from './banner-art'
 
 const SVG_DIRECTORY = 'public/banners'
@@ -90,6 +92,26 @@ export const bannerFile = (
     .filter(Boolean)
     .join('-')
 
+/* Where a logo sits: the right half of the safe band (x 700..1130, y 75..555),
+   the same box a motif draws in, inset so the mark breathes. */
+const LOGO_BOX = { x: 730, y: 130, width: 370, height: 370 } as const
+
+/** The logo as an `<image>` with an inlined SVG, so the banner stays one
+    self-contained file and librsvg rasterises it for the PNG. A registry icon
+    is filled with the accent, since it has no colours of its own. */
+const renderLogo = (
+  logo: NonNullable<BannerSpec['logo']>,
+  accent: string,
+): string => {
+  const svg =
+    typeof logo === 'string'
+      ? readFileSync(logo, 'utf8')
+      : renderIcon(logo.icon, 24).replace(/currentColor/g, accent)
+  const data = Buffer.from(svg).toString('base64')
+  const { x, y, width, height } = LOGO_BOX
+  return `<image x="${x}" y="${y}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet" href="data:image/svg+xml;base64,${data}"/>`
+}
+
 export const renderBanner = (
   spec: BannerSpec,
   locale: BannerLocale = 'en',
@@ -117,11 +139,18 @@ export const renderBanner = (
   </defs>
   <rect width="${WIDTH}" height="${HEIGHT}" fill="url(#bg-${id})"/>
   <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-${id})"/>
-<g filter="url(#lift-${id})">${renderArt(spec.art, accent, s.structure)}</g>
+<g filter="url(#lift-${id})">${spec.logo ? renderLogo(spec.logo, accent) : renderArt(spec.art, accent, s.structure)}</g>
   <rect x="96" y="150" width="76" height="4" rx="2" fill="${accent}"/>
   <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="${accent}">${escape(c.kicker.toUpperCase())}</text>
-  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="${s.title}">${escape(c.title[0])}</text>
-  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="${s.subtitle}">${escape(c.title[1])}</text>
+  ${
+    spec.logo
+      ? /* A logo banner names a thing: the headline is the name a reader
+           searches for ("Android 6.0"), the subtext what it was called. */
+        `<text x="96" y="318" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="96" font-weight="600" letter-spacing="-3" fill="${s.title}">${escape(c.title[0])}</text>
+  <text x="96" y="392" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="52" font-weight="500" letter-spacing="-1" fill="${s.subtitle}">${escape(c.title[1])}</text>`
+      : `<text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="${s.title}">${escape(c.title[0])}</text>
+  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="${s.subtitle}">${escape(c.title[1])}</text>`
+  }
   <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="${s.meta}">${escape(c.meta)}</text>
 </svg>
 `

@@ -133,6 +133,13 @@ last stop. A lone registry icon is a category badge: it says which section the
 post is filed under and nothing about the post. Registry marks appear **inside**
 a motif, at content scale, never floating in a corner.
 
+**Exception: a banner whose subject *is* a mark.** A note about one version of a
+platform shows that version's logo (`logo` in the spec, a licensed SVG credited
+in the note, or a registry icon when no licensed file exists). The headline is
+then the name a reader searches for ("Android 6.0") and the subtext what it was
+called ("Marshmallow"). The owner chose this for the `android-versions` series:
+the marshmallow says more about Android 6.0 than a generic shield.
+
 Four files per banner — two locales × two surfaces:
 
 | Output | Used by |
