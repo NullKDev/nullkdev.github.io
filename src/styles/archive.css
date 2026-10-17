@@ -2709,6 +2709,17 @@ html:has(.lightbox[open]) {
     transition: none;
   }
 }
+/* What a demo island leaves in place when it cannot mount (no JavaScript):
+   the same footprint as a quiet aside, so the gap reads as intentional. */
+.prose .demo-fallback {
+  margin: 1.6rem 0;
+  padding: 1rem 1.1rem;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-md);
+  color: var(--ink-muted);
+  font-size: 0.92rem;
+}
+
 /* MDX callout: type-driven accent, 1px frame, tinted icon (no fat borders). */
 .prose .callout {
   --cc: var(--accent);

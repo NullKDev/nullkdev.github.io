@@ -18,19 +18,19 @@ evidence: []
 protection: { mode: public }
 ---
 
-import PretextStreamingDemo from '@/components/demos/PretextStreamingDemo'
+import PretextStreamingIsland from '@/components/demos/PretextStreamingIsland.astro'
 
 ## El demo
 
-Pulsa **Simulate Stream** para ver llegar mensajes de IA token a token. Cada burbuja se expande fluidamente mientras se llena de texto — sin jank, sin reflow, sin layout thrashing. Luego cambia al **modo 🐢 DOM** y ejecútalo de nuevo para ver la diferencia en el contador de fps.
+Pulsa **Simular streaming** para ver llegar mensajes de IA token a token. Cada burbuja se expande fluidamente mientras se llena de texto — sin jank, sin reflow, sin layout thrashing. Luego cambia al **modo DOM** y ejecútalo de nuevo para ver la diferencia en el contador de fps.
 
-<PretextStreamingDemo client:only="react" />
+<PretextStreamingIsland locale="es" />
 
 ---
 
 ## Qué está pasando
 
-En **modo ⚡ pretext**, cada fotograma hace esto:
+En **modo pretext**, cada fotograma hace esto:
 
 1. Obtiene el fragmento de texto actual en streaming
 2. Llama a `prepare(text, font)` — medición en canvas, se ejecuta una vez cuando el texto cambia
@@ -39,7 +39,7 @@ En **modo ⚡ pretext**, cada fotograma hace esto:
 
 Sin lecturas del DOM después del paso 2. El árbol de layout del navegador nunca se ensucia por la medición en sí.
 
-En **modo 🐢 DOM**, cada fotograma hace esto en su lugar:
+En **modo DOM**, cada fotograma hace esto en su lugar:
 
 1. Obtiene el fragmento de texto actual en streaming
 2. Crea un `<div>` oculto, establece su texto y estilos, lo agrega a `document.body`

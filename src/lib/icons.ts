@@ -107,6 +107,17 @@ const registry = {
   sun: 'lucide:sun',
   moon: 'lucide:moon',
 
+  /* Media and demo controls. `pause`/`play` are the robot's motion toggle and
+     the demos' playback button; `fast`/`slow` name the two measuring paths the
+     streaming demo compares, so they read as speed, not as brand marks. */
+  pause: 'lucide:pause',
+  play: 'lucide:play',
+  stop: 'lucide:square',
+  loading: 'lucide:loader-circle',
+  upload: 'lucide:upload',
+  fast: 'lucide:zap',
+  slow: 'lucide:turtle',
+
   /* Callout tones — consumed by src/components/mdx/Callout.astro, which used to
      carry its own private icon set at a fourth stroke width. Named after the
      mark, not the tone: `note` is already taken by the Notes entry kind, and
