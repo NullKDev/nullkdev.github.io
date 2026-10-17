@@ -6,6 +6,7 @@ import Layout from '@/layouts/Layout.astro'
 import { getBannerSources } from '@/lib/banners'
 import {
   getAdjacentDocuments,
+  getCounterpartDocument,
   getDocumentAlternatePath,
   getDocumentCounterpartPath,
   getDocumentPath,
@@ -17,8 +18,9 @@ import {
 } from '@/lib/content'
 import { getTopicLabel } from '@/data/taxonomy'
 import { getArchiveLabel } from '@/i18n/archive'
-import { buildDocumentOutline } from '@/lib/outline'
+import { buildDocumentOutline, getCounterpartAnchors } from '@/lib/outline'
 import { buildDocumentArticleLd } from '@/lib/structured-data'
+import EntryContentsCompact from '@/components/entry/EntryContentsCompact.astro'
 import EntryOutline from '@/components/entry/EntryOutline.astro'
 import EntryReadingTools from '@/components/entry/EntryReadingTools.astro'
 import EvidenceList from '@/components/entry/EvidenceList.astro'
@@ -49,6 +51,15 @@ const relationships = await getDocumentRelationships(document)
 const { Content, headings } = await render(document)
 // The same depth rule the subpost gets when its entry inlines it.
 const outline = buildDocumentOutline(headings)
+// Heading i → heading i of the translation, for the language switch; see
+// `getCounterpartAnchors` and `mountLocaleAnchor`.
+const counterpartDocument = await getCounterpartDocument(document)
+const counterpartAnchors = getCounterpartAnchors(
+  outline,
+  counterpartDocument
+    ? buildDocumentOutline((await render(counterpartDocument)).headings)
+    : undefined,
+)
 
 /* Just the subpost. Concatenating the parent title produced 153-character
    <title> elements that a search result truncates into uselessness — "How
@@ -81,6 +92,10 @@ const jsonLd = buildDocumentArticleLd({
 >
   <main
     class="entry-page document-page"
+    data-domain={domain}
+    data-counterpart-anchors={counterpartAnchors
+      ? JSON.stringify(counterpartAnchors)
+      : undefined}
     data-copy={dictionary.archive.copy}
     data-copied={dictionary.archive.copied}
   >
@@ -103,22 +118,25 @@ const jsonLd = buildDocumentArticleLd({
         {document.data.summary}
       </p>
     </header>
+    <EntryContentsCompact items={outline} locale={locale} />
     <div class="entry-layout">
-      <article class="prose"><Content /></article><aside
-        class="entry-index"
-        aria-label={dictionary.archive.contents}
-      >
-        <EntryOutline items={outline} locale={locale} /><h2>
-          {dictionary.archive.topics}
-        </h2><ul class="topic-list">
-          {
-            document.data.topics.map((topic) => (
-              <li>{getTopicLabel(topic, locale)}</li>
-            ))
-          }
-        </ul>
-      </aside>
+      <article class="prose"><Content /></article>
+      <div class="entry-index">
+        <EntryOutline items={outline} locale={locale} />
+      </div>
     </div>
+    {
+      document.data.topics.length > 0 && (
+        <section class="entry-topics" aria-labelledby="entry-topics-title">
+          <h2 id="entry-topics-title">{dictionary.archive.topics}</h2>
+          <ul class="topic-list">
+            {document.data.topics.map((topic) => (
+              <li>{getTopicLabel(topic, locale)}</li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
     {
       (document.data.evidence.length > 0 || relationships.length > 0) && (
         <div class="entry-record">

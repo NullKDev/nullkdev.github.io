@@ -1,10 +1,17 @@
 ---
-// The "In this record" index of a long-form page. The items — which headings,
-// at which level — are derived in `src/lib/outline.ts`; this only renders
-// them. `data-toc` is what the active-section marker in
-// `src/lib/entry-enhancements.ts` looks for.
+// The "In this record" index of a long-form page, beside the text on wide
+// screens. The items — which headings, at which level, with which number — are
+// derived in `src/lib/outline.ts`; this only renders them.
+//
+// The list is its own scroll container (`data-toc-scroll`): a 51-item index in
+// a sticky box used to run past the bottom of the window, so the active item
+// sat off-screen. Each inlined subpost is a `<details>` group: its title is
+// always listed, its headings only when the reader is in it (opened by
+// `src/lib/entry-enhancements.ts`) or opens it — which works without
+// JavaScript, since `<details>` is native. `data-toc` is what the
+// active-section marker looks for.
 import { getDictionary, type Locale } from '@/i18n'
-import type { OutlineItem } from '@/lib/outline'
+import { groupOutlineByPart, type OutlineItem } from '@/lib/outline'
 
 interface Props {
   items: readonly OutlineItem[]
@@ -12,16 +19,47 @@ interface Props {
 }
 const { items, locale } = Astro.props
 const dictionary = getDictionary(locale)
+const { lead, parts } = groupOutlineByPart(items)
+const count = (n: number) =>
+  `${n} ${n === 1 ? dictionary.archive.section : dictionary.archive.sections}`
 ---
 
 {
   items.length > 0 && (
     <nav class="toc" aria-label={dictionary.archive.contents}>
       <h2>{dictionary.archive.contents}</h2>
-      <ol class="toc-list" data-toc>
-        {items.map((item) => (
+      <ol class="toc-list" data-toc data-toc-scroll>
+        {lead.map((item) => (
           <li data-level={item.level}>
-            <a href={`#${item.slug}`}>{item.text}</a>
+            <a href={`#${item.slug}`}>
+              {item.number && <span class="toc-num">{item.number}</span>}
+              <span class="toc-text">{item.text}</span>
+            </a>
+          </li>
+        ))}
+        {parts.map(({ part, items: partItems }) => (
+          <li data-level="1" class="toc-part">
+            <a href={`#${part.slug}`}>
+              <span class="toc-text">{part.text}</span>
+            </a>
+            {partItems.length > 0 && (
+              <details data-toc-part>
+                <summary>
+                  {count(partItems.length)}
+                  {part.minutes !== undefined &&
+                    ` · ${part.minutes} ${dictionary.archive.minutes}`}
+                </summary>
+                <ol>
+                  {partItems.map((item) => (
+                    <li data-level={item.level}>
+                      <a href={`#${item.slug}`}>
+                        <span class="toc-text">{item.text}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </details>
+            )}
           </li>
         ))}
       </ol>

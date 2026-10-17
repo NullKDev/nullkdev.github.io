@@ -6,8 +6,9 @@
  *
  * Each one is progressive: without JavaScript the page is complete — the code
  * is still readable, the contents still link, the images still show. These
- * only add a progress bar, copy buttons, the active-section marker, diagram
- * zoom and an image viewer.
+ * only add a progress bar, copy buttons, the active-section marker, section
+ * self-links, a language switch that keeps the reader's place, diagram zoom
+ * and an image viewer.
  *
  * Anything the browser shows comes from the server-rendered page: labels from
  * `data-*` attributes written from the locale dictionary, and the viewer's
@@ -82,39 +83,187 @@ export const mountCodeBlocks = (root: HTMLElement): void => {
     })
 }
 
-/** Table of contents: mark the section currently in view as active. */
-export const mountTocHighlight = (root: HTMLElement): void => {
+const prefersReducedMotion = (): boolean =>
+  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? true
+
+/**
+ * Keep `link` visible inside its scrolling index, the way
+ * `scrollIntoView({ block: 'nearest' })` would — but by moving that list only.
+ * `scrollIntoView` also scrolls every scrollable ancestor, the page included,
+ * and the page is exactly what the reader is scrolling.
+ */
+const revealInList = (list: HTMLElement, link: HTMLElement): void => {
+  const box = list.getBoundingClientRect()
+  const item = link.getBoundingClientRect()
+  // A little air, so the active link never sits flush against the fade.
+  const margin = 24
+  let delta = 0
+  if (item.top < box.top) delta = item.top - box.top - margin
+  else if (item.bottom > box.bottom) delta = item.bottom - box.bottom + margin
+  if (delta === 0) return
+  const top = Math.max(0, list.scrollTop + delta)
+  if (prefersReducedMotion() || typeof list.scrollTo !== 'function') {
+    list.scrollTop = top
+  } else {
+    list.scrollTo({ top, behavior: 'smooth' })
+  }
+}
+
+/**
+ * The part group an index link belongs to: the `<details>` it sits in, or,
+ * for a part's own title, the `<details>` beside it.
+ */
+const partGroupOf = (link: HTMLElement): HTMLDetailsElement | null =>
+  link.closest<HTMLDetailsElement>('details[data-toc-part]') ??
+  link.parentElement?.querySelector<HTMLDetailsElement>(
+    ':scope > details[data-toc-part]',
+  ) ??
+  null
+
+/**
+ * Table of contents: mark the section currently in view as active, in every
+ * contents on the page (the desktop index and the phone contents list the same
+ * sections). In the desktop index it also opens the part being read, closes
+ * the part it opened before — never one the reader opened — and scrolls the
+ * index itself so the active link stays visible.
+ */
+export const mountTocHighlight = (
+  root: HTMLElement,
+  onActive?: (id: string) => void,
+): void => {
   const tocLinks = Array.from(
     root.querySelectorAll<HTMLAnchorElement>('[data-toc] a[href^="#"]'),
   )
   if (!tocLinks.length || !('IntersectionObserver' in window)) return
-  const linkById = new Map<string, HTMLAnchorElement>()
+  const linksById = new Map<string, HTMLAnchorElement[]>()
   const targets: HTMLElement[] = []
+  const idOf = new WeakMap<Element, string>()
   tocLinks.forEach((link) => {
     const id = decodeURIComponent(link.hash.slice(1))
     const target = document.getElementById(id)
-    if (target) {
-      linkById.set(id, link)
-      targets.push(target)
+    if (!target) return
+    const links = linksById.get(id)
+    if (links) links.push(link)
+    else {
+      linksById.set(id, [link])
+      /* A part's `<section>` stays in the band for as long as the reader is
+         anywhere inside it, so after a jump it outranked the heading actually
+         in view. Watch its title heading instead, reported as the part. */
+      const watched =
+        target.matches('section') && target.querySelector('h2')
+          ? target.querySelector<HTMLElement>('h2')!
+          : target
+      idOf.set(watched, id)
+      targets.push(watched)
     }
   })
   let activeId: string | null = null
+  let opened: HTMLDetailsElement | null = null
   const setActive = (id: string) => {
     if (id === activeId) return
     activeId = id
     tocLinks.forEach((link) => link.removeAttribute('aria-current'))
-    linkById.get(id)?.setAttribute('aria-current', 'true')
+    const links = linksById.get(id) ?? []
+    links.forEach((link) => link.setAttribute('aria-current', 'true'))
+    // One part per section, whichever contents the link sits in.
+    const group = links.map(partGroupOf).find(Boolean) ?? null
+    if (group !== opened) {
+      if (opened?.dataset.autoOpen !== undefined) {
+        opened.open = false
+        delete opened.dataset.autoOpen
+      }
+      opened = null
+      if (group && !group.open) {
+        group.open = true
+        group.dataset.autoOpen = ''
+        opened = group
+      }
+    }
+    links.forEach((link) => {
+      const list = link.closest<HTMLElement>('[data-toc-scroll]')
+      if (list) revealInList(list, link)
+    })
+    onActive?.(id)
   }
   const observer = new IntersectionObserver(
     (entries) => {
       const visible = entries
         .filter((entry) => entry.isIntersecting)
         .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
-      if (visible[0]) setActive(visible[0].target.id)
+      const first = visible[0]?.target
+      if (first) setActive(idOf.get(first) ?? first.id)
     },
     { rootMargin: '-12% 0px -70% 0px', threshold: 0 },
   )
   targets.forEach((target) => observer.observe(target))
+}
+
+/**
+ * A self-link on every anchored `h2`/`h3`, revealed on hover and focus, so a
+ * reader can copy the address of the section they are on.
+ *
+ * The mark and the label come from a server-rendered `<template>` (registry
+ * icon, locale dictionary). The link sits inside the heading, so the heading
+ * is re-labelled by its own text: otherwise "Link to section: …" would become
+ * part of every heading's name in a screen reader's headings list.
+ */
+export const mountSectionLinks = (root: HTMLElement): void => {
+  const template = root.querySelector<HTMLTemplateElement>(
+    'template[data-section-link]',
+  )
+  const anchor = template?.content.querySelector<HTMLAnchorElement>('a')
+  if (!template || !anchor) return
+  const label = template.dataset.label ?? 'Link to section'
+  root
+    .querySelectorAll<HTMLHeadingElement>('.prose h2[id], .prose h3[id]')
+    .forEach((heading) => {
+      if (heading.querySelector('.heading-anchor')) return
+      const text = (heading.textContent ?? '').replace(/\s+/g, ' ').trim()
+      const title = document.createElement('span')
+      title.id = `${heading.id}--title`
+      title.append(...Array.from(heading.childNodes))
+      const link = anchor.cloneNode(true) as HTMLAnchorElement
+      link.setAttribute('href', `#${heading.id}`)
+      link.setAttribute('aria-label', `${label}: ${text}`)
+      heading.append(title, link)
+      heading.setAttribute('aria-labelledby', title.id)
+    })
+}
+
+/** `href` with its fragment replaced by `anchor`, or removed without one. */
+export const withAnchor = (
+  href: string,
+  anchor: string | undefined,
+): string => {
+  const base = href.split('#')[0]
+  return anchor ? `${base}#${anchor}` : base
+}
+
+/**
+ * Keep the reader's place across the language switch. The server writes the
+ * heading i → heading i mapping on the page only when both translations share
+ * an outline (`getCounterpartAnchors`); here the switch's address follows the
+ * active section, so a click, a middle-click and a copied link all land on the
+ * same section in the other language. Without a mapping it is left alone and
+ * lands at the top, as before.
+ */
+export const mountLocaleAnchor = (
+  root: HTMLElement,
+): ((id: string) => void) => {
+  const link = document.querySelector<HTMLAnchorElement>(
+    '[data-locale-control]',
+  )
+  let anchors: Record<string, string> = {}
+  try {
+    anchors = JSON.parse(root.dataset.counterpartAnchors ?? '{}')
+  } catch {
+    /* A malformed mapping only costs the reader their place. */
+  }
+  const base = link?.getAttribute('href') ?? ''
+  return (id) => {
+    if (!link || !base) return
+    link.setAttribute('href', withAnchor(base, anchors[id]))
+  }
 }
 
 /**
@@ -212,7 +361,8 @@ export const mountEntryEnhancements = (
   if (!root) return
   mountReadingProgress(root)
   mountCodeBlocks(root)
-  mountTocHighlight(root)
+  mountSectionLinks(root)
+  mountTocHighlight(root, mountLocaleAnchor(root))
   mountDiagramViewers()
   mountFigures(root)
 }

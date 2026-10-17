@@ -55,6 +55,7 @@ const registry = {
   minus: 'lucide:minus',
   plus: 'lucide:plus',
   fitWidth: 'lucide:scan',
+  sectionLink: 'lucide:hash',
 
   // Record apparatus — the blocks under an entry
   outcomes: 'lucide:target',

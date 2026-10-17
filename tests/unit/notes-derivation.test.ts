@@ -7,6 +7,7 @@ import {
   getAvailableKinds,
   getAvailableTopics,
   getNotesMeta,
+  getNeighbourAge,
   getReadingMinutes,
   getSupersededBy,
   noteKinds,
@@ -323,5 +324,26 @@ describe('resolveNotesCounterpart', () => {
         kind: 'paper',
       }),
     ).toEqual({ alternatePath: undefined, switchPath: '/es/notes/' })
+  })
+})
+
+describe('pager neighbour age', () => {
+  /* Inside a series the date pager sits under the series navigation; calling
+     both "Previous" made two different "previous" notes. The pager says
+     which way in time it goes instead — derived, because the archive order
+     ranks featured notes first and is not strictly by date. */
+  const day = (value: string) => new Date(value)
+
+  it('names a later neighbour newer and an earlier one older', () => {
+    expect(getNeighbourAge(day('2026-05-01'), day('2026-06-01'))).toBe('newer')
+    expect(getNeighbourAge(day('2026-05-01'), day('2026-04-01'))).toBe('older')
+  })
+
+  it('makes no claim when a date is missing or the same', () => {
+    expect(getNeighbourAge(undefined, day('2026-04-01'))).toBeUndefined()
+    expect(getNeighbourAge(day('2026-04-01'), undefined)).toBeUndefined()
+    expect(
+      getNeighbourAge(day('2026-04-01'), day('2026-04-01')),
+    ).toBeUndefined()
   })
 })

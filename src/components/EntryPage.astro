@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content'
 import { pageTitle } from '@/data/brand'
 import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
+import EntryContentsCompact from '@/components/entry/EntryContentsCompact.astro'
 import EntryOutline from '@/components/entry/EntryOutline.astro'
 import EntryReadingTools from '@/components/entry/EntryReadingTools.astro'
 import EvidenceList from '@/components/entry/EvidenceList.astro'
@@ -21,6 +22,7 @@ import Layout from '@/layouts/Layout.astro'
 import {
   getAdjacentEntries,
   getArchiveEntries,
+  getCounterpartEntry,
   getDocumentsForEntry,
   getEntryAlternatePath,
   getEntryCounterpartPath,
@@ -35,8 +37,13 @@ import { getTopicLabel } from '@/data/taxonomy'
 import { getArchiveLabel } from '@/i18n/archive'
 import { getRelatedLabEntries } from '@/lib/lab'
 import { renderIcon } from '@/lib/icons'
-import { getReadingMinutes } from '@/lib/notes'
-import { buildEntryOutline, getPartAnchor } from '@/lib/outline'
+import { getNeighbourAge, getReadingMinutes } from '@/lib/notes'
+import {
+  buildEntryOutline,
+  getCounterpartAnchors,
+  getPartAnchor,
+  type OutlinePart,
+} from '@/lib/outline'
 import { buildEntryArticleLd } from '@/lib/structured-data'
 import '@/styles/global.css'
 import '@/styles/archive.css'
@@ -87,14 +94,60 @@ const readingMinutes = getReadingMinutes([
 ])
 
 // One anchored outline spanning the entry and its subposts; see lib/outline.
+// Each part carries its own reading time, so a collapsed part still says how
+// long it is.
+const toPart = (
+  document: (typeof documents)[number],
+  partHeadings: OutlinePart['headings'],
+): OutlinePart => ({
+  slug: getPartAnchor(document.data.order),
+  title: document.data.title,
+  minutes: getReadingMinutes([document.body]),
+  headings: partHeadings,
+})
 const tableOfContents = buildEntryOutline(
   headings,
-  renderedDocuments.map(({ document, rendered }) => ({
-    slug: getPartAnchor(document.data.order),
-    title: document.data.title,
-    headings: rendered.headings,
-  })),
+  renderedDocuments.map(({ document, rendered }) =>
+    toPart(document, rendered.headings),
+  ),
 )
+
+// The translation's outline, so the language switch can land on the same
+// section (heading i → heading i). Only kept when both outlines match; see
+// `getCounterpartAnchors`.
+const counterpart = await getCounterpartEntry(entry)
+const counterpartOutline = counterpart
+  ? buildEntryOutline(
+      (await render(counterpart)).headings,
+      await Promise.all(
+        (await getDocumentsForEntry(counterpart)).map(async (document) =>
+          toPart(document, (await render(document)).headings),
+        ),
+      ),
+    )
+  : undefined
+const counterpartAnchors = getCounterpartAnchors(
+  tableOfContents,
+  counterpartOutline,
+)
+
+// Inside a series the date pager sits under the series navigation. Two
+// "Previous" links pointing at different notes read as a contradiction, so
+// there the pager names the direction in time instead.
+const inSeries = Boolean(series && series.total > 1)
+const pagerLabel = (
+  neighbour: ArchiveEntry | undefined,
+  fallback: string,
+): string => {
+  if (!inSeries || !neighbour) return fallback
+  const age = getNeighbourAge(
+    entry.data.publishedAt,
+    neighbour.data.publishedAt,
+  )
+  if (age === 'newer') return dictionary.archive.newerNote
+  if (age === 'older') return dictionary.archive.olderNote
+  return fallback
+}
 
 /* One derivation for every surface that renders a banner — see
    `src/lib/banners.ts` for why it does not live here. */
@@ -140,6 +193,10 @@ const jsonLd = buildEntryArticleLd({
 >
   <main
     class="entry-page"
+    data-domain={domain}
+    data-counterpart-anchors={counterpartAnchors
+      ? JSON.stringify(counterpartAnchors)
+      : undefined}
     data-copy={dictionary.archive.copy}
     data-copied={dictionary.archive.copied}
     data-note-key={isLab
@@ -291,6 +348,8 @@ const jsonLd = buildEntryArticleLd({
       )
     }
 
+    <EntryContentsCompact items={tableOfContents} locale={locale} />
+
     <div class="entry-layout">
       <article class="prose">
         <Content />
@@ -310,21 +369,27 @@ const jsonLd = buildEntryArticleLd({
           })
         }
       </article>
-      <aside class="entry-index" aria-label={dictionary.archive.contents}>
+      <div class="entry-index">
         <EntryOutline items={tableOfContents} locale={locale} />
-        <h2>{dictionary.archive.topics}</h2><ul class="topic-list">
-          {
-            entry.data.topics.map((topic) => (
+      </div>
+    </div>
+
+    {
+      entry.data.topics.length > 0 && (
+        <section class="entry-topics" aria-labelledby="entry-topics-title">
+          <h2 id="entry-topics-title">{dictionary.archive.topics}</h2>
+          <ul class="topic-list">
+            {entry.data.topics.map((topic) => (
               <li>
                 <a href={getLocalizedPath(`/tags#${topic}`, locale)}>
                   {getTopicLabel(topic, locale)}
                 </a>
               </li>
-            ))
-          }
-        </ul>
-      </aside>
-    </div>
+            ))}
+          </ul>
+        </section>
+      )
+    }
 
     {
       (('outcomes' in entry.data && entry.data.outcomes.length > 0) ||
@@ -465,7 +530,7 @@ const jsonLd = buildEntryArticleLd({
     }
     <RelatedLab entries={relatedLab} locale={locale} />
     {
-      series && (
+      series && inSeries && (
         <nav class="series-navigation" aria-label={dictionary.archive.series}>
           <p>
             <strong>
@@ -503,7 +568,7 @@ const jsonLd = buildEntryArticleLd({
             >
               <span class="pager-link__label">
                 <Icon name="arrowLeft" size={14} />{' '}
-                {dictionary.archive.previous}
+                {pagerLabel(adjacent.previous, dictionary.archive.previous)}
               </span>
               <span class="pager-link__title">
                 {adjacent.previous.data.title}
@@ -519,7 +584,8 @@ const jsonLd = buildEntryArticleLd({
               href={getEntryPath(adjacent.next)}
             >
               <span class="pager-link__label">
-                {dictionary.archive.next} <Icon name="arrowRight" size={14} />
+                {pagerLabel(adjacent.next, dictionary.archive.next)}{' '}
+                <Icon name="arrowRight" size={14} />
               </span>
               <span class="pager-link__title">{adjacent.next.data.title}</span>
             </a>

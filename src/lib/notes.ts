@@ -28,6 +28,22 @@ export const getReadingMinutes = (
 }
 
 /**
+ * Which way in time a pager neighbour lies. The archive order ranks featured
+ * notes first, so "the next one in the list" is not necessarily older; the
+ * label is derived from the dates instead, and makes no claim without two
+ * distinct ones.
+ */
+export const getNeighbourAge = (
+  current: Date | undefined,
+  neighbour: Date | undefined,
+): 'newer' | 'older' | undefined => {
+  if (!current || !neighbour) return undefined
+  const difference = neighbour.getTime() - current.getTime()
+  if (difference === 0) return undefined
+  return difference > 0 ? 'newer' : 'older'
+}
+
+/**
  * Per-entry index data derived in one pass: reading time counting subposts,
  * and the real titles of those subposts. A four-part series is not a
  * two-minute read, and a manual should list what it covers by title rather

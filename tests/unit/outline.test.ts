@@ -3,7 +3,10 @@ import { describe, expect, it } from 'vitest'
 import {
   buildDocumentOutline,
   buildEntryOutline,
+  getCounterpartAnchors,
   getPartAnchor,
+  getTopLevelOutline,
+  groupOutlineByPart,
 } from '@/lib/outline'
 
 const heading = (depth: number, slug: string) => ({
@@ -20,16 +23,34 @@ describe('entry outline', () => {
         {
           slug: 'part-1',
           title: 'Part one',
+          minutes: 4,
           headings: [heading(2, 'setup'), heading(3, 'step'), heading(4, 'x')],
         },
       ],
     )
     expect(outline).toEqual([
-      { slug: 'intro', text: 'INTRO', level: 1 },
+      { slug: 'intro', text: 'INTRO', level: 1, number: '01' },
       { slug: 'detail', text: 'DETAIL', level: 2 },
-      { slug: 'part-1', text: 'Part one', level: 1 },
+      { slug: 'part-1', text: 'Part one', level: 1, part: true, minutes: 4 },
       { slug: 'setup', text: 'SETUP', level: 2 },
       { slug: 'step', text: 'STEP', level: 3 },
+    ])
+  })
+
+  it('numbers top-level headings the way the prose counter numbers them', () => {
+    /* The counter in prose.css numbers `.prose > h2` only: an entry's own
+       sections. A subpost's h2s sit inside its `<section>`, so they carry no
+       number in the text and must carry none in the index either. */
+    const outline = buildEntryOutline(
+      [heading(2, 'a'), heading(3, 'a1'), heading(2, 'b')],
+      [{ slug: 'part-1', title: 'P', headings: [heading(2, 'c')] }],
+    )
+    expect(outline.map((item) => item.number)).toEqual([
+      '01',
+      undefined,
+      '02',
+      undefined,
+      undefined,
     ])
   })
 
@@ -50,9 +71,88 @@ describe('document outline', () => {
         heading(4, 'too-deep'),
       ]),
     ).toEqual([
-      { slug: 'setup', text: 'SETUP', level: 1 },
+      { slug: 'setup', text: 'SETUP', level: 1, number: '01' },
       { slug: 'step', text: 'STEP', level: 2 },
     ])
+  })
+})
+
+describe('outline grouping', () => {
+  const outline = buildEntryOutline(
+    [heading(2, 'intro'), heading(3, 'detail')],
+    [
+      { slug: 'part-1', title: 'One', headings: [heading(2, 'setup')] },
+      { slug: 'part-2', title: 'Two', headings: [] },
+    ],
+  )
+
+  it('splits the entry’s own sections from each part and its headings', () => {
+    const { lead, parts } = groupOutlineByPart(outline)
+    expect(lead.map(({ slug }) => slug)).toEqual(['intro', 'detail'])
+    expect(
+      parts.map(({ part, items }) => [
+        part.slug,
+        items.map(({ slug }) => slug),
+      ]),
+    ).toEqual([
+      ['part-1', ['setup']],
+      ['part-2', []],
+    ])
+  })
+
+  it('has no parts for an entry without subposts', () => {
+    const { lead, parts } = groupOutlineByPart(buildDocumentOutline([]))
+    expect(lead).toEqual([])
+    expect(parts).toEqual([])
+  })
+
+  it('keeps only the top rung for the compact phone contents', () => {
+    expect(getTopLevelOutline(outline).map(({ slug }) => slug)).toEqual([
+      'intro',
+      'part-1',
+      'part-2',
+    ])
+  })
+})
+
+describe('counterpart anchors', () => {
+  const en = buildDocumentOutline([
+    heading(2, 'setup'),
+    heading(3, 'step'),
+    heading(2, 'wrap-up'),
+  ])
+  const es = buildDocumentOutline([
+    heading(2, 'preparacion'),
+    heading(3, 'paso'),
+    heading(2, 'cierre'),
+  ])
+
+  it('maps heading i of one language to heading i of the other', () => {
+    expect(getCounterpartAnchors(en, es)).toEqual({
+      setup: 'preparacion',
+      step: 'paso',
+      'wrap-up': 'cierre',
+    })
+  })
+
+  it('degrades to no mapping when the outlines differ in length', () => {
+    expect(getCounterpartAnchors(en, es.slice(0, 2))).toBeUndefined()
+  })
+
+  it('degrades to no mapping when the outlines differ in shape', () => {
+    /* Same length, different nesting: heading i is no longer the same
+       section, so landing there would be a confident wrong answer. */
+    const reshaped = buildDocumentOutline([
+      heading(2, 'preparacion'),
+      heading(2, 'paso'),
+      heading(2, 'cierre'),
+    ])
+    expect(getCounterpartAnchors(en, reshaped)).toBeUndefined()
+  })
+
+  it('has nothing to map without a translation', () => {
+    expect(getCounterpartAnchors(en, undefined)).toBeUndefined()
+    expect(getCounterpartAnchors([], [])).toBeUndefined()
   })
 })
 
