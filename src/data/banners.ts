@@ -378,6 +378,120 @@ export const banners: readonly BannerSpec[] = [
     ...PALETTE.android,
   },
   {
+    slug: 'android-12',
+    copy: {
+      en: {
+        kicker: 'Android 12 · API 31',
+        title: ['Material You,', 'locked exports'],
+        meta: 'Snow Cone · Oct 2021 · Privacy dashboard',
+        alt: 'Android 12 banner — wallpaper-driven color, a privacy dashboard and mandatory exported flags.',
+      },
+      es: {
+        kicker: 'Android 12 · API 31',
+        title: ['Material You,', 'exports cerrados'],
+        meta: 'Snow Cone · oct. 2021 · Panel de privacidad',
+        alt: 'Banner de Android 12 — color tomado del fondo, panel de privacidad y exported obligatorio.',
+      },
+    },
+    art: 'api-locked',
+    ...PALETTE.android,
+  },
+  {
+    slug: 'android-12l',
+    copy: {
+      en: {
+        kicker: 'Android 12L · API 32',
+        title: ['Built for', 'large screens'],
+        meta: '12L · Mar 2022 · Taskbar and split screen',
+        alt: 'Android 12L banner — a taskbar and split screen for tablets and foldables.',
+      },
+      es: {
+        kicker: 'Android 12L · API 32',
+        title: ['Hecho para', 'pantallas grandes'],
+        meta: '12L · mar 2022 · Barra de tareas y pantalla dividida',
+        alt: 'Banner de Android 12L — barra de tareas y pantalla dividida para tablets y plegables.',
+      },
+    },
+    art: 'process-bridge',
+    ...PALETTE.android,
+  },
+  {
+    slug: 'android-13',
+    copy: {
+      en: {
+        kicker: 'Android 13 · API 33',
+        title: ['Ask before you', 'notify'],
+        meta: 'Tiramisu · Aug 2022 · POST_NOTIFICATIONS',
+        alt: 'Android 13 banner — the notification permission and granular media access.',
+      },
+      es: {
+        kicker: 'Android 13 · API 33',
+        title: ['Pide permiso', 'para notificar'],
+        meta: 'Tiramisu · ago 2022 · POST_NOTIFICATIONS',
+        alt: 'Banner de Android 13 — el permiso de notificaciones y el acceso granular a medios.',
+      },
+    },
+    art: 'api-locked',
+    ...PALETTE.android,
+  },
+  {
+    slug: 'android-14',
+    copy: {
+      en: {
+        kicker: 'Android 14 · API 34',
+        title: ['Every service', 'states its type'],
+        meta: 'Upside Down Cake · Oct 2023 · foreground service types',
+        alt: 'Android 14 banner — typed foreground services and selected photo access.',
+      },
+      es: {
+        kicker: 'Android 14 · API 34',
+        title: ['Cada servicio', 'declara su tipo'],
+        meta: 'Upside Down Cake · oct 2023 · tipos de servicio',
+        alt: 'Banner de Android 14 — servicios en primer plano con tipo y acceso a fotos elegidas.',
+      },
+    },
+    art: 'api-locked',
+    ...PALETTE.android,
+  },
+  {
+    slug: 'android-15',
+    copy: {
+      en: {
+        kicker: 'Android 15 · API 35',
+        title: ['Edge to edge,', 'by default'],
+        meta: 'Vanilla Ice Cream · October 2024 · Private space',
+        alt: 'Android 15 banner — enforced edge-to-edge and the private space.',
+      },
+      es: {
+        kicker: 'Android 15 · API 35',
+        title: ['Edge-to-edge,', 'por defecto'],
+        meta: 'Vanilla Ice Cream · octubre 2024 · Espacio privado',
+        alt: 'Banner de Android 15 — edge-to-edge obligatorio y el espacio privado.',
+      },
+    },
+    art: 'api-locked',
+    ...PALETTE.android,
+  },
+  {
+    slug: 'android-16',
+    copy: {
+      en: {
+        kicker: 'Android 16 · API 36',
+        title: ['Adaptive by', 'default'],
+        meta: 'Baklava · June 2025 · large screens',
+        alt: 'Android 16 banner — adaptive layouts on large screens and the first minor SDK release.',
+      },
+      es: {
+        kicker: 'Android 16 · API 36',
+        title: ['Adaptable por', 'defecto'],
+        meta: 'Baklava · junio de 2025 · pantallas grandes',
+        alt: 'Banner de Android 16 — diseños adaptables en pantallas grandes y la primera versión menor del SDK.',
+      },
+    },
+    art: 'api-locked',
+    ...PALETTE.android,
+  },
+  {
     slug: 'gof-patterns-android',
     copy: {
       en: {
