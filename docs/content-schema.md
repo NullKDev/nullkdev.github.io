@@ -247,6 +247,24 @@ flowchart LR
   diagram wider than ~330px scrolls on a phone. Prefer `LR` for a fan-out, few
   nodes, short labels; the prose carries the detail.
 
+### Authoring kit
+
+An `.mdx` entry may import the components in `src/components/mdx/`. Each one
+renders static HTML with the site's own styles; none ships JavaScript.
+
+| Component | Use it for |
+|---|---|
+| `Callout.astro` | A labelled aside — `type` is `note` · `info` · `success` · `warn`, plus an optional `title`. The icon comes from the registry. |
+| `Figure.astro` | An image with an optional caption (`src`, `alt`, `caption`). It joins the entry lightbox. |
+| `ReadmeCard.astro` | A prominent link out to a repository README or other long-form source (`href`, `repo`, `label`). |
+| `BenchmarkBars.astro` | A measured comparison: a real `<table>` with bars drawn against a fixed `max`. |
+
+Pass every visible string from the entry, in the entry's language — the kit
+does not translate for you. Interactive demos are not part of the kit: they live
+in `src/components/demos/` and are rendered through their `*Island.astro`
+wrapper with a `locale`, which supplies the translated labels and the no-JS
+fallback.
+
 ## Adding a field
 
 1. Add it to `content.config.ts` **with a default**, so existing records stay valid.

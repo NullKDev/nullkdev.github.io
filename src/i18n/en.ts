@@ -40,6 +40,7 @@ export const en = {
     modelLoading: 'Assembling 3D model…',
     modelReady: '3D model ready.',
     modelError: 'The 3D model is unavailable.',
+    modelPause: 'Pause the robot animation',
     modelRobotAlt: 'An expressive indigo humanoid robot.',
   },
   section: {
@@ -302,5 +303,52 @@ export const en = {
     lab: 'Enter the shared passphrase for this Lab entry.',
     notes: 'Enter the shared passphrase for this Notes entry.',
     gallery: 'Enter the shared passphrase for this Gallery entry.',
+  },
+  demos: {
+    needsScript:
+      'This demo runs in your browser and needs JavaScript. The text around it explains what it shows.',
+    matteflow: {
+      canvasLabel:
+        'Article text reflowing line by line around the person cut out of the chosen video.',
+      empty:
+        'Choose a video of a person against a plain background to see the text flow around them.',
+      videoError:
+        'Your browser could not play that file. Try another video, such as an MP4 or WebM.',
+      loading: 'Loading…',
+      play: 'Play',
+      pause: 'Pause',
+      ownVideo: 'Use your own video',
+      layoutVia: 'Text layout via',
+      tipLead: 'Best results with your video:',
+      tipBody:
+        'use a recording with a person against a plain, uniform background — green screen, white wall, or solid color backdrop. The matte algorithm measures color distance from the frame edges, so busy or gradient backgrounds will reduce quality.',
+      wrap: 'Wrap',
+      scale: 'Scale',
+      verticalShift: 'V-Shift',
+      horizontalShift: 'H-Shift',
+      article:
+        'Typography has always shaped how we receive words. Long before screens, typographers spent careers perfecting the rhythm of text on a page — the interplay of white space, column width, and line length that makes reading effortless. The browser, for all its power, treats text layout as a side effect: something that happens after the fact, triggered by the DOM, measured by reflowing the entire layout tree. Pretext changes that contract. It brings text measurement into userland — pure arithmetic on cached segment widths — so that layout becomes an input to your render loop rather than a costly side effect of it. The result you see here is a direct consequence: article text that flows around a moving foreground subject, line by line, recomputed each frame at near-zero cost. This is what it looks like when the browser is no longer in charge of measuring its own words.',
+    },
+    streaming: {
+      modeLabel: 'Measuring method',
+      pretextMode: 'pretext',
+      domMode: 'DOM',
+      start: 'Simulate stream',
+      running: 'Streaming…',
+      stop: 'Stop',
+      idle: 'Press "Simulate stream" to watch AI messages stream in real time.',
+      loading: 'Loading pretext…',
+      fps: 'fps',
+      pretextNote: 'arithmetic layout, zero DOM reads per frame',
+      domNote: 'getBoundingClientRect() triggers layout reflow each frame',
+      question1: 'How does pretext avoid layout reflow when measuring text?',
+      answer1:
+        "Pretext splits work into two phases. First, prepare() uses Canvas's measureText() API to measure every segment once — this runs outside the browser's layout pipeline, so no reflow happens. The results are cached on an opaque handle.",
+      answer2:
+        'Then layout() takes that handle and computes line breaks using pure arithmetic — it never touches the DOM. Width changes are essentially free: just call layout() again with the new width, no re-measuring needed.',
+      question2: 'What kind of speedup does that give in practice?',
+      answer3:
+        'For 500 text blocks: prepare() ≈ 19ms (same as one DOM pass), but layout() ≈ 0.09ms per call. Once prepared, each subsequent resize or streaming update costs almost nothing — that is roughly 500× faster for height prediction in hot paths like AI chat or virtualized lists.',
+    },
   },
 } as const

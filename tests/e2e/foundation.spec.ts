@@ -212,7 +212,11 @@ test('autonomous Robot hero is unboxed, single-model, and announces readiness', 
   await expect(attribution).toBeVisible()
   expect(await attribution.evaluate((element) => element.tagName)).toBe('P')
   await expect(page.locator('.model-showcase > a')).toHaveCount(0)
-  await expect(page.locator('.model-showcase > button')).toHaveCount(0)
+  // The one control is the reader's pause (WCAG 2.2.2) — no clip pickers.
+  await expect(page.locator('.model-showcase > button')).toHaveCount(1)
+  await expect(
+    page.getByRole('button', { name: 'Pause the robot animation' }),
+  ).toBeVisible()
   await expect(page.locator('.model-showcase > select')).toHaveCount(0)
   await expectNoAxeViolations(page)
 })
@@ -401,6 +405,67 @@ test('Robot pauses clips and pending gaps outside strict activity conditions', a
   await expect(showcase).toHaveAttribute('data-motion', 'playing')
 })
 
+test('Robot pause control stops clips and gaps until the reader resumes', async ({
+  page,
+}) => {
+  test.skip((page.viewportSize()?.width ?? 0) <= 760, 'desktop-only behavior')
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await page.addInitScript(() => {
+    Math.random = () => 0
+  })
+  await page.goto('/')
+  const showcase = page.locator('[data-model-showcase]')
+  const viewer = page.locator('model-viewer')
+  const toggle = page.getByRole('button', {
+    name: 'Pause the robot animation',
+  })
+  const currentTime = () =>
+    viewer.evaluate(
+      (element) =>
+        (element as HTMLElement & { currentTime: number }).currentTime,
+    )
+
+  await expect(showcase).toHaveAttribute('data-ready', '', MODEL_READY)
+  await expect(toggle).toBeVisible()
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false')
+  const box = await toggle.boundingBox()
+  expect(box?.width).toBeGreaterThanOrEqual(44)
+  expect(box?.height).toBeGreaterThanOrEqual(44)
+  await expect.poll(currentTime).toBeGreaterThan(0.2)
+
+  // Keyboard first: the control is reachable and operable without a pointer.
+  await toggle.focus()
+  await page.keyboard.press('Enter')
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+  await expect(showcase).toHaveAttribute('data-motion', 'paused')
+  const pausedTime = await currentTime()
+  for (const time of await currentTimesDuring(viewer, 700)) {
+    expect(time).toBeCloseTo(pausedTime, 2)
+  }
+
+  // A clip ending while paused must not schedule the next one.
+  await viewer.dispatchEvent('finished')
+  await expect(showcase).not.toHaveAttribute('data-gap-active', '')
+  await expect(showcase).toHaveAttribute('data-motion', 'paused')
+  expect(
+    await attributeChangesDuring(showcase, 'data-animation', 1100),
+  ).toEqual([])
+  await expect(showcase).toHaveAttribute('data-animation', 'Idle')
+
+  // The pause outlives a reload for the rest of the session.
+  await page.reload()
+  await expect(showcase).toHaveAttribute('data-ready', '', MODEL_READY)
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+  await expect(showcase).toHaveAttribute('data-motion', 'paused')
+
+  // Resuming restarts the sequence where the activity gate allows.
+  await toggle.click()
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false')
+  await expect(showcase).toHaveAttribute('data-motion', 'playing')
+  await expect.poll(currentTime).toBeGreaterThan(0.2)
+  await expectNoAxeViolations(page)
+})
+
 test('reduced motion still animates and context loss stops all work', async ({
   page,
 }) => {
@@ -465,7 +530,7 @@ test('load failure is honest, stable, and does not retry', async ({ page }) => {
   )
 })
 
-test('@mobile loads only Robot near the viewport without controls or overflow', async ({
+test('@mobile loads only Robot near the viewport without clip controls or overflow', async ({
   page,
 }) => {
   const modelRequests: string[] = []
@@ -483,7 +548,13 @@ test('@mobile loads only Robot near the viewport without controls or overflow', 
   expect(modelRequests.map((url) => new URL(url).pathname)).toEqual([
     '/models/RobotExpressive.glb',
   ])
-  await expect(page.locator('.model-showcase > button')).toHaveCount(0)
+  // Only the reader's pause control, at a full touch-target size.
+  await expect(page.locator('.model-showcase > button')).toHaveCount(1)
+  const pause = page.getByRole('button', { name: 'Pause the robot animation' })
+  await expect(pause).toBeInViewport()
+  const box = await pause.boundingBox()
+  expect(box?.width).toBeGreaterThanOrEqual(44)
+  expect(box?.height).toBeGreaterThanOrEqual(44)
   await expect(page.locator('.model-showcase > select')).toHaveCount(0)
   expect(
     await page.evaluate(() => ({
@@ -492,6 +563,85 @@ test('@mobile loads only Robot near the viewport without controls or overflow', 
     })),
   ).toEqual({ clientWidth: 390, scrollWidth: 390 })
   await expectNoAxeViolations(page)
+})
+
+test('Spanish demos speak Spanish, use registry marks, and can be stopped', async ({
+  page,
+}) => {
+  await page.goto('/es/notes/pretext-layout-de-texto/demo-react/')
+  const start = page.getByRole('button', { name: 'Simular streaming' })
+  await expect(start).toBeVisible()
+  await expect(
+    page.getByRole('group', { name: 'Método de medición' }),
+  ).toBeVisible()
+  await expect(page.getByRole('button', { name: 'pretext' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  await start.click()
+  const stop = page.getByRole('button', { name: 'Detener' })
+  await expect(stop).toBeVisible()
+  await stop.click()
+  await expect(start).toBeVisible()
+
+  // No clip ships with the demo: the article fills the column, and the only
+  // control offered is the one that works — choosing a video.
+  await page.goto('/es/notes/pretext-layout-de-texto/matteflow/')
+  await expect(
+    page.getByRole('img', { name: /Texto de un artículo/ }),
+  ).toBeVisible()
+  await expect(
+    page.getByRole('status').filter({ hasText: 'Elige un video' }),
+  ).toBeVisible()
+  await expect(page.getByText('Usar tu propio video')).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: /Pausar|Reproducir/ }),
+  ).toHaveCount(0)
+
+  for (const path of [
+    '/es/notes/pretext-layout-de-texto/demo-react/',
+    '/es/notes/pretext-layout-de-texto/matteflow/',
+  ]) {
+    await page.goto(path)
+    const text = await page.locator('main').innerText()
+    for (const glyph of ['⏳', '⏸', '▶', '⚡', '🐢']) {
+      expect(text).not.toContain(glyph)
+    }
+    for (const english of [
+      'Simulate stream',
+      'Use your own video',
+      'Loading…',
+    ]) {
+      expect(text).not.toContain(english)
+    }
+  }
+  await expectNoAxeViolations(page)
+})
+
+test('demos explain themselves without JavaScript, in the page language', async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    baseURL: 'http://127.0.0.1:4321',
+    javaScriptEnabled: false,
+  })
+  const page = await context.newPage()
+  await page.goto('/es/notes/pretext-layout-de-texto/matteflow/')
+  await expect(
+    page.getByText(
+      'Esta demo se ejecuta en tu navegador y necesita JavaScript.',
+      {
+        exact: false,
+      },
+    ),
+  ).toBeVisible()
+  await page.goto('/notes/pretext-text-layout/react-demo/')
+  await expect(
+    page.getByText('This demo runs in your browser and needs JavaScript.', {
+      exact: false,
+    }),
+  ).toBeVisible()
+  await context.close()
 })
 
 test('Spanish shell and detail metadata contain no known English UI labels', async ({

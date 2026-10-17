@@ -4,16 +4,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': new URL('./src', import.meta.url).pathname,
-      '@components': new URL('./src/components', import.meta.url).pathname,
-      '@ui': new URL('./src/components/ui', import.meta.url).pathname,
-      '@layouts': new URL('./src/layouts', import.meta.url).pathname,
-      '@lib': new URL('./src/lib', import.meta.url).pathname,
-      '@content': new URL('./src/content', import.meta.url).pathname,
-      '@styles': new URL('./src/styles', import.meta.url).pathname,
-      '@i18n': new URL('./src/i18n', import.meta.url).pathname,
-      '@data': new URL('./src/data', import.meta.url).pathname,
-      '@assets': new URL('./src/assets', import.meta.url).pathname,
-      '@hooks': new URL('./src/hooks', import.meta.url).pathname,
       /* Astro's virtual module does not exist outside a build, so Vite
          cannot resolve it and vi.mock never gets a turn. The stub is what
          makes a lib module that reads a collection testable. */

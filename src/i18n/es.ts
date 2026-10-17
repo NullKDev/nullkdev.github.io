@@ -42,6 +42,7 @@ export const es = {
     modelLoading: 'Ensamblando modelo 3D…',
     modelReady: 'Modelo 3D listo.',
     modelError: 'El modelo 3D no está disponible.',
+    modelPause: 'Pausar la animación del robot',
     modelRobotAlt: 'Un robot humanoide expresivo de color índigo.',
   },
   section: {
@@ -54,14 +55,14 @@ export const es = {
       'Un banco de trabajo: herramientas que construí porque las necesitaba, y experimentos que sigo corriendo. Algunos están terminados, otros siguen en movimiento — cada uno dice cuál es su estado y de qué está hecho.',
     notes: 'Escritos sobre lo que construyo e investigo.',
     gallery: 'Estudios visuales y colecciones curadas.',
-    empty: 'Todavía no hay nada acá.',
+    empty: 'Todavía no hay nada aquí.',
   },
   lab: {
     entry: 'entrada',
     entries: 'entradas',
     status: 'Estado',
     execution: 'Ejecución',
-    allLocal: 'Todo acá corre en tu navegador',
+    allLocal: 'Todo aquí corre en tu navegador',
     localCount: 'corren en tu navegador',
     networkCount: 'consultan un servicio externo',
     filter: 'Filtrar por tecnología o tema',
@@ -85,7 +86,7 @@ export const es = {
     builtWith: 'Construido con',
     related: 'Entradas relacionadas',
     supported: 'disponible en este navegador',
-    missing: 'no disponible acá',
+    missing: 'no disponible aquí',
     prompts: 'pide permiso',
     unsupported: 'A este navegador le falta algo que esta entrada necesita.',
     needs: 'Necesita',
@@ -270,13 +271,13 @@ export const es = {
     eyebrow: 'Continuidad del archivo',
     movedTitle: 'Este registro cambió de ubicación.',
     movedBody:
-      'El material fue migrado a la estructura actual del archivo. Continuá hacia su registro canónico.',
+      'El material fue migrado a la estructura actual del archivo. Continúa hacia su registro canónico.',
     retiredTitle: 'Este registro visual fue retirado.',
     retiredBody:
-      'La ruta anterior se conserva por continuidad, pero no se republica material sin verificar. Continuá hacia el archivo honesto de Galería.',
+      'La ruta anterior se conserva por continuidad, pero no se republica material sin verificar. Continúa hacia el archivo honesto de Galería.',
     demoTitle: 'Esta demo interactiva fue retirada.',
     demoBody:
-      'La demo anterior no se republica porque su implementación no fue migrada, atribuida, explicada y probada por completo. Continuá hacia la Nota preservada con sus fuentes.',
+      'La demo anterior no se republica porque su implementación no fue migrada, atribuida, explicada y probada por completo. Continúa hacia la Nota preservada con sus fuentes.',
     continue: 'Continuar al archivo',
   },
   notFound: {
@@ -300,9 +301,57 @@ export const es = {
     reset: 'Bloquear de nuevo',
     error: 'Esa frase de acceso no pudo desbloquear este material.',
     loading: 'Derivando una clave y comprobando la carga cifrada…',
-    work: 'Ingresá la frase compartida para esta entrada de Trabajo.',
-    lab: 'Ingresá la frase compartida para esta entrada de Laboratorio.',
-    notes: 'Ingresá la frase compartida para esta entrada de Notas.',
-    gallery: 'Ingresá la frase compartida para esta entrada de Galería.',
+    work: 'Ingresa la frase compartida para esta entrada de Trabajo.',
+    lab: 'Ingresa la frase compartida para esta entrada de Laboratorio.',
+    notes: 'Ingresa la frase compartida para esta entrada de Notas.',
+    gallery: 'Ingresa la frase compartida para esta entrada de Galería.',
+  },
+  demos: {
+    needsScript:
+      'Esta demo se ejecuta en tu navegador y necesita JavaScript. El texto que la rodea explica lo que muestra.',
+    matteflow: {
+      canvasLabel:
+        'Texto de un artículo que se reacomoda línea por línea alrededor de la persona recortada del video elegido.',
+      empty:
+        'Elige un video de una persona contra un fondo liso para ver cómo el texto fluye a su alrededor.',
+      videoError:
+        'Tu navegador no pudo reproducir ese archivo. Prueba con otro video, por ejemplo MP4 o WebM.',
+      loading: 'Cargando…',
+      play: 'Reproducir',
+      pause: 'Pausar',
+      ownVideo: 'Usar tu propio video',
+      layoutVia: 'Layout de texto con',
+      tipLead: 'Mejores resultados con tu video:',
+      tipBody:
+        'usa una grabación de una persona contra un fondo liso y uniforme — pantalla verde, pared blanca o un telón de color sólido. El algoritmo de matte mide la distancia de color desde los bordes del fotograma, así que los fondos recargados o con degradado reducen la calidad.',
+      wrap: 'Wrap',
+      scale: 'Escala',
+      verticalShift: 'Desp. V',
+      horizontalShift: 'Desp. H',
+      article:
+        'La tipografía siempre ha moldeado la forma en que recibimos las palabras. Mucho antes de las pantallas, los tipógrafos dedicaron carreras enteras a perfeccionar el ritmo del texto en la página: la relación entre el espacio en blanco, el ancho de columna y el largo de línea que hace que leer no cueste. El navegador, con todo su poder, trata el layout de texto como un efecto secundario: algo que ocurre después, disparado por el DOM y medido reacomodando todo el árbol de layout. Pretext cambia ese contrato. Lleva la medición de texto al código de la aplicación, aritmética pura sobre anchos de segmento en caché, para que el layout sea una entrada de tu bucle de render y no un efecto secundario costoso. Lo que ves aquí es la consecuencia directa: texto que fluye alrededor de un sujeto en movimiento, línea por línea, recalculado en cada fotograma a un costo casi nulo. Así se ve cuando el navegador deja de estar a cargo de medir sus propias palabras.',
+    },
+    streaming: {
+      modeLabel: 'Método de medición',
+      pretextMode: 'pretext',
+      domMode: 'DOM',
+      start: 'Simular streaming',
+      running: 'Transmitiendo…',
+      stop: 'Detener',
+      idle: 'Pulsa «Simular streaming» para ver mensajes de IA llegar en tiempo real.',
+      loading: 'Cargando pretext…',
+      fps: 'fps',
+      pretextNote: 'layout aritmético, cero lecturas del DOM por fotograma',
+      domNote:
+        'getBoundingClientRect() provoca un reflow de layout en cada fotograma',
+      question1: '¿Cómo evita pretext el reflow de layout al medir texto?',
+      answer1:
+        'Pretext divide el trabajo en dos fases. Primero, prepare() usa la API measureText() de Canvas para medir cada segmento una sola vez; esto ocurre fuera del pipeline de layout del navegador, así que no hay reflow. Los resultados quedan en caché en un handle opaco.',
+      answer2:
+        'Después, layout() toma ese handle y calcula los saltos de línea con aritmética pura, sin tocar el DOM. Cambiar el ancho es prácticamente gratis: basta con llamar de nuevo a layout() con el ancho nuevo, sin volver a medir.',
+      question2: '¿Qué aceleración da eso en la práctica?',
+      answer3:
+        'Para 500 bloques de texto: prepare() ≈ 19 ms (lo mismo que una pasada por el DOM), pero layout() ≈ 0,09 ms por llamada. Una vez preparado, cada redimensionado o actualización del streaming cuesta casi nada: unas 500× más rápido para predecir alturas en rutas críticas como un chat de IA o listas virtualizadas.',
+    },
   },
 } as const satisfies Dictionary

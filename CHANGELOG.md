@@ -70,6 +70,22 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ### Corregido
 
+- El robot de la portada se puede pausar: un botón visible de 44 px, operable
+  con teclado, con nombre fijo ("Pausar la animación del robot") y
+  `aria-pressed`. La pausa detiene el clip en curso y la espera hasta el
+  siguiente, se mantiene durante la sesión y convive con las pausas
+  automáticas (fuera de pantalla, pestaña oculta, fallo de WebGL). La
+  animación sigue siendo autónoma para todos, también con movimiento reducido.
+  El fin de cada clip se escucha con el evento público `finished` de
+  model-viewer, sin tocar sus propiedades internas.
+- Las demos de Pretext hablan el idioma de la página: botones, textos de
+  ayuda, el artículo de Matteflow y la conversación simulada se traducen desde
+  los diccionarios, con iconos del registro en lugar de emojis. Sin
+  JavaScript, cada demo explica que lo necesita en vez de dejar un hueco.
+  Matteflow ya no promete un video de ejemplo que no existe: muestra el
+  artículo y pide elegir un video, informa si no se puede reproducir y libera
+  el video subido al salir. El chat simulado se puede detener y deja de
+  actualizarse al abandonar la página.
 - Las páginas 404 ya no declaran como canónica la portada (`/` y `/es/`), lo
   que les decía a los buscadores que el error y el archivo eran el mismo
   documento. Siguen fuera del índice y sus textos se traducen desde los

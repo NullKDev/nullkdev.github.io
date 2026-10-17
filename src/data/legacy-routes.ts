@@ -1,4 +1,4 @@
-import type { Locale } from '@/i18n'
+import { getLocalizedPath, type Locale } from '@/i18n'
 
 export interface LegacyRoute {
   source: string
@@ -78,8 +78,8 @@ const route = (
   kind: LegacyRoute['kind'] = 'migrated',
   retirement?: LegacyRoute['retirement'],
 ): LegacyRoute => ({
-  source: `${locale === 'es' ? '/es' : ''}/${source}/`.replaceAll('//', '/'),
-  target: `${locale === 'es' ? '/es' : ''}/${target}/`.replaceAll('//', '/'),
+  source: getLocalizedPath(`/${source}/`, locale),
+  target: getLocalizedPath(`/${target}/`, locale),
   locale,
   kind,
   retirement,
