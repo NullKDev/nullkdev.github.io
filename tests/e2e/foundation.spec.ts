@@ -968,6 +968,19 @@ test('diagrams ship as static SVG that fits the column and zooms on request', as
   await expectNoAxeViolations(page)
 })
 
+test('Matteflow plays a video the reader chooses', async ({ page }) => {
+  // The file plays from a blob: URL. With `media-src 'self'` alone the CSP
+  // blocked it, the console logged the violation, and the demo could only ever
+  // show its "could not play" message.
+  await page.goto('/notes/pretext-text-layout/matteflow/')
+  const demo = page.locator('canvas[role="img"]').first().locator('..')
+  await expect(demo.getByRole('status')).toBeVisible()
+  await page
+    .locator('input[type="file"][accept="video/*"]')
+    .setInputFiles(new URL('fixtures/probe.webm', import.meta.url).pathname)
+  await expect(demo.getByRole('status')).toHaveCount(0)
+})
+
 test('legacy routes are noindex canonical compatibility pages without loops', async ({
   page,
   request,

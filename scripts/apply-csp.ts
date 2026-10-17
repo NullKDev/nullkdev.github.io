@@ -109,7 +109,7 @@ const BASE = [
   allow("img-src 'self' data: blob:", GA_SCRIPT, ...GA_COLLECT),
   "font-src 'self'",
   allow("connect-src 'self'", GA_SCRIPT, ...GA_COLLECT),
-  "media-src 'self'",
+  "media-src 'self' blob:",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   "object-src 'none'",

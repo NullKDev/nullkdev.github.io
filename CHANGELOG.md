@@ -84,7 +84,9 @@ este repo usa de verdad — no las genéricas del estándar.
   JavaScript, cada demo explica que lo necesita en vez de dejar un hueco.
   Matteflow ya no promete un video de ejemplo que no existe: muestra el
   artículo y pide elegir un video, informa si no se puede reproducir y libera
-  el video subido al salir. El chat simulado se puede detener y deja de
+  el video subido al salir. Elegir un video propio nunca había funcionado en
+  producción: la CSP bloqueaba los `blob:` en `media-src`, y ahora los
+  permite. El chat simulado se puede detener y deja de
   actualizarse al abandonar la página.
 - Las páginas 404 ya no declaran como canónica la portada (`/` y `/es/`), lo
   que les decía a los buscadores que el error y el archivo eran el mismo
