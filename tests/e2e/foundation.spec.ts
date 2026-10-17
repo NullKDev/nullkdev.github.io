@@ -540,7 +540,7 @@ test('@mobile drawer and 44px controls reset native dialog state', async ({
   page,
 }) => {
   await page.goto('/')
-  const trigger = page.getByRole('button', { name: 'Open navigation' })
+  const trigger = page.getByRole('button', { name: 'Menu', exact: true })
   for (const locator of [
     trigger,
     page.getByRole('link', { name: 'View in Spanish' }),

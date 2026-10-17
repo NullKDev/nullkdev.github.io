@@ -13,7 +13,6 @@ export const en = {
     notes: 'Notes',
     gallery: 'Gallery',
     about: 'About',
-    menu: 'Open navigation',
     menuText: 'Menu',
     close: 'Close navigation',
     closeText: 'Close',

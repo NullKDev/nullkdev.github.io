@@ -23,7 +23,7 @@ const reference = ['uses', 'stack', 'tags', 'colophon'] as const
       <a
         class="wordmark"
         href={getLocalizedPath('/', locale)}
-        aria-label={dictionary.nav.home}
+        aria-label={`${brand.mark}, ${dictionary.nav.home}`}
       >
         <BrandMark />
         <span>{brand.mark}</span>

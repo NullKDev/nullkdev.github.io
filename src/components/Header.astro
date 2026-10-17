@@ -27,7 +27,7 @@ const localeFallback = getLocalizedPath(
   <a
     class="wordmark"
     href={getLocalizedPath('/', locale)}
-    aria-label={dictionary.nav.home}
+    aria-label={`${brand.mark}, ${dictionary.nav.home}`}
   >
     <BrandMark />
     <span>{brand.mark}</span>
@@ -66,7 +66,7 @@ const localeFallback = getLocalizedPath(
     <a
       class="locale-control"
       href={counterpartPath ?? localeFallback}
-      aria-label={dictionary.nav.language}
+      aria-label={`${otherLocale.toUpperCase()}, ${dictionary.nav.language}`}
       hreflang={otherLocale}
       data-locale-control
     >
@@ -76,7 +76,6 @@ const localeFallback = getLocalizedPath(
       class="menu-control"
       type="button"
       data-menu-open
-      aria-label={dictionary.nav.menu}
       aria-controls="mobile-navigation"
       aria-expanded="false">{dictionary.nav.menuText}</button
     >

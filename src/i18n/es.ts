@@ -15,7 +15,6 @@ export const es = {
     notes: 'Notas',
     gallery: 'Galería',
     about: 'Acerca de',
-    menu: 'Abrir navegación',
     menuText: 'Menú',
     close: 'Cerrar navegación',
     closeText: 'Cerrar',

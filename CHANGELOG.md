@@ -51,6 +51,14 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ## [Unreleased]
 
+### Corregido
+
+- El logo, el selector de idioma y el botón de menú del encabezado anunciaban
+  un nombre accesible que no contenía su texto visible ("Home" para el logo,
+  "Open navigation" para un botón que dice "Menu"), lo que incumple WCAG 2.5.3
+  y deja sin respuesta a quien navega por voz. Ahora el nombre empieza por lo
+  que se ve. Lo detectó la regla `label-content-name-mismatch` de axe-core 4.14.
+
 ### Seguridad
 
 - Se cierran 34 de 35 advisories (16 high) en dependencias transitivas
