@@ -159,6 +159,7 @@ export const es = {
     zoomOut: 'Alejar',
     zoomReset: 'Ajustar al ancho',
     openImage: 'Abrir imagen',
+    readFullReadme: 'Leer el README completo',
     image: 'Imagen',
     documents: 'Documentos',
     evidence: 'Registro de evidencia',

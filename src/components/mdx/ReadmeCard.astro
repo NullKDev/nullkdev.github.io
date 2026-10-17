@@ -3,6 +3,7 @@
 // README (or any long-form source). Styles live in archive.css (.readme-card).
 // Part of the MDX authoring kit: kept even while no entry imports it, so a
 // dead-code sweep should not remove it. See docs/architecture.md.
+import { getDictionary, getLocaleFromPath } from '@/i18n'
 import { renderIcon } from '@/lib/icons'
 
 interface Props {
@@ -10,7 +11,13 @@ interface Props {
   repo?: string
   label?: string
 }
-const { href, repo, label = 'Read the full README' } = Astro.props
+// MDX components receive no locale, so the default label follows the page URL.
+const {
+  href,
+  repo,
+  label = getDictionary(getLocaleFromPath(Astro.url.pathname)).archive
+    .readFullReadme,
+} = Astro.props
 ---
 
 <a class="readme-card" href={href} target="_blank" rel="noopener noreferrer">
