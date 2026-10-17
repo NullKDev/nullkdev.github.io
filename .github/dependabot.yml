@@ -1,6 +1,9 @@
 # Cooldowns exist because the danger window for a supply-chain attack is the
 # hours right after a malicious release lands, before it is yanked. Waiting a
-# few days costs nothing on a static site and skips most of that window.
+# week costs nothing on a static site and skips most of that window. Both
+# ecosystems wait the same 7 days: an action runs with the workflow's token, so
+# it is no less of a supply-chain path than a package. zizmor's
+# `dependabot-cooldown` audit (run in workflow-lint.yml) enforces the floor.
 version: 2
 updates:
   - package-ecosystem: npm
@@ -14,7 +17,7 @@ updates:
       day: monday
     open-pull-requests-limit: 5
     cooldown:
-      default-days: 5
+      default-days: 7
     # astro check refuses TypeScript 7, so the bump breaks the whole build, not
     # just lint. Lift this once @astrojs/check supports it.
     ignore:
@@ -40,6 +43,8 @@ updates:
     schedule:
       interval: weekly
       day: monday
+    cooldown:
+      default-days: 7
     groups:
       # init and analyze read the same config and refuse to run at different
       # versions: "Loaded a configuration file for version X, but running

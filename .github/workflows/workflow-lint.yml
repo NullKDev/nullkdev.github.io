@@ -1,14 +1,15 @@
 # The workflows themselves are attack surface: they hold the token that can
 # publish the site. actionlint catches correctness bugs, zizmor catches the
-# security patterns — injection sinks, over-broad permissions, unpinned actions.
+# security patterns — injection sinks, over-broad permissions, unpinned actions,
+# and in dependabot.yml a missing cooldown.
 name: Workflow lint
 
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/**']
+    paths: ['.github/workflows/**', '.github/dependabot.yml']
   pull_request:
-    paths: ['.github/workflows/**']
+    paths: ['.github/workflows/**', '.github/dependabot.yml']
 
 permissions:
   contents: read
@@ -22,16 +23,26 @@ jobs:
         with:
           persist-credentials: false
       - name: actionlint
-        # Pinned to a commit, not `main`: piping a moving script into a shell
-        # would reintroduce exactly the supply-chain hole the SHA pins close.
+        # The release binary is fetched directly and checked against a SHA-256
+        # written here, taken from the release's published checksums file.
+        # actionlint's download script verifies nothing, and a checksums file
+        # fetched from the same release would only prove the release agrees
+        # with itself. A version bump must update both lines together.
+        env:
+          ACTIONLINT_VERSION: 1.7.12
+          ACTIONLINT_SHA256: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
         run: |
-          curl -fsSL --proto '=https' --tlsv1.2 \
-            https://raw.githubusercontent.com/rhysd/actionlint/914e7df21a07ef503a81201c76d2b11c789d3fca/scripts/download-actionlint.bash \
-            -o download-actionlint.sh
-          bash download-actionlint.sh 1.7.12
+          archive="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          curl -fsSL --proto '=https' --tlsv1.2 -o "$archive" \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/${archive}"
+          echo "${ACTIONLINT_SHA256}  ${archive}" | sha256sum --check --strict -
+          tar -xzf "$archive" actionlint
           ./actionlint -color
       - name: zizmor
         uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
           enable-cache: false
-      - run: uvx zizmor --persona=regular .github/workflows
+      # Pinned: an unpinned `uvx zizmor` runs whatever PyPI serves that day,
+      # and a new audit could fail CI on a change that never touched a workflow.
+      # Scans `.github`, not just the workflows, so dependabot.yml is audited.
+      - run: uvx zizmor@1.29.0 --persona=regular .github
