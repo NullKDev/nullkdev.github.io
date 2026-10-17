@@ -1,0 +1,355 @@
+---
+entryId: notes-android-11
+locale: en
+translationKey: android-11
+slug: android-11
+title: 'Android 11: one-time grants, scoped storage'
+summary: API 30, September 2020. Camera, microphone and location got "Only this time", unused apps lost their permissions, and apps targeting 30 could no longer opt out of scoped storage.
+visibility: public
+maturity: stable
+publishedAt: 2026-10-17
+topics: [android, platform-apis, security]
+image: /banners/android-11.svg
+imageAlt: Android 11 banner — one-time permissions and enforced scoped storage.
+links:
+  - label: Android 11 features and APIs
+    href: https://developer.android.com/about/versions/11/features
+    kind: publication
+  - label: Privacy in Android 11
+    href: https://developer.android.com/about/versions/11/privacy
+    kind: publication
+references: []
+evidence: []
+documents: []
+protection: { mode: public }
+kind: article
+lifecycle: current
+series:
+  id: android-versions
+  order: 12
+citations:
+  - title: Android 11 features and APIs
+    url: https://developer.android.com/about/versions/11/features
+    accessedAt: 2026-10-17
+  - title: 'Behavior changes: all apps (Android 11)'
+    url: https://developer.android.com/about/versions/11/behavior-changes-all
+    accessedAt: 2026-10-17
+  - title: 'Behavior changes: apps targeting Android 11'
+    url: https://developer.android.com/about/versions/11/behavior-changes-11
+    accessedAt: 2026-10-17
+  - title: Privacy in Android 11
+    url: https://developer.android.com/about/versions/11/privacy
+    accessedAt: 2026-10-17
+  - title: Permissions updates in Android 11
+    url: https://developer.android.com/about/versions/11/privacy/permissions
+    accessedAt: 2026-10-17
+  - title: Location updates in Android 11
+    url: https://developer.android.com/about/versions/11/privacy/location
+    accessedAt: 2026-10-17
+  - title: Storage updates in Android 11
+    url: https://developer.android.com/about/versions/11/privacy/storage
+    accessedAt: 2026-10-17
+  - title: Foreground services in Android 11
+    url: https://developer.android.com/about/versions/11/privacy/foreground-services
+    accessedAt: 2026-10-17
+  - title: Data access auditing in Android 11
+    url: https://developer.android.com/about/versions/11/privacy/data-access-auditing
+    accessedAt: 2026-10-17
+  - title: Package visibility filtering on Android
+    url: https://developer.android.com/training/package-visibility
+    accessedAt: 2026-10-17
+  - title: Declare package visibility needs
+    url: https://developer.android.com/training/package-visibility/declaring
+    accessedAt: 2026-10-17
+  - title: Manage all files on a storage device
+    url: https://developer.android.com/training/data-storage/manage-all-files
+    accessedAt: 2026-10-17
+  - title: Request runtime permissions
+    url: https://developer.android.com/training/permissions/requesting
+    accessedAt: 2026-10-17
+  - title: App hibernation
+    url: https://developer.android.com/topic/performance/app-hibernation
+    accessedAt: 2026-10-17
+  - title: Android Debug Bridge (adb)
+    url: https://developer.android.com/tools/adb
+    accessedAt: 2026-10-17
+  - title: ApplicationExitInfo reference
+    url: https://developer.android.com/reference/android/app/ApplicationExitInfo
+    accessedAt: 2026-10-17
+  - title: 'Behavior changes: Android 13'
+    url: https://developer.android.com/about/versions/13/behavior-changes-13
+    accessedAt: 2026-10-17
+  - title: Foreground service types are required (Android 14)
+    url: https://developer.android.com/about/versions/14/changes/fgs-types-required
+    accessedAt: 2026-10-17
+  - title: Android 11 release notes (AOSP)
+    url: https://source.android.com/docs/setup/about/android-11-release
+    accessedAt: 2026-10-17
+  - title: Codenames, tags, and build numbers (AOSP)
+    url: https://source.android.com/docs/setup/reference/build-numbers
+    accessedAt: 2026-10-17
+  - title: Build.java at android-11.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-11.0.0_r1/core/java/android/os/Build.java
+    accessedAt: 2026-10-17
+  - title: PlatLogoActivity.java at android-11.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-11.0.0_r1/core/java/com/android/internal/app/PlatLogoActivity.java
+    accessedAt: 2026-10-17
+  - title: NekoControlsService.kt at android-11.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-11.0.0_r1/packages/EasterEgg/src/com/android/egg/neko/NekoControlsService.kt
+    accessedAt: 2026-10-17
+  - title: EasterEgg strings.xml at android-11.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-11.0.0_r1/packages/EasterEgg/res/values/strings.xml
+    accessedAt: 2026-10-17
+  - title: 'Turning it up to 11: Android 11 for developers'
+    url: https://android-developers.googleblog.com/2020/09/android11-final-release.html
+    accessedAt: 2026-10-17
+  - title: Turning it up to Android 11 (The Keyword)
+    url: https://blog.google/products/android/android-11/
+    accessedAt: 2026-10-17
+  - title: Pixel 4a (5G) and Pixel 5 pack 5G speeds and so much more (The Keyword)
+    url: https://blog.google/products-and-platforms/devices/pixel/new-5g-pixels-more-helpful-features/
+    accessedAt: 2026-10-17
+  - title: Pixel phone hardware tech specs (earlier models)
+    url: https://support.google.com/pixelphone/answer/16043605
+    accessedAt: 2026-10-17
+  - title: New Android App Bundle and target API level requirements in 2021
+    url: https://android-developers.googleblog.com/2020/11/new-android-app-bundle-and-target-api.html
+    accessedAt: 2026-10-17
+  - title: Use of the broad package (App) visibility (QUERY_ALL_PACKAGES) permission
+    url: https://support.google.com/googleplay/android-developer/answer/10158779
+    accessedAt: 2026-10-17
+  - title: Use of All files access (MANAGE_EXTERNAL_STORAGE) permission
+    url: https://support.google.com/googleplay/android-developer/answer/10467955
+    accessedAt: 2026-10-17
+  - title: Android 11—The Ars Technica Review
+    url: https://arstechnica.com/gadgets/2020/09/android-11-the-ars-technica-review/
+    accessedAt: 2026-10-17
+  - title: Google launches Android 11, rolling out now to Pixel phones (9to5Google)
+    url: https://9to5google.com/2020/09/08/google-android-11-pixel-launch/
+    accessedAt: 2026-10-17
+  - title: Android 11's internal dessert name is 'Red Velvet Cake' (9to5Google)
+    url: https://9to5google.com/2020/07/23/android-red-velvet-cake/
+    accessedAt: 2026-10-17
+  - title: '"Red Velvet Cake" is Android 11''s internal dessert name (XDA Developers)'
+    url: https://www.xda-developers.com/android-11-red-velvet-cake/
+    accessedAt: 2026-10-17
+  - title: 'File:Android 11 logo.svg (Wikimedia Commons)'
+    url: https://commons.wikimedia.org/wiki/File:Android_11_logo.svg
+    accessedAt: 2026-10-17
+  - title: 'File:Android 11 Easter Egg Light Theme.png (Wikimedia Commons)'
+    url: https://commons.wikimedia.org/wiki/File:Android_11_Easter_Egg_Light_Theme.png
+    accessedAt: 2026-10-17
+  - title: Android Developers content license
+    url: https://developer.android.com/license
+    accessedAt: 2026-10-17
+---
+
+Android 11 is the release where a permission could last for one session. Camera,
+microphone and location requests gained "Only this time", and apps nobody opened
+for months lost their grants. For developers it closed the scoped storage
+opt-out and hid the list of installed apps from apps targeting API 30.
+
+![The Android 11 wordmark: the word android followed by the number 11, in black](./assets/android-11-logo.svg 'Android 11 logo, shown on a light plate. Wikimedia Commons · Public domain (PD-textlogo) · Trademark of Google LLC')
+
+## At a glance
+
+|                                 |                                                                        |
+| ------------------------------- | ---------------------------------------------------------------------- |
+| Version                         | Android 11                                                             |
+| API level                       | 30                                                                     |
+| Name                            | Red Velvet Cake, internal only. Public name: Android 11                |
+| `Build.VERSION_CODES`           | `R`                                                                    |
+| Release                         | Pixel rollout began 8 September 2020                                   |
+| Launch devices                  | Pixel 5 and Pixel 4a (5G), announced 30 September 2020                 |
+| Google Play target-API deadline | New apps from August 2021, updates to existing apps from November 2021 |
+
+Google released Android 11 and pushed its source to AOSP on 8 September 2020,
+starting with the Pixel 2, 3, 3a, 4 and 4a. Google's announcement also named
+OnePlus, Xiaomi, OPPO and realme phones. The first phones sold with Android 11
+were the Pixel 5 and Pixel 4a (5G), announced on 30 September.
+
+Dave Burke, Android's VP of engineering, told the All About Android podcast in
+July 2020 that his team called the release "RVC", for Red Velvet Cake. He said
+the name would not appear outside Google. The SDK constant is just `R`, and
+build IDs start with R (`RP1A.200720.009` was the first Pixel build).
+
+## What it brought
+
+- **Conversations.** Messaging notifications get their own section at the top
+  of the shade. Users can mark a conversation as priority, per contact rather
+  than per app.
+- **Bubbles.** Floating chat windows, experimental behind a developer option in
+  Android 10, are open to all apps. An app targeting API 30 only gets bubbles
+  for notifications linked to a shortcut.
+- **Device controls.** A long press on the power button shows controls for
+  smart home devices. Apps add theirs with `ControlsProviderService`.
+- **Media controls.** Players move into Quick Settings, in a swipeable carousel
+  that can resume recent sessions, with an output switcher for speakers and
+  headphones.
+- **Screen recording.** A built-in recorder in Quick Settings, with audio from
+  the microphone, the device or both.
+- **Wireless debugging.** `adb` connects over Wi-Fi without a USB cable, after
+  pairing with a code (`adb pair ipaddr:port`) or a QR code from Android Studio.
+- **5G APIs.** Apps can tell when the user is on 5G
+  (`TelephonyDisplayInfo`), whether the connection is temporarily unmetered
+  (`NET_CAPABILITY_TEMPORARILY_NOT_METERED`), and its estimated bandwidth. The
+  emulator gained a 5G network setting in version 30.0.22.
+- **Developer tools.** Data access auditing (see below), app exit reasons
+  (`ApplicationExitInfo`), per-change compatibility toggles, `adb install
+--incremental` for large APKs, and more Kotlin nullability annotations.
+- **Smaller additions.** Synchronized keyboard animations
+  (`WindowInsetsAnimation.Callback`), waterfall and hinge-angle APIs, NNAPI 1.3,
+  low-latency decoding in `MediaCodec`, an NDK image decoder, and wireless
+  Android Auto on compatible cars.
+
+## Security and privacy
+
+- **Data access auditing.** An app registers
+  `AppOpsManager.OnOpNotedCallback` and is told each time its own code, or a
+  library inside it, touches private data. Attribution tags name the part of the
+  app that made the call.
+- **Scudo.** Native heap allocations use the Scudo hardened allocator, except on
+  low-memory devices. Crashes it catches show up as `Scudo ERROR:`.
+- **fdsan aborts.** The file descriptor sanitizer added in Android 10 now stops
+  the process on a double close or use after close, instead of logging.
+- **Heap pointer tagging.** For apps targeting 30, heap pointers carry
+  a tag in their top byte, to prepare for Arm's Memory Tagging Extension.
+- **Mainline.** Google more than doubled the number of system modules it can
+  update through Google Play system updates, with 12 new ones.
+- **Hardened identifiers.** `getIccId()` returns an empty string. App usage
+  stats move to credential-encrypted storage and stay unreadable until the user
+  unlocks the device.
+- **Platform.** The Generic Kernel Image (GKI) moves SoC support out of the core
+  kernel into modules. Virtual A/B brings seamless updates with less storage.
+  GWP-ASan runs in system apps to catch heap bugs.
+
+## Permissions
+
+Three changes reach every app, whatever it targets:
+
+- **One-time permissions.** The camera, microphone and location dialogs offer
+  "While using the app", "Only this time" and "Deny". A one-time grant lasts
+  while the activity is visible and a short while after the app goes to the
+  background, or until a foreground service started from the visible activity
+  stops.
+- **Two denials mean no.** If the user taps "Deny" twice for the same
+  permission, the dialog stops appearing. `adb shell dumpsys package <package>`
+  shows it as `USER_FIXED`.
+- **"Files & Media".** The Storage permission group is renamed. An app using
+  scoped storage that asks for `READ_EXTERNAL_STORAGE` gets a dialog about
+  photos and media.
+
+![A location permission dialog with three buttons: While using the app, Only this time, and Deny](./assets/one-time-permission-dialog.png 'The location dialog in Android 11, with the new "Only this time" option. Android Developers · CC BY 2.5')
+
+For apps that target API 30:
+
+- **Auto-reset.** If the user does not open the app for a few months, Android
+  resets its runtime permissions and tells the user. The per-app switch is
+  "Remove permissions if app isn't used" in App info > Permissions.
+- **Background location.** A request for foreground and background location at
+  once is ignored. The app asks for foreground location first, then for
+  `ACCESS_BACKGROUND_LOCATION`, and the user turns on "Allow all the time" in
+  Settings.
+- **Phone numbers.** `getLine1Number()` needs `READ_PHONE_NUMBERS` instead of
+  `READ_PHONE_STATE`.
+- **New.** `MANAGE_EXTERNAL_STORAGE` ("All files access") and
+  `QUERY_ALL_PACKAGES`, both covered below.
+
+```mermaid title="Background location for an app targeting API 30"
+flowchart TD
+  start([Feature needs location]) --> fg[Request ACCESS_FINE_LOCATION]
+  fg --> gatedDialog[System dialog]
+  gatedDialog -- While using the app --> bg[Request ACCESS_BACKGROUND_LOCATION]
+  bg --> gatedSettings[Settings page]
+  gatedSettings -- Allow all the time --> done[Location in the background]
+  gatedSettings -- left unchanged --> fgOnly[Foreground location only]
+```
+
+The system owns both dashed steps. The dialog for background location has no
+button to grant it; the user must pick "Allow all the time" on the settings
+page.
+
+The overlay permission also changed. `ACTION_MANAGE_OVERLAY_PERMISSION` always
+opens the top-level settings list and ignores the package in the intent. Call
+screening apps and apps capturing the screen get `SYSTEM_ALERT_WINDOW` on
+request.
+
+## What changed for your app
+
+### All apps on Android 11
+
+| Change                                                                               | What to do                                                                              |
+| ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| One-time permissions and the two-denial rule                                         | Check the permission before every access; expect a denial without a dialog              |
+| Foreground services started from the background lose camera, microphone and location | Start them while the app is visible                                                     |
+| Scudo is the native allocator, and fdsan aborts                                      | Fix memory and file descriptor bugs in native code                                      |
+| `getIccId()` returns an empty string                                                 | Use `getSubscriptionId()`                                                               |
+| App usage stats need an unlocked user                                                | Call `UsageStatsManager` after `isUserUnlocked()` returns true                          |
+| Sharing a content URI                                                                | Set `FLAG_GRANT_READ_URI_PERMISSION` or `FLAG_GRANT_WRITE_URI_PERMISSION` on the intent |
+| Maps v1 shared library removed                                                       | Move to the Maps SDK for Android and drop its `<uses-library>`                          |
+| Apps cannot read other apps' folders under `Android/data`                            | Share files through a `FileProvider` or the Storage Access Framework                    |
+
+### Apps targeting API 30
+
+| Change                                                                            | What to do                                                                                                  |
+| --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Scoped storage is enforced; `requestLegacyExternalStorage` is ignored             | Use `MediaStore` and the Storage Access Framework; migrate legacy files before you raise `targetSdkVersion` |
+| `WRITE_EXTERNAL_STORAGE` grants nothing extra                                     | Write to your own directories or to `MediaStore` collections                                                |
+| Installed apps are filtered from `getInstalledApplications()` and similar calls   | Declare the apps or intents you need in `<queries>`                                                         |
+| Camera or microphone in a foreground service                                      | Add `camera` or `microphone` to `android:foregroundServiceType`                                             |
+| Custom toasts from the background are blocked                                     | Use a text toast or a notification; `Toast.addCallback()` reports show and hide                             |
+| Foreground and background location in one request are ignored                     | Ask for them in two steps                                                                                   |
+| APKs signed only with v1 cannot be installed                                      | Sign with APK Signature Scheme v2 or higher, and keep v1 for older devices                                  |
+| A compressed or unaligned `resources.arsc` blocks install                         | Store it uncompressed and 4-byte aligned                                                                    |
+| Implicit `IMAGE_CAPTURE` and `VIDEO_CAPTURE` intents go to the system camera only | Name the package to use a third-party camera                                                                |
+| Firebase JobDispatcher and `GcmNetworkManager` stop on Android 6.0+               | Move to WorkManager                                                                                         |
+
+Scoped storage itself arrived in [Android 10](/notes/android-10/), where an app
+could still opt out. From API 30 there is no opt-out, but Android 11 brought
+back direct file paths (`File`, `fopen()`) for media an app can already reach,
+and added batch edits for media files.
+
+Apps whose core job needs every file, such as file managers, antivirus and
+backup apps, can declare `MANAGE_EXTERNAL_STORAGE`. The user enables "Allow
+access to manage all files" on a settings page the app opens with
+`ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION`, and `isExternalStorageManager()`
+reports the result. Even then, other apps' folders under `Android/data` stay
+closed.
+
+Package visibility works the same way. An app that talks to a text-to-speech
+engine or a speech recognition service, for example, must declare that intent
+in `<queries>`. For the rare app
+that needs the full list, `QUERY_ALL_PACKAGES` exists. Google Play reviews both
+permissions: All files access from May 2021, and `QUERY_ALL_PACKAGES` through
+its Permissions Declaration Form.
+
+## What lasted
+
+- **Auto-reset grew into hibernation.** From Android 12, an unused app also
+  loses its jobs, push messages and cache. From December 2021 Google Play
+  services brought the permission reset to Android 6.0 to 10.
+- **Package visibility** and `<queries>` are still the rule, and Play still
+  limits `QUERY_ALL_PACKAGES` to apps whose core function needs it.
+- **Storage** kept narrowing. Android 13 replaced `READ_EXTERNAL_STORAGE` with
+  `READ_MEDIA_IMAGES`, `READ_MEDIA_VIDEO` and `READ_MEDIA_AUDIO`.
+- **Foreground service types**, required here for camera and microphone, became
+  mandatory for every foreground service in apps targeting Android 14.
+- **Wireless debugging** stayed. Android 17 with adb 37.0.0 added "adb Wi-Fi
+  2.0", which reconnects on its own on a trusted network.
+- **One-time permissions** and the two-denial rule are unchanged.
+
+## Worth knowing
+
+- The Easter egg is a volume dial with 11 steps that stops at 10. Turn it to
+  the top three times and it unlocks: it then reaches 11 and the next stage
+  starts. The code says so: "until the dial is "unlocked", you can't turn it all
+  the way to 11".
+- The next stage is **Cat Controls**, the Android 7.0 cat collector moved into
+  the new device controls: a water bowl that fills from 0 to 200 mL, a food
+  bowl, and a toy to throw.
+- Google's own launch post was titled "Turning it up to 11", and its consumer
+  post listed 11 new things.
+- The `R` constant in AOSP has a one-word comment, `R.`, right below a
+  three-line quotation on Android 10's `Q`.
+
+![The Android 11 Easter egg: a green dial with a white knob, surrounded by eleven dots, with an orange number 11 beside it, on a light blue background](./assets/android-11-easter-egg.png 'The Android 11 Easter egg, turned up to 11. Wikimedia Commons · CC BY-SA 4.0')

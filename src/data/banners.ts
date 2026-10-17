@@ -283,6 +283,101 @@ export const banners: readonly BannerSpec[] = [
     ...PALETTE.android,
   },
   {
+    slug: 'android-8-0-oreo',
+    copy: {
+      en: {
+        kicker: 'Android 8.0 · API 26',
+        title: ['Background work', 'on a leash'],
+        meta: 'Oreo · Aug 2017 · background limits',
+        alt: 'Android 8.0 Oreo banner — background work under new limits.',
+      },
+      es: {
+        kicker: 'Android 8.0 · API 26',
+        title: ['Segundo plano', 'con correa'],
+        meta: 'Oreo · ago 2017 · límites en segundo plano',
+        alt: 'Banner de Android 8.0 Oreo — el trabajo en segundo plano bajo nuevos límites.',
+      },
+    },
+    art: 'memory-ceiling',
+    ...PALETTE.android,
+  },
+  {
+    slug: 'android-8-1-oreo',
+    copy: {
+      en: {
+        kicker: 'Android 8.1 · API 27',
+        title: ['Android Go', 'for 1 GB phones'],
+        meta: 'Oreo · Dec 2017 · Go edition, Neural Networks API',
+        alt: 'Android 8.1 Oreo banner — Android Go for low-RAM phones.',
+      },
+      es: {
+        kicker: 'Android 8.1 · API 27',
+        title: ['Android Go', 'para 1 GB de RAM'],
+        meta: 'Oreo · dic 2017 · edición Go, Neural Networks API',
+        alt: 'Banner de Android 8.1 Oreo — Android Go para teléfonos con poca RAM.',
+      },
+    },
+    art: 'memory-ceiling',
+    ...PALETTE.android,
+  },
+  {
+    slug: 'android-9-pie',
+    copy: {
+      en: {
+        kicker: 'Android 9 · API 28',
+        title: ['Idle apps lose', 'camera and mic'],
+        meta: 'Pie · Aug 2018 · TLS by default',
+        alt: 'Android 9 Pie banner — idle apps cut off from the camera, microphone and sensors.',
+      },
+      es: {
+        kicker: 'Android 9 · API 28',
+        title: ['Sin cámara ni', 'micro en reposo'],
+        meta: 'Pie · ago 2018 · TLS por defecto',
+        alt: 'Banner de Android 9 Pie — apps inactivas sin acceso a cámara, micrófono ni sensores.',
+      },
+    },
+    art: 'api-locked',
+    ...PALETTE.android,
+  },
+  {
+    slug: 'android-10',
+    copy: {
+      en: {
+        kicker: 'Android 10 · API 29',
+        title: ['Scoped storage,', 'no dessert'],
+        meta: 'Quince Tart · Sep 2019 · scoped storage',
+        alt: 'Android 10 banner — storage scoped to each app.',
+      },
+      es: {
+        kicker: 'Android 10 · API 29',
+        title: ['Almacenamiento', 'acotado'],
+        meta: 'Quince Tart · sep 2019 · almacenamiento acotado',
+        alt: 'Banner de Android 10 — almacenamiento acotado a cada app.',
+      },
+    },
+    art: 'api-locked',
+    ...PALETTE.android,
+  },
+  {
+    slug: 'android-11',
+    copy: {
+      en: {
+        kicker: 'Android 11 · API 30',
+        title: ['Permission for', 'one session'],
+        meta: 'Red Velvet Cake · Sep 2020 · one-time grants',
+        alt: 'Android 11 banner — a permission granted for one session only.',
+      },
+      es: {
+        kicker: 'Android 11 · API 30',
+        title: ['Permiso por', 'una sesión'],
+        meta: 'Red Velvet Cake · sep 2020 · permisos de una vez',
+        alt: 'Banner de Android 11 — un permiso otorgado solo por una sesión.',
+      },
+    },
+    art: 'api-locked',
+    ...PALETTE.android,
+  },
+  {
     slug: 'gof-patterns-android',
     copy: {
       en: {
