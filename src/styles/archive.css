@@ -244,12 +244,6 @@
 .crumb [aria-current] {
   color: var(--ink);
 }
-.status-chip--sm {
-  margin-bottom: 0;
-  padding: 0.22rem 0.6rem 0.22rem 0.48rem;
-  font-size: 0.66rem;
-}
-
 .breadcrumbs {
   display: flex;
   flex-wrap: wrap;
@@ -278,6 +272,13 @@
   color: color-mix(in srgb, var(--tone) 72%, var(--ink));
   font-size: 0.72rem;
   font-weight: 600;
+}
+/* The compact variant sits inline with a label, so it carries no margin. It
+   must come after the base rule: same specificity, so order decides. */
+.status-chip--sm {
+  margin-bottom: 0;
+  padding: 0.22rem 0.6rem 0.22rem 0.48rem;
+  font-size: 0.66rem;
 }
 .status-chip__dot {
   width: 0.44rem;

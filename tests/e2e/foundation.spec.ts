@@ -1705,3 +1705,29 @@ test('gallery contact sheets keep their lead image and two rows', async ({
     }
   }
 })
+
+test('a compact status chip sits level with its label', async ({ page }) => {
+  // `.status-chip--sm` drops the base chip's bottom margin; declared before
+  // the base rule, it lost the cascade and lifted every chip off its label.
+  await page.goto('/es/gallery/')
+  const offsets = await page
+    .locator('.gallery-sheet__kind')
+    .evaluateAll((labels) =>
+      labels.map((label) => {
+        const chip = label.querySelector('.status-chip')!
+        const text = document.createRange()
+        text.selectNodeContents(label.firstChild!)
+        const a = text.getBoundingClientRect()
+        const b = chip.getBoundingClientRect()
+        return Math.abs(a.top + a.height / 2 - (b.top + b.height / 2))
+      }),
+    )
+  expect(offsets.length).toBeGreaterThan(0)
+  for (const offset of offsets) expect(offset).toBeLessThanOrEqual(2)
+  expect(
+    await page
+      .locator('.status-chip--sm')
+      .first()
+      .evaluate((chip) => getComputedStyle(chip).marginBottom),
+  ).toBe('0px')
+})
