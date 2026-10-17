@@ -223,6 +223,29 @@ Every rule above exists because something broke invisibly.
 - **If a check blocks a correct change, fix the check.** A metadata assertion
   once forced every page to share the same preview image.
 
+### Visual check in a real browser
+
+The `chrome-devtools` MCP server (installed at user scope) drives a real
+Chrome. Use it to **see** a UI change before calling it done — tests prove
+behaviour, not that it looks right. Playwright's bundled Chromium is not the
+reader's browser: a client-rendered diagram once measured 351px there and past
+1,600px in the owner's Chrome.
+
+| When | What to do |
+|---|---|
+| Any visual change | `bun run dev` (it backgrounds itself when an agent runs it), open the page, screenshot at **1280** and **390** wide, in **both themes** and **both locales** |
+| Layout or sizing | read the rendered box with a script (`getBoundingClientRect`), not the declared CSS |
+| Interaction (zoom, menus, dialogs) | click through it and screenshot before and after; check the page did not shift |
+| Any page you touched | list console messages and network requests — no errors, no third-party origin besides Google Analytics |
+| Performance-sensitive change | run a trace or a Lighthouse audit on the built site (`bun run build && bun run preview`) |
+
+- **Report what you saw**, with the screenshot, not "it should look fine".
+- It is a check, not a test. Anything worth keeping becomes an assertion in
+  `tests/e2e/` so CI holds the line.
+- The browser is real: never sign in to accounts or open private data in it.
+- Stop the server when done (`bunx astro dev stop`); a stray server on :4321
+  makes `test:e2e` fail with "exited early".
+
 ## Branching
 
 ```
