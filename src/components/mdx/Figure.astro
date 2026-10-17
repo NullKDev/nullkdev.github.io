@@ -1,6 +1,9 @@
 ---
 // Authoring component for .mdx entries: an image with an optional caption.
-// Marked data-zoomable so the entry lightbox picks it up. Styles: .prose figure.
+// mountFigures (src/lib/entry-enhancements.ts) wraps every .prose image, this
+// one included, in a zoom button and marks it data-zoomable only when the
+// lightbox can open; shipping the mark here would show a zoom cursor on an
+// image nothing can open without JS. Styles: .prose figure.
 // Part of the MDX authoring kit: kept even while no entry imports it, so a
 // dead-code sweep should not remove it. See docs/architecture.md.
 interface Props {
@@ -12,6 +15,6 @@ const { src, alt, caption } = Astro.props
 ---
 
 <figure>
-  <img src={src} alt={alt} loading="lazy" decoding="async" data-zoomable />
+  <img src={src} alt={alt} loading="lazy" decoding="async" />
   {caption && <figcaption>{caption}</figcaption>}
 </figure>

@@ -50,7 +50,7 @@ const distance = Math.sqrt((r - bg.r) ** 2 + (g - bg.g) ** 2 + (b - bg.b) ** 2)
 const alpha = clamp((distance - threshold) / feather, 0, 1)
 ```
 
-A pixel close to the background color gets alpha ≈ 0 (transparent). A pixel far from it gets alpha ≈ 1 (foreground). The **Threshold** slider controls when a pixel counts as foreground; **Matte** would control the soft edge.
+A pixel close to the background color gets alpha ≈ 0 (transparent). A pixel far from it gets alpha ≈ 1 (foreground). The demo fixes both numbers (`threshold` and `feather` are constants in the renderer), so its sliders do not touch the matte: **Wrap** sets how strongly the text bends around the silhouette, **Scale** sizes the figure, and **V-Shift** / **H-Shift** move it inside the frame.
 
 ### Step 2: wrap profile
 

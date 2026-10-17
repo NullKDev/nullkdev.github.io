@@ -223,7 +223,7 @@ export const es = {
       },
       {
         title: 'Privacidad',
-        body: 'Las herramientas del Laboratorio corren enteras en tu navegador — nada de lo que escribas se envía a ningún lado. El contenido protegido usa cifrado del lado del cliente como disuasión, no como autorización. La única excepción al "sin terceros" es Google Analytics, que registra qué páginas se leen; el consent mode niega el almacenamiento publicitario, así que mide el archivo, no a vos.',
+        body: 'Las herramientas del Laboratorio corren enteras en tu navegador — nada de lo que escribas se envía a ningún lado. El contenido protegido usa cifrado del lado del cliente como disuasión, no como autorización. La única excepción al "sin terceros" es Google Analytics, que registra qué páginas se leen; el consent mode niega el almacenamiento publicitario, así que mide el archivo, no a ti.',
       },
     ],
   },

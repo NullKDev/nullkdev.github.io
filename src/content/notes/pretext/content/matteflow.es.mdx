@@ -50,7 +50,7 @@ const distance = Math.sqrt((r - bg.r) ** 2 + (g - bg.g) ** 2 + (b - bg.b) ** 2)
 const alpha = clamp((distance - threshold) / feather, 0, 1)
 ```
 
-Un píxel cercano al color de fondo obtiene alpha ≈ 0 (transparente). Un píxel alejado de él obtiene alpha ≈ 1 (primer plano). El slider **Threshold** controla cuándo un píxel cuenta como primer plano; el borde suave depende del feather.
+Un píxel cercano al color de fondo obtiene alpha ≈ 0 (transparente). Un píxel alejado de él obtiene alpha ≈ 1 (primer plano). La demo fija ambos números (`threshold` y `feather` son constantes del renderer), así que sus sliders no tocan el matte: **Wrap** define cuánto se curva el texto alrededor de la silueta, **Escala** ajusta el tamaño de la figura y **Desp. V** / **Desp. H** la desplazan dentro del cuadro.
 
 ### Paso 2: perfil de wrap
 

@@ -61,9 +61,23 @@ src/pages/                                   routing only
 
 ### Stylesheets per surface
 
-A page ships `global.css` and `archive.css` plus only the section sheets its
-route imports — the home page never downloads the notes index or the lab
-console. A rule used by one surface goes in that surface's
+A page ships `global.css` and `archive.css` plus the section sheets its
+**route file** reaches — the home page never downloads the notes index or the
+lab console. Astro collects CSS per route module, not per rendered branch: a
+dynamic route that renders different components for different params ships
+every sheet any of them imports, on every page it builds. Today that means:
+
+| Route | Ships |
+|---|---|
+| `index.astro` (home) | shared + `home.css` |
+| `notes/**` indexes and filters | shared + `notes.css` |
+| `404.astro`, legacy compatibility pages | shared + `fallback.css` |
+| `[section].astro` — Work, Lab, Gallery, About, Uses, Stack, Tags, Colophon | shared + one bundle of `archive-index`, `work`, `lab-index`, `gallery-index`, `about`, `secondary` and `prose` |
+| `[domain]/[slug].astro` — every entry | shared + `entry`, `prose`, `lab-entry` and `gallery-detail` |
+| `[domain]/[slug]/[document].astro` — subposts | shared + `entry` and `prose` |
+
+Narrowing the last three further means one route file per section, not moving
+an import. A rule used by one surface goes in that surface's
 `src/styles/sections/<surface>.css`; a rule two unrelated surfaces share stays
 in `archive.css`. Keep every sheet under ~800 lines.
 
@@ -119,7 +133,7 @@ Registered in `package.json` and chained into `bun run build`.
 | `performance:check` | Per-route gzip budgets for total, JS, CSS, images, fonts |
 | `banners:build` · `banners:check` | Renders every banner from `src/data/banners.ts` into SVG + PNG; verifies all are 1200×630 |
 | `csp:apply` | Seals each page's CSP with SHA-256 hashes of the inline scripts this archive expects (`<head>` scripts, Astro's hydration runtime, and `data-csp-inline` opt-ins); any other executable inline script fails the build. Component scripts are never inline — `assetsInlineLimit` in `astro.config.mjs` keeps them `/_astro/*.js` files |
-| `links:check` · `metadata:check` | Built-link crawl, and metadata/RSS/sitemap/JSON-LD/hreflang checks — including that every page shares its own image |
+| `links:check` · `metadata:check` | Built-link crawl, and metadata/RSS/sitemap/JSON-LD/hreflang checks — including that every page (subposts: their entry's) shares its own image, and that every hreflang pair is reciprocal and absent on noindex pages |
 | `commits:check` | Commit subjects and PR titles against the convention (not chained into the build; runs in CI and locally) |
 
 ### One origin — `site.config.mjs`

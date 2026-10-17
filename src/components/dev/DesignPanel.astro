@@ -441,7 +441,6 @@ const styles = `
         `color-mix(in srgb, ${hex} 78%, white)`,
       )
       root.style.setProperty('--focus', hex)
-      root.style.setProperty('--scene-primary', hex)
       root.style.setProperty(
         '--accent-soft',
         `color-mix(in srgb, ${hex} 24%, var(--surface))`,
@@ -512,7 +511,6 @@ const styles = `
           '--accent-hover',
           '--accent-soft',
           '--focus',
-          '--scene-primary',
         ]) {
           root.style.removeProperty(name)
         }

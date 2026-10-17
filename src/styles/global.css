@@ -89,7 +89,6 @@
   --popover-foreground: #0f172a;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --scene-primary: #4f46e5;
   --grid-ink: #b4bdcc;
   /* Per-section identity accents (used sparingly for personality). */
   --domain-work: #4f46e5;
@@ -150,7 +149,6 @@
   --popover-foreground: #e9edf5;
   --destructive: #f87171;
   --destructive-foreground: #1a0a0a;
-  --scene-primary: #818cf8;
   --grid-ink: #35425e;
   --domain-work: #818cf8;
   --domain-lab: #2dd4bf;

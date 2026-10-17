@@ -123,7 +123,12 @@ este repo usa de verdad — no las genéricas del estándar.
   lectores de pantalla podían perderlo. La región ahora existe desde el inicio
   y solo cambia su texto.
 - Las páginas con traducción declaran `hreflang="x-default"` apuntando a la
-  versión en inglés, para quien no lee ninguno de los dos idiomas.
+  versión en inglés, para quien no lee ninguno de los dos idiomas. Los
+  `hreflang` solo nombran la traducción real de la misma página: una entrada
+  sin traducir ya no anuncia el índice de su sección, la página 2 de Notas ya
+  no anuncia la página 1 del otro idioma, y las páginas `noindex` (404,
+  contenido protegido, rutas antiguas) no declaran ninguno. El build falla si
+  un par no es recíproco.
 - Una subpublicación abierta en su propia URL ahora tiene las mismas
   herramientas de lectura que dentro de su entrada: botón para copiar el código
   y su lenguaje, barra de progreso, marcador de la sección activa en el índice
@@ -145,10 +150,12 @@ este repo usa de verdad — no las genéricas del estándar.
   El enlace de cada pieza y el visor abren una versión WebP de hasta 2048 px,
   no el original de cámara. Las miniaturas del índice reservan su espacio, y
   un video sin póster ya no se muestra como imagen rota.
-- Cada página descarga solo el CSS de su sección, en lugar de una sola hoja con
-  el de todo el sitio. El inicio y el índice de Notas bajan de ~29 KB a ~15 KB
-  de CSS comprimido, la página 404 a ~13 KB, y las fichas y los índices de
-  sección a ~20 KB. También se eliminan reglas que ya no usaba ninguna página.
+- El CSS se divide por tipo de página, en lugar de una sola hoja con el de todo
+  el sitio. El inicio y el índice de Notas bajan de ~29 KB a ~15 KB de CSS
+  comprimido y la página 404 a ~13 KB. Las páginas de sección (Trabajo, Lab,
+  Galería, Acerca de y las secundarias) comparten un paquete de ~22 KB, igual
+  que las fichas, que incluyen los estilos de Lab y Galería; las subentradas
+  quedan en ~19 KB. También se eliminan reglas que ya no usaba ninguna página.
 
 ### Cambiado
 
@@ -156,8 +163,10 @@ este repo usa de verdad — no las genéricas del estándar.
   de Notas y Galería se declaran `Article`, y las de Trabajo y Lab
   `TechArticle` (Lab usaba `SoftwareApplication`, que sin precio ni
   valoración es un resultado enriquecido inválido); todas indican autor e
-  imagen, la misma que se comparte en redes. El build falla si una entrada
-  pierde cualquiera de las dos.
+  imagen, la misma que se comparte en redes. Una subpublicación abierta en su
+  propia URL comparte el banner de su entrada en lugar de la tarjeta genérica
+  del sitio. El build falla si una entrada o subpublicación pierde cualquiera
+  de las dos.
 
 ### Seguridad
 

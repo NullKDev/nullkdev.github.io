@@ -64,12 +64,16 @@ that shipped. The hashes are computed from the built bytes after each build
 scripts carry content-derived data — a checked-in list would rot silently and
 break production while local checks stayed green.
 
-"Expected" is enforced, not assumed. The sealer hashes executable inline
-scripts in `<head>`, Astro's hydration runtime (compared byte for byte against
-the installed `astro` package), Astro's own inlined component scripts outside
-`<article>`, `<svg>` and `<template>`, and body scripts that opt in with
-`data-csp-inline`. Any other executable inline script fails the build, so a
-script injected at build time is never hashed into the policy. JSON written
+"Expected" is enforced, not assumed. The sealer hashes exactly three kinds of
+executable inline script: any script in `<head>`, any script that opts in with
+`data-csp-inline`, and a classic (untyped) script whose bytes equal one of
+Astro's island runtimes — the `<astro-island>` definition and the `client:*`
+loaders, read from the installed `astro` package. Every other executable inline
+script fails the build, including a bare inline module, and the failure names
+the `<article>`, `<svg>` or `<template>` it sat in. Component scripts are not
+inlined at all: `vite.build.assetsInlineLimit` keeps them as `/_astro/*.js`
+files, which `'self'` already covers. A script injected at build time is
+therefore never hashed into the policy. JSON written
 into a `<script>` goes through `serializeJsonForScript`
 (`src/lib/json-script.ts`), which escapes `<` so a value cannot close the
 element.
