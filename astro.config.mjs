@@ -6,6 +6,7 @@ import sitemap from '@astrojs/sitemap'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'astro/config'
 import hastDiagrams from './scripts/hast-diagrams.mjs'
+import hastFigures from './scripts/hast-figures.mjs'
 import hastTables from './scripts/hast-tables.mjs'
 import {
   createReadStream,
@@ -108,7 +109,8 @@ export default defineConfig({
 
        hastTables wraps every table in its own scroll container and marks
        numeric columns, neither of which markdown table syntax can express.
-       hastDiagrams compiles ```mermaid fences to static SVG. See each module.
+       hastDiagrams compiles ```mermaid fences to static SVG. hastFigures turns
+       a standalone image with a title into a captioned figure. See each module.
 
        Astro 7 defaults `.md` to Sätteri, which renders only `.md`; MDX always
        runs unified. Declaring `processor: unified()` keeps both formats on the
@@ -120,7 +122,9 @@ export default defineConfig({
        Not `satteri({ hastPlugins })`: MDX would not inherit them, and every
        `.mdx` entry silently lost the treatment (0 wrappers on a page that had
        2). Not `mdx({ rehypePlugins })`: deprecated, and redundant here. */
-    processor: unified({ rehypePlugins: [hastTables, hastDiagrams] }),
+    processor: unified({
+      rehypePlugins: [hastTables, hastDiagrams, hastFigures],
+    }),
     // Shiki runs before the plugins above. Excluding mermaid leaves the fence
     // as plain `code.language-mermaid` with its `title` meta for hastDiagrams.
     syntaxHighlight: { type: 'shiki', excludeLangs: ['math', 'mermaid'] },

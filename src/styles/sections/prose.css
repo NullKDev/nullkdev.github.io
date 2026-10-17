@@ -163,6 +163,24 @@
   display: block;
   width: 100%;
 }
+/* A captioned markdown image (scripts/hast-figures.mjs) keeps its own shape:
+   a logo or a phone screenshot stretched to the full column would be taller
+   than the screen. It gets a definite height and its width follows from the
+   width/height attributes, so the box is reserved before a lazy image loads.
+   On a column narrower than that, the picture is contained, not squashed.
+   The lightbox shows it full size. */
+.prose figure[data-figure] img {
+  width: auto;
+  height: min(22rem, 60vh, 75vw);
+  max-width: 100%;
+  margin-inline: auto;
+  object-fit: contain;
+}
+.prose figure[data-figure] .zoom-trigger {
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
 .prose figcaption {
   margin-top: 0.6rem;
   color: var(--ink-muted);
