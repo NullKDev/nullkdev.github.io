@@ -8,7 +8,7 @@ summary: From Beta 3 to the June 16 release — the behaviour changes that stay 
 visibility: public
 maturity: stable
 publishedAt: 2026-07-29
-updatedAt: 2026-08-06
+updatedAt: 2026-10-17
 topics: [android, kotlin, platform-apis, security]
 featuredRank: 4
 image: /banners/android-17-stable.svg
@@ -54,12 +54,37 @@ citations:
   - title: Prepare your app for the resizability and orientation changes
     url: https://android-developers.googleblog.com/2026/02/prepare-your-app-for-resizability-and.html
     accessedAt: 2026-08-06
+  - title: The third beta of Android 17
+    url: https://android-developers.googleblog.com/2026/03/the-third-beta-of-android-17.html
+    accessedAt: 2026-10-17
+  - title: Meet Google Play's target API level requirement
+    url: https://developer.android.com/google/play/requirements/target-sdk
+    accessedAt: 2026-10-17
+  - title: Android 16 QPR2 is Released (Android Developers Blog)
+    url: https://developer.android.com/blog/posts/android-16-qpr-2-is-released
+    accessedAt: 2026-10-17
+  - title: use_generational_cmc flag value in the bp4a release config (AOSP)
+    url: https://android.googlesource.com/platform/build/release/+/refs/tags/android-17.0.0_r1/aconfig/bp4a/com.android.art.flags/use_generational_cmc_flag_values.textproto
+    accessedAt: 2026-10-17
+  - title: cp1a release config at android-17.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/build/release/+/refs/tags/android-17.0.0_r1/release_configs/cp1a.textproto
+    accessedAt: 2026-10-17
+  - title: Codenames, tags, and build numbers (AOSP)
+    url: https://source.android.com/docs/setup/reference/build-numbers
+    accessedAt: 2026-10-17
+  - title: "What's new in Android security and privacy in 2026 (The Keyword)"
+    url: https://blog.google/security/whats-new-in-android-security-privacy-2026/
+    accessedAt: 2026-10-17
+  - title: Android 17 stable update is rolling out to Pixel phones (GSMArena)
+    url: https://www.gsmarena.com/android_17_stable_update_is_rolling_out_to_pixel_phones-news-73308.php
+    accessedAt: 2026-10-17
 ---
 
 Android 17 — API 37, internal codename _Cinnamon Bun_ — went stable on
 **16 June 2026**, alongside the June Pixel Drop, on Pixel 6 and newer. Other OEMs
-have been joining the rollout since. Beta 4 — the final beta, where the API
-surface locked — shipped on **16 April**. My
+have been joining the rollout since. The API surface locked at Beta 3, on
+**26 March**, when Google declared platform stability; Beta 4, the last scheduled
+beta, shipped on **16 April**. My
 [Beta 3 write-up](/notes/android-17-beta-3/) covers API 37 at platform stability;
 this covers what happened after it, and what actually costs you time.
 
@@ -96,8 +121,10 @@ where the assumptions live. Google frames Android 17 as the move to an
 
 The exemption is narrower than "games are fine": it applies to apps that
 **declare `android:appCategory="game"`**. It is a manifest declaration, not a
-vibe, and Play distribution makes targeting API 37 mandatory for new apps and
-updates in **August 2027** — so the exemption buys layout work, not an escape.
+vibe. Google has not announced the Play deadline for API 37 yet (as of
+October 2026); the current rule asks for API 36 from **31 August 2026**, and each
+year so far has moved the bar one level. Plan as if API 37 follows — the
+exemption buys layout work, not an escape.
 
 ### `System.load()` requires read-only native libraries
 
@@ -131,9 +158,10 @@ before you decide you need blanket access.
 
 ### Background audio needs a foreground service
 
-Playback, audio-focus requests and volume changes from an app that is not visible
-now require a **running foreground service**. On top of that, the app must satisfy
-one of two conditions:
+On Android 17, every app — whatever it targets — needs a visible activity or a
+**running foreground service** (not of type `SHORT_SERVICE`) to play audio,
+request audio focus or change the volume. An app targeting 37 that does it from
+the background must also meet one of two conditions:
 
 - the foreground service has **while-in-use (WIU)** capabilities, or
 - the app holds the **exact alarm** permission and is driving `USAGE_ALARM`
@@ -151,8 +179,8 @@ Media3's session and focus handling. Nothing hard-blocks ExoPlayer 2 from runnin
 — you just get interrupted playback, lost focus and broken notifications, which is
 a worse failure than a crash because nobody files a bug for it.
 
-For apps that do _not_ target 17, the softer version of this still applies: audio
-APIs called outside a valid lifecycle **fail silently**, and audio focus returns
+Whatever the target, the failure mode is the same: audio APIs called outside a
+valid lifecycle **fail silently**, and audio focus returns
 `AUDIOFOCUS_REQUEST_FAILED`.
 
 ### Reflection into the platform stops working
@@ -181,8 +209,8 @@ field that used to hold data is the most expensive kind of failure to trace.
 
 For most apps targeting 17, one-time-password SMS **is not readable until three
 hours after it arrives**. During that window the `SMS_RECEIVED_ACTION` broadcast
-is withheld and SMS provider queries are filtered. The default SMS assistant app
-and companion-device apps are exempt.
+is withheld and SMS provider queries are filtered. The default SMS app, the
+assistant app and connected companion apps are exempt.
 
 The same three-hour hold applies to **WebOTP-format messages regardless of
 targetSdk**, when the app is not the verified recipient by domain.
@@ -221,6 +249,14 @@ ART's Concurrent Mark-Compact collector is now **generational**. Instead of
 treating every object the same and sweeping the whole heap, it runs frequent cheap
 young-generation collections and reserves full-heap passes for when they are
 actually needed.
+
+It is not new in 17, though Google's launch post presents it that way. Google
+listed the generational CMC collector in the
+[Android 16 QPR2 release post](https://developer.android.com/blog/posts/android-16-qpr-2-is-released)
+in December 2025, and AOSP agrees: the `use_generational_cmc` flag is first
+`ENABLED` in the `bp4a` release configuration, the Android 16 QPR2 build
+(`BP4A.251205.006`). Android 17's configuration, `cp1a`, inherits from `bp4a`, so
+17 keeps it on.
 
 The premise is the oldest observation in garbage collection: most objects die
 young. Acting on it cuts GC CPU cost and collection duration, which shows up as

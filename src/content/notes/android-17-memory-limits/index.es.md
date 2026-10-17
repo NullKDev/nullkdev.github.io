@@ -4,11 +4,11 @@ locale: es
 translationKey: android-17-memory-limits
 slug: android-17-limites-memoria
 title: 'Android 17 mata tu proceso sin stack trace'
-summary: Los límites de memoria por app son límites de cgroup que configura el fabricante, no se pueden consultar en runtime, y la muerte no deja crash log.
+summary: Los límites de memoria por app son límites de cgroup atados al RAM del dispositivo, no se pueden consultar en runtime, y la muerte no deja crash log.
 visibility: public
 maturity: stable
 publishedAt: 2026-07-29
-updatedAt: 2026-07-29
+updatedAt: 2026-10-17
 topics: [android, kotlin, performance, platform-apis]
 featuredRank: 5
 image: /banners/android-17-memory-limits.svg
@@ -35,10 +35,16 @@ citations:
     accessedAt: 2026-07-29
   - title: Memory Limiter
     url: https://source.android.com/docs/core/perf/memory-limiter
-    accessedAt: 2026-07-29
+    accessedAt: 2026-10-17
   - title: 'Behavior changes: all apps'
     url: https://developer.android.com/about/versions/17/behavior-changes-all
-    accessedAt: 2026-07-29
+    accessedAt: 2026-10-17
+  - title: MemoryLimiter.java at android-17.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-17.0.0_r1/services/core/java/com/android/server/am/MemoryLimiter.java
+    accessedAt: 2026-10-17
+  - title: Memory Limiter, as published in July 2026 (Internet Archive)
+    url: https://web.archive.org/web/20260723233811/https://source.android.com/docs/core/perf/memory-limiter
+    accessedAt: 2026-10-17
 ---
 
 Android 17 aplica límites de memoria por app. Cuando tu proceso cruza uno, el
@@ -74,28 +80,46 @@ preguntando.
 ## Tres hechos que cambian cómo planificas
 
 **1. No puedes consultar el límite.** A partir de Android 17 — SDK 37 — no hay API
-en runtime para preguntar cuál es tu límite. No puedes leerlo, loguearlo, ni
-adaptarte a él. Cualquier estrategia que implique "consultar el presupuesto y
-quedarse abajo" no está disponible.
+en runtime para preguntar cuál es tu límite. Tu app no puede leerlo, loguearlo, ni
+adaptarse a él. Cualquier estrategia que implique "consultar el presupuesto y
+quedarse abajo" no está disponible. En un dispositivo de pruebas sí puedes verlo:
+`adb shell am memory-limiter status` muestra los límites para procesos visibles y
+no visibles, y `am memory-limiter manual <pid> <MB>` impone uno más estricto para
+que veas a tu app chocar contra él.
 
-**2. Lo configura el fabricante.** Los límites vienen de
-`/vendor/etc/memory-limiter-config.xml`, con bloques `<limitSet>` que declaran
-`minimumRequiredMemTotal`, `memVisible`, `memNotVisible`, `swapVisible` y
-`swapNotVisible` en MiB. AOSP recomienda un rango, no un valor:
+**2. Quién fija los números depende de qué fuente leas.** Los límites son bloques
+`<limitSet>` en un `memory-limiter-config.xml`, que declaran
+`minimumRequiredMemTotal`, `maximumAllowedMemTotal`, `memVisible`,
+`memNotVisible`, `swapVisible` y `swapNotVisible` en MiB. Las dos fuentes
+primarias no coinciden en dónde vive ese archivo:
 
-- **Procesos visibles**: al menos 1/2 y como máximo 2/3 del RAM físico total
-- **No visibles**: 1/4 a 1/3 del RAM físico total
+- **El código publicado** (`MemoryLimiter.java` en `android-17.0.0_r1`) lee
+  `/vendor/etc/memory-limiter-config.xml`, la partición que controla el
+  fabricante. La documentación de AOSP decía lo mismo en julio de 2026.
+- **La documentación actual** (actualizada desde agosto de 2026) dice
+  `/system/etc/memory-limiter-config.xml` y define límites estándar de plataforma
+  por nivel de RAM. Nombra la "consistencia del ecosistema" como principio y no
+  admite listas de excepciones por app.
 
-El ejemplo de la documentación da `memVisible=8192` y `memNotVisible=4096` para un
-dispositivo de 14GB o más.
+Las dos ponen a los procesos visibles en aproximadamente 1/2 a 2/3 del RAM físico
+y a los no visibles en 1/4 a 1/3. Los niveles estándar, según el `MemTotal` del
+kernel:
 
-Un rango fijado por el fabricante, sin API para leerlo, significa que **el
-comportamiento difiere entre dispositivos con el mismo RAM**. Dos teléfonos de 8GB
-pueden tener límites distintos, y tu app no tiene manera de distinguirlos.
+| RAM del dispositivo | Rango de `MemTotal` (MiB) | Visible | No visible |
+| ------------------- | ------------------------- | ------- | ---------- |
+| 16 GB               | 14336 a 18431             | 10 GiB  | 5 GiB      |
+| 12 GB               | 9216 a 14335              | 8 GiB   | 4 GiB      |
+| 8 GB                | 6800 a 9215               | 5 GiB   | 3 GiB      |
+| 6 GB                | 4800 a 6799               | 4 GiB   | 2 GiB      |
+| 4 GB                | 3200 a 4799               | 2 GiB   | 1 GiB      |
 
-**3. Si el archivo de configuración no está, el limiter queda desactivado por
-completo.** Así que algunos dispositivos no aplican nada. "Funciona en mi teléfono"
-nunca fue evidencia más débil que aquí.
+Los límites de swap coinciden con el límite de memoria no visible en cada nivel.
+
+**3. Algunos dispositivos no aplican nada.** En el código publicado, si el archivo
+de configuración falta o es inválido, el limiter queda desactivado. Con los
+niveles estándar, los dispositivos con 18.432 MiB de `MemTotal` o más, o con menos
+de 3.200, no tienen límites. "Funciona en mi teléfono" nunca fue evidencia más
+débil que aquí.
 
 ## Qué procesos están exentos
 
@@ -195,9 +219,9 @@ degradación lenta; es una muerte segura con temporizador.
 3. **Revisa el tercer flag de R8.** Dos minutos, y a menudo una reducción real.
 4. **Audita los caminos de decodificación de bitmaps.** Donde suelen estar los
    megabytes.
-5. **No ajustes contra un número.** No hay número que puedas leer, varía por
-   fabricante, y en algunos dispositivos no existe. Construye margen, no un
-   objetivo.
+5. **No ajustes contra un número.** Tu app no puede leerlo, depende del nivel
+   de RAM del dispositivo, y en algunos dispositivos no existe. Construye margen,
+   no un objetivo.
 
 El resumen honesto: es un buen cambio con un mal modo de falla. Hacer que una app
 hambrienta de memoria cargue con su propio costo — en vez de que lo paguen todas

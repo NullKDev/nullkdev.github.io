@@ -8,7 +8,7 @@ summary: De la Beta 3 al release del 16 de junio — los cambios que quedan dorm
 visibility: public
 maturity: stable
 publishedAt: 2026-07-29
-updatedAt: 2026-08-06
+updatedAt: 2026-10-17
 topics: [android, kotlin, platform-apis, security]
 featuredRank: 4
 image: /banners/android-17-stable.svg
@@ -54,12 +54,37 @@ citations:
   - title: Prepare your app for the resizability and orientation changes
     url: https://android-developers.googleblog.com/2026/02/prepare-your-app-for-resizability-and.html
     accessedAt: 2026-08-06
+  - title: The third beta of Android 17
+    url: https://android-developers.googleblog.com/2026/03/the-third-beta-of-android-17.html
+    accessedAt: 2026-10-17
+  - title: Meet Google Play's target API level requirement
+    url: https://developer.android.com/google/play/requirements/target-sdk
+    accessedAt: 2026-10-17
+  - title: Android 16 QPR2 is Released (Android Developers Blog)
+    url: https://developer.android.com/blog/posts/android-16-qpr-2-is-released
+    accessedAt: 2026-10-17
+  - title: use_generational_cmc flag value in the bp4a release config (AOSP)
+    url: https://android.googlesource.com/platform/build/release/+/refs/tags/android-17.0.0_r1/aconfig/bp4a/com.android.art.flags/use_generational_cmc_flag_values.textproto
+    accessedAt: 2026-10-17
+  - title: cp1a release config at android-17.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/build/release/+/refs/tags/android-17.0.0_r1/release_configs/cp1a.textproto
+    accessedAt: 2026-10-17
+  - title: Codenames, tags, and build numbers (AOSP)
+    url: https://source.android.com/docs/setup/reference/build-numbers
+    accessedAt: 2026-10-17
+  - title: "What's new in Android security and privacy in 2026 (The Keyword)"
+    url: https://blog.google/security/whats-new-in-android-security-privacy-2026/
+    accessedAt: 2026-10-17
+  - title: Android 17 stable update is rolling out to Pixel phones (GSMArena)
+    url: https://www.gsmarena.com/android_17_stable_update_is_rolling_out_to_pixel_phones-news-73308.php
+    accessedAt: 2026-10-17
 ---
 
 Android 17 — API 37, nombre en código interno _Cinnamon Bun_ — pasó a estable el
 **16 de junio de 2026**, junto con el Pixel Drop de junio, en Pixel 6 y
 posteriores. El resto de los fabricantes se viene sumando al rollout desde
-entonces. La Beta 4 — la última, donde se bloqueó la superficie de API — salió el
+entonces. La superficie de API se bloqueó en la Beta 3, el **26 de marzo**, cuando
+Google declaró platform stability; la Beta 4, la última programada, salió el
 **16 de abril**. Mi [nota sobre la Beta 3](/es/notes/android-17-beta-3/) cubre API
 37 en platform stability; esta cubre lo que pasó después, y lo que realmente te
 cuesta tiempo.
@@ -98,9 +123,10 @@ estándar "adaptive-first", y esta es la cláusula que lo hace cumplir.
 
 La exención es más angosta que "los juegos zafan": aplica a las apps que
 **declaran `android:appCategory="game"`**. Es una declaración en el manifest, no
-una interpretación. Y en Play, apuntar a API 37 pasa a ser obligatorio para apps
-nuevas y actualizaciones en **agosto de 2027** — así que la exención te compra
-tiempo de layout, no una salida.
+una interpretación. Google todavía no anunció la fecha límite de Play para API 37
+(a octubre de 2026); la regla vigente pide API 36 desde el **31 de agosto de
+2026**, y cada año hasta ahora subió la vara un nivel. Planifica como si API 37
+siguiera el mismo camino — la exención te compra tiempo de layout, no una salida.
 
 ### `System.load()` exige librerías nativas de solo lectura
 
@@ -137,9 +163,10 @@ antes de decidir que necesitas acceso amplio.
 
 ### El audio en background exige un foreground service
 
-Reproducir, pedir foco de audio o cambiar el volumen desde una app que no está
-visible ahora requiere un **foreground service corriendo**. Además, la app tiene
-que cumplir una de dos condiciones:
+En Android 17, toda app — apunte a lo que apunte — necesita una activity visible o
+un **foreground service corriendo** (que no sea de tipo `SHORT_SERVICE`) para
+reproducir audio, pedir foco de audio o cambiar el volumen. Una app que apunta a
+37 y lo hace desde background además tiene que cumplir una de dos condiciones:
 
 - el foreground service tiene capacidades **while-in-use (WIU)**, o
 - la app tiene el permiso de **alarma exacta** y está manejando streams
@@ -158,9 +185,9 @@ bloquea de golpe a ExoPlayer 2 — simplemente vas a tener reproducción
 interrumpida, foco perdido y notificaciones rotas, que es una falla peor que un
 crash porque nadie reporta un bug por eso.
 
-Para las apps que **no** apuntan a 17 igual aplica la versión suave: las APIs de
-audio llamadas fuera de un ciclo de vida válido **fallan en silencio**, y el foco
-de audio devuelve `AUDIOFOCUS_REQUEST_FAILED`.
+Apunte a lo que apunte, la falla es la misma: las APIs de audio llamadas fuera de
+un ciclo de vida válido **fallan en silencio**, y el foco de audio devuelve
+`AUDIOFOCUS_REQUEST_FAILED`.
 
 ### La reflection sobre la plataforma deja de funcionar
 
@@ -190,8 +217,8 @@ en un campo que antes traía datos es el tipo de falla más caro de rastrear.
 Para la mayoría de las apps que apuntan a 17, los SMS con código de un solo uso
 **no se pueden leer hasta tres horas después de llegar**. Durante esa ventana el
 broadcast `SMS_RECEIVED_ACTION` se retiene y las consultas al proveedor de SMS se
-filtran. La app de mensajería por defecto y las apps de dispositivos vinculados
-están exentas.
+filtran. La app de SMS por defecto, la app de asistente y las apps de
+dispositivos vinculados están exentas.
 
 La misma retención de tres horas aplica a los **mensajes en formato WebOTP sin
 importar el targetSdk**, cuando la app no es el destinatario verificado por
@@ -233,6 +260,14 @@ El Concurrent Mark-Compact de ART ahora es **generacional**. En vez de tratar a
 todos los objetos igual y barrer el heap completo, corre recolecciones de
 generación joven, frecuentes y baratas, y reserva las pasadas de heap completo
 para cuando hacen falta de verdad.
+
+No es nuevo en 17, aunque el post de lanzamiento de Google lo presente así. Google
+ya incluyó el recolector CMC generacional en el
+[post del lanzamiento de Android 16 QPR2](https://developer.android.com/blog/posts/android-16-qpr-2-is-released)
+en diciembre de 2025, y AOSP coincide: el flag `use_generational_cmc` aparece
+`ENABLED` por primera vez en la configuración de release `bp4a`, la del build de
+Android 16 QPR2 (`BP4A.251205.006`). La configuración de Android 17, `cp1a`,
+hereda de `bp4a`, así que 17 lo mantiene activado.
 
 La premisa es la observación más vieja de la recolección de basura: la mayoría de
 los objetos muere joven. Actuar sobre eso baja el costo de CPU y la duración de la

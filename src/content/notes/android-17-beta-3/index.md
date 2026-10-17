@@ -8,7 +8,7 @@ summary: A full breakdown of API 37 at platform stability — every notable new 
 visibility: public
 maturity: archived
 publishedAt: 2026-03-27
-updatedAt: 2026-07-23
+updatedAt: 2026-10-17
 topics: [android, kotlin, platform-apis]
 featuredRank: 9
 image: /banners/android-17-beta-3.svg
@@ -40,6 +40,21 @@ citations:
   - title: CommonsWare Beta 3 notes
     url: https://commonsware.com/blog/2026/03/27/random-musings-android-17-beta-3.html
     accessedAt: 2026-03-27
+  - title: Android 17 is here
+    url: https://android-developers.googleblog.com/2026/06/Android-17.html
+    accessedAt: 2026-10-17
+  - title: 'Behavior changes: apps targeting Android 17'
+    url: https://developer.android.com/about/versions/17/behavior-changes-17
+    accessedAt: 2026-10-17
+  - title: Public Java API (libcore current.txt) at android-17.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/libcore/+/refs/tags/android-17.0.0_r1/api/current.txt
+    accessedAt: 2026-10-17
+  - title: Connectivity module API (current.txt) at android-17.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/packages/modules/Connectivity/+/refs/tags/android-17.0.0_r1/framework/api/current.txt
+    accessedAt: 2026-10-17
+  - title: NFC module API (current.txt) at android-17.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/packages/modules/Nfc/+/refs/tags/android-17.0.0_r1/framework/api/current.txt
+    accessedAt: 2026-10-17
 ---
 
 Android 17 Beta 3 dropped on March 26, 2026, and it carries a very specific signal for developers: **platform stability has been reached**. That means the API surface is now locked. No more additions, no more removals, no more surprises. If you're a library author, SDK vendor, or app developer, the clock is ticking.
@@ -56,6 +71,8 @@ Google uses Beta 3 as the point at which the final API set is frozen. From here 
 - Game engines and developer tooling vendors need to validate against this build
 
 The stable release is expected later in 2026. We don't have an exact date yet, but the timeline mirrors previous years: Beta 3 in March → stable around Q3.
+
+> **Update, 17 October 2026:** that guess was wrong. Android 17 went stable on 16 June 2026, after one more beta (Beta 4, 16 April). See [Android 17: what breaks on targetSdk 37](/notes/android-17-stable/).
 
 ---
 
@@ -147,11 +164,11 @@ Android 17 introduces **APK signature scheme v3.2** with a hybrid approach: clas
 
 ### Native dynamic code loading — read-only enforcement extended
 
-Since Android 14, Java/DEX files loaded dynamically must be read-only. **Android 17 extends this enforcement to native libraries**. If your app calls `System.load()` on a native file that isn't marked read-only, it now throws `UnsatisfiedLinkError`. Audit your native library loading paths.
+Since Android 14, Java/DEX files loaded dynamically must be read-only. **Android 17 extends this enforcement to native libraries** for apps targeting API 37. If such an app calls `System.load()` on a native file that isn't marked read-only, it now throws `UnsatisfiedLinkError`. Audit your native library loading paths.
 
 ### Certificate transparency — on by default
 
-What was an opt-in feature on Android 16 is now **enabled by default for all apps**. No code changes needed for apps that use standard HTTPS — but if you're doing manual certificate validation or certificate pinning, review your implementation.
+What was an opt-in feature on Android 16 is now **enabled by default for apps targeting API 37**. No code changes needed for apps that use standard HTTPS — but if you're doing manual certificate validation or certificate pinning, review your implementation.
 
 ---
 
@@ -223,20 +240,22 @@ New floating toolbar for recording controls. The toolbar itself is excluded from
 
 ### For all apps (regardless of target API)
 
-| Change                                     | What to do                                                                             |
-| ------------------------------------------ | -------------------------------------------------------------------------------------- |
-| **DCL native enforcement**                 | Ensure native libs loaded via `System.load()` are on read-only paths                   |
-| **Certificate Transparency on by default** | Review custom certificate validation code                                              |
-| **Local Network Access blocked**           | Apps targeting Android 17+ need `ACCESS_LOCAL_NETWORK` permission to reach LAN devices |
+None of the changes Google highlighted at Beta 3 applies to every app. An earlier version of this note listed native DCL, Certificate Transparency and local network access here; Google's Beta 3 post scopes all three to apps targeting API 37, so they are in the next table. The final list of changes for all apps is in the [stable note](/notes/android-17-stable/).
 
 ### For apps targeting API 37
 
-| Change                                  | What to do                                                                                              |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| **Large screen resizability enforced**  | Cannot opt out of orientation/resizability constraints on large screens — test on foldables and tablets |
-| **`String.getChars()` removed**         | Migrate to `String.getBytes()` or equivalent — this is an OpenJDK 21 change                             |
-| **`ACTION_TAG_DISCOVERED` deprecated**  | Migrate to the newer NFC intent actions                                                                 |
-| **`DnsResolver.getInstance()` removed** | Use the constructor-based approach instead                                                              |
+| Change                                     | What to do                                                                                              |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| **Large screen resizability enforced**     | Cannot opt out of orientation/resizability constraints on large screens — test on foldables and tablets |
+| **DCL native enforcement**                 | Ensure native libs loaded via `System.load()` are on read-only paths                                    |
+| **Certificate Transparency on by default** | Review custom certificate validation code                                                               |
+| **Local Network Access blocked**           | Request `ACCESS_LOCAL_NETWORK`, or use a system device picker, to reach LAN devices                     |
+
+API changes in SDK 37, which show up when you compile against it, whatever you target:
+
+- **`ACTION_TAG_DISCOVERED` is deprecated.** Move to `ACTION_NDEF_DISCOVERED` or `ACTION_TECH_DISCOVERED`.
+- **`DnsResolver.getInstance()` is deprecated, not removed.** SDK 37 adds a `DnsResolver(Context, Looper)` constructor to use instead.
+- **`String.getChars()` is still there.** The API diff lists it under removals, but the method is in the public API at the `android-17.0.0_r1` tag. What changed is that `CharSequence` gained a default `getChars()` from OpenJDK 25. No migration needed.
 
 ---
 

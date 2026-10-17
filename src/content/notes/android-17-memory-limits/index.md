@@ -4,11 +4,11 @@ locale: en
 translationKey: android-17-memory-limits
 slug: android-17-memory-limits
 title: 'Android 17 kills your process with no stack trace'
-summary: Per-app memory limits are cgroup limits an OEM configures, you cannot query them at runtime, and the kill leaves no crash log.
+summary: Per-app memory limits are cgroup limits tied to device RAM, you cannot query them at runtime, and the kill leaves no crash log.
 visibility: public
 maturity: stable
 publishedAt: 2026-07-29
-updatedAt: 2026-07-29
+updatedAt: 2026-10-17
 topics: [android, kotlin, performance, platform-apis]
 featuredRank: 5
 image: /banners/android-17-memory-limits.svg
@@ -35,10 +35,16 @@ citations:
     accessedAt: 2026-07-29
   - title: Memory Limiter
     url: https://source.android.com/docs/core/perf/memory-limiter
-    accessedAt: 2026-07-29
+    accessedAt: 2026-10-17
   - title: 'Behavior changes: all apps'
     url: https://developer.android.com/about/versions/17/behavior-changes-all
-    accessedAt: 2026-07-29
+    accessedAt: 2026-10-17
+  - title: MemoryLimiter.java at android-17.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-17.0.0_r1/services/core/java/com/android/server/am/MemoryLimiter.java
+    accessedAt: 2026-10-17
+  - title: Memory Limiter, as published in July 2026 (Internet Archive)
+    url: https://web.archive.org/web/20260723233811/https://source.android.com/docs/core/perf/memory-limiter
+    accessedAt: 2026-10-17
 ---
 
 Android 17 enforces per-app memory limits. When your process crosses one, the
@@ -73,27 +79,43 @@ when reclaim cannot keep up and an allocation fails. That is why there is no cle
 ## Three facts that change how you plan
 
 **1. You cannot query the limit.** As of Android 17 — SDK 37 — there is no runtime
-API to ask what your limit is. You cannot read it, log it, or adapt to it. Any
-strategy that involves "check the budget and stay under it" is not available.
+API to ask what your limit is. Your app cannot read it, log it, or adapt to it.
+Any strategy that involves "check the budget and stay under it" is not available.
+On a test device you can see it: `adb shell am memory-limiter status` prints the
+visible and not-visible limits, and `am memory-limiter manual <pid> <MB>` imposes
+a tighter one so you can watch your app hit it.
 
-**2. The OEM configures it.** The limits come from
-`/vendor/etc/memory-limiter-config.xml`, with `<limitSet>` blocks declaring
-`minimumRequiredMemTotal`, `memVisible`, `memNotVisible`, `swapVisible` and
-`swapNotVisible` in MiB. AOSP recommends a range rather than a value:
+**2. Who sets the numbers depends on which source you read.** The limits are
+`<limitSet>` blocks in a `memory-limiter-config.xml`, declaring
+`minimumRequiredMemTotal`, `maximumAllowedMemTotal`, `memVisible`,
+`memNotVisible`, `swapVisible` and `swapNotVisible` in MiB. The two primary
+sources disagree on where that file lives:
 
-- **Visible processes**: at least 1/2 and at most 2/3 of total physical RAM
-- **Not visible**: 1/4 to 1/3 of total physical RAM
+- **The released code** (`MemoryLimiter.java` at `android-17.0.0_r1`) reads
+  `/vendor/etc/memory-limiter-config.xml`, the partition the device maker owns.
+  AOSP's documentation said the same in July 2026.
+- **The current documentation** (updated since August 2026) says
+  `/system/etc/memory-limiter-config.xml` and defines standard platform limits
+  per RAM tier. It names "ecosystem consistency" as a principle and allows no
+  per-app allowlists.
 
-The example in the documentation gives `memVisible=8192` and `memNotVisible=4096`
-for a device with 14GB or more.
+Both put visible processes at roughly 1/2 to 2/3 of physical RAM and not-visible
+ones at 1/4 to 1/3. The standard tiers, by kernel `MemTotal`:
 
-A range set by the manufacturer, with no API to read it, means **behaviour differs
-between devices with identical RAM**. Two phones with 8GB can have different
-limits, and your app has no way to tell them apart.
+| Device RAM | `MemTotal` range (MiB) | Visible | Not visible |
+| ---------- | ---------------------- | ------- | ----------- |
+| 16 GB      | 14336 to 18431         | 10 GiB  | 5 GiB       |
+| 12 GB      | 9216 to 14335          | 8 GiB   | 4 GiB       |
+| 8 GB       | 6800 to 9215           | 5 GiB   | 3 GiB       |
+| 6 GB       | 4800 to 6799           | 4 GiB   | 2 GiB       |
+| 4 GB       | 3200 to 4799           | 2 GiB   | 1 GiB       |
 
-**3. If the config file is absent, the limiter is disabled entirely.** So some
-devices enforce nothing. "It works on my phone" has never been weaker evidence
-than it is here.
+Swap limits match the not-visible memory limit in every tier.
+
+**3. Some devices enforce nothing.** In the released code, a missing or invalid
+config file disables the limiter. Under the standard tiers, devices with 18,432
+MiB of `MemTotal` or more, or less than 3,200, get no limits at all. "It works on
+my phone" has never been weaker evidence than it is here.
 
 ## Which processes are exempt
 
@@ -189,8 +211,9 @@ it is a hard kill on a timer.
 2. **Wire `TRIGGER_TYPE_ANOMALY`.** It is the only forward-looking signal available.
 3. **Check the third R8 flag.** Two minutes, and often a real reduction.
 4. **Audit bitmap decoding paths.** Where the megabytes usually are.
-5. **Do not tune to a number.** There is no number you can read, it varies by OEM,
-   and on some devices it does not exist. Build headroom, not a target.
+5. **Do not tune to a number.** Your app cannot read it, it depends on the
+   device's RAM tier, and on some devices it does not exist. Build headroom, not a
+   target.
 
 The honest summary: this is a good change with a bad failure mode. Making a
 memory-hungry app bear its own cost — instead of every other app on the phone
