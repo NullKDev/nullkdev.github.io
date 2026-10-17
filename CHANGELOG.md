@@ -88,7 +88,7 @@ este repo usa de verdad — no las genéricas del estándar.
 - Estilos de impresión: sin cabecera, navegación, índices, banner, barra de
   progreso ni botones de copiar; negro sobre blanco en ambos temas, sin cortar
   bloques de código, figuras ni tablas, y con la URL de cada enlace externo.
-- Una nota dice dónde está parada, arriba del todo: una nota reemplazada
+- Una nota dice en qué estado está, arriba del todo: una nota reemplazada
   enlaza a la que la reemplazó ("Esta nota fue reemplazada por …", en el idioma
   de la página) y una archivada sin reemplazo lo explica en una frase. Las notas
   de una serie muestran "Parte 2 de 3 · Android 17" en la cabecera y en su
@@ -98,6 +98,10 @@ este repo usa de verdad — no las genéricas del estándar.
   cabecera muestra la madurez de la redacción ("Redacción: Estable"), y el chip
   de ciclo de vida explica qué es y enlaza a la nueva sección del colofón que
   define los tres estados.
+- La página 404 sugiere las notas más cercanas a la dirección que no existe
+  (una ruta antigua de `/blog/`, un slug mal escrito o cortado), en inglés y en
+  español, a partir del mismo índice que la búsqueda. Sin JavaScript, o sin
+  nada parecido, se queda con los enlaces de siempre.
 
 ### Corregido
 
@@ -189,6 +193,26 @@ este repo usa de verdad — no las genéricas del estándar.
   retiene el foco, se cierra con Escape y devuelve el foco a la imagen que lo
   abrió. Siempre tiene nombre, aunque la imagen no tenga texto alternativo, y
   el botón de cerrar usa el ícono del registro con un área de 44 px.
+- La búsqueda de Notas encuentra los títulos de sección: el índice incluye los
+  encabezados `h2`/`h3` de cada nota con su ancla, y un resultado que solo
+  coincide en un encabezado lleva directo a esa sección ("en § AlarmManager").
+  Sin resultados, dice qué se buscó y ofrece limpiar la búsqueda o explorar
+  temas; el recuento ya no habla de "todo el archivo", solo de notas. Mientras
+  se busca, las pestañas de tipo ocultan sus totales, y queda un único botón
+  para limpiar. El build falla si una ancla indexada no existe o si el índice
+  supera su presupuesto gzip.
+- Quien lee en español recibe un feed en español: `/es/rss.xml` existe, con
+  `<language>es</language>` y solo las notas en español, y las páginas en
+  español lo enlazan en el `<head>`, el pie y la cabecera de Notas. El feed en
+  inglés declara `<language>en</language>`. El build verifica que cada idioma
+  enlace su propio feed y que ambos se lean como XML.
+- Las herramientas del Lab se usan en el teléfono: entrada y salida se apilan
+  en una columna por debajo de 760 px en lugar de quedar lado a lado a unos
+  150 px cada una. La regla para apilarlas existía pero perdía por
+  especificidad frente a la de dos columnas.
+- En `astro dev`, la CSP ya no bloquea los scripts que inician las islas de
+  React, así que las herramientas del Lab y las demos funcionan al
+  desarrollar. La política publicada no cambia.
 
 ### Rendimiento
 

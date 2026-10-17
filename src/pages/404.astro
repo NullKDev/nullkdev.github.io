@@ -12,7 +12,11 @@ const spanishNotFound = getLocalizedPath('/404/', 'es')
 >
   <script is:inline slot="head" define:vars={{ spanishNotFound }}>
     if (location.pathname === '/es' || location.pathname.startsWith('/es/')) {
-      location.replace(spanishNotFound)
+      // The address that missed travels along, so the Spanish 404 can still
+      // suggest the notes closest to it.
+      location.replace(
+        spanishNotFound + '?from=' + encodeURIComponent(location.pathname),
+      )
     }
   </script>
 </NotFoundPage>

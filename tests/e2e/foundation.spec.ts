@@ -1103,9 +1103,7 @@ test('notes search finds entries across the archive and announces the count', as
   await search.fill('android')
   await expect(results).toBeVisible()
   await expect(page.locator('[data-notes-list] li').first()).toBeVisible()
-  await expect(status).toHaveText(
-    /^\d+ of \d+ entries across the whole archive\.$/,
-  )
+  await expect(status).toHaveText(/^\d+ of \d+ notes match\.$/)
   await expect(
     page.locator('[data-notes-list] .notes-results__meta').last(),
   ).toHaveText(/ · \d+ min read$/)
@@ -1113,7 +1111,7 @@ test('notes search finds entries across the archive and announces the count', as
 
   // A second query reuses the index already fetched.
   await search.fill('compose')
-  await expect(status).toHaveText(/entries across the whole archive/)
+  await expect(status).toHaveText(/notes match/)
   expect(searchRequests).toHaveLength(1)
 
   await search.fill('')
@@ -1502,4 +1500,147 @@ test('a note prints as text, without the screen chrome', async ({ page }) => {
   )
   expect(after).toContain('http')
   await expect(page.locator('.prose').first()).toBeVisible()
+})
+
+/* ------------------------------------------------------------------------
+   UX round: search by heading, per-locale feeds, 404 suggestions, Lab on a
+   phone. Kept together at the end of the file.
+   ------------------------------------------------------------------------ */
+
+test('notes search finds a heading and links straight to its section', async ({
+  page,
+}) => {
+  await page.goto('/notes/')
+  const search = page.getByRole('searchbox', { name: 'Search notes' })
+  await search.fill('AlarmManager')
+
+  const hit = page.locator('[data-notes-list] a', { hasText: 'AlarmManager' })
+  await expect(hit.first()).toBeVisible()
+  await expect(hit.first()).toHaveAttribute(
+    'href',
+    /\/notes\/android-17-beta-3\/#alarmmanager-/,
+  )
+  await expect(hit.first().locator('.notes-results__section')).toHaveText(
+    /^in § AlarmManager/,
+  )
+  // The type tabs drop their whole-collection counts while a query is active.
+  await expect(page.locator('.notes-filter__n').first()).toBeHidden()
+  // One clear control, the labelled one.
+  await expect(page.getByRole('button', { name: 'Clear' })).toBeVisible()
+
+  await hit.first().click()
+  await expect(page).toHaveURL(/#alarmmanager-/)
+  const anchor = decodeURIComponent(new URL(page.url()).hash.slice(1))
+  await expect(page.locator(`[id="${anchor}"]`)).toBeInViewport()
+})
+
+test('notes search with no match names the query and offers ways on', async ({
+  page,
+}) => {
+  await page.goto('/notes/')
+  const search = page.getByRole('searchbox', { name: 'Search notes' })
+  await search.fill('zzqqxx')
+
+  const empty = page.locator('[data-notes-empty]')
+  await expect(empty).toContainText('No notes match “zzqqxx”.')
+  await expect(empty).not.toContainText('archive')
+  await expect(page.locator('[data-notes-status]')).toHaveText(
+    'No notes match “zzqqxx”.',
+  )
+  await expect(
+    empty.getByRole('link', { name: 'browse topics' }),
+  ).toHaveAttribute('href', '/tags/')
+  await empty.getByRole('button', { name: 'Clear search' }).click()
+  await expect(search).toHaveValue('')
+  await expect(search).toBeFocused()
+  await expect(page.locator('[data-notes-results]')).toBeHidden()
+  await expect(page.locator('.notes-filter__n').first()).toBeVisible()
+})
+
+test('each locale links its own feed, and the Spanish feed is Spanish', async ({
+  page,
+  request,
+}) => {
+  await page.goto('/es/notes/')
+  await expect(
+    page.locator('link[rel="alternate"][type="application/rss+xml"]'),
+  ).toHaveAttribute('href', '/es/rss.xml')
+  await expect(page.locator('.site-footer a[href="/es/rss.xml"]')).toHaveCount(
+    1,
+  )
+  await expect(page.locator('a[href="/rss.xml"]')).toHaveCount(0)
+
+  await page.goto('/notes/')
+  await expect(
+    page.locator('link[rel="alternate"][type="application/rss+xml"]'),
+  ).toHaveAttribute('href', '/rss.xml')
+
+  const feed = await request.get('/es/rss.xml')
+  expect(feed.status()).toBe(200)
+  const xml = await feed.text()
+  // Parsed by the browser's own XML parser, as a feed reader would.
+  const parsed = await page.evaluate((source) => {
+    const doc = new DOMParser().parseFromString(source, 'application/xml')
+    return {
+      error: doc.querySelector('parsererror') !== null,
+      language: doc.querySelector('channel > language')?.textContent,
+      items: doc.querySelectorAll('channel > item').length,
+    }
+  }, xml)
+  expect(parsed.error).toBe(false)
+  expect(parsed.language).toBe('es')
+  expect(parsed.items).toBeGreaterThan(0)
+  expect(xml).toContain('<language>es</language>')
+  expect(xml).toContain('/es/notes/')
+  expect(await (await request.get('/rss.xml')).text()).toContain(
+    '<language>en</language>',
+  )
+})
+
+test('the 404 suggests the closest notes, in both languages', async ({
+  page,
+}) => {
+  // A truncated slug: no such page, but three notes share its words.
+  await page.goto('/notes/android-17-beta/')
+  const english = page.locator('[data-not-found-suggestions]')
+  await expect(english).toBeVisible()
+  await expect(english.locator('a').first()).toHaveAttribute(
+    'href',
+    '/notes/android-17-beta-3/',
+  )
+
+  await page.goto('/es/notes/android-17-beta/')
+  await expect(page).toHaveURL(/\/es\/404\/\?from=/)
+  const spanish = page.locator('[data-not-found-suggestions]')
+  await expect(spanish).toBeVisible()
+  await expect(spanish.locator('h2')).toHaveText(
+    'Notas más cercanas a esta dirección',
+  )
+  await expect(spanish.locator('a').first()).toHaveAttribute(
+    'href',
+    '/es/notes/android-17-beta-3/',
+  )
+
+  // Nothing close: the section stays hidden and the plain links remain.
+  await page.goto('/zzqqxx/')
+  await expect(page.locator('[data-not-found-suggestions]')).toBeHidden()
+  await expect(page.locator('.hero-actions a')).toHaveCount(2)
+})
+
+test('a Lab tool stacks input and output on a phone', async ({ page }) => {
+  for (const [width, columns] of [
+    [390, 1],
+    [1280, 2],
+  ] as const) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/lab/json-formatter/')
+    const inputBox = await page
+      .locator('.lab-pane:not(.output-pane)')
+      .boundingBox()
+    const outputBox = await page.locator('.output-pane').boundingBox()
+    expect(inputBox && outputBox).toBeTruthy()
+    const sideBySide = Math.abs(inputBox!.y - outputBox!.y) < 1
+    expect(sideBySide ? 2 : 1, `${width}px`).toBe(columns)
+    if (columns === 1) expect(inputBox!.width).toBeGreaterThan(300)
+  }
 })

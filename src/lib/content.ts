@@ -271,9 +271,6 @@ export const getHomeSections = async (
     }),
   )
 
-export const getPublicEnglishNotes = async () =>
-  (await getArchiveEntries('notes', 'en')) as CollectionEntry<'notes'>[]
-
 export const assertTrackedContentIntegrity = async () => {
   const collections = await Promise.all(
     archiveDomains.map(async (domain) => ({

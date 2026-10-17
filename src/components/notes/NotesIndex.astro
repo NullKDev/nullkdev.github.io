@@ -17,6 +17,7 @@ import { getArchiveLabel } from '@/i18n/archive'
 import Layout from '@/layouts/Layout.astro'
 import { buildCollectionPageLd } from '@/lib/structured-data'
 import { getArchiveEntries } from '@/lib/content'
+import { getFeedPath } from '@/lib/rss'
 import {
   countByKind,
   getAvailableKinds,
@@ -150,7 +151,7 @@ const collectionJsonLd = buildCollectionPageLd({
         <p class="notes-head__count">
           {all.length}
           <span>{countWord}</span>
-          <a class="notes-head__feed" href="/rss.xml">
+          <a class="notes-head__feed" href={getFeedPath(locale)}>
             <Icon name="feed" size={14} />
             RSS
           </a>
@@ -243,7 +244,22 @@ const collectionJsonLd = buildCollectionPageLd({
         data-jump={dictionary.notes.jumpTo}
         data-minutes={dictionary.notes.readTime}
         data-error={dictionary.notes.searchError}
+        data-section={dictionary.notes.inSection}
       >
+      </p>
+      <p
+        class="notes-results__empty"
+        data-notes-empty
+        data-template={dictionary.notes.noMatch}
+        hidden
+      >
+        <span data-notes-empty-text></span>{' '}<button
+          type="button"
+          data-notes-clear>{dictionary.notes.clearSearch}</button
+        >{` ${dictionary.notes.or} `}<a
+          href={getLocalizedPath('/tags/', locale)}
+          >{dictionary.notes.browseTopics}</a
+        >.
       </p>
       <ol class="notes-results__list" data-notes-list></ol>
     </section>
@@ -289,20 +305,18 @@ const collectionJsonLd = buildCollectionPageLd({
 </script>
 
 <script>
+  import {
+    searchNotes,
+    type SearchHit,
+    type SearchRow,
+  } from '@/lib/notes-search'
+
   // Search runs over the whole collection, not the current page — the same
   // reason filtering and pagination are routes. The field only appears once
-  // this script can actually make it work.
-  type Row = {
-    title: string
-    summary: string
-    kindLabel: string
-    topics: string[]
-    path: string
-    minutes: number
-    date: string
-  }
+  // this script can actually make it work. Matching lives in lib/notes-search
+  // so the build, this field and the 404 suggestions read the index one way.
   type Filter = { label: string; count: number; path: string }
-  type Index = { entries: Row[]; filters: Filter[] }
+  type Index = { entries: SearchRow[]; filters: Filter[] }
 
   const form = document.querySelector<HTMLFormElement>('[data-notes-search]')
   const input = form?.querySelector<HTMLInputElement>('input')
@@ -311,12 +325,19 @@ const collectionJsonLd = buildCollectionPageLd({
   const list = document.querySelector<HTMLOListElement>('[data-notes-list]')
   const count = document.querySelector<HTMLElement>('[data-notes-count]')
   const status = document.querySelector<HTMLElement>('[data-notes-status]')
+  const empty = document.querySelector<HTMLElement>('[data-notes-empty]')
+  const emptyText = empty?.querySelector<HTMLElement>('[data-notes-empty-text]')
+  const emptyClear =
+    empty?.querySelector<HTMLButtonElement>('[data-notes-clear]')
+  const filterBar = document.querySelector<HTMLElement>('.notes-filter')
   const stream = document.querySelector<HTMLElement>('.notes-stream')
   const pagination = document.querySelector<HTMLElement>('.pagination')
   const template = count?.dataset.template ?? ''
   const jumpLabel = count?.dataset.jump ?? ''
   const minutesUnit = count?.dataset.minutes ?? ''
   const errorText = count?.dataset.error ?? ''
+  const sectionLabel = count?.dataset.section ?? ''
+  const emptyTemplate = empty?.dataset.template ?? ''
 
   if (form && input && results && list && count) {
     let index: Promise<Index> | undefined
@@ -340,82 +361,108 @@ const collectionJsonLd = buildCollectionPageLd({
       if (status) status.textContent = message
     }
 
-    const filterRow = (filter: Filter) => {
+    // The type tabs count the whole collection and their links drop the
+    // query, so a number beside them while searching would describe a list
+    // the reader is not looking at. The tabs stay; their counts step out.
+    const setSearching = (searching: boolean) => {
+      filterBar?.toggleAttribute('data-searching', searching)
+      if (stream) stream.hidden = searching
+      if (pagination) pagination.hidden = searching
+      if (reset) reset.hidden = input.value === ''
+    }
+
+    const resultRow = (
+      href: string,
+      kindText: string,
+      titleText: string,
+      metaText: string,
+      section?: string,
+    ) => {
       const item = document.createElement('li')
-      item.className = 'notes-results__jump'
       const link = document.createElement('a')
-      link.href = filter.path
+      link.href = href
       const kind = document.createElement('span')
       kind.className = 'notes-results__kind'
-      kind.textContent = jumpLabel
+      kind.textContent = kindText
+      const body = document.createElement('span')
+      body.className = 'notes-results__body'
       const title = document.createElement('strong')
-      title.textContent = filter.label
+      title.textContent = titleText
+      body.append(title)
+      if (section) {
+        const where = document.createElement('span')
+        where.className = 'notes-results__section'
+        where.textContent = `${sectionLabel} ${section}`
+        body.append(where)
+      }
       const meta = document.createElement('span')
       meta.className = 'notes-results__meta'
-      meta.textContent = String(filter.count)
-      link.append(kind, title, meta)
+      meta.textContent = metaText
+      link.append(kind, body, meta)
       item.append(link)
       return item
     }
+
+    const filterRow = (filter: Filter) => {
+      const item = resultRow(
+        filter.path,
+        jumpLabel,
+        filter.label,
+        String(filter.count),
+      )
+      item.className = 'notes-results__jump'
+      return item
+    }
+
+    const hitRow = ({ row, section, href }: SearchHit) =>
+      resultRow(
+        href,
+        row.kindLabel,
+        row.title,
+        `${row.date} · ${row.minutes} ${minutesUnit}`,
+        section?.text,
+      )
 
     const render = (query: string, data: Index) => {
       const needle = query.toLowerCase()
       const jumps = data.filters.filter((filter) =>
         filter.label.toLowerCase().includes(needle),
       )
-      const matches = data.entries.filter((row) =>
-        [row.title, row.summary, row.kindLabel, ...row.topics]
-          .join(' ')
-          .toLowerCase()
-          .includes(needle),
-      )
-      list.replaceChildren(
-        ...jumps.map(filterRow),
-        ...matches.map((row) => {
-          const item = document.createElement('li')
-          const link = document.createElement('a')
-          link.href = row.path
-          const kind = document.createElement('span')
-          kind.className = 'notes-results__kind'
-          kind.textContent = row.kindLabel
-          const title = document.createElement('strong')
-          title.textContent = row.title
-          const meta = document.createElement('span')
-          meta.className = 'notes-results__meta'
-          meta.textContent = `${row.date} · ${row.minutes} ${minutesUnit}`
-          link.append(kind, title, meta)
-          item.append(link)
-          return item
-        }),
-      )
+      const hits = searchNotes(data.entries, query)
+      list.replaceChildren(...jumps.map(filterRow), ...hits.map(hitRow))
+
+      // Nothing at all: say what was searched and offer the two ways on,
+      // instead of a bare "0 of 9".
+      const nothing = jumps.length === 0 && hits.length === 0
+      if (empty && emptyText) {
+        emptyText.textContent = emptyTemplate.replace('{query}', query)
+        empty.hidden = !nothing
+      }
+      count.hidden = nothing
       count.textContent = template
-        .replace('{shown}', String(matches.length))
+        .replace('{shown}', String(hits.length))
         .replace('{total}', String(data.entries.length))
-      announce(count.textContent)
+      announce(nothing ? (emptyText?.textContent ?? '') : count.textContent)
       results.hidden = false
-      if (stream) stream.hidden = true
-      if (pagination) pagination.hidden = true
-      if (reset) reset.hidden = false
+      setSearching(true)
     }
 
     // The archive below stays in place: search is an addition to the filters,
     // so losing it must not take the list away too.
     const fail = () => {
       list.replaceChildren()
+      if (empty) empty.hidden = true
+      count.hidden = false
       count.textContent = errorText
       announce(errorText)
       results.hidden = false
-      if (stream) stream.hidden = false
-      if (pagination) pagination.hidden = false
-      if (reset) reset.hidden = false
+      setSearching(false)
     }
 
     const clear = () => {
       announce('')
       results.hidden = true
-      if (stream) stream.hidden = false
-      if (pagination) pagination.hidden = false
-      if (reset) reset.hidden = true
+      setSearching(false)
     }
 
     input.addEventListener('input', () => {
@@ -441,8 +488,23 @@ const collectionJsonLd = buildCollectionPageLd({
       }, 120)
     })
 
+    // One way to clear: the labelled button. The browser's own cancel glyph
+    // is hidden in notes.css, and Escape does what the button does in every
+    // browser, not only the ones that clear a search field natively.
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && input.value !== '') {
+        event.preventDefault()
+        form.reset()
+      }
+    })
+    emptyClear?.addEventListener('click', () => {
+      form.reset()
+      input.focus()
+    })
+
     form.addEventListener('submit', (event) => event.preventDefault())
     form.addEventListener('reset', () => {
+      window.clearTimeout(pending)
       window.setTimeout(clear, 0)
     })
 

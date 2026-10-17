@@ -41,5 +41,61 @@ const dictionary = getDictionary(locale)
         >{dictionary.notFound.notes}</a
       >
     </div>
+    <section
+      class="not-found-suggestions"
+      aria-labelledby="not-found-suggestions"
+      data-not-found-suggestions
+      data-endpoint={getLocalizedPath('/notes-search.json', locale)}
+      hidden
+    >
+      <h2 id="not-found-suggestions">{dictionary.notFound.suggestions}</h2>
+      <ul data-not-found-list></ul>
+    </section>
   </main>
 </Layout>
+
+<script>
+  import { suggestNotesForPath, type SearchRow } from '@/lib/notes-search'
+
+  // The closest notes to the address that missed, read from the same index
+  // the Notes search uses. Without JavaScript, or with nothing close, the
+  // section stays hidden and the links above remain the way on. The Spanish
+  // 404 is reached by redirect, so the address that missed arrives as `from`.
+  const section = document.querySelector<HTMLElement>(
+    '[data-not-found-suggestions]',
+  )
+  const list = section?.querySelector<HTMLUListElement>('[data-not-found-list]')
+  const missed =
+    new URLSearchParams(location.search).get('from') ?? location.pathname
+
+  if (section && list) {
+    fetch(section.dataset.endpoint ?? '')
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        return response.json() as Promise<{ entries: SearchRow[] }>
+      })
+      .then(({ entries }) => {
+        const rows = suggestNotesForPath(missed, entries)
+        if (rows.length === 0) return
+        list.replaceChildren(
+          ...rows.map((row) => {
+            const item = document.createElement('li')
+            const link = document.createElement('a')
+            link.href = row.path
+            const kind = document.createElement('span')
+            kind.className = 'not-found-suggestions__kind'
+            kind.textContent = row.kindLabel
+            const title = document.createElement('strong')
+            title.textContent = row.title
+            link.append(kind, title)
+            item.append(link)
+            return item
+          }),
+        )
+        section.hidden = false
+      })
+      // Suggestions are a convenience: a failed fetch leaves the page as it
+      // is without them, which is still a complete 404.
+      .catch(() => undefined)
+  }
+</script>

@@ -4,6 +4,8 @@ import { getTopicLabel } from '@/data/taxonomy'
 import { getArchiveLabel } from '@/i18n/archive'
 import { getArchiveEntries, getEntryPath } from '@/lib/content'
 import { formatDate } from '@/lib/dates'
+import { loadEntryOutline } from '@/lib/entry-outline'
+import { toSearchSections, type SearchRow } from '@/lib/notes-search'
 import {
   getAvailableKinds,
   getAvailableTopics,
@@ -15,6 +17,10 @@ import { getLocalizedPath, type Locale } from '@/i18n'
  * Every published note in one small document, so search covers the whole
  * collection rather than the page the reader happens to be on. Emitted per
  * locale; the client fetches it once, on first keystroke.
+ *
+ * Each note carries its outline headings with their anchors, so a term that
+ * only appears as a section title still finds the note and lands on that
+ * section. The same index feeds the 404 suggestions.
  */
 export const buildNotesSearchIndex = async (locale: Locale) => {
   const entries = (await getArchiveEntries(
@@ -40,18 +46,21 @@ export const buildNotesSearchIndex = async (locale: Locale) => {
     })),
   ]
 
-  const rows = entries.map((entry) => ({
-    title: entry.data.title,
-    summary: entry.data.summary,
-    kind: entry.data.kind,
-    kindLabel: getArchiveLabel('noteKind', entry.data.kind, locale),
-    topics: entry.data.topics.map((topic) => getTopicLabel(topic, locale)),
-    path: getEntryPath(entry),
-    minutes: meta[entry.id]?.minutes ?? 1,
-    date: entry.data.publishedAt
-      ? formatDate(entry.data.publishedAt, locale, 'month')
-      : '',
-  }))
+  const rows: SearchRow[] = await Promise.all(
+    entries.map(async (entry) => ({
+      title: entry.data.title,
+      summary: entry.data.summary,
+      kind: entry.data.kind,
+      kindLabel: getArchiveLabel('noteKind', entry.data.kind, locale),
+      topics: entry.data.topics.map((topic) => getTopicLabel(topic, locale)),
+      path: getEntryPath(entry),
+      minutes: meta[entry.id]?.minutes ?? 1,
+      date: entry.data.publishedAt
+        ? formatDate(entry.data.publishedAt, locale, 'month')
+        : '',
+      sections: toSearchSections(await loadEntryOutline(entry)),
+    })),
+  )
 
   return { entries: rows, filters }
 }

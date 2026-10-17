@@ -8,6 +8,23 @@ Format: what was decided · why · what it rules out.
 
 ---
 
+## 2026-10-17 — Search finds headings; tab counts step out while searching
+
+**Decided.** `/notes-search.json` carries every note's outline (h2/h3 and
+inlined subpost parts) with its anchors, read through the same
+`buildEntryOutline` the page renders. A note that matches only in a heading
+links to `path#slug` and says which section. While a query is active the type
+tabs keep their links but hide their counts.
+
+**Why.** A reader searching for a term they saw as a section title got "0 of
+9". Per-query tab counts were rejected: the tabs are routes that drop the
+query, so a count beside them would promise a filtered list the link does not
+open.
+
+**Rules out.** Full-text search of note bodies — it would multiply the index
+for terms the outline already locates. The build fails if an indexed anchor is
+missing from its page or the index outgrows its gzip budget.
+
 ## 2026-10-17 — The robot keeps moving, and the reader can stop it
 
 **Decided.** The home robot animates autonomously for every visitor,
@@ -87,7 +104,7 @@ WhatsApp render nothing at all for an SVG `og:image`.
 
 **Why.** Every page advertised the same card, which still carried the previous
 brand and section names. The blocker was not the missing prop: the metadata
-checker *asserted* that every page use the shared image, so the correct change
+checker _asserted_ that every page use the shared image, so the correct change
 could not pass the build. When a check enforces the wrong thing, the check is
 the defect.
 
@@ -120,7 +137,7 @@ light tint.
 
 **Why.** The light surface was `#F8FAFC`, which measures 1.05:1 against the
 `#ffffff` card and 1.01:1 against the page. The banner had no edge; its corner
-*was* the surface behind it, so the artwork read as floating on the card. The
+_was_ the surface behind it, so the artwork read as floating on the card. The
 100-level tints had the same problem at 1.13–1.23:1 — a colour present in the
 file and absent on screen. Measuring also caught what looking could not: emerald
 `#059669` clears 3:1 on three grounds and fails its own light tint at 2.94:1.
@@ -154,7 +171,7 @@ being retyped in fifteen files.
 **Why.** The owner wanted a name that reads as a person rather than a handle.
 
 **Rules out.** A global find-and-replace on "nullkdev". Four kinds of string
-only *look* like the brand and must never be swept up: the host
+only _look_ like the brand and must never be swept up: the host
 (`nullkdev.github.io`), the GitHub URLs, and two classes of identifier —
 `nullkdev:notes-read`, whose rename discards every visitor's reading history,
 and `nullkdev:protected:v*`, which is bound into the encryption envelope and
@@ -179,7 +196,7 @@ cannot return a string, but `renderIcon()` is consumed by `set:html` in 19
 places. Consuming the JSON packs directly preserved both APIs. Also rules out
 subsetting IBM Plex Mono — the Lab's Unicode inspector renders arbitrary
 visitor-supplied code points, so any subset guarantees fallback glyphs exactly
-where the glyph *is* the content.
+where the glyph _is_ the content.
 
 ## 2026-07-25 — Gallery items live in a manifest, filled by a scanner
 
@@ -206,7 +223,7 @@ frontmatter (a 200-image `index.md` is an unreviewable diff).
 **Decided.** `galleryItems` is a discriminated union on `type`: `image`,
 `video`, `document`, `archive`, `link`. Every item carries `origin`
 (`captured | generated | derived | third-party`), and `origin: generated`
-*requires* a `generation` block with tool, model, and prompt — enforced by a
+_requires_ a `generation` block with tool, model, and prompt — enforced by a
 schema refinement in both directions.
 
 **Why.** A generated image and a photograph are not the same kind of object and
@@ -233,7 +250,7 @@ and every card is the same component.
 
 **Why.** "Most popular" is impossible — the site has no analytics by design and
 `PRODUCT.md` forbids inventing metrics. "Newest" is already stated by position:
-the first card *is* the newest, so featuring it repeated the same fact at a cost
+the first card _is_ the newest, so featuring it repeated the same fact at a cost
 of 464px above the fold. On a page built for browsing and filtering, the first
 screen should show more choices, not fewer.
 

@@ -80,6 +80,20 @@ for (const file of htmlFiles) {
   const noindex = /<meta name="robots" content="noindex, nofollow"/.test(html)
   if (!/<html lang="(?:en|es)"/.test(html))
     failures.push(`${file}: missing lang`)
+  /* Each language subscribes to its own feed. Spanish pages used to offer
+     `/rss.xml`, an English feed, in both the <head> and the footer. */
+  const pageLang = html.match(/<html lang="(en|es)"/)?.[1]
+  const ownFeed = pageLang === 'es' ? '/es/rss.xml' : '/rss.xml'
+  const otherFeed = pageLang === 'es' ? '/rss.xml' : '/es/rss.xml'
+  const feedLink = html.match(
+    /<link rel="alternate" type="application\/rss\+xml"[^>]*href="([^"]+)"/,
+  )?.[1]
+  if (feedLink !== ownFeed) {
+    failures.push(`${file}: feed link ${String(feedLink)}, expected ${ownFeed}`)
+  }
+  if (html.includes(`href="${otherFeed}"`)) {
+    failures.push(`${file}: links the other language's feed ${otherFeed}`)
+  }
   /* An indexable page must name its canonical URL. A noindex page may omit
      it: the 404 stands in for every missing path, and a canonical there told
      crawlers the error page and the home page were one document. Legacy
@@ -245,9 +259,50 @@ const robots = await readFile(join(dist, 'robots.txt'), 'utf8')
 if (!robots.includes(`Sitemap: ${SITE_URL}/sitemap-index.xml`)) {
   failures.push('robots.txt: missing canonical sitemap')
 }
-const rss = await readFile(join(dist, 'rss.xml'), 'utf8')
-if (!rss.includes('<rss') || !rss.includes('<pubDate>')) {
-  failures.push('rss.xml: missing channel or dated entries')
+/* Both feeds must declare their language and hold only that language's
+   entries — every Spanish URL lives under /es/. That each one parses as XML
+   is asserted in a real browser by the e2e suite (`DOMParser`). */
+for (const [feedFile, language] of [
+  ['rss.xml', 'en'],
+  ['es/rss.xml', 'es'],
+] as const) {
+  const xml = await readFile(join(dist, feedFile), 'utf8')
+  const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].map(
+    ([, body]) => body,
+  )
+  if (!/^<\?xml[^>]*\?>\s*<rss[\s>]/.test(xml) || items.length === 0) {
+    failures.push(`${feedFile}: missing channel or entries`)
+    continue
+  }
+  if (!xml.includes(`<language>${language}</language>`)) {
+    failures.push(`${feedFile}: <language> is not ${language}`)
+  }
+  for (const item of items) {
+    const link = item.match(/<link>([^<]+)<\/link>/)?.[1] ?? ''
+    const inSpanish = link.startsWith(`${SITE_URL}/es/`)
+    if (!item.includes('<pubDate>')) {
+      failures.push(`${feedFile}: entry ${link} has no pubDate`)
+    }
+    if (inSpanish !== (language === 'es')) {
+      failures.push(`${feedFile}: entry ${link} is not in ${language}`)
+    }
+  }
+}
+
+/* A heading hit in notes search links to `path#slug`. Every indexed anchor
+   must exist on the page it points at, or search lands at the top. */
+for (const searchFile of ['notes-search.json', 'es/notes-search.json']) {
+  const index = JSON.parse(await readFile(join(dist, searchFile), 'utf8')) as {
+    entries: { path: string; sections: { slug: string }[] }[]
+  }
+  for (const { path, sections } of index.entries) {
+    const page = await readFile(join(dist, path, 'index.html'), 'utf8')
+    for (const { slug } of sections) {
+      if (!page.includes(`id="${slug}"`)) {
+        failures.push(`${searchFile}: ${path}#${slug} is not an anchor`)
+      }
+    }
+  }
 }
 
 if (failures.length > 0) {

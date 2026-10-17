@@ -112,7 +112,7 @@ export const es = {
     search: 'Buscar en notas',
     searchPlaceholder: 'Buscar títulos, resúmenes, temas…',
     clear: 'Limpiar',
-    results: '{shown} de {total} entradas en todo el archivo.',
+    results: '{shown} de {total} notas coinciden.',
     read: 'Leída',
     revised: 'Revisada desde que la leíste',
     jumpTo: 'Filtro',
@@ -120,6 +120,14 @@ export const es = {
       'No se pudo cargar la búsqueda. Los filtros por tipo y tema siguen funcionando.',
     pagination: 'Paginación',
     filter: 'Filtrar por tipo',
+    noMatch: 'Ninguna nota coincide con “{query}”.',
+    clearSearch: 'Limpiar búsqueda',
+    or: 'o',
+    browseTopics: 'explorar temas',
+    inSection: 'en §',
+    feedTitle: 'Notas de {name}',
+    feedDescription:
+      'Notas de investigación, artículos y documentos de {name}, en español.',
   },
   gallery: {
     pieces: 'Piezas',
@@ -306,6 +314,7 @@ export const es = {
     body: 'El registro solicitado puede haberse movido, seguir siendo privado o nunca haber ingresado al archivo público.',
     home: 'Volver al archivo',
     notes: 'Explorar Notas',
+    suggestions: 'Notas más cercanas a esta dirección',
   },
   galleryNotice:
     'Galería archiva actualmente estudios propios del sistema visual. Las rutas fotográficas anteriores se conservan como avisos honestos de retiro; no se republica material sin verificar.',
