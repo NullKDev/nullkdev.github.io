@@ -98,3 +98,7 @@ Thumbs.db
 #  none of it belongs in this history.
 # ─────────────────────────────────────────────────────────────────────────────
 /backup
+# Local AI runtime state: the skill registry and ODD feature logs belong to
+# one machine's agent setup, not to the site.
+.atl/
+/odd/
