@@ -3,7 +3,6 @@ import type { CollectionEntry } from 'astro:content'
 import { pageTitle } from '@/data/brand'
 import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
 import LabCard from '@/components/lab/LabCard.astro'
-import { getTopicLabel } from '@/data/taxonomy'
 import {
   getAlternateLocale,
   getDictionary,
@@ -12,6 +11,7 @@ import {
 } from '@/i18n'
 import { getArchiveLabel } from '@/i18n/archive'
 import Layout from '@/layouts/Layout.astro'
+import { getLabFacets } from '@/lib/lab'
 import { buildCollectionPageLd } from '@/lib/structured-data'
 import '@/styles/global.css'
 import '@/styles/archive.css'
@@ -26,21 +26,9 @@ const { locale, entries } = Astro.props
 const dictionary = getDictionary(locale)
 const total = entries.length
 
-// Facets come from the records themselves. A tag carried by every entry cannot
-// narrow anything, so it never becomes a filter.
-const facetCounts = new Map<string, number>()
-for (const entry of entries) {
-  const tags = entry.data.technologies.length
-    ? entry.data.technologies
-    : entry.data.topics
-  for (const tag of new Set(tags)) {
-    facetCounts.set(tag, (facetCounts.get(tag) ?? 0) + 1)
-  }
-}
-const facets = [...facetCounts.entries()]
-  .filter(([, count]) => count < total)
-  .map(([id, count]) => ({ id, count, label: getTopicLabel(id, locale) }))
-  .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, locale))
+// Facets come from the records; a tag on nearly every entry is left out
+// because it cannot narrow anything. The rule lives in `getLabFacets`.
+const facets = getLabFacets(entries, locale)
 
 // Status distribution, in the order a workbench actually reads: what is moving
 // first, what is settled after, what is put away last.

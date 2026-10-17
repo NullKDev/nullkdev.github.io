@@ -14,7 +14,7 @@ import Layout from '@/layouts/Layout.astro'
 import { buildCollectionPageLd } from '@/lib/structured-data'
 import GalleryImage from '@/components/gallery/GalleryImage.astro'
 import { getEntryPath, getGallerySheets } from '@/lib/content'
-import { galleryStill } from '@/lib/gallery'
+import { formatPieceCount, galleryStill } from '@/lib/gallery'
 import '@/styles/global.css'
 import '@/styles/archive.css'
 import '@/styles/sections/gallery-index.css'
@@ -113,7 +113,7 @@ const collectionJsonLd = buildCollectionPageLd({
                   ))}
                   {items.length > thumbs.length && thumbs.length > 0 && (
                     <span class="gallery-sheet__more">
-                      +{items.length - thumbs.length}
+                      {formatPieceCount(items.length, dictionary.archive)}
                     </span>
                   )}
                 </div>

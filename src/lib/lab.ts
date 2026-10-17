@@ -1,4 +1,5 @@
 import type { CollectionEntry } from 'astro:content'
+import { getTopicLabel } from '@/data/taxonomy'
 import type { Locale } from '@/i18n'
 
 type LabEntry = CollectionEntry<'lab'>
@@ -74,4 +75,46 @@ export const getRelatedLabEntries = (
     )
     .slice(0, limit)
     .map(({ candidate }) => candidate)
+}
+
+/**
+ * A tag on 85% or more of the listed entries is not a filter: choosing it
+ * hides at most one or two entries, so the button promises a narrowing it
+ * cannot deliver. `developer-tools` on 8 of 8 tools and `web` on 7 of 8 were
+ * exactly that. Those tags stay on the entries themselves; only the filter
+ * bar leaves them out.
+ */
+export const FACET_COVERAGE_LIMIT = 0.85
+
+export interface LabFacet {
+  readonly id: string
+  readonly count: number
+  readonly label: string
+}
+
+/**
+ * Filter facets derived from the records. Declared technologies win over
+ * topics; each entry counts once per tag. Most used first, then by label.
+ */
+export const getLabFacets = (
+  entries: readonly LabEntry[],
+  locale: Locale,
+): LabFacet[] => {
+  const counts = new Map<string, number>()
+  for (const entry of entries) {
+    const tags = entry.data.technologies.length
+      ? entry.data.technologies
+      : entry.data.topics
+    for (const tag of new Set(tags)) {
+      counts.set(tag, (counts.get(tag) ?? 0) + 1)
+    }
+  }
+  return [...counts.entries()]
+    .filter(([, count]) => count / entries.length < FACET_COVERAGE_LIMIT)
+    .map(([id, count]) => ({ id, count, label: getTopicLabel(id, locale) }))
+    .sort(
+      (left, right) =>
+        right.count - left.count ||
+        left.label.localeCompare(right.label, locale),
+    )
 }

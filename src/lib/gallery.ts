@@ -114,3 +114,16 @@ export const resolveGalleryImage = (src: string): ImageMetadata | undefined => {
   if (!match) return undefined
   return rasters[`/src/content/gallery/${match[1]}/assets/${match[2]}`]?.default
 }
+
+/**
+ * "21 pieces" — the size of a collection in one number. The contact sheet
+ * used to show a type tally beside a "+18" overflow badge, which read as two
+ * unrelated counts.
+ */
+export const formatPieceCount = (
+  count: number,
+  labels: { readonly pieceCount: string; readonly pieceCountOne: string },
+): string =>
+  count === 1
+    ? labels.pieceCountOne
+    : labels.pieceCount.replace('{count}', String(count))

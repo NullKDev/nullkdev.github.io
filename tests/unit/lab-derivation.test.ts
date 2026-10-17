@@ -5,6 +5,7 @@ import {
   formatBytes,
   getDataHosts,
   getExecutionTone,
+  getLabFacets,
   getTotalDownloadBytes,
 } from '@/lib/lab'
 import { getLifecycleTone } from '@/lib/status'
@@ -109,5 +110,54 @@ describe('gallery guards', () => {
     // isFile is defined as "not media", so a new type still renders somewhere
     // instead of vanishing from both surfaces.
     expect(isFile(item('spreadsheet'))).toBe(true)
+  })
+})
+
+describe('getLabFacets', () => {
+  type Lab = Parameters<typeof getLabFacets>[0][number]
+  const lab = (technologies: string[], topics: string[] = []) =>
+    ({ data: { technologies, topics } }) as unknown as Lab
+  // Eight tools, the shape the audit found: one tag on all, one on seven.
+  const entries = [
+    lab([], ['developer-tools', 'web', 'json']),
+    lab([], ['developer-tools', 'web', 'json']),
+    lab([], ['developer-tools', 'web', 'yaml']),
+    lab([], ['developer-tools', 'web', 'dates']),
+    lab([], ['developer-tools', 'web', 'encoding']),
+    lab([], ['developer-tools', 'web', 'networking']),
+    lab([], ['developer-tools', 'web', 'security']),
+    lab([], ['developer-tools', 'networking']),
+  ]
+
+  it('drops tags that cover 85% or more of the listed entries', () => {
+    const ids = getLabFacets(entries, 'en').map(({ id }) => id)
+    expect(ids).not.toContain('developer-tools')
+    expect(ids).not.toContain('web')
+    expect(ids).toEqual([
+      'json',
+      'networking',
+      'dates',
+      'encoding',
+      'security',
+      'yaml',
+    ])
+  })
+
+  it('keeps a tag just under the threshold', () => {
+    const seven = [...entries.slice(0, 6), lab([], ['json']), lab([], ['x'])]
+    // `web` is on 6 of 8 (75%): it still narrows the list.
+    expect(getLabFacets(seven, 'en').map(({ id }) => id)).toContain('web')
+  })
+
+  it('prefers declared technologies over topics, counted once per entry', () => {
+    const facets = getLabFacets(
+      [lab(['react', 'react'], ['web']), lab(['wasm']), lab([], ['web'])],
+      'en',
+    )
+    expect(facets).toEqual([
+      { id: 'react', count: 1, label: 'React' },
+      { id: 'wasm', count: 1, label: 'Wasm' },
+      { id: 'web', count: 1, label: 'Web' },
+    ])
   })
 })

@@ -3,7 +3,10 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { resetCollections, setCollection } from '../stubs/astro-content'
 
 import { getGalleryItems, getGallerySheets } from '@/lib/content'
+import { en } from '@/i18n/en'
+import { es } from '@/i18n/es'
 import {
+  formatPieceCount,
   galleryStill,
   resolveGalleryImage,
   type GalleryItemEntry,
@@ -144,5 +147,14 @@ describe('gallery image sources', () => {
       type: 'video',
     }) as MediaItem
     expect(galleryStill(video)).toBeUndefined()
+  })
+})
+
+describe('formatPieceCount', () => {
+  it('counts every piece in a collection, singular and plural', () => {
+    expect(formatPieceCount(21, en.archive)).toBe('21 pieces')
+    expect(formatPieceCount(1, en.archive)).toBe('1 piece')
+    expect(formatPieceCount(21, es.archive)).toBe('21 piezas')
+    expect(formatPieceCount(1, es.archive)).toBe('1 pieza')
   })
 })

@@ -82,6 +82,19 @@
 .prose li {
   margin: 0.35rem 0;
 }
+/* Tailwind's preflight sets every list to `list-style: none`, so Markdown
+   lists rendered without bullets on screen and on paper, and the marker colour
+   below styled nothing. Only plain Markdown lists get markers back; a list a
+   component classes (task lists, record lists) keeps its own treatment. */
+.prose ul:not([class]) {
+  list-style: disc;
+}
+.prose ul:not([class]) ul:not([class]) {
+  list-style: circle;
+}
+.prose ol:not([class]) {
+  list-style: decimal;
+}
 .prose li::marker {
   color: var(--accent);
 }

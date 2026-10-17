@@ -88,9 +88,37 @@ este repo usa de verdad — no las genéricas del estándar.
 - Estilos de impresión: sin cabecera, navegación, índices, banner, barra de
   progreso ni botones de copiar; negro sobre blanco en ambos temas, sin cortar
   bloques de código, figuras ni tablas, y con la URL de cada enlace externo.
+- Una nota dice dónde está parada, arriba del todo: una nota reemplazada
+  enlaza a la que la reemplazó ("Esta nota fue reemplazada por …", en el idioma
+  de la página) y una archivada sin reemplazo lo explica en una frase. Las notas
+  de una serie muestran "Parte 2 de 3 · Android 17" en la cabecera y en su
+  tarjeta, con el título de la serie desde `src/data/series.ts` (el esquema
+  rechaza un `series.id` que no esté ahí). "Parte" queda solo para las
+  subpartes ("4 partes", "Parte 3 de 4") y ninguna cuenta de uno se anuncia. La
+  cabecera muestra la madurez de la redacción ("Redacción: Estable"), y el chip
+  de ciclo de vida explica qué es y enlaza a la nueva sección del colofón que
+  define los tres estados.
 
 ### Corregido
 
+- Las fechas ya no salen un día antes: una fecha del frontmatter
+  (`2026-03-27`) es medianoche UTC y se formateaba en la zona del build
+  (GMT-5), así que la página decía 26. Toda fecha pasa por `formatDate` en
+  `src/lib/dates.ts`, en UTC, y los `datetime` son fechas ISO. "Actualizado"
+  se oculta cuando coincide con el día de publicación, y la lectura dice
+  "7 min" en lugar de "Lectura: 7 min de lectura".
+- Etiquetas que confundían: la navegación de subpartes decía "Documentos" (el
+  nombre interno de la colección) y ahora dice "Partes"; la serie se nombraba
+  por su id; un tema en una nota lleva al listado de Notas filtrado, como en las
+  tarjetas, en lugar de a `/tags`; los conteos de `/tags` ya no llevan cero a la
+  izquierda; la Galería muestra "23 piezas" en lugar de "+18"; el botón de
+  Trabajo de la portada usa una flecha y no el ícono de enlace externo; y el
+  filtro del Laboratorio omite temas presentes en el 85% o más de las entradas,
+  que no filtraban nada. El build falla si vuelve a aparecer "Documents", un
+  "1 / 1" o un id de serie en el HTML.
+- El español es neutro en todo el contenido: se quitó el voseo (podés, tenés,
+  subís, probá…) de las notas, el Laboratorio y Trabajo, y una prueba lo
+  detecta en el contenido en español y en `es.ts` (fuera de bloques de código).
 - El robot de la portada se puede pausar: un botón visible de 44 px, operable
   con teclado, con nombre fijo ("Pausar la animación del robot") y
   `aria-pressed`. La pausa detiene el clip en curso y la espera hasta el

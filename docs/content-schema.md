@@ -121,12 +121,17 @@ should not be presented as one.
 | `lifecycle` | `current` \| `superseded` \| `archived` |
 | `supersededBy` | `translationKey` of the replacement. **Effectively required whenever `lifecycle` is `superseded`**, or the reader is told something is stale and given nowhere to go |
 | `level` | `intro` \| `working` \| `deep`. Most useful on guides and references |
-| `series` | `{ id, order }` for multi-part sets |
+| `series` | `{ id, order }` for a run of separate notes. `id` must be declared in `src/data/series.ts`, which gives it a display title in both locales; the schema rejects any other id, so a page never prints the slug. A "series" of one note announces nothing |
 | `pdf` · `citations` | Rendered as a badge and a count on papers |
 
 Reading time and subpost titles are **derived, never stored**: `getNotesMeta()`
 in `src/lib/notes.ts` reads the documents collection once per page and counts
 subposts, because a four-part series is not a two-minute read.
+
+**Part vs series.** A *part* is a subpost of one entry (`documents`); a *series*
+is several notes sharing `series.id`. The copy keeps them apart — "4 parts",
+"Part 3 of 4" for subposts; "Part 2 of 3 · Android 17" for series members — and
+derives both in `src/lib/series.ts`. A count of one is never shown.
 
 Deliberately not added: `abstract`, `prerequisites`, `canonicalUrl`. Reasonable
 fields with no consumer yet, and a field nothing renders is dead weight. Add
