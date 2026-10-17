@@ -669,9 +669,20 @@ test('Spanish shell and detail metadata contain no known English UI labels', asy
 test('public records, series, and nested document adjacency resolve', async ({
   page,
 }) => {
+  // A series of one has nowhere to go: no series navigation.
   await page.goto('/notes/gof-patterns-android/')
+  await expect(page.getByRole('navigation', { name: 'Series' })).toHaveCount(0)
+  await page.goto('/notes/android-17-beta-3/')
   await expect(page.getByRole('navigation', { name: 'Series' })).toContainText(
-    'gof-android',
+    'android-17',
+  )
+  // Under it, the date pager says which way in time it goes rather than
+  // offering a second, different "Previous".
+  const pager = page.getByRole('navigation', { name: 'More entries' })
+  await expect(pager).not.toContainText('Previous')
+  await expect(pager).not.toContainText('Next')
+  await expect(pager.locator('.pager-link__label').first()).toHaveText(
+    /(Older|Newer) note/,
   )
   await page.goto('/notes/gof-patterns-android/proxy-facade/')
   const navigation = page.getByRole('navigation', { name: 'Documents' })
@@ -805,6 +816,8 @@ test('a subpost on its own URL gets the same reading tools as its entry', async 
 }) => {
   // Subposts used to mount only the diagram viewer: the same code was
   // copyable inside the entry and not on the subpost's own page.
+  // The outline under test is the wide index beside the text.
+  await page.setViewportSize({ width: 1280, height: 900 })
   await page.goto('/notes/gof-patterns-android/adapter-factory/')
   const main = page.locator('main.entry-page')
   const copy = main.locator('.code-block__copy')
@@ -1256,4 +1269,236 @@ test('gallery serves resized modern formats and a keyboard-operable viewer', asy
   await expect(viewer).toBeHidden()
   await expect(viewer.locator('[data-lightbox-media] > *')).toHaveCount(0)
   await expect(triggers.first()).toBeFocused()
+})
+
+/* ------------------------------------------------------------------ */
+/* Reading structure: contents, section links, measure, print          */
+/* ------------------------------------------------------------------ */
+
+/** Average characters per full line across the long paragraphs in view. */
+const charactersPerLine = (page: Page) =>
+  page.evaluate(() => {
+    const paragraphs = Array.from(
+      document.querySelectorAll<HTMLElement>('.prose p'),
+    ).filter((p) => p.textContent!.length > 250 && p.offsetParent)
+    const averages: number[] = []
+    const range = document.createRange()
+    for (const paragraph of paragraphs.slice(0, 5)) {
+      const lines = new Map<number, number>()
+      const walker = document.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT)
+      let node: Node | null
+      while ((node = walker.nextNode())) {
+        for (let i = 0; i < (node as Text).length; i++) {
+          range.setStart(node, i)
+          range.setEnd(node, i + 1)
+          const rect = range.getClientRects()[0]
+          if (!rect) continue
+          const top = Math.round(rect.top)
+          lines.set(top, (lines.get(top) ?? 0) + 1)
+        }
+      }
+      const counts = [...lines.values()].slice(0, -1)
+      if (counts.length) {
+        averages.push(counts.reduce((a, b) => a + b, 0) / counts.length)
+      }
+    }
+    return averages.reduce((a, b) => a + b, 0) / averages.length
+  })
+
+test('the wide index fits the window and keeps the active section in view', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile-chromium', 'wide layout only')
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.goto('/notes/gof-patterns-android/')
+  const index = page.locator('.entry-index')
+  const headings = await page
+    .locator('.entry-index [data-toc] a')
+    .evaluateAll((links) => links.map((link) => link.getAttribute('href')!))
+  // 51 sections across four parts: the case that used to run off-screen.
+  expect(headings.length).toBeGreaterThan(40)
+
+  const sample = headings.filter(
+    (_, i) => i % 6 === 0 || i === headings.length - 1,
+  )
+  for (const href of sample) {
+    await page.evaluate(
+      (id) => {
+        const target = document.getElementById(id)!
+        window.scrollTo({
+          top: target.getBoundingClientRect().top + window.scrollY - 150,
+          behavior: 'instant',
+        })
+      },
+      decodeURIComponent(href.slice(1)),
+    )
+    // The section reported active is the one the observer settles on; what
+    // is required is that, whichever it is, the reader can see it.
+    const active = page.locator(
+      '.entry-index [data-toc] a[aria-current="true"]',
+    )
+    await expect
+      .poll(
+        async () => {
+          const box = await active.boundingBox()
+          return Boolean(box && box.y >= 0 && box.y + box.height <= 900)
+        },
+        { message: href },
+      )
+      .toBe(true)
+    const indexBox = (await index.boundingBox())!
+    expect(indexBox.height).toBeLessThanOrEqual(900)
+  }
+  // Topics no longer share the sticky box.
+  await expect(index.locator('.topic-list')).toHaveCount(0)
+  await expect(
+    page.getByRole('heading', { name: 'Filed under' }),
+  ).toBeAttached()
+})
+
+test('@mobile phone contents sit before the first paragraph, collapsed', async ({
+  page,
+  browser,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  for (const scripted of [true, false]) {
+    const context = scripted
+      ? undefined
+      : await browser.newContext({
+          javaScriptEnabled: false,
+          viewport: { width: 390, height: 844 },
+        })
+    const view = context ? await context.newPage() : page
+    await view.goto('/notes/gof-patterns-android/')
+    const contents = view.locator('details.toc-mobile')
+    await expect(contents).toBeVisible()
+    await expect(view.locator('.entry-index')).toBeHidden()
+    const box = (await contents.boundingBox())!
+    expect(box.height).toBeLessThan(56)
+    const firstParagraph = (await view
+      .locator('.prose > p')
+      .first()
+      .boundingBox())!
+    expect(box.y).toBeLessThan(firstParagraph.y)
+    await expect(contents.locator('summary')).toContainText('In this record')
+    await expect(contents.locator('summary')).toContainText('sections')
+
+    await contents.locator('summary').click()
+    const links = contents.locator('a')
+    await expect(links.first()).toBeVisible()
+    // The top rung only, numbered like the headings in the text.
+    await expect(links.first().locator('.toc-num')).toHaveText('01')
+    await links.nth(1).click()
+    await expect(view).toHaveURL(/#.+/)
+    await context?.close()
+  }
+})
+
+test('every section heading carries a named, keyboard-reachable self-link', async ({
+  page,
+}) => {
+  await page.goto('/notes/android-17-beta-3/')
+  const heading = page.locator('.prose h2[id]').first()
+  const id = await heading.getAttribute('id')
+  const name = (await heading.innerText()).trim()
+  // The heading keeps its own name; the link is not folded into it.
+  await expect(page.getByRole('heading', { name, exact: true })).toHaveCount(1)
+  const link = page.getByRole('link', { name: `Link to section: ${name}` })
+  await expect(link).toHaveAttribute('href', `#${id}`)
+  await link.focus()
+  await expect(link).toBeFocused()
+  await expect
+    .poll(() => link.evaluate((el) => getComputedStyle(el).opacity))
+    .toBe('1')
+  await page.keyboard.press('Enter')
+  await expect(page).toHaveURL(new RegExp(`#${id}$`))
+
+  await page.goto('/es/notes/android-17-beta-3/')
+  await expect(
+    page.getByRole('link', { name: /^Enlace a la sección: / }).first(),
+  ).toBeAttached()
+})
+
+test('switching language lands on the same section', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile-chromium', 'wide layout only')
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.goto('/notes/android-17-beta-3/')
+  const links = page.locator('.entry-index [data-toc] a')
+  const index = 7
+  const href = (await links.nth(index).getAttribute('href'))!
+  await page.evaluate((id) => {
+    const target = document.getElementById(id)!
+    window.scrollTo({
+      top: target.getBoundingClientRect().top + window.scrollY - 150,
+      behavior: 'instant',
+    })
+  }, href.slice(1))
+  await expect(links.nth(index)).toHaveAttribute('aria-current', 'true')
+
+  await page.locator('[data-locale-control]').click()
+  await expect(page).toHaveURL(/\/es\/notes\/android-17-beta-3\/#.+/)
+  const counterpart = await page
+    .locator('.entry-index [data-toc] a')
+    .nth(index)
+    .getAttribute('href')
+  expect(new URL(page.url()).hash).toBe(counterpart)
+  const landed = (await page
+    .locator(`[id="${decodeURIComponent(counterpart!.slice(1))}"]`)
+    .boundingBox())!
+  expect(landed.y).toBeGreaterThanOrEqual(0)
+  expect(landed.y).toBeLessThan(900)
+})
+
+test('running text keeps a 60–75 character measure', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile-chromium', 'wide layouts only')
+  for (const width of [1280, 820]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/notes/android-17-beta-3/')
+    const measure = await charactersPerLine(page)
+    expect(measure, `${width}px`).toBeGreaterThanOrEqual(60)
+    expect(measure, `${width}px`).toBeLessThanOrEqual(75)
+  }
+})
+
+test('a note prints as text, without the screen chrome', async ({ page }) => {
+  await page.goto('/notes/android-17-beta-3/')
+  await page.evaluate(() =>
+    document.documentElement.setAttribute('data-theme', 'dark'),
+  )
+  await page.emulateMedia({ media: 'print' })
+  await settleTransitions(page)
+  for (const selector of [
+    '.site-header',
+    '.site-footer',
+    '.entry-index',
+    '.toc-mobile',
+    '.entry-banner',
+    '.read-progress',
+    '.code-block__bar',
+    '.heading-anchor',
+  ]) {
+    const hidden = await page
+      .locator(selector)
+      .evaluateAll((elements) =>
+        elements.every((el) => getComputedStyle(el).display === 'none'),
+      )
+    expect(hidden, selector).toBe(true)
+  }
+  const colours = await page.evaluate(() => ({
+    paper: getComputedStyle(document.body).backgroundColor,
+    ink: getComputedStyle(document.querySelector('.prose p')!).color,
+  }))
+  // Black on white even from the dark theme.
+  expect(colours.paper).toBe('rgb(255, 255, 255)')
+  expect(colours.ink).toBe('rgb(0, 0, 0)')
+  const external = page.locator('.prose a[href^="http"]').first()
+  const after = await external.evaluate(
+    (el) => getComputedStyle(el, '::after').content,
+  )
+  expect(after).toContain('http')
+  await expect(page.locator('.prose').first()).toBeVisible()
 })

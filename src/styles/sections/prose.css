@@ -47,6 +47,28 @@
 }
 .prose p {
   margin: 0 0 1.15rem;
+  text-wrap: pretty;
+}
+/* Running text keeps a reading measure: ~83 characters a line at 1280px was
+   past the comfortable 60–75. Figures, code, tables and diagrams are not
+   running text and keep the full column.
+
+   58ch, not the textbook 68ch: `ch` is the width of "0", and Switzer's zero is
+   wide next to its average letter — 68ch measured 82 characters a line. 58ch
+   measures ~70, at 1280 and at 820 alike, since `ch` scales with the text. */
+.prose :is(p, ul, ol, dl, blockquote) {
+  max-width: 58ch;
+}
+.prose :is(h2, h3) {
+  text-wrap: balance;
+}
+/* Spanish runs long words on a narrow column; let them break rather than
+   leave ragged gaps. Only there: at full width the measure absorbs them. */
+@media (max-width: 760px) {
+  .prose p:lang(es),
+  .prose li:lang(es) {
+    hyphens: auto;
+  }
 }
 .prose p,
 .prose li {
@@ -646,6 +668,9 @@ html:has(.lightbox[open]) {
 }
 .prose pre {
   max-width: 100%;
+  /* One mono face: the block itself, not only its <code>, so its metrics
+     match the inline code beside it. */
+  font-family: 'IBM Plex Mono', monospace;
   padding: 1.15rem 1.3rem;
   overflow-x: auto;
   border: 1px solid var(--line);
@@ -762,4 +787,80 @@ html:has(.lightbox[open]) {
   margin: 0;
   color: var(--ink-muted);
   line-height: 1.6;
+}
+
+/* A self-link on each section heading, added by mountSectionLinks. Out of
+   sight until the heading is hovered or the link is focused, so reading is
+   not dotted with marks; reachable from the keyboard all the same. */
+.heading-anchor {
+  display: inline-flex;
+  flex: none;
+  align-self: center;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-left: 0.25rem;
+  border-radius: var(--radius-sm);
+  color: var(--ink-muted);
+  vertical-align: middle;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.14s ease;
+}
+.prose :is(h2, h3):hover .heading-anchor,
+.heading-anchor:focus-visible {
+  opacity: 1;
+}
+.heading-anchor:hover {
+  color: var(--accent);
+}
+.heading-anchor:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+@media print {
+  .prose {
+    font-size: 11pt;
+    line-height: 1.55;
+  }
+  .prose :is(p, ul, ol, dl, blockquote) {
+    max-width: none;
+  }
+  .prose :is(p, li) {
+    color: #000;
+    orphans: 3;
+    widows: 3;
+  }
+  .prose :is(h2, h3, h4) {
+    break-after: avoid;
+  }
+  .prose :is(pre, figure, table, blockquote, .code-block, .diagram) {
+    break-inside: avoid;
+  }
+  .prose pre {
+    white-space: pre-wrap;
+    overflow: visible;
+  }
+  .prose pre code {
+    width: auto;
+  }
+  /* Code prints in its light colours whatever the screen theme. */
+  :root[data-theme='dark'] .prose .astro-code,
+  :root[data-theme='dark'] .prose .astro-code span {
+    color: var(--shiki-light) !important;
+  }
+  .heading-anchor,
+  .code-block__bar,
+  .diagram__bar {
+    display: none !important;
+  }
+  /* On paper a link cannot be followed, so it says where it goes. */
+  .prose a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    color: #444;
+    font-size: 0.85em;
+    overflow-wrap: anywhere;
+  }
 }

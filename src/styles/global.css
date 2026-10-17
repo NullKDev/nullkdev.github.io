@@ -654,3 +654,34 @@ main {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Print: black on white in either theme, without the site chrome. Section
+   stylesheets hide their own screen-only parts (see sections/entry.css). */
+@media print {
+  :root,
+  :root[data-theme='dark'] {
+    color-scheme: light;
+    --paper: #ffffff;
+    --surface: #ffffff;
+    --surface-raised: #ffffff;
+    --ink: #000000;
+    --ink-muted: #3f3f46;
+    --line: #c4c4c8;
+    --line-strong: #8a8a90;
+    --accent: #000000;
+    --signal: #000000;
+    --shadow-1: none;
+    --shadow-2: none;
+  }
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000;
+  }
+  .site-header,
+  .site-footer,
+  .skip-link,
+  .mobile-drawer {
+    display: none !important;
+  }
+}

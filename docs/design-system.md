@@ -36,6 +36,24 @@ Add a lifecycle value to the map, not a new colour to a component.
   counts, code, tabular numerics. Not as decoration. If mono is being used to
   make something "look technical", that is the wrong reason.
 
+### Reading structure (entry and subpost pages)
+
+- **Measure.** Running text (`p`, lists, blockquotes) is capped at `58ch`,
+  which measures ~70 characters a line in Switzer — `68ch` measured 82, because
+  `ch` is the wide "0". Figures, code, tables and diagrams keep the column.
+- **One outline, three surfaces.** `src/lib/outline.ts` builds it; the wide
+  index, the phone contents and the language switch all read it. Top-level
+  items carry the same two-digit number the prose counter prints.
+- **Wide index (≥1024px).** Sticky, never taller than the window; the list
+  scrolls itself and the script keeps the active link in view without moving
+  the page. Subpost parts are `<details>` groups that open while being read.
+- **Phone contents (<1024px).** One collapsed `<details>` before the first
+  paragraph, top rung only. Below 1024px the index never sits beside the text.
+- **Section links.** Each anchored `h2`/`h3` gets a registry `sectionLink`
+  self-link, hidden until hover or focus; the heading stays named by its text.
+- **Print.** Chrome, indexes, banner and controls are hidden; black on white in
+  both themes; external link URLs are printed after the link.
+
 ## Icons
 
 **One registry: `src/lib/icons.ts`** — and it is the only seam between this site

@@ -1,7 +1,6 @@
 /* Entry and document pages — imported by EntryPage.astro and DocumentPage.astro.
    Heading, facts, layout, outline, record blocks, relations and pager. */
 
-.entry-index,
 .status-note strong {
   font-family: 'IBM Plex Mono', monospace;
 }
@@ -12,6 +11,10 @@
   max-width: 20ch;
   font-size: calc(clamp(2.3rem, 5vw, 4rem) * var(--display-mult));
   line-height: 1;
+  /* The index headings' -0.055em is tuned for a two-word display title. On a
+     sentence-length entry title at this smaller size it closed the gap after
+     punctuation until "17: qué" read as one word. */
+  letter-spacing: -0.035em;
 }
 .entry-facts {
   display: flex;
@@ -85,6 +88,13 @@
 .entry-banner {
   margin: 2.25rem 0 0;
 }
+/* A note is read, not looked at: a full-width banner (471px tall at 1280)
+   pushed the first paragraph below the fold. Held to the text column, the
+   same image at the same ratio is ~40% shorter. Width only — the shape is
+   still `--banner-ratio` on the <img>, the one banner shape. */
+.entry-page[data-domain='notes'] .entry-banner {
+  max-width: var(--entry-text-column);
+}
 /* Light theme gets the light-ground variant of the same banner: same accent,
    same artwork, same shadows — only the surface and the type invert.
 
@@ -126,9 +136,16 @@
   margin-bottom: 0;
   line-height: 1.6;
 }
+.entry-page {
+  /* The text column. The grid, and a note's banner, both read it. */
+  --entry-text-column: 44rem;
+}
 .entry-layout {
   display: grid;
-  grid-template-columns: minmax(0, 44rem) minmax(13rem, 17rem);
+  grid-template-columns: minmax(0, var(--entry-text-column)) minmax(
+      13rem,
+      17rem
+    );
   justify-content: space-between;
   gap: clamp(2.5rem, 5vw, 5rem);
   margin-top: 3rem;
@@ -140,46 +157,86 @@
   min-width: 0;
   max-width: 100%;
 }
+
+/* The wide index. Sticky beside the text, and never taller than the window:
+   capped, it scrolls its own list (`overscroll-behavior` keeps the page from
+   scrolling once the list reaches an end). Uncapped, a 51-item index ran
+   1,200px past the bottom of a 900px window and the active item sat off
+   screen. The topics moved out of this box for the same reason. */
 .entry-index {
   position: sticky;
   top: 7rem;
+  display: flex;
+  flex-direction: column;
   align-self: start;
+  max-height: calc(100dvh - 7rem - 1rem);
   border-top: 1px solid var(--line-strong);
-  font-size: 0.7rem;
+}
+.entry-index .toc {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 .entry-index h2 {
+  flex: none;
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
   color: var(--ink-muted);
-  font-size: 0.66rem;
+  font:
+    600 0.66rem 'IBM Plex Mono',
+    monospace;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 .entry-index a {
   text-decoration: none;
 }
-/* Table of contents rail: a hairline the active segment lights up against. */
+/* Table of contents rail: a hairline the active segment lights up against.
+   Text in the reading face; only the section numbers are mono. */
 .toc-list {
+  min-height: 0;
+  margin: 0;
+  /* Room for the focus ring inside the scroll box, which clips. */
+  padding: 2px 4px 2px 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  border-left: 1px solid var(--line);
+  scrollbar-width: thin;
+}
+.toc-list ol {
   margin: 0;
   padding: 0;
   list-style: none;
-  border-left: 1px solid var(--line);
 }
 .toc-list li {
   margin: 0;
 }
 .toc-list a {
   position: relative;
-  display: block;
+  display: flex;
+  gap: 0.55rem;
   margin-left: -1px;
-  padding: 0.32rem 0 0.32rem 0.85rem;
+  padding: 0.3rem 0 0.3rem 0.85rem;
   border-left: 1px solid transparent;
   color: var(--ink-muted);
-  font-size: 0.76rem;
+  font-size: 0.8125rem;
   line-height: 1.4;
   transition:
     color 0.16s ease,
     border-color 0.16s ease;
+}
+.toc-list a:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+.toc-num {
+  flex: none;
+  padding-top: 0.12em;
+  font:
+    500 0.7rem 'IBM Plex Mono',
+    monospace;
+  font-variant-numeric: tabular-nums;
 }
 /* The index is an outline, not a flat list: a part and a heading inside that
    part must not read as siblings. Indent carries the nesting; weight and ink
@@ -196,9 +253,46 @@
   padding-left: 2.55rem;
 }
 /* Air before a new part, so groups separate without a rule between them. */
-.toc-list li[data-level='2'] + li[data-level='1'] > a,
-.toc-list li[data-level='3'] + li[data-level='1'] > a {
+.toc-part {
   margin-top: 0.45rem;
+}
+/* A part's headings fold behind one line that says how much is inside. */
+.toc-part summary {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 1.75rem;
+  margin-left: -1px;
+  padding-left: 0.85rem;
+  border-left: 1px solid transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+  font:
+    0.7rem 'IBM Plex Mono',
+    monospace;
+  list-style: none;
+}
+.toc-part summary::-webkit-details-marker {
+  display: none;
+}
+.toc-part summary::before {
+  content: '';
+  width: 0.38rem;
+  height: 0.38rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.16s ease;
+}
+.toc-part details[open] > summary::before {
+  transform: rotate(45deg);
+}
+.toc-part summary:hover {
+  color: var(--ink);
+}
+.toc-part summary:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
 }
 
 .toc-list a:hover {
@@ -208,6 +302,116 @@
   border-left-color: var(--accent);
   color: var(--accent);
   font-weight: 600;
+}
+
+/* The phone contents: one collapsed line before the first paragraph. */
+.toc-mobile {
+  max-width: var(--entry-text-column);
+  margin-top: 2rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+}
+.toc-mobile summary {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3rem;
+  padding: 0 1rem;
+  cursor: pointer;
+  list-style: none;
+}
+.toc-mobile summary::-webkit-details-marker {
+  display: none;
+}
+.toc-mobile summary::after {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-left: auto;
+  border-right: 1.5px solid var(--ink-muted);
+  border-bottom: 1.5px solid var(--ink-muted);
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.16s ease;
+}
+.toc-mobile[open] summary::after {
+  transform: translateY(2px) rotate(-135deg);
+}
+.toc-mobile summary:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+.toc-mobile__title {
+  color: var(--ink);
+  font-weight: 600;
+}
+.toc-mobile__count {
+  color: var(--ink-muted);
+  font:
+    0.72rem 'IBM Plex Mono',
+    monospace;
+}
+.toc-mobile__list {
+  margin: 0;
+  padding: 0.25rem 0 0.6rem;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+.toc-mobile__list a {
+  display: flex;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  align-items: center;
+  padding: 0.35rem 1rem;
+  color: var(--ink);
+  line-height: 1.35;
+  text-decoration: none;
+}
+.toc-mobile__list .toc-num {
+  padding-top: 0;
+  color: var(--accent);
+}
+.toc-mobile__list a[aria-current='true'] {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* "Filed under": after the text, where it is met as a way onward. It used to
+   share the sticky index, and was the first thing cut off. */
+.entry-topics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  max-width: var(--entry-text-column);
+  margin-top: 3rem;
+}
+.entry-topics h2 {
+  margin: 0;
+  color: var(--ink-muted);
+  font:
+    600 0.66rem 'IBM Plex Mono',
+    monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Below 1024px the index no longer fits beside the text without squeezing it
+   (prose was 441px wide at 820): the phone contents takes over. */
+@media (max-width: 1023.98px) {
+  .entry-layout {
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: 2rem;
+  }
+  .entry-index {
+    display: none;
+  }
+}
+@media (min-width: 1024px) {
+  .toc-mobile {
+    display: none;
+  }
 }
 /* The record apparatus: the evidence backing that follows the writing. Quiet
    section heads, colour-coded provenance, one consistent list grammar. */
@@ -623,12 +827,6 @@
 
 @media (max-width: 760px) {
   .entry-layout {
-    grid-template-columns: 1fr;
-  }
-  .entry-index {
-    position: static;
-  }
-  .entry-layout {
     gap: 2rem;
   }
   .record-links {
@@ -651,5 +849,41 @@
   .series-navigation div {
     align-items: flex-start;
     flex-direction: column;
+  }
+}
+
+/* Print: the text and its record, nothing that only works on a screen. */
+@media print {
+  .entry-index,
+  .toc-mobile,
+  .entry-banner,
+  .read-progress,
+  .crumb,
+  .breadcrumbs,
+  .series-navigation,
+  .entry-pager,
+  .back-link {
+    display: none !important;
+  }
+  .entry-layout {
+    display: block;
+    margin-top: 1.5rem;
+  }
+  .entry-heading h1 {
+    max-width: none;
+    font-size: 24pt;
+  }
+  .entry-heading,
+  .entry-record h2,
+  .record-block__head {
+    break-after: avoid;
+  }
+  .outcome,
+  .evidence-item,
+  .condition,
+  .relationship-list a,
+  .record-link {
+    break-inside: avoid;
+    box-shadow: none;
   }
 }

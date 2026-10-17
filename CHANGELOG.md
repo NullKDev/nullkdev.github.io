@@ -68,6 +68,27 @@ este repo usa de verdad — no las genéricas del estándar.
   redibujarse. Cada diagrama lleva un nombre accesible obligatorio (el build
   falla sin `title`). Se elimina `astro-mermaid` y sus ~248 KB de JavaScript.
 
+- El índice de los artículos largos ya no se corta: la columna lateral tiene
+  como máximo el alto de la ventana y desplaza su propia lista (nunca la
+  página) para mantener a la vista la sección que se está leyendo. En una nota
+  con subpartes, cada parte muestra su título, cuántas secciones tiene y sus
+  minutos de lectura, y despliega sus encabezados solo cuando se está leyendo
+  (con `<details>`, así que funciona sin JavaScript). Las secciones de primer
+  nivel llevan el mismo número que el texto ("06 Breaking changes"). Los temas
+  ("Archivado en") salen de la columna y pasan al final del texto.
+- Índice en el teléfono: un `<details>` plegado ("En este registro · N
+  secciones") antes del primer párrafo, con las secciones de primer nivel.
+  Antes el índice aparecía después del artículo, a más de 12.000px.
+- Cada encabezado de sección tiene un enlace a sí mismo, visible al pasar el
+  cursor o con el foco del teclado y con nombre accesible localizado ("Enlace
+  a la sección: …"), sin alterar el nombre del encabezado. Cambiar de idioma
+  conserva la posición: la sección i en inglés lleva a la sección i en
+  español, solo cuando ambas traducciones tienen el mismo esquema (lo verifica
+  una prueba sobre las notas reales); si no, se llega al inicio como antes.
+- Estilos de impresión: sin cabecera, navegación, índices, banner, barra de
+  progreso ni botones de copiar; negro sobre blanco en ambos temas, sin cortar
+  bloques de código, figuras ni tablas, y con la URL de cada enlace externo.
+
 ### Corregido
 
 - El robot de la portada se puede pausar: un botón visible de 44 px, operable
@@ -159,6 +180,17 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ### Cambiado
 
+- Tipografía de lectura: el texto corrido queda en ~70 caracteres por línea
+  (antes ~83 a 1280px); por debajo de 1024px el índice deja de ir al lado del
+  texto, que a 820px quedaba en 441px. Títulos de entrada con menos
+  interletrado (−0,035em; "17:qué" se pegaba), `text-wrap` en párrafos y
+  encabezados, guiones automáticos en español en pantallas angostas y una sola
+  fuente monoespaciada para el código.
+- En las notas, el banner se ajusta al ancho de la columna de texto (misma
+  proporción `--banner-ratio`): pasa de 471px a 282px de alto y el texto
+  empieza ~190px más arriba. Dentro de una serie, el paginador por fecha dice
+  "Nota más antigua / más reciente" en lugar de un segundo "Anterior", y una
+  serie de una sola nota ya no muestra navegación de serie.
 - Los datos estructurados de cada página salen de un solo módulo. Las entradas
   de Notas y Galería se declaran `Article`, y las de Trabajo y Lab
   `TechArticle` (Lab usaba `SoftwareApplication`, que sin precio ni
