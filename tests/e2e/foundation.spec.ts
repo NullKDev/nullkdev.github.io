@@ -57,6 +57,18 @@ test('home initializes and synchronizes theme, locale, fonts, and metadata', asy
     'href',
     `${SITE_URL}/es/`,
   )
+  await expect(page.locator('link[hreflang="x-default"]')).toHaveAttribute(
+    'href',
+    `${SITE_URL}/`,
+  )
+  // model-viewer compiles its bundled WebAssembly decoder on import, so the
+  // hero page needs the grant; a page without the model must not carry it.
+  await expect(
+    page.locator('meta[http-equiv="Content-Security-Policy"]'),
+  ).toHaveAttribute('content', /'wasm-unsafe-eval'/)
+  expect(await (await page.request.get('/notes/')).text()).not.toContain(
+    'wasm-unsafe-eval',
+  )
   const theme = page.getByRole('button', { name: 'Switch to dark theme' })
   await expect(theme).toHaveAttribute('aria-pressed', 'false')
   await theme.click()

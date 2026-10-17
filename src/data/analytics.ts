@@ -9,17 +9,20 @@
  * client, and a measurement ID is public by nature anyway (it travels in every
  * request the tag makes). Do not put anything secret behind this prefix.
  *
- * Two things this deliberately does NOT do:
+ * What turning it on actually does — stated plainly, because an earlier
+ * version of this comment promised the opposite:
  *
- * - It does not load on a page the reader has not consented to be measured on,
- *   because there is no consent mechanism here yet. GA4 writes cookies and, in
- *   the EU/UK, that needs consent before the tag fires. Turning this on without
- *   a banner is a legal decision, not a technical one.
- * - It does not widen the CSP on its own. Google's tag is served from
- *   googletagmanager.com and beacons to google-analytics.com; both would have
- *   to be added to `script-src` and `connect-src` in `scripts/apply-csp.ts`.
- *   That is the point at which "no third-party origins" stops being true, so
- *   the change should be made knowingly rather than fall out of a config flag.
+ * - There is no consent mechanism. When the ID is set, every page loads
+ *   Google's tag on idle with Consent Mode defaulting `analytics_storage` to
+ *   `granted` (advertising storage, user data and personalisation are
+ *   denied). GA4 then sets its first-party cookies without asking. In the
+ *   EU/UK that normally needs consent first, so setting the ID is a legal
+ *   decision as much as a technical one.
+ * - The CSP widens automatically. `scripts/apply-csp.ts` reads the same
+ *   variable and, only when it holds a valid ID, adds googletagmanager.com to
+ *   `script-src` and the google-analytics.com collection endpoints (regional
+ *   ones included) to `connect-src` and `img-src`. Without the ID, no Google
+ *   origin appears in the policy.
  */
 const measurementId = import.meta.env.PUBLIC_GOOGLE_ANALYTICS_ID ?? ''
 

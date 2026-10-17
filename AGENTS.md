@@ -322,19 +322,31 @@ describing it must say so. `private:scan` fails the build if plaintext reaches
 
 - Never commit secrets. Build secrets must not reach HTML, JS, source maps or
   logs.
-- PBKDF2 at 600,000 iterations, salted, stored as `base64(salt):hash`.
+- Protected content is AES-256-GCM, keyed by PBKDF2-SHA-256 at 600,000
+  iterations. Each payload ships as a versioned JSON envelope carrying its own
+  random salt (16 bytes) and IV (12 bytes) in base64, with the entry context
+  bound as additional data (`src/lib/protection/crypto.ts`). Passphrases
+  (`PRIVATE_CONTENT_KEY_*`) must be at least 16 characters or the build fails.
 - CSP is emitted by `src/layouts/Layout.astro` and **sealed after the build** by
-  `scripts/apply-csp.ts`, which hashes the inline scripts that shipped. Never
-  hand-maintain those hashes.
+  `scripts/apply-csp.ts`, which hashes only the inline scripts it expects —
+  `<head>`, Astro's hydration runtime, Astro's inlined component scripts
+  outside `<article>`/`<svg>`/`<template>`, and body scripts marked
+  `data-csp-inline` — and fails the build on any other. Never hand-maintain
+  those hashes.
+- JSON written into a `<script>` goes through `serializeJsonForScript`
+  (`src/lib/json-script.ts`), never a bare `JSON.stringify`.
 - `script-src` is `'self'` plus hashes. `'unsafe-inline'` is styles only.
 - **Google Analytics is the only third-party origin**, and only when
-  `PUBLIC_GOOGLE_ANALYTICS_ID` is set. Any other third-party request is blocked
+  `PUBLIC_GOOGLE_ANALYTICS_ID` is set — then the CSP gains the Google origins
+  automatically and the tag loads without a consent prompt
+  (`analytics_storage` granted). Any other third-party request is blocked
   and the feature visibly fails — bundle the dependency instead of widening the
   allowlist.
 - GitHub Pages cannot set response headers: `frame-ancestors`, HSTS,
   `X-Content-Type-Options` and `Permissions-Policy` are unavailable, and a
   `_headers` file does nothing. See [SECURITY.md](SECURITY.md).
-- Workflows must pass `actionlint` and `zizmor`; actions are pinned to SHAs.
+- Workflows and `dependabot.yml` must pass `actionlint` and `zizmor`; actions
+  are pinned to SHAs.
 
 ## Skills
 

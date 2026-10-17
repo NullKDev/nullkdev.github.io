@@ -17,12 +17,51 @@
  *
  * The alternative — `script-src 'unsafe-inline'` — would let any injected
  * `<script>` execute, which is the single thing a CSP exists to prevent.
+ *
+ * Hashing whatever shipped has the opposite trap: a script injected at build
+ * time — raw HTML in an entry, a JSON payload that breaks out of its element, a
+ * compromised dependency writing markup — would be hashed and allowed like any
+ * other. So only inline scripts this archive expects are sealed:
+ *
+ * - any executable script in `<head>`, which only the layout and pages write;
+ * - Astro's hydration runtime, compared byte for byte against the copy in the
+ *   installed `astro` package, wherever an island puts it — `<article>`
+ *   included, because islands live inside entries;
+ * - Astro's processed component scripts, which it inlines as a bare
+ *   `<script type="module">` (no other attribute) when they are small — never
+ *   inside `<article>`, `<svg>` or `<template>`, where only content renders;
+ * - a body script that opts in with `data-csp-inline`.
+ *
+ * Any other executable inline script fails the build, naming the file.
  */
 import { createHash } from 'node:crypto'
 import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
+import islandScript from 'astro/runtime/server/astro-island.prebuilt.js'
+import idleScript from 'astro/runtime/client/idle.prebuilt.js'
+import loadScript from 'astro/runtime/client/load.prebuilt.js'
+import mediaScript from 'astro/runtime/client/media.prebuilt.js'
+import onlyScript from 'astro/runtime/client/only.prebuilt.js'
+import visibleScript from 'astro/runtime/client/visible.prebuilt.js'
+import { fromHtml } from 'hast-util-from-html'
+
 const DIST = 'dist'
+
+/**
+ * The classic scripts Astro writes in front of the first island of each kind:
+ * the `<astro-island>` element definition and one loader per `client:*`
+ * directive. Read from the installed package so an Astro upgrade moves the
+ * allowlist with it.
+ */
+export const ASTRO_RUNTIME_SCRIPTS: ReadonlySet<string> = new Set([
+  islandScript,
+  idleScript,
+  loadScript,
+  mediaScript,
+  onlyScript,
+  visibleScript,
+])
 
 /** Types the browser executes. Anything else in a <script> is inert data. */
 const EXECUTABLE_TYPES = new Set([
@@ -33,8 +72,10 @@ const EXECUTABLE_TYPES = new Set([
   'importmap',
 ])
 
-/** model-viewer decodes Draco-compressed geometry through a WASM module. */
-const WASM = "'wasm-unsafe-eval'"
+/** Where only content renders, so no processed component script belongs. */
+const CONTENT_REGIONS = new Set(['article', 'svg', 'template'])
+
+const OPT_IN = 'dataCspInline'
 
 /**
  * Google Analytics is the one third-party the archive talks to, and only when a
@@ -76,6 +117,138 @@ const BASE = [
   'upgrade-insecure-requests',
 ]
 
+/*
+ * `'wasm-unsafe-eval'` is granted to the pages that render the 3D hero and to
+ * no other. model-viewer bundles three.js's meshopt decoder as inline
+ * WebAssembly and compiles it when the module loads, whether or not the model
+ * is compressed — the robot GLB is not, yet Chromium reports a CSP violation
+ * the moment the hero imports model-viewer without the grant. Everywhere else
+ * the grant would only widen what an injected script could do.
+ */
+const WASM = "'wasm-unsafe-eval'"
+
+/** True when the page renders the model-viewer hero (`ModelShowcase`). */
+export const loadsModelViewer = (html: string): boolean =>
+  /<[a-z][\w-]*\s[^>]*\bdata-model-showcase\b/i.test(html)
+
+export interface ScriptPolicyOptions {
+  analytics: boolean
+  wasm: boolean
+}
+
+/** The `script-src` directive for a page carrying these inline hashes. */
+export const buildScriptPolicy = (
+  hashes: readonly string[],
+  { analytics, wasm }: ScriptPolicyOptions,
+): string =>
+  [
+    `script-src 'self'`,
+    ...(wasm ? [WASM] : []),
+    ...hashes,
+    ...(analytics ? [GA_SCRIPT] : []),
+  ].join(' ')
+
+export interface InlineScriptViolation {
+  reason: string
+  snippet: string
+}
+
+export interface InlineScriptReport {
+  /** CSP source expressions, deduplicated, in document order. */
+  hashes: string[]
+  violations: InlineScriptViolation[]
+}
+
+type HastRoot = ReturnType<typeof fromHtml>
+type HastNode = HastRoot | HastRoot['children'][number]
+type HastElement = Extract<HastNode, { type: 'element' }>
+
+const typeOf = (element: HastElement): string =>
+  String(element.properties.type ?? '')
+    .trim()
+    .toLowerCase()
+
+/** The raw bytes between the tags, which is what the browser hashes. */
+const rawBody = (html: string, element: HastElement): string => {
+  const first = element.children[0]?.position?.start.offset
+  const last = element.children.at(-1)?.position?.end.offset
+  return first === undefined || last === undefined
+    ? ''
+    : html.slice(first, last)
+}
+
+const verdict = (
+  element: HastElement,
+  body: string,
+  ancestors: readonly string[],
+  runtimeScripts: ReadonlySet<string>,
+): string | null => {
+  if (ancestors.includes('head')) return null
+  if (element.properties[OPT_IN] !== undefined) return null
+
+  const type = typeOf(element)
+  const region = ancestors.find((name) => CONTENT_REGIONS.has(name))
+
+  if (type === '' && runtimeScripts.has(body)) return null
+  if (type === 'module') {
+    const attributes = Object.keys(element.properties)
+    if (attributes.length !== 1) {
+      return 'a module script with attributes other than type="module" is not one Astro inlined'
+    }
+    return region
+      ? `a module script inside <${region}>, where only content renders`
+      : null
+  }
+  return region
+    ? `an unexpected inline script inside <${region}>`
+    : 'an unexpected inline script in <body>'
+}
+
+/**
+ * Splits a page's executable inline scripts into the hashes to seal and the
+ * ones that must fail the build. Pure: the caller decides what to do with it.
+ */
+export const classifyInlineScripts = (
+  html: string,
+  runtimeScripts: ReadonlySet<string> = ASTRO_RUNTIME_SCRIPTS,
+): InlineScriptReport => {
+  const hashes = new Set<string>()
+  const violations: InlineScriptViolation[] = []
+
+  const visit = (node: HastNode, ancestors: readonly string[]): void => {
+    if (node.type === 'element' && node.tagName === 'script') {
+      if (node.properties.src !== undefined) return
+      if (!EXECUTABLE_TYPES.has(typeOf(node))) return
+      const body = rawBody(html, node)
+      if (body.trim() === '') return
+
+      const reason = verdict(node, body, ancestors, runtimeScripts)
+      if (reason) {
+        violations.push({
+          reason,
+          snippet: body.trim().slice(0, 80).replace(/\s+/g, ' '),
+        })
+        return
+      }
+      hashes.add(createHash('sha256').update(body).digest('base64'))
+      return
+    }
+    if (!('children' in node)) return
+    const next =
+      node.type === 'element' ? [...ancestors, node.tagName] : ancestors
+    for (const child of node.children) visit(child, next)
+    if (node.type === 'element' && node.tagName === 'template') {
+      for (const child of node.content?.children ?? []) visit(child, next)
+    }
+  }
+
+  visit(fromHtml(html), [])
+  return {
+    hashes: [...hashes].map((hash) => `'sha256-${hash}'`),
+    violations,
+  }
+}
+
 const htmlFiles = async (dir: string): Promise<string[]> => {
   const entries = await readdir(dir, { withFileTypes: true })
   const nested = await Promise.all(
@@ -88,54 +261,56 @@ const htmlFiles = async (dir: string): Promise<string[]> => {
   return nested.flat()
 }
 
-const typeOf = (attributes: string): string =>
-  (attributes.match(/\btype\s*=\s*["']([^"']*)["']/i)?.[1] ?? '')
-    .trim()
-    .toLowerCase()
+const run = async (): Promise<void> => {
+  const files = await htmlFiles(DIST)
+  const failures: string[] = []
+  let sealed = 0
+  let maxHashes = 0
 
-/** Hashes every executable inline script on the page, in document order. */
-const scriptHashes = (html: string): string[] => {
-  const hashes = new Set<string>()
-  const pattern = /<script(?![^>]*\bsrc\s*=)([^>]*)>([\s\S]*?)<\/script>/gi
+  for (const file of files) {
+    const html = await readFile(file, 'utf8')
+    const { hashes, violations } = classifyInlineScripts(html)
 
-  for (const [, attributes, body] of html.matchAll(pattern)) {
-    if (!EXECUTABLE_TYPES.has(typeOf(attributes))) continue
-    if (body.trim() === '') continue
-    hashes.add(createHash('sha256').update(body).digest('base64'))
+    for (const { reason, snippet } of violations) {
+      failures.push(`${file}: ${reason}: ${snippet}`)
+    }
+    if (violations.length > 0) continue
+    maxHashes = Math.max(maxHashes, hashes.length)
+
+    const scriptPolicy = buildScriptPolicy(hashes, {
+      analytics: analyticsEnabled,
+      wasm: loadsModelViewer(html),
+    })
+    const policy = [scriptPolicy, ...BASE].join('; ')
+
+    const patched = html.replace(
+      /(<meta http-equiv="Content-Security-Policy" content=")[^"]*(")/i,
+      (_match, open: string, close: string) => `${open}${policy}${close}`,
+    )
+
+    if (patched === html && !html.includes(policy)) {
+      console.error(`No Content-Security-Policy meta tag to seal in ${file}.`)
+      process.exit(1)
+    }
+
+    await writeFile(file, patched)
+    sealed += 1
   }
 
-  return [...hashes].map((hash) => `'sha256-${hash}'`)
-}
-
-const files = await htmlFiles(DIST)
-let sealed = 0
-let maxHashes = 0
-
-for (const file of files) {
-  const html = await readFile(file, 'utf8')
-  const hashes = scriptHashes(html)
-  maxHashes = Math.max(maxHashes, hashes.length)
-
-  const policy = [
-    allow(`script-src 'self' ${WASM} ${hashes.join(' ')}`.trimEnd(), GA_SCRIPT),
-    ...BASE,
-  ].join('; ')
-
-  const patched = html.replace(
-    /(<meta http-equiv="Content-Security-Policy" content=")[^"]*(")/i,
-    (_match, open: string, close: string) => `${open}${policy}${close}`,
-  )
-
-  if (patched === html) {
-    console.error(`No Content-Security-Policy meta tag to seal in ${file}.`)
+  if (failures.length > 0) {
+    console.error(
+      `Refusing to seal ${failures.length} unexpected inline script(s). ` +
+        'Move the code into a processed <script>, or mark a deliberate ' +
+        'is:inline body script with data-csp-inline:\n' +
+        failures.map((failure) => `  ${failure}`).join('\n'),
+    )
     process.exit(1)
   }
 
-  await writeFile(file, patched)
-  sealed += 1
+  console.log(
+    `Content-Security-Policy sealed across ${sealed} HTML files ` +
+      `(up to ${maxHashes} inline script hashes per page).`,
+  )
 }
 
-console.log(
-  `Content-Security-Policy sealed across ${sealed} HTML files ` +
-    `(up to ${maxHashes} inline script hashes per page).`,
-)
+if (import.meta.main) await run()

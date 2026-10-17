@@ -75,6 +75,12 @@ este repo usa de verdad — no las genéricas del estándar.
   "Open navigation" para un botón que dice "Menu"), lo que incumple WCAG 2.5.3
   y deja sin respuesta a quien navega por voz. Ahora el nombre empieza por lo
   que se ve. Lo detectó la regla `label-content-name-mismatch` de axe-core 4.14.
+- La consola de los laboratorios anunciaba "este navegador no cumple los
+  requisitos" en una región viva que aparecía junto con el mensaje, y los
+  lectores de pantalla podían perderlo. La región ahora existe desde el inicio
+  y solo cambia su texto.
+- Las páginas con traducción declaran `hreflang="x-default"` apuntando a la
+  versión en inglés, para quien no lee ninguno de los dos idiomas.
 
 ### Seguridad
 
@@ -84,6 +90,19 @@ este repo usa de verdad — no las genéricas del estándar.
   cabían en los rangos de sus paquetes padre y bastó con volver a resolver el
   lockfile. El `audit` en rojo bloqueaba todos los PR de Dependabot. El último,
   en `katex`, se fue con `mermaid` al compilar los diagramas en el build.
+- La CSP ya no autoriza cualquier script inline que salga del build: solo
+  sella los del `<head>`, el runtime de hidratación de Astro (comparado byte a
+  byte con el paquete instalado), los scripts de componentes que Astro inserta
+  fuera de `<article>`, `<svg>` y `<template>`, y los marcados con
+  `data-csp-inline`. Cualquier otro hace fallar el build, en vez de quedar
+  permitido sin que nadie lo note. `'wasm-unsafe-eval'` queda solo en las
+  páginas que muestran el robot 3D, cuyo visor compila WebAssembly al cargar;
+  el resto del sitio ya no lo concede.
+- El JSON que se escribe dentro de un `<script>` (JSON-LD, la galería, la
+  consola de laboratorios) escapa `<`, así que un valor con `</script>` ya no
+  puede cerrar el elemento e inyectar marcado.
+- El build exige que cada clave `PRIVATE_CONTENT_KEY_*` tenga al menos 16
+  caracteres: el contenido cifrado es público y se ataca sin conexión.
 
 ## [0.4.0] — 2026-08-30
 
