@@ -36,7 +36,7 @@ asume que un paquete de npm es autocontenido.
 
 La autenticación es inicio de sesión con ChatGPT para personas y una variable de
 entorno para automatización: `OPENAI_API_KEY`, `CODEX_API_KEY` o
-`CODEX_ACCESS_TOKEN`. Usá `--auth api-key` en CI para que una sesión interactiva
+`CODEX_ACCESS_TOKEN`. Usa `--auth api-key` en CI para que una sesión interactiva
 vieja no cambie en silencio con qué identidad corre un pipeline. Para máquinas sin
 interfaz existe `login --device-auth`.
 
@@ -67,19 +67,19 @@ flowchart LR
 ```
 
 <Callout type="warn" title="El código 2 no es un aprobado">
-  Tratá el `2` como **resultado desconocido**. Si estás bloqueando merges, un
-  escaneo incompleto retiene la puerta igual que un hallazgo — no tenés
+  Trata el `2` como **resultado desconocido**. Si estás bloqueando merges, un
+  escaneo incompleto retiene la puerta igual que un hallazgo — no tienes
   evidencia en ninguna dirección, y un reintento que se lo traga convierte «no
   miramos» en «no encontramos nada».
 </Callout>
 
-## Empezá en modo solo-reporte
+## Empieza en modo solo-reporte
 
 `--fail-on-severity` acepta `critical`, `high`, `medium` o `low`, y es el
 interruptor que convierte un escáner en un bloqueante.
 
-No lo actives el primer día. Ejecutá el escaneo, exportá los hallazgos y dejá que
-el pipeline pase igual mientras medís cuánto de la salida es real. Es la misma
+No lo actives el primer día. Ejecuta el escaneo, exporta los hallazgos y deja que
+el pipeline pase igual mientras mides cuánto de la salida es real. Es la misma
 medición de precisión que propone el artículo principal, solo que no te cuesta
 nada extra porque el escaneo ya está corriendo.
 
@@ -89,15 +89,15 @@ npx @openai/codex-security scan . \
   --max-cost 5
 ```
 
-Cuando tengas algunas semanas de datos, subí la puerta de arriba hacia abajo.
+Cuando tengas algunas semanas de datos, sube la puerta de arriba hacia abajo.
 Primero `critical`. La primera experiencia de nadie con una herramienta de
 seguridad nueva debería ser un release bloqueado por un hallazgo de severidad
 media en un archivo que no tocó.
 
-## Escaneá el diff, no el mundo, en los pull requests
+## Escanea el diff, no el mundo, en los pull requests
 
 Los escaneos de repositorio completo son para ejecuciones programadas. En un pull
-request, escaneá lo que cambió:
+request, escanea lo que cambió:
 
 ```bash
 npx @openai/codex-security scan . --diff "origin/${BASE_REF}"
@@ -118,9 +118,9 @@ repositorio entero, no algo que pongas en el camino al merge.
 configuración por defecto — `gpt-5.6-sol` con esfuerzo `xhigh` — es lo bastante
 cara como para que escanear sin límite sea un riesgo real.
 
-Leé con atención la salvedad documentada: **las solicitudes ya en curso pueden
+Lee con atención la salvedad documentada: **las solicitudes ya en curso pueden
 terminar por encima del límite.** Es un techo con desborde, no un corte duro.
-Ponelo por debajo de lo que estás dispuesto a gastar de verdad.
+Ponlo por debajo de lo que estás dispuesto a gastar de verdad.
 
 Los cinco niveles de esfuerzo — `minimal`, `low`, `medium`, `high`, `xhigh` — son
 la otra palanca. `xhigh` es el valor por defecto, lo que significa que la
@@ -129,7 +129,7 @@ esfuerzo menor, más un escaneo profundo nocturno en `xhigh`, es la forma en la
 que va a terminar la mayoría de los equipos.
 
 Para trabajo sobre muchas repos, `bulk-scan` toma un CSV con columnas `id`,
-`repository` y `revision`, y corre con `--workers 4` por defecto. Subilo a
+`repository` y `revision`, y corre con `--workers 4` por defecto. Súbelo a
 conciencia; el techo de costo es por escaneo, no por ejecución masiva.
 
 ## El directorio de salida es un artefacto sensible
@@ -140,15 +140,15 @@ en prosa, con código.
 
 Tres consecuencias:
 
-- **Escribilo fuera del repositorio.** Un `--output-dir` apuntando a cualquier
+- **Escríbelo fuera del repositorio.** Un `--output-dir` apuntando a cualquier
   lugar dentro del árbol de trabajo es la forma en que ese archivo termina
-  commiteado. Usá el directorio temporal del runner.
+  commiteado. Usa el directorio temporal del runner.
 - **No lo publiques como artefacto de CI público.** En un repositorio público,
   los artefactos de build los puede descargar cualquiera.
 - **Dale una política de retención,** que la documentación recomienda de forma
   explícita.
 
-Exportá a SARIF para los tableros — `export --format sarif` — y dejá que la
+Exporta a SARIF para los tableros — `export --format sarif` — y deja que la
 plataforma de seguridad guarde el detalle bajo su propio control de acceso, en
 lugar de dejar copias en el almacenamiento de CI.
 
@@ -158,35 +158,35 @@ npx @openai/codex-security export \
   --output-dir "$RUNNER_TEMP/codex-security"
 ```
 
-## Separá encontrar, validar y corregir
+## Separa encontrar, validar y corregir
 
 `scan`, `validate` y `patch` son comandos distintos, y mantenerlos distintos es
 el instinto correcto.
 
 `validate` vuelve a verificar hallazgos candidatos contra el código actual, que es
-lo que querés al triar un backlog — un hallazgo levantado hace tres semanas puede
+lo que quieres al triar un backlog — un hallazgo levantado hace tres semanas puede
 estar ya corregido. `patch` genera la remediación. Ninguno de los dos debería
 correr sin supervisión en el camino al merge. Un parche generado es una
 propuesta; necesita la misma revisión que cualquier otro cambio, y probablemente
 más, porque llega con una afirmación implícita de corrección en seguridad.
 
 `scans compare` y `scans match` comparan resultados entre ejecuciones, que es
-cómo respondés «¿este pull request introdujo algo nuevo?» sin releer todo el
+cómo respondes «¿este pull request introdujo algo nuevo?» sin releer todo el
 backlog.
 
-## Registrá los falsos positivos como corresponde
+## Registra los falsos positivos como corresponde
 
 `findings false-positive` marca un hallazgo como no aplicable con una razón
 escrita, y la decisión persiste entre escaneos futuros **sin suprimir la regla
 subyacente**.
 
-Usalo, y exigí que la razón sea real. La alternativa — equipos deshabilitando
+Úsalo, y exige que la razón sea real. La alternativa — equipos deshabilitando
 categorías enteras de reglas para acallar el ruido — es la forma en que una
 organización se queda ciega ante una clase completa de vulnerabilidad mientras su
 tablero sigue en verde.
 
 `--knowledge-base` acepta documentos de arquitectura y modelo de amenazas. Si
-tenés un modelo de amenazas escrito, esta es la entrada de mayor palanca
+tienes un modelo de amenazas escrito, esta es la entrada de mayor palanca
 disponible: es la diferencia entre un escáner que marca cada llamada de
 deserialización y uno que sabe cuáles de ellas son alcanzables desde un límite no
 confiable.
@@ -197,10 +197,10 @@ confiable.
    severidad, salida al temporal del runner, `--max-cost` bajo.
 2. Escaneo profundo semanal del repositorio completo, resultados exportados a
    SARIF.
-3. Después de un mes, contá hallazgos confirmados sobre hallazgos totales. Ese es
+3. Después de un mes, cuenta hallazgos confirmados sobre hallazgos totales. Ese es
    tu número de precisión, sobre tu código.
-4. Activá `--fail-on-severity critical` solo si esa razón lo justifica.
-5. Alimentá el modelo de amenazas vía `--knowledge-base` y medí si la razón
+4. Activa `--fail-on-severity critical` solo si esa razón lo justifica.
+5. Alimenta el modelo de amenazas vía `--knowledge-base` y mide si la razón
    mejora.
 
 El paso 3 es el que la gente saltea, y es el único que te dice si algo del resto

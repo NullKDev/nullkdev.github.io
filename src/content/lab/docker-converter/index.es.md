@@ -4,7 +4,7 @@ locale: es
 translationKey: docker-converter
 slug: docker-a-kubernetes
 title: Docker Run → Kubernetes
-summary: Traducí un comando docker run acotado a recursos Kubernetes revisables sin ejecutarlo ni contactar un daemon.
+summary: Traduce un comando docker run acotado a recursos Kubernetes revisables sin ejecutarlo ni contactar un daemon.
 visibility: public
 maturity: growing
 publishedAt: 2026-07-23
@@ -36,4 +36,4 @@ outputs: [YAML de Deployment y Service de Kubernetes]
 implementationId: docker-converter
 ---
 
-No pretende ser un parser completo del CLI de Docker ni un generador de configuración de clúster. Produce un Deployment y, cuando hay puertos, un Service. Revisá contextos de seguridad, límites de recursos, probes, almacenamiento, secretos y políticas de red antes de usar el resultado.
+No pretende ser un parser completo del CLI de Docker ni un generador de configuración de clúster. Produce un Deployment y, cuando hay puertos, un Service. Revisa contextos de seguridad, límites de recursos, probes, almacenamiento, secretos y políticas de red antes de usar el resultado.

@@ -4,7 +4,7 @@ locale: es
 translationKey: base64-encoder
 slug: codificador-base64
 title: Codificador Base64
-summary: Codificá y decodificá texto UTF-8 como Base64 dentro del navegador, con errores claros para entradas inválidas.
+summary: Codifica y decodifica texto UTF-8 como Base64 dentro del navegador, con errores claros para entradas inválidas.
 visibility: public
 maturity: stable
 publishedAt: 2026-07-23

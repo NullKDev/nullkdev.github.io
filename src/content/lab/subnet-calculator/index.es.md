@@ -4,7 +4,7 @@ locale: es
 translationKey: subnet-calculator
 slug: calculadora-subred
 title: Calculadora de subred IPv4
-summary: Calculá red, broadcast, máscara y rango IPv4 utilizable localmente a partir de una dirección y prefijo CIDR.
+summary: Calcula red, broadcast, máscara y rango IPv4 utilizable localmente a partir de una dirección y prefijo CIDR.
 visibility: public
 maturity: stable
 publishedAt: 2026-07-23

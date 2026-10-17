@@ -68,7 +68,7 @@ El repositorio superó las 8.000 estrellas en menos de un mes. Fui a buscar la
 metodología detrás de ese 92%, y lo que encontré no fue un defecto. Fue una
 ausencia.
 
-**El número es recall. El número que decide si podés usar la herramienta es la
+**El número es recall. El número que decide si puedes usar la herramienta es la
 precisión, y la precisión nunca se publicó.**
 
 ## Qué es realmente
@@ -86,8 +86,8 @@ Cyber.
 Así que la descripción precisa es más estrecha que la nota de prensa y que la
 reacción en contra. Lo que es Apache 2.0 es el CLI, el SDK, el arnés de Docker y
 la orquestación. Lo que está cerrado es aquello que decide si un hallazgo es un
-hallazgo. Podés leer cada línea de cómo se recolecta, se trocea y se envía tu
-código. No podés leer, ejecutar ni auditar la parte que razona sobre él.
+hallazgo. Puedes leer cada línea de cómo se recolecta, se trocea y se envía tu
+código. No puedes leer, ejecutar ni auditar la parte que razona sobre él.
 
 ```mermaid title="Arquitectura: tu máquina ejecuta la CLI abierta y envía tu código al modelo cerrado de OpenAI, que devuelve veredictos"
 flowchart TB
@@ -100,7 +100,7 @@ flowchart TB
 
 Esa distinción importa más que la discusión de licencias a la que suele
 reducirse. Significa que la propiedad interesante de esta herramienta — su
-criterio — no es reproducible por vos, y que su perfil de error es el que diga la
+criterio — no es reproducible por ti, y que su perfil de error es el que diga la
 evaluación de OpenAI.
 
 Lo que nos lleva a la evaluación.
@@ -116,8 +116,8 @@ afirmación de utilidad, porque se puede alcanzar 100% de recall reportando que
 cada línea del código es vulnerable.
 
 La pregunta complementaria es la precisión: _de las cosas que el escáner reportó,
-¿cuántas eran reales?_ El recall mide lo que atrapás. La precisión mide lo que
-tenés que atravesar para llegar ahí. Poné un escáner con 92% de recall y 20% de
+¿cuántas eran reales?_ El recall mide lo que atrapas. La precisión mide lo que
+tienes que atravesar para llegar ahí. Pon un escáner con 92% de recall y 20% de
 precisión sobre un monorepo y le habrás entregado a tu equipo de seguridad cuatro
 falsas alarmas por cada verdadera — indefinidamente, en cada commit.
 
@@ -134,7 +134,7 @@ Y está medido sobre repositorios elegidos para el benchmark. Tu código no.
 
 ## Qué encontraron los benchmarks independientes
 
-Acá la historia gira, y gira en contra de la narrativa fácil, no a favor.
+Aquí la historia gira, y gira en contra de la narrativa fácil, no a favor.
 
 [RealVuln](https://arxiv.org/abs/2604.13764) (Pellew y Raza, marzo de 2026)
 evaluó 15 escáneres sobre 26 repositorios Python vulnerables con **796 hallazgos
@@ -200,7 +200,7 @@ cualquiera de los dos extremos. Nada de lo publicado te dice cuál.
 
 ## Por qué esto lo es todo
 
-Si creés que un escáner ruidoso es apenas molesto, mirá lo que le hizo a curl.
+Si crees que un escáner ruidoso es apenas molesto, mira lo que le hizo a curl.
 
 curl mantuvo un bug bounty en HackerOne desde abril de 2019. Para 2025, los
 reportes generados con LLM — largos, seguros de sí mismos, superficialmente
@@ -237,13 +237,13 @@ faltante resalte más, no menos.
 
 En concreto, y conviene separarlo del debate sobre si la etiqueta corresponde.
 
-**Obtenés:** la capacidad de auditar qué sale de tu máquina, ejecutar el escáner
+**Obtienes:** la capacidad de auditar qué sale de tu máquina, ejecutar el escáner
 en tus propios contenedores, integrarlo a CI con tu propia política, mantener los
-resultados en infraestructura que controlás y bifurcar la orquestación si no te
+resultados en infraestructura que controlas y bifurcar la orquestación si no te
 sirve. Para entornos regulados eso no es poco — el flujo de datos es la pregunta
 que realmente hace cumplimiento, y ahora se responde leyendo el código.
 
-**No obtenés:** la capacidad de ejecutarlo sin la aprobación de OpenAI,
+**No obtienes:** la capacidad de ejecutarlo sin la aprobación de OpenAI,
 reproducir sus resultados, evaluarlo antes de pedir acceso, ni seguir usándolo si
 cambian los términos. La inteligencia de escaneo es una dependencia hospedada con
 una puerta delante.
@@ -251,31 +251,31 @@ una puerta delante.
 <Callout type="warn" title="La salida del escaneo es un artefacto sensible">
   Una advertencia que la documentación plantea y que la cobertura pasó por alto:
   los resultados contienen **fragmentos de código fuente y detalles de las
-  vulnerabilidades**. Si apuntás `--output-dir` dentro del repositorio, tarde o
+  vulnerabilidades**. Si apuntas `--output-dir` dentro del repositorio, tarde o
   temprano vas a commitear un archivo que describe exactamente cómo explotar tu
-  propio producto. Mantenelo fuera del árbol y con una política de retención —
-  el cableado está en el [complemento sobre integración con
+  propio producto. Mantenlo fuera del árbol y con una política de retención — el
+  cableado está en el [complemento sobre integración con
   CI](/es/notes/codex-security-brecha-precision/integracion-ci/).
 </Callout>
 
 ## Qué haría yo
 
-- **Tomate la prueba en serio y diseñala como una medición.** El acceso está
-  restringido, así que tenés una sola oportunidad de primera impresión. No la
-  gastes en un repositorio que ya sabés que está limpio.
-- **Medí la precisión vos, porque nadie más lo hizo.** Ejecutalo sobre un
+- **Tómate la prueba en serio y diséñala como una medición.** El acceso está
+  restringido, así que tienes una sola oportunidad de primera impresión. No la
+  gastes en un repositorio que ya sabes que está limpio.
+- **Mide la precisión tú mismo, porque nadie más lo hizo.** Ejecútalo sobre un
   repositorio cuyo historial de vulnerabilidades conozcas — uno con CVE resueltos
-  y commits auditados. Contá hallazgos confirmados sobre hallazgos totales. Esa
+  y commits auditados. Cuenta hallazgos confirmados sobre hallazgos totales. Esa
   sola razón te dice más que el 92%.
-- **Incluí un conjunto de trampas de falso positivo.** El diseño de RealVuln vale
-  la pena copiarlo: sembrá código que parezca vulnerable y no lo sea. El
+- **Incluye un conjunto de trampas de falso positivo.** El diseño de RealVuln vale
+  la pena copiarlo: siembra código que parezca vulnerable y no lo sea. El
   comportamiento de un escáner ante casi-aciertos deliberados es el mejor sustituto
   disponible de su comportamiento sobre tu código real.
-- **Compará contra la línea base que realmente ejecutás,** no contra la
+- **Compara contra la línea base que realmente ejecutas,** no contra la
   perfección. Si hoy Semgrep te da 0,205 de precisión, un escáner en 0,6 es una
   ganancia grande aunque esté lejos de estar limpio.
-- **Presupuestá el tiempo de revisión antes de habilitarlo en CI.** Con cualquier
-  precisión plausible, alguien va a leer hallazgos que terminan en nada. Decidí
+- **Presupuesta el tiempo de revisión antes de habilitarlo en CI.** Con cualquier
+  precisión plausible, alguien va a leer hallazgos que terminan en nada. Decide
   quién y cuánto tiempo antes de que se bloquee el primer pull request.
 
 Lo que vale la pena llevarse no es que Codex Security esté sobrevalorado — con la
@@ -287,5 +287,5 @@ media medición presentada como una completa**. La mitad que se publicó es la
 mitad que vende. La mitad que no, es la que determina si tu equipo va a seguir
 leyendo la salida dentro de seis meses.
 
-Pedí ese número cuando solicites acceso. Si existe, es lo más útil que podrían
+Pide ese número cuando solicites acceso. Si existe, es lo más útil que podrían
 decirte.

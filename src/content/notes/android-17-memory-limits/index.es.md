@@ -65,16 +65,16 @@ La métrica es **memoria anónima** — heap más asignaciones nativas que no es
 respaldadas por un archivo. Las páginas respaldadas por archivo se desalojan; las
 anónimas van a swap. Por eso la descripción de salida dice `AnonSwap`.
 
-Fijate qué es `memory.high`: un límite **blando**. El kernel no te mata
+Fíjate qué es `memory.high`: un límite **blando**. El kernel no te mata
 inmediatamente por cruzarlo. Te estrangula e intenta reclamar. La muerte llega
 después, cuando el reclamo no alcanza y una asignación falla. Por eso no hay un
 `OutOfMemoryError` limpio que atrapar — a esa altura te están deteniendo, no
 preguntando.
 
-## Tres hechos que cambian cómo planificás
+## Tres hechos que cambian cómo planificas
 
-**1. No podés consultar el límite.** A partir de Android 17 — SDK 37 — no hay API
-en runtime para preguntar cuál es tu límite. No podés leerlo, loguearlo, ni
+**1. No puedes consultar el límite.** A partir de Android 17 — SDK 37 — no hay API
+en runtime para preguntar cuál es tu límite. No puedes leerlo, loguearlo, ni
 adaptarte a él. Cualquier estrategia que implique "consultar el presupuesto y
 quedarse abajo" no está disponible.
 
@@ -95,7 +95,7 @@ pueden tener límites distintos, y tu app no tiene manera de distinguirlos.
 
 **3. Si el archivo de configuración no está, el limiter queda desactivado por
 completo.** Así que algunos dispositivos no aplican nada. "Funciona en mi teléfono"
-nunca fue evidencia más débil que acá.
+nunca fue evidencia más débil que aquí.
 
 ## Qué procesos están exentos
 
@@ -132,15 +132,15 @@ activityManager.getHistoricalProcessExitReasons(packageName, 0, 10)
 
 Dos detalles que importan:
 
-- La razón es **`REASON_OTHER`**, no una constante dedicada. Tenés que matchear
+- La razón es **`REASON_OTHER`**, no una constante dedicada. Tienes que matchear
   contra el string de descripción, lo que significa que un cambio de redacción en
-  la plataforma puede romper tu detección en silencio. Matcheá contra
+  la plataforma puede romper tu detección en silencio. Matchea contra
   `"MemoryLimiter"`, no contra el `"MemoryLimiter:AnonSwap"` completo.
-- Leé esto **en el siguiente arranque**, no en el momento de la muerte — no hay
+- Lee esto **en el siguiente arranque**, no en el momento de la muerte — no hay
   momento de la muerte que puedas observar. `getHistoricalProcessExitReasons` es la
   única ventana.
 
-Si no agregás algo así, estas muertes llegan como una caída inexplicable en la
+Si no agregas algo así, estas muertes llegan como una caída inexplicable en la
 duración de sesión y una suba de cold starts, sin nada en Crashlytics que las
 conecte.
 
@@ -162,41 +162,41 @@ profilingManager.addProfilingTriggers(triggers)
 ```
 
 `TRIGGER_TYPE_ANOMALY` es el que cambia el juego: es lo más cercano a la API de
-consulta que no existe. No podés preguntar cuál es tu límite, pero sí te pueden
+consulta que no existe. No puedes preguntar cuál es tu límite, pero sí te pueden
 avisar cuando te estás acercando.
 
 ## Qué reduce el número de verdad
 
 Nada de esto es consejo nuevo. Es consejo recién obligatorio, que es distinto.
 
-**Activá R8 bien.** `isMinifyEnabled = true`, `isShrinkResources = true`, y
+**Activa R8 bien.** `isMinifyEnabled = true`, `isShrinkResources = true`, y
 `proguard-android-optimize.txt` en lugar de la variante que no optimiza. Una
 cantidad sorprendente de proyectos tiene los dos primeros y no el tercero.
 
-**Bajá la resolución de las imágenes al decodificar.** `inSampleSize` cuando
-conocés el tamaño destino, y `RGB_565` cuando no necesitás transparencia — eso es
+**Baja la resolución de las imágenes al decodificar.** `inSampleSize` cuando
+conoces el tamaño destino, y `RGB_565` cuando no necesitas transparencia — eso es
 la mitad de bytes por pixel que `ARGB_8888`. Un bitmap a resolución completa para
 un thumbnail es la forma más común de desperdiciar decenas de megabytes.
 
-**Respondé a `onTrimMemory`.** Específicamente `TRIM_MEMORY_UI_HIDDEN` — el usuario
+**Responde a `onTrimMemory`.** Específicamente `TRIM_MEMORY_UI_HIDDEN` — el usuario
 se fue, tus vistas no están visibles, y lo que cacheaste para dibujar es costo puro
 — y `TRIM_MEMORY_BACKGROUND`. Casi todas las apps sobreescriben este método y no
 liberan nada significativo dentro.
 
-**Encontrá los leaks.** LeakCanary ahora se integra al profiler de Android Studio
+**Encuentra los leaks.** LeakCanary ahora se integra al profiler de Android Studio
 directamente en Panda 3. Un leak bajo un límite de memoria ya no es una
 degradación lenta; es una muerte segura con temporizador.
 
 ## Qué haría esta semana
 
-1. **Enviá primero el chequeo de `ApplicationExitInfo`.** Son una docena de líneas
-   y sin eso estás ciego. No podés arreglar una tasa que no podés ver.
-2. **Cableá `TRIGGER_TYPE_ANOMALY`.** Es la única señal que mira para adelante.
-3. **Revisá el tercer flag de R8.** Dos minutos, y a menudo una reducción real.
-4. **Auditá los caminos de decodificación de bitmaps.** Donde suelen estar los
+1. **Envía primero el chequeo de `ApplicationExitInfo`.** Son una docena de líneas
+   y sin eso estás ciego. No puedes arreglar una tasa que no puedes ver.
+2. **Cablea `TRIGGER_TYPE_ANOMALY`.** Es la única señal que mira para adelante.
+3. **Revisa el tercer flag de R8.** Dos minutos, y a menudo una reducción real.
+4. **Audita los caminos de decodificación de bitmaps.** Donde suelen estar los
    megabytes.
 5. **No ajustes contra un número.** No hay número que puedas leer, varía por
-   fabricante, y en algunos dispositivos no existe. Construí margen, no un
+   fabricante, y en algunos dispositivos no existe. Construye margen, no un
    objetivo.
 
 El resumen honesto: es un buen cambio con un mal modo de falla. Hacer que una app

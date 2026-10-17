@@ -4,7 +4,7 @@ locale: es
 translationKey: android-17-stable
 slug: android-17-estable
 title: 'Android 17: qué rompe en targetSdk 37'
-summary: De la Beta 3 al release del 16 de junio — los cambios que quedan dormidos hasta que subís targetSdk a 37, y las dos reescrituras de runtime debajo.
+summary: De la Beta 3 al release del 16 de junio — los cambios que quedan dormidos hasta que subes targetSdk a 37, y las dos reescrituras de runtime debajo.
 visibility: public
 maturity: stable
 publishedAt: 2026-07-29
@@ -65,8 +65,8 @@ entonces. La Beta 4 — la última, donde se bloqueó la superficie de API — s
 cuesta tiempo.
 
 Seis semanas después, el encuadre útil no es la lista de features. Es este: **casi
-todo lo que va a romper tu app está dormido ahora mismo.** Se dispara cuando subís
-`targetSdk` a 37, no cuando un usuario actualiza el teléfono. O sea que vos elegís
+todo lo que va a romper tu app está dormido ahora mismo.** Se dispara cuando subes
+`targetSdk` a 37, no cuando un usuario actualiza el teléfono. O sea que tú eliges
 el día, y eso conviene usarlo a propósito.
 
 ## El proceso cambió, y esa es la noticia real
@@ -107,9 +107,9 @@ tiempo de layout, no una salida.
 > Todos los archivos nativos cargados con `System.load()` deben estar marcados
 > como solo lectura. Si no, el sistema lanza `UnsatisfiedLinkError`.
 
-Si distribuís código nativo que se extrae, se copia o se descarga en runtime y
+Si distribuyes código nativo que se extrae, se copia o se descarga en runtime y
 después se carga desde una ubicación escribible, ese camino ahora lanza excepción.
-Es una restricción de Dynamic Code Loading: una librería que todavía podés
+Es una restricción de Dynamic Code Loading: una librería que todavía puedes
 escribir es una librería que un atacante todavía puede reescribir entre el chequeo
 y la carga.
 
@@ -126,14 +126,14 @@ desarrollo local u otro teléfono en la misma Wi-Fi.
 Hay **dos caminos de vuelta**, y el orden importa:
 
 1. **Un selector de dispositivos mediado por el sistema.** El usuario elige el
-   dispositivo, el sistema otorga el alcance, y vos no mostrás ningún prompt de
+   dispositivo, el sistema otorga el alcance, y tú no muestras ningún prompt de
    permiso.
 2. **El nuevo permiso runtime `ACCESS_LOCAL_NETWORK`**, pedido explícitamente,
    para comunicación persistente con la LAN.
 
-Ir al permiso primero es el reflejo, y es la peor opción: pagás un prompt, una
-tasa de rechazo y una justificación que tenés que escribir. Probá el selector
-antes de decidir que necesitás acceso amplio.
+Ir al permiso primero es el reflejo, y es la peor opción: pagas un prompt, una
+tasa de rechazo y una justificación que tienes que escribir. Prueba el selector
+antes de decidir que necesitas acceso amplio.
 
 ### 4. El audio en background exige un foreground service
 
@@ -147,7 +147,7 @@ que cumplir una de dos condiciones:
 
 Ojo con lo que exige la plataforma: un foreground service con la capacidad
 correcta. `MediaSessionService` no está en la regla; es la forma práctica de
-cumplirla. Media3 configura, arranca y para ese servicio por vos y publica la
+cumplirla. Media3 configura, arranca y para ese servicio por ti y publica la
 notificación de media, así que una app construida sobre `MediaSessionService` ya
 está mayormente en regla.
 
@@ -179,10 +179,10 @@ principal — contención que aparecía como frames perdidos. La reescritura lo
 elimina. El costo es que todo lo que reflexione sobre los internos de
 `MessageQueue` se rompe: `mMessages` sigue existiendo por compatibilidad binaria,
 pero **siempre es `null`**, haya mensajes pendientes o no. Espresso y Robolectric
-son los primeros que vas a tocar, así que actualizá esas librerías antes de mover
+son los primeros que vas a tocar, así que actualiza esas librerías antes de mover
 `targetSdk`.
 
-Auditá el árbol de dependencias antes del bump, no después. Un `null` silencioso
+Audita el árbol de dependencias antes del bump, no después. Un `null` silencioso
 en un campo que antes traía datos es el tipo de falla más caro de rastrear.
 
 ### 6. Los SMS con OTP llegan tres horas tarde
@@ -198,7 +198,7 @@ importar el targetSdk**, cuando la app no es el destinatario verificado por
 dominio.
 
 Tres horas no es una demora con la que se diseña: es un mensaje de que leer la
-bandeja se terminó. Si todavía parseás SMS directamente, pasate a **SMS Retriever**
+bandeja se terminó. Si todavía parseas SMS directamente, pásate a **SMS Retriever**
 o **SMS User Consent** — los dos te entregan el código sin que la app lea los
 mensajes del usuario, que es justamente el punto.
 
@@ -207,10 +207,10 @@ mensajes del usuario, que es justamente el punto.
 CT era opt-in en Android 16. Para las apps que apuntan a 17 está **activado por
 defecto**.
 
-Para casi todos esto es invisible y bueno. Muerde en un solo lugar: si pineás o
-inyectás un certificado que no está en un log público de CT — un proxy
+Para casi todos esto es invisible y bueno. Muerde en un solo lugar: si pineas o
+inyectas un certificado que no está en un log público de CT — un proxy
 corporativo, un arnés de pruebas, una CA interna — conexiones que antes
-funcionaban van a fallar. Probá tu entorno de staging antes de asumir que
+funcionaban van a fallar. Prueba tu entorno de staging antes de asumir que
 producción está bien.
 
 ### 8. Los contactos se angostan
@@ -219,10 +219,10 @@ Se movieron dos cosas, y solo una rompe.
 
 La que rompe: para las apps que apuntan a 37, **Contacts Provider 2 esconde las
 columnas con PII** de la vista de datos — `ACCOUNT_NAME`, `ACCOUNT_TYPE`,
-`ACCOUNT_TYPE_AND_DATA_SET`. Si las consultás, contá con que no van a estar.
+`ACCOUNT_TYPE_AND_DATA_SET`. Si las consultas, cuenta con que no van a estar.
 
 La otra es una oportunidad. Android 17 trae un **Contact Picker** estandarizado:
-una UI del sistema navegable donde declarás los campos que necesitás — teléfonos,
+una UI del sistema navegable donde declaras los campos que necesitas — teléfonos,
 mails — y el usuario te entrega contactos puntuales. `READ_CONTACTS` no está
 deprecado, pero ahora es la opción bruta. Si pedías la agenda entera porque no
 había alternativa, ahora la hay.
@@ -239,7 +239,7 @@ los objetos muere joven. Actuar sobre eso baja el costo de CPU y la duración de
 recolección, lo que se ve como menos frames perdidos y menos batería quemada
 haciendo contabilidad.
 
-Esto lo tenés gratis — sin `targetSdk`, sin cambiar código. Y como ART se
+Esto lo tienes gratis — sin `targetSdk`, sin cambiar código. Y como ART se
 distribuye por Google Play system updates, las mejoras de runtime llegan a
 dispositivos hasta **API 31**, no solo a los que se actualizaron de OS.
 
@@ -252,10 +252,10 @@ Algorithm, el estándar post-cuántico del NIST — en dos variantes, `ML-DSA-65
 La parte que importa para la adopción: está expuesto a través de las APIs
 **estándar de Java Cryptographic Architecture**. `KeyPairGenerator`, `KeyFactory`,
 `Signature`. Ninguna superficie nueva que aprender, ningún SDK de proveedor. Si
-hoy generás claves de firma en hardware, la forma del código no cambia — cambia el
+hoy generas claves de firma en hardware, la forma del código no cambia — cambia el
 string del algoritmo.
 
-Si ya lo necesitás es otra pregunta. Las firmas post-cuánticas importan donde una
+Si ya lo necesitas es otra pregunta. Las firmas post-cuánticas importan donde una
 firma tiene que seguir siendo verificable durante años y un adversario puede
 guardar el tráfico de hoy para atacarlo después. Para un token de sesión que
 expira en una hora, no. Está bien que la plataforma esté lista antes de que la
@@ -266,7 +266,7 @@ criptográficas.
 
 Android 17 aplica **límites de memoria por app derivados del RAM del dispositivo**,
 y un proceso que los excede muere **sin stack trace**. `ApplicationExitInfo` es
-donde te enterás de que pasó.
+donde te enteras de que pasó.
 
 Este merece más que un párrafo, y tiene su propia nota:
 [Android 17 mata tu proceso sin stack trace](/es/notes/android-17-limites-memoria/).
@@ -288,24 +288,24 @@ cambio chico con un modelo de amenaza claro detrás.
 
 ## Qué haría esta semana
 
-1. **Compilá contra SDK 37 en CI, sin cambiar `targetSdk`.** Obtenés señal de
+1. **Compila contra SDK 37 en CI, sin cambiar `targetSdk`.** Obtienes señal de
    deprecaciones y de superficie de API con riesgo de comportamiento cero.
-2. **Auditá tus dependencias por reflection.** Las librerías de testing, feature
+2. **Audita tus dependencias por reflection.** Las librerías de testing, feature
    flags y analytics son las que reescriben campos `static final` y leen los
-   internos de `MessageQueue`. Actualizá Espresso y Robolectric primero.
+   internos de `MessageQueue`. Actualiza Espresso y Robolectric primero.
 3. **Grep de `System.load(`.** El chequeo más rápido posible para el breaking
    change que más fácil se pasa por alto.
-4. **Probá en un plegable o un emulador de tablet en horizontal.** No porque vaya
+4. **Prueba en un plegable o un emulador de tablet en horizontal.** No porque vaya
    a verse mal — porque ahora va a pasar, hayas optado o no.
-5. **Inventariá tus permisos.** Todo lo que toque la LAN, la agenda o la bandeja
+5. **Inventaría tus permisos.** Todo lo que toque la LAN, la agenda o la bandeja
    de SMS ahora tiene un camino más angosto y mediado por el sistema que le gana a
    pedir.
-6. **Corré tu camino de TLS en staging.** CT por defecto falla ruidosamente, pero
+6. **Corre tu camino de TLS en staging.** CT por defecto falla ruidosamente, pero
    solo donde tengas un certificado no público, y eso normalmente no es
    producción.
-7. **Después subí `targetSdk`**, a propósito, con tiempo para reaccionar.
+7. **Después sube `targetSdk`**, a propósito, con tiempo para reaccionar.
 
-Si manejás un equipo, no esperes a que el plazo de Play te fuerce el número. La
+Si manejas un equipo, no esperes a que el plazo de Play te fuerce el número. La
 auditoría es la parte lenta, no el bump.
 
 El patrón de este release es consistente: la plataforma está cerrando caminos que
@@ -314,4 +314,4 @@ acceso irrestricto a la LAN, lecturas amplias de contactos, scraping de SMS,
 reflection sobre los internos, memoria sin techo. Cada uno era un lugar donde una
 app podía ser descuidada y el costo caía en otra parte. Es una dirección
 defendible. También significa que "sigue funcionando" deja de ser evidencia de
-nada el día que cambiás un número.
+nada el día que cambias un número.

@@ -100,6 +100,6 @@ completa. De ahí en adelante deja de ser teoría: un chat de IA en streaming co
 las alturas de burbuja medidas con pretext, y un layout editorial donde el texto
 fluye alrededor de un bailarín y se recomputa en cada fotograma.
 
-> **¿Querés verlo antes de leer nada?** Texto fluyendo alrededor de una figura
+> **¿Quieres verlo antes de leer nada?** Texto fluyendo alrededor de una figura
 > bailando, recomputado en cada fotograma, corriendo en esta misma página — sin
 > instalación. [Saltar al demo de Matteflow](#part-4)

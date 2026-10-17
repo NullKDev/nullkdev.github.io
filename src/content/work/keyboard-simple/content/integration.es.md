@@ -44,4 +44,4 @@ dependencies {
 }
 ```
 
-Estas instrucciones documentan el artefacto publicado; no garantizan compatibilidad. Verificá repositorio, disponibilidad, compatibilidad con Android Gradle Plugin y comportamiento antes de usarlo hoy.
+Estas instrucciones documentan el artefacto publicado; no garantizan compatibilidad. Verifica repositorio, disponibilidad, compatibilidad con Android Gradle Plugin y comportamiento antes de usarlo hoy.
