@@ -74,7 +74,9 @@ este repo usa de verdad — no las genéricas del estándar.
   con subpartes, cada parte muestra su título, cuántas secciones tiene y sus
   minutos de lectura, y despliega sus encabezados solo cuando se está leyendo
   (con `<details>`, así que funciona sin JavaScript). Las secciones de primer
-  nivel llevan el mismo número que el texto ("06 Breaking changes"). Los temas
+  nivel llevan el mismo número que el texto ("06 Breaking changes") y las
+  subsecciones se numeran según su sección ("2.1", "2.2"), igual en el índice
+  y en el encabezado; los números ya no se escriben a mano en el título. Los temas
   ("Archivado en") salen de la columna y pasan al final del texto.
 - Índice en el teléfono: un `<details>` plegado ("En este registro · N
   secciones") antes del primer párrafo, con las secciones de primer nivel.

@@ -83,7 +83,7 @@ proceso asumía una fase de DP para absorber sorpresas, esa fase ya no existe.
 
 ## Qué rompe en targetSdk 37
 
-### 1. La redimensionabilidad en pantallas grandes ya no es opcional
+### La redimensionabilidad en pantallas grandes ya no es opcional
 
 Las apps que apunten a Android 17 **ya no pueden optar por salirse** de las
 restricciones de orientación, redimensionamiento y aspect ratio en pantallas cuyo
@@ -102,7 +102,7 @@ una interpretación. Y en Play, apuntar a API 37 pasa a ser obligatorio para app
 nuevas y actualizaciones en **agosto de 2027** — así que la exención te compra
 tiempo de layout, no una salida.
 
-### 2. `System.load()` exige librerías nativas de solo lectura
+### `System.load()` exige librerías nativas de solo lectura
 
 > Todos los archivos nativos cargados con `System.load()` deben estar marcados
 > como solo lectura. Si no, el sistema lanza `UnsatisfiedLinkError`.
@@ -116,7 +116,7 @@ y la carga.
 Vale hacer un grep de `System.load(` — no de `loadLibrary`, que resuelve desde el
 APK y no está afectado.
 
-### 3. El acceso a la red local está bloqueado por defecto
+### El acceso a la red local está bloqueado por defecto
 
 Las apps que apunten a 17 tienen el **acceso a la red local bloqueado por
 defecto**. mDNS, sockets, descubrimiento de dispositivos — cualquier cosa que
@@ -135,7 +135,7 @@ Ir al permiso primero es el reflejo, y es la peor opción: pagas un prompt, una
 tasa de rechazo y una justificación que tienes que escribir. Prueba el selector
 antes de decidir que necesitas acceso amplio.
 
-### 4. El audio en background exige un foreground service
+### El audio en background exige un foreground service
 
 Reproducir, pedir foco de audio o cambiar el volumen desde una app que no está
 visible ahora requiere un **foreground service corriendo**. Además, la app tiene
@@ -162,7 +162,7 @@ Para las apps que **no** apuntan a 17 igual aplica la versión suave: las APIs d
 audio llamadas fuera de un ciclo de vida válido **fallan en silencio**, y el foco
 de audio devuelve `AUDIOFOCUS_REQUEST_FAILED`.
 
-### 5. La reflection sobre la plataforma deja de funcionar
+### La reflection sobre la plataforma deja de funcionar
 
 Dos cambios, una misma causa, y caen sobre tus dependencias más que sobre tu
 código.
@@ -185,7 +185,7 @@ son los primeros que vas a tocar, así que actualiza esas librerías antes de mo
 Audita el árbol de dependencias antes del bump, no después. Un `null` silencioso
 en un campo que antes traía datos es el tipo de falla más caro de rastrear.
 
-### 6. Los SMS con OTP llegan tres horas tarde
+### Los SMS con OTP llegan tres horas tarde
 
 Para la mayoría de las apps que apuntan a 17, los SMS con código de un solo uso
 **no se pueden leer hasta tres horas después de llegar**. Durante esa ventana el
@@ -202,7 +202,7 @@ bandeja se terminó. Si todavía parseas SMS directamente, pásate a **SMS Retri
 o **SMS User Consent** — los dos te entregan el código sin que la app lea los
 mensajes del usuario, que es justamente el punto.
 
-### 7. Certificate Transparency viene activado
+### Certificate Transparency viene activado
 
 CT era opt-in en Android 16. Para las apps que apuntan a 17 está **activado por
 defecto**.
@@ -213,7 +213,7 @@ corporativo, un arnés de pruebas, una CA interna — conexiones que antes
 funcionaban van a fallar. Prueba tu entorno de staging antes de asumir que
 producción está bien.
 
-### 8. Los contactos se angostan
+### Los contactos se angostan
 
 Se movieron dos cosas, y solo una rompe.
 

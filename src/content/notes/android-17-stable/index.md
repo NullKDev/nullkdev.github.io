@@ -82,7 +82,7 @@ assumed a DP phase to absorb surprises, that phase no longer exists.
 
 ## What breaks on targetSdk 37
 
-### 1. Large-screen resizability is no longer optional
+### Large-screen resizability is no longer optional
 
 Apps targeting Android 17 **can no longer opt out** of orientation, resizability
 and aspect-ratio constraints on displays whose smallest width is over **600dp**.
@@ -99,7 +99,7 @@ The exemption is narrower than "games are fine": it applies to apps that
 vibe, and Play distribution makes targeting API 37 mandatory for new apps and
 updates in **August 2027** — so the exemption buys layout work, not an escape.
 
-### 2. `System.load()` requires read-only native libraries
+### `System.load()` requires read-only native libraries
 
 > All native files loaded using `System.load()` must be marked as read-only.
 > Otherwise, the system throws `UnsatisfiedLinkError`.
@@ -112,7 +112,7 @@ still rewrite between the check and the load.
 Worth grepping for `System.load(` — not `loadLibrary`, which resolves from the APK
 and is unaffected.
 
-### 3. Local network access is blocked by default
+### Local network access is blocked by default
 
 Apps targeting 17 have **local network access blocked by default**. mDNS, raw
 sockets, device discovery — anything that reaches a printer, a Chromecast, a smart
@@ -129,7 +129,7 @@ Reaching for the permission first is the reflex, and it is the worse option: you
 pay a prompt, a denial rate, and a justification you have to write. Try the picker
 before you decide you need blanket access.
 
-### 4. Background audio needs a foreground service
+### Background audio needs a foreground service
 
 Playback, audio-focus requests and volume changes from an app that is not visible
 now require a **running foreground service**. On top of that, the app must satisfy
@@ -155,7 +155,7 @@ For apps that do _not_ target 17, the softer version of this still applies: audi
 APIs called outside a valid lifecycle **fail silently**, and audio focus returns
 `AUDIOFOCUS_REQUEST_FAILED`.
 
-### 5. Reflection into the platform stops working
+### Reflection into the platform stops working
 
 Two changes, one root cause, and they land on your dependencies rather than your
 code.
@@ -177,7 +177,7 @@ update those libraries before you touch `targetSdk`.
 Audit your dependency tree before the bump, not after. A silent `null` from a
 field that used to hold data is the most expensive kind of failure to trace.
 
-### 6. OTP SMS arrives three hours late
+### OTP SMS arrives three hours late
 
 For most apps targeting 17, one-time-password SMS **is not readable until three
 hours after it arrives**. During that window the `SMS_RECEIVED_ACTION` broadcast
@@ -192,7 +192,7 @@ inbox is over. If you still parse SMS directly, move to **SMS Retriever** or **S
 User Consent** — both hand you the code without the app reading the user's
 messages, which is the point.
 
-### 7. Certificate Transparency is on by default
+### Certificate Transparency is on by default
 
 CT was opt-in on Android 16. For apps targeting 17 it is **enabled by default**.
 
@@ -201,7 +201,7 @@ you pin or inject a certificate that is not in a public CT log — a corporate
 proxy, a test harness, an internal CA — connections that used to work will fail.
 Check your staging environment before you assume production is fine.
 
-### 8. Contacts get narrower
+### Contacts get narrower
 
 Two things moved, and only one of them breaks.
 

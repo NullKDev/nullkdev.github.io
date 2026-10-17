@@ -33,6 +33,27 @@
   font-size: 0.82rem;
   font-weight: 600;
 }
+/* A subsection carries its parent's number: every section restarts the count,
+   and an h3 after it reads "2.1", "2.2" — the same number the index prints
+   (`numberSections` in src/lib/outline.ts derives it the same way). An h3
+   before the first section has no parent and stays bare. Inline, not the h2's
+   flex row: without the script that wraps the title, a flex h3 would split an
+   inline `<code>` into its own item. */
+.prose > h2 {
+  counter-reset: prose-subsection;
+}
+.prose > h2 ~ h3::before {
+  counter-increment: prose-subsection;
+  content: counter(prose-section) '.' counter(prose-subsection);
+  display: inline-block;
+  margin-right: 0.6rem;
+  transform: translateY(-0.12em);
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
 .prose h3 {
   margin: 2.2rem 0 0.6rem;
   font-size: 1.3rem;

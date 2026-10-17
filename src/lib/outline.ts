@@ -22,8 +22,9 @@ export interface OutlineItem {
   readonly slug: string
   readonly text: string
   readonly level: OutlineLevel
-  /** The number the prose counter prints before this heading ("06"). Only an
-      entry's own `h2`s carry one — see `numberSections`. */
+  /** The number the prose counters print before this heading: "06" for a
+      section, "6.2" for a subsection in it. Only a page's own `h2`s and the
+      `h3`s under them carry one — see `numberSections`. */
   readonly number?: string
   /** Set on the title of an inlined subpost, the group its headings sit in. */
   readonly part?: true
@@ -66,19 +67,40 @@ const toItems = (
     level: Math.min(depth - MIN_DEPTH + offset, 3) as OutlineLevel,
   }))
 
+/** A hand-typed ordinal at the start of a heading ("1. ", "2) "). */
+const TYPED_ORDINAL = /^\d+[.)]\s+/
+
 /**
- * Number the top rung the way `prose.css` numbers the text: its counter
- * increments on `.prose > h2`, a page's own sections, with two digits. The
- * index and the heading then show the same "06" for the same section, so a
- * reader can match one to the other at a glance.
+ * Number the outline the way `prose.css` numbers the text. Its counter
+ * increments on `.prose > h2`, a page's own sections, with two digits ("06");
+ * every such h2 resets a sub-counter that the `h3`s after it print as
+ * "<section>.<n>" ("6.2"), so a subsection reads as part of its parent. The
+ * index and the heading then show the same number for the same place, and a
+ * reader can match one to the other at a glance. An `h3` before the first
+ * `h2` has no parent section; the prose leaves it bare and so does the index.
+ *
+ * A heading this numbers loses a typed ordinal from its index label only —
+ * "1. Foo" under section 2 would otherwise read "2.1 1. Foo". The content
+ * should not type them (the counter numbers it), but a stray one must not
+ * double the number. The heading's text and anchor are left alone.
  */
 const numberSections = (items: readonly OutlineItem[]): OutlineItem[] => {
-  let count = 0
-  return items.map((item) =>
-    item.level === 1
-      ? { ...item, number: String(++count).padStart(2, '0') }
-      : item,
-  )
+  let section = 0
+  let subsection = 0
+  return items.map((item) => {
+    if (item.level === 1) {
+      section += 1
+      subsection = 0
+      return { ...item, number: String(section).padStart(2, '0') }
+    }
+    if (item.level !== 2 || section === 0) return item
+    subsection += 1
+    return {
+      ...item,
+      text: item.text.replace(TYPED_ORDINAL, ''),
+      number: `${section}.${subsection}`,
+    }
+  })
 }
 
 /**

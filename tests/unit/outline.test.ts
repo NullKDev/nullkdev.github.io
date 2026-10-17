@@ -31,7 +31,7 @@ describe('entry outline', () => {
     )
     expect(outline).toEqual([
       { slug: 'intro', text: 'INTRO', level: 1, number: '01' },
-      { slug: 'detail', text: 'DETAIL', level: 2 },
+      { slug: 'detail', text: 'DETAIL', level: 2, number: '1.1' },
       { slug: 'part-1', text: 'Part one', level: 1, part: true, minutes: 4 },
       { slug: 'setup', text: 'SETUP', level: 2 },
       { slug: 'step', text: 'STEP', level: 3 },
@@ -48,10 +48,56 @@ describe('entry outline', () => {
     )
     expect(outline.map((item) => item.number)).toEqual([
       '01',
-      undefined,
+      '1.1',
       '02',
       undefined,
       undefined,
+    ])
+  })
+
+  it('numbers a subsection after its parent section, as the prose does', () => {
+    /* prose.css resets a sub-counter on every `.prose > h2` and prints
+       "<section>.<n>" on the h3s that follow it, so the index must say "2.1"
+       where the text says "2.1" — never a count that ignores the parent. An
+       h3 before the first h2 has no parent and the prose leaves it bare. */
+    const outline = buildEntryOutline(
+      [
+        heading(3, 'orphan'),
+        heading(2, 'a'),
+        heading(3, 'a1'),
+        heading(2, 'b'),
+        heading(3, 'b1'),
+        heading(3, 'b2'),
+      ],
+      [{ slug: 'part-1', title: 'P', headings: [heading(3, 'c1')] }],
+    )
+    expect(outline.map((item) => item.number)).toEqual([
+      undefined,
+      '01',
+      '1.1',
+      '02',
+      '2.1',
+      '2.2',
+      undefined,
+      undefined,
+    ])
+  })
+
+  it('drops a typed ordinal from a label it numbers, never the heading text otherwise', () => {
+    const outline = buildEntryOutline(
+      [
+        { depth: 2, slug: 'a', text: 'Changes' },
+        { depth: 3, slug: 'a1', text: '1. Resizability' },
+        { depth: 3, slug: 'a2', text: '2) Native libraries' },
+        { depth: 3, slug: 'a3', text: '2026 in review' },
+      ],
+      [],
+    )
+    expect(outline.map(({ number, text }) => [number, text])).toEqual([
+      ['01', 'Changes'],
+      ['1.1', 'Resizability'],
+      ['1.2', 'Native libraries'],
+      ['1.3', '2026 in review'],
     ])
   })
 
@@ -73,7 +119,7 @@ describe('document outline', () => {
       ]),
     ).toEqual([
       { slug: 'setup', text: 'SETUP', level: 1, number: '01' },
-      { slug: 'step', text: 'STEP', level: 2 },
+      { slug: 'step', text: 'STEP', level: 2, number: '1.1' },
     ])
   })
 })
