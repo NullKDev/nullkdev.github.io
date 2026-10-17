@@ -1672,3 +1672,36 @@ test('a Lab tool stacks input and output on a phone', async ({ page }) => {
     if (columns === 1) expect(inputBox!.width).toBeGreaterThan(300)
   }
 })
+
+test('gallery contact sheets keep their lead image and two rows', async ({
+  page,
+}) => {
+  // `astro:assets` wraps each photo in <picture> with <source> children. With
+  // the picture dissolved into the grid, those sources once became grid items:
+  // the lead photo landed in the third column and the rest spilled into extra
+  // rows below an empty block.
+  for (const path of ['/gallery/', '/es/gallery/']) {
+    await page.goto(path)
+    const sheets = page.locator('.gallery-sheet__contact')
+    const count = await sheets.count()
+    expect(count).toBeGreaterThan(0)
+    for (let index = 0; index < count; index++) {
+      const layout = await sheets.nth(index).evaluate((sheet) => {
+        const box = sheet.getBoundingClientRect()
+        const images = [...sheet.querySelectorAll('img')].map((image) =>
+          image.getBoundingClientRect(),
+        )
+        return {
+          rows: getComputedStyle(sheet).gridTemplateRows.split(' ').length,
+          leadAtStart: images.length === 0 || images[0].left - box.left < 2,
+          allInside: images.every(
+            (image) => image.bottom <= box.bottom + 1 && image.width > 0,
+          ),
+        }
+      })
+      expect(layout.leadAtStart, `${path} sheet ${index} lead`).toBe(true)
+      expect(layout.allInside, `${path} sheet ${index} inside`).toBe(true)
+      expect(layout.rows, `${path} sheet ${index} rows`).toBeLessThanOrEqual(2)
+    }
+  }
+})

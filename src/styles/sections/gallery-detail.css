@@ -40,6 +40,11 @@
 .gallery-piece__open picture {
   display: contents;
 }
+/* A dissolved picture hands its <source> children to the parent's layout;
+   they carry no box of their own. */
+.gallery-piece__open source {
+  display: none;
+}
 .gallery-piece__open img,
 .gallery-piece__open video {
   display: block;

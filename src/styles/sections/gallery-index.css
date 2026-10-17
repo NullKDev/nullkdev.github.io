@@ -112,9 +112,14 @@
   padding: 0.6rem;
 }
 /* `astro:assets` wraps each thumbnail in a picture element; letting it
-   dissolve keeps the image itself as the grid item. */
+   dissolve keeps the image itself as the grid item. Its <source> children
+   would then become grid items too — empty cells that pushed the lead photo
+   into the third column and the rest into extra rows — so they leave layout. */
 .gallery-sheet__contact picture {
   display: contents;
+}
+.gallery-sheet__contact source {
+  display: none;
 }
 .gallery-sheet__contact > img:first-child,
 .gallery-sheet__contact > picture:first-child img {
