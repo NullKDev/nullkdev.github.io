@@ -169,6 +169,25 @@ export const banners: readonly BannerSpec[] = [
     ...PALETTE.android,
   },
   {
+    slug: 'android-versions',
+    copy: {
+      en: {
+        kicker: 'Android 4.4 → 17 · API 19–37',
+        title: ['Android, version', 'by version'],
+        meta: 'KitKat to Cinnamon Bun · 2013–2026 · 18 versions',
+        alt: 'Android, version by version banner — eighteen releases from 4.4 to 17.',
+      },
+      es: {
+        kicker: 'Android 4.4 → 17 · API 19–37',
+        title: ['Android, versión', 'por versión'],
+        meta: 'De KitKat a Cinnamon Bun · 2013–2026 · 18 versiones',
+        alt: 'Banner de Android, versión por versión — dieciocho versiones, de 4.4 a 17.',
+      },
+    },
+    art: 'release-train',
+    ...PALETTE.android,
+  },
+  {
     slug: 'android-4-4-kitkat',
     copy: {
       en: {
@@ -489,6 +508,25 @@ export const banners: readonly BannerSpec[] = [
       },
     },
     art: 'api-locked',
+    ...PALETTE.android,
+  },
+  {
+    slug: 'android-17',
+    copy: {
+      en: {
+        kicker: 'Android 17 · API 37',
+        title: ['Adaptive by force,', 'memory by limit'],
+        meta: 'Cinnamon Bun · June 2026 · app memory limits',
+        alt: 'Android 17 banner — apps lose the large-screen opt-out and get a RAM-based memory ceiling.',
+      },
+      es: {
+        kicker: 'Android 17 · API 37',
+        title: ['Adaptable sí o sí,', 'memoria con techo'],
+        meta: 'Cinnamon Bun · junio de 2026 · límites de memoria',
+        alt: 'Banner de Android 17 — las apps pierden la exclusión en pantallas grandes y tienen un techo de memoria según la RAM.',
+      },
+    },
+    art: 'memory-ceiling',
     ...PALETTE.android,
   },
   {

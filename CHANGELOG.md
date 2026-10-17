@@ -54,8 +54,13 @@ este repo usa de verdad — no las genéricas del estándar.
 ### Agregado
 
 - Serie «Android, versión por versión»: una nota investigada por cada versión
-  desde la 4.4 KitKat, con nombre, nivel de API, seguridad, permisos y qué cambia
-  para tu app, en inglés y español. Empieza con Android 6.0 Marshmallow. Las
+  desde la 4.4 KitKat hasta la 17, con nombre, nivel de API, seguridad, permisos y
+  qué cambia para tu app, en inglés y español: 18 notas más una nota principal
+  con la tabla de todas las versiones y los hilos que las cruzan (permisos,
+  segundo plano, almacenamiento, seguridad, nombres). Las notas de Android 17
+  se corrigieron contra las fuentes primarias (el GC generacional llegó en la
+  QPR2 de Android 16, la API se fijó en la Beta 3, el plazo de Play para API 37
+  aún no está anunciado). Las
   imágenes de una nota ahora pueden llevar pie de foto con su crédito
   (`![alt](./assets/x.png 'Pie. Fuente · Licencia')`), que se compila a
   `<figure>` en el build sin perder la optimización de imágenes.
