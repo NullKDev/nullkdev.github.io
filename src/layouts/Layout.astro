@@ -105,10 +105,22 @@ const themeScriptHash = createHash('sha256')
    expects — this <head>, Astro's own scripts, or a body script marked
    `data-csp-inline` — and fails the build on any other. Keep this list
    closed — anything added is something a compromised dependency is then
-   allowed to reach. */
+   allowed to reach.
+
+   `astro dev` is the one exception, and only there. Nothing seals the dev
+   server's output, and Astro inlines the island loaders into every page it
+   serves, so the production `script-src` blocked them and no React island
+   (lab tools, demos) hydrated in dev. Dev swaps the theme hash for
+   'unsafe-inline' — a hash would make browsers ignore 'unsafe-inline' — and
+   keeps every other directive, so dev still fails on a new origin. A build
+   never takes this branch: `import.meta.env.DEV` is false there, and
+   `scripts/apply-csp.ts` rewrites `script-src` from the shipped bytes anyway. */
+const scriptSource = import.meta.env.DEV
+  ? "script-src 'self' 'unsafe-inline'"
+  : `script-src 'self' 'sha256-${themeScriptHash}'`
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'sha256-${themeScriptHash}'`,
+  scriptSource,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self'",

@@ -335,6 +335,10 @@ describing it must say so. `private:scan` fails the build if plaintext reaches
   `<head>`, Astro's hydration runtime, and body scripts marked
   `data-csp-inline` — and fails the build on any other. Never hand-maintain
   those hashes.
+- **`astro dev` only** relaxes `script-src` to `'self' 'unsafe-inline'`
+  (`import.meta.env.DEV` in the Layout): nothing seals dev output, and without
+  it no React island hydrates. Every other directive is the same, and a build
+  never takes that branch — production `script-src` is still the sealed hashes.
 - Component `<script>` blocks ship as `/_astro/*.js` files, never inline:
   `vite.build.assetsInlineLimit` in `astro.config.mjs` returns `false` for
   `.js`. An inline bare `<script type="module">` in `<body>` fails the build,
