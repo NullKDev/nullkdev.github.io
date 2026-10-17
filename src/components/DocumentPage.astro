@@ -3,8 +3,10 @@ import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
 import { pageTitle } from '@/data/brand'
 import { render } from 'astro:content'
 import Layout from '@/layouts/Layout.astro'
+import { getBannerSources } from '@/lib/banners'
 import {
   getAdjacentDocuments,
+  getDocumentAlternatePath,
   getDocumentCounterpartPath,
   getDocumentPath,
   getDocumentRelationships,
@@ -36,6 +38,12 @@ const { entry, document, locale } = Astro.props
 const dictionary = getDictionary(locale)
 const domain = getEntryDomain(entry)
 const counterpartPath = await getDocumentCounterpartPath(entry, document)
+const alternatePath = await getDocumentAlternatePath(entry, document)
+/* A subpost is a part of its entry, so it shares the entry's banner — the
+   social PNG, since scrapers render nothing for SVG. Without this every
+   subpost previewed as the generic identity card. */
+const banner = getBannerSources(entry.data.image, locale)
+const socialImage = banner?.social
 const adjacent = await getAdjacentDocuments(entry, document)
 const relationships = await getDocumentRelationships(document)
 const { Content, headings } = await render(document)
@@ -54,6 +62,7 @@ const jsonLd = buildDocumentArticleLd({
   locale,
   path: getDocumentPath(entry, document),
   parentPath: getEntryPath(entry),
+  image: socialImage,
   publishedAt: document.data.publishedAt,
   updatedAt: document.data.updatedAt,
   site: Astro.site,
@@ -65,6 +74,9 @@ const jsonLd = buildDocumentArticleLd({
   title={documentTitle}
   description={document.data.summary}
   counterpartPath={counterpartPath}
+  alternatePath={alternatePath}
+  image={socialImage}
+  imageAlt={banner ? entry.data.imageAlt : undefined}
   jsonLd={jsonLd}
 >
   <main

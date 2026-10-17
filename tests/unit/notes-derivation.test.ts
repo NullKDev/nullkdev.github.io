@@ -11,6 +11,7 @@ import {
   getSupersededBy,
   noteKinds,
   NOTES_PER_PAGE,
+  resolveNotesCounterpart,
 } from '@/lib/notes'
 
 /* Derived from the function signature rather than imported from
@@ -239,5 +240,88 @@ describe('notes meta', () => {
 describe('pagination', () => {
   it('exposes one page size for every notes route', () => {
     expect(NOTES_PER_PAGE).toBe(8)
+  })
+})
+
+describe('resolveNotesCounterpart', () => {
+  const many = (count: number, shape: NoteShape = {}) =>
+    Array.from({ length: count }, (_, index) =>
+      note({ ...shape, id: `${shape.kind ?? 'n'}-${index}` }),
+    )
+
+  it('pairs the same page of the same view when the other locale has it', () => {
+    const other = many(NOTES_PER_PAGE + 1)
+    expect(
+      resolveNotesCounterpart({
+        otherEntries: other,
+        otherBase: '/es/notes',
+        page: 2,
+      }),
+    ).toEqual({ alternatePath: '/es/notes/2/', switchPath: '/es/notes/2/' })
+    expect(
+      resolveNotesCounterpart({
+        otherEntries: other,
+        otherBase: '/es/notes',
+        page: 1,
+      }),
+    ).toEqual({ alternatePath: '/es/notes/', switchPath: '/es/notes/' })
+  })
+
+  it('names no alternate for a page number the other locale does not build', () => {
+    const other = many(NOTES_PER_PAGE)
+    expect(
+      resolveNotesCounterpart({
+        otherEntries: other,
+        otherBase: '/es/notes',
+        page: 2,
+      }),
+    ).toEqual({ alternatePath: undefined, switchPath: '/es/notes/' })
+  })
+
+  it('keeps the unfiltered index paired even when the other locale is empty', () => {
+    expect(
+      resolveNotesCounterpart({
+        otherEntries: [],
+        otherBase: '/notes',
+        page: 1,
+      }),
+    ).toEqual({ alternatePath: '/notes/', switchPath: '/notes/' })
+  })
+
+  it('pairs a filter only when the other locale has entries in it', () => {
+    const other = [
+      ...many(2, { kind: 'guide' }),
+      ...many(1, { topics: ['astro'] }),
+    ]
+    expect(
+      resolveNotesCounterpart({
+        otherEntries: other,
+        otherBase: '/es/notes',
+        page: 1,
+        kind: 'guide',
+      }),
+    ).toEqual({
+      alternatePath: '/es/notes/type/guide/',
+      switchPath: '/es/notes/type/guide/',
+    })
+    expect(
+      resolveNotesCounterpart({
+        otherEntries: other,
+        otherBase: '/es/notes',
+        page: 1,
+        topic: 'astro',
+      }),
+    ).toEqual({
+      alternatePath: '/es/notes/topic/astro/',
+      switchPath: '/es/notes/topic/astro/',
+    })
+    expect(
+      resolveNotesCounterpart({
+        otherEntries: other,
+        otherBase: '/es/notes',
+        page: 1,
+        kind: 'paper',
+      }),
+    ).toEqual({ alternatePath: undefined, switchPath: '/es/notes/' })
   })
 })

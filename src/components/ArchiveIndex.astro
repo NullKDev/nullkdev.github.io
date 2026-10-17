@@ -70,7 +70,7 @@ const collectionJsonLd = buildCollectionPageLd({
       locale={locale}
       title={pageTitle(dictionary.nav[domain])}
       description={dictionary.section[domain]}
-      counterpartPath={getLocalizedPath(
+      alternatePath={getLocalizedPath(
         `/${domain}/`,
         getAlternateLocale(locale),
       )}

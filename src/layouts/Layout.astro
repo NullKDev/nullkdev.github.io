@@ -16,7 +16,13 @@ interface Props {
   locale: Locale
   title: string
   description: string
+  /** Where the language switch goes. A fallback is fine here — a section
+      index for an untranslated entry — and it defaults to `alternatePath`. */
   counterpartPath?: string
+  /** The real translation of this exact page, if one exists. Only this feeds
+      hreflang and `x-default`; a fallback here is a one-way annotation search
+      engines discard. */
+  alternatePath?: string
   image?: string
   noindex?: boolean
   jsonLd?: JsonLd
@@ -33,6 +39,7 @@ const {
   title,
   description,
   counterpartPath,
+  alternatePath,
   image = '/og/signal-archive.png',
   imageAlt,
   noindex,
@@ -46,15 +53,20 @@ const dictionary = getDictionary(locale)
    page. Not rendering it at all keeps the script out of the build. */
 const showDesignPanel = import.meta.env.DEV
 const canonical = new URL(canonicalPath ?? Astro.url.pathname, Astro.site)
-const counterpartUrl = counterpartPath
-  ? new URL(counterpartPath, Astro.site)
-  : undefined
+const switchPath = counterpartPath ?? alternatePath
+/* hreflang describes indexable pages only. A noindex page — the 404, a
+   protected record, a legacy compatibility page — is a translation of
+   nothing; its language switch still works. */
+const showAlternates = !noindex
+const alternateUrl =
+  showAlternates && alternatePath
+    ? new URL(alternatePath, Astro.site)
+    : undefined
 /* `x-default` names the page for a reader whose language matches neither
    alternate. It is emitted only when a real reciprocal counterpart exists —
    a lone page has no choice to default — and it always points at English, the
-   unprefixed locale. */
-const xDefaultUrl =
-  counterpartUrl && (locale === 'en' ? canonical : counterpartUrl)
+   unprefixed locale. `check-built-metadata.ts` asserts the pair is mutual. */
+const xDefaultUrl = alternateUrl && (locale === 'en' ? canonical : alternateUrl)
 
 /* Theme has to resolve before the first paint or the page flashes the wrong
    one, which rules out an external file. That means one inline script — and an
@@ -152,13 +164,17 @@ const csp = [
       title={`${brand.name} Notes`}
       href="/rss.xml"
     />
-    <link rel="alternate" hreflang={locale} href={canonical} />
     {
-      counterpartUrl && (
+      showAlternates && (
+        <link rel="alternate" hreflang={locale} href={canonical} />
+      )
+    }
+    {
+      alternateUrl && (
         <link
           rel="alternate"
           hreflang={locale === 'en' ? 'es' : 'en'}
-          href={counterpartUrl}
+          href={alternateUrl}
         />
       )
     }
@@ -208,7 +224,7 @@ const csp = [
     <Header
       locale={locale}
       pathname={Astro.url.pathname}
-      counterpartPath={counterpartPath}
+      counterpartPath={switchPath}
     />
     <div id="main-content" tabindex="-1"><slot /></div>
     <Footer locale={locale} pathname={Astro.url.pathname} />

@@ -33,7 +33,7 @@ const tagsPath = getLocalizedPath('/tags', locale)
   locale={locale}
   title={dictionary.meta.title}
   description={dictionary.meta.description}
-  counterpartPath={getLocalizedPath('/', getAlternateLocale(locale))}
+  alternatePath={getLocalizedPath('/', getAlternateLocale(locale))}
   jsonLd={buildHomeLd({
     description: dictionary.meta.description,
     locale,

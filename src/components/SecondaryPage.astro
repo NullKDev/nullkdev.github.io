@@ -50,7 +50,7 @@ const pageJsonLd = buildWebPageLd({
   locale={locale}
   title={pageTitle(title)}
   description={description}
-  counterpartPath={getLocalizedPath(`/${section}/`, getAlternateLocale(locale))}
+  alternatePath={getLocalizedPath(`/${section}/`, getAlternateLocale(locale))}
   jsonLd={pageJsonLd}
 >
   <main class="secondary-page">

@@ -17,6 +17,18 @@ const htmlFiles = (await walk(dist)).filter((file) => file.endsWith('.html'))
 const sitemap = await readFile(join(dist, 'sitemap-0.xml'), 'utf8')
 const failures: string[] = []
 
+interface BuiltPage {
+  readonly file: string
+  readonly locale: string | undefined
+  readonly noindex: boolean
+  readonly socialImage: string | undefined
+  /** hreflang → href, exactly as the page declares them. */
+  readonly alternates: ReadonlyMap<string, string>
+}
+/** Every built page by the URL it is served at. */
+const pages = new Map<string, BuiltPage>()
+const subposts: { url: string; file: string }[] = []
+
 for (const file of htmlFiles) {
   const html = await readFile(file, 'utf8')
   const relativePath = relative(dist, file).split(sep).join('/')
@@ -79,8 +91,26 @@ for (const file of htmlFiles) {
       )
     }
   }
-  if (!/<link rel="alternate" hreflang="(?:en|es)"/.test(html)) {
-    failures.push(`${file}: missing hreflang`)
+  const alternates = new Map(
+    [
+      ...html.matchAll(
+        /<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"/g,
+      ),
+    ].map(([, hreflang, href]) => [hreflang, href]),
+  )
+  const locale = /<html lang="(en|es)"/.exec(html)?.[1]
+  pages.set(sourceUrl, { file, locale, noindex, socialImage, alternates })
+  /* hreflang describes indexable pages to search engines. A noindex page —
+     the 404, a protected record, a legacy compatibility page — is not a
+     translation of anything, and naming one as an alternate is exactly the
+     non-reciprocal annotation search engines discard. */
+  if (noindex && alternates.size > 0) {
+    failures.push(`${file}: noindex page declares hreflang alternates`)
+  }
+  if (!noindex && locale && alternates.get(locale) !== canonical) {
+    failures.push(
+      `${file}: missing self hreflang="${locale}" pointing at its canonical`,
+    )
   }
   if (noindex && sitemap.includes(`<loc>${sourceUrl}</loc>`)) {
     failures.push(`${file}: noindex source appears in sitemap`)
@@ -99,6 +129,9 @@ for (const file of htmlFiles) {
      AGENTS.md documents. An entry that shares its banner names that same
      image, so search and social previews agree. */
   const longForm = /<main class="entry-page(?: document-page)?"/.test(html)
+  if (/<main class="entry-page document-page"/.test(html) && !noindex) {
+    subposts.push({ url: sourceUrl, file })
+  }
   if (longForm && !noindex) {
     const article = structuredData.find(
       ({ '@type': type }) => type === 'Article' || type === 'TechArticle',
@@ -116,6 +149,58 @@ for (const file of htmlFiles) {
         )
       }
     }
+  }
+}
+
+/* Reciprocity. An alternate is only a translation when the page it names
+   exists, is indexable, and names this page back; anything else is a guess —
+   a section index standing in for an untranslated entry, or page 1 standing
+   in for page 2 — and search engines ignore a one-way pair. `x-default` exists
+   only for a real en/es pair and always names the English page. */
+for (const [url, page] of pages) {
+  if (page.noindex || !page.locale) continue
+  const otherLocale = page.locale === 'en' ? 'es' : 'en'
+  const other = page.alternates.get(otherLocale)
+  const xDefault = page.alternates.get('x-default')
+  if (other) {
+    const target = pages.get(other)
+    if (!target) {
+      failures.push(
+        `${page.file}: hreflang="${otherLocale}" ${other} is not a built page`,
+      )
+    } else if (target.noindex) {
+      failures.push(
+        `${page.file}: hreflang="${otherLocale}" ${other} is noindex`,
+      )
+    } else if (target.alternates.get(page.locale) !== url) {
+      failures.push(
+        `${page.file}: hreflang="${otherLocale}" ${other} does not name ${url} back`,
+      )
+    }
+    const english = page.locale === 'en' ? url : other
+    if (xDefault !== english) {
+      failures.push(
+        `${page.file}: x-default is ${String(xDefault)}, expected the English page ${english}`,
+      )
+    }
+  } else if (xDefault) {
+    failures.push(`${page.file}: x-default without a translated counterpart`)
+  }
+}
+
+/* A subpost on its own URL shares its parent entry's image: it is a part of
+   that record, and AGENTS.md says a page shares its own image, never the
+   generic identity card. The article image follows from the og:image rule
+   above. */
+for (const { url, file } of subposts) {
+  const parentUrl = url.replace(/[^/]+\/$/, '')
+  const parent = pages.get(parentUrl)
+  if (!parent) {
+    failures.push(`${file}: parent entry ${parentUrl} is not a built page`)
+  } else if (parent.socialImage !== pages.get(url)?.socialImage) {
+    failures.push(
+      `${file}: shares ${String(pages.get(url)?.socialImage)}, not its entry's image ${String(parent.socialImage)}`,
+    )
   }
 }
 

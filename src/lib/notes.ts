@@ -125,3 +125,64 @@ export const getAvailableTopics = (
         right.count - left.count || left.id.localeCompare(right.id),
     )
 }
+
+/** The axis a Notes index is filtered on, if any. Topic wins, as in routing. */
+export interface NotesView {
+  readonly kind?: string
+  readonly topic?: string
+}
+
+/** One place that knows how a Notes URL is built, for every axis. */
+export const getNotesViewPath = (base: string, { kind, topic }: NotesView) =>
+  topic
+    ? `${base}/topic/${topic}/`
+    : kind
+      ? `${base}/type/${kind}/`
+      : `${base}/`
+
+/** Page 1 is the view itself; Astro serves later pages one level down. */
+export const getNotesPagePath = (viewPath: string, page: number) =>
+  page === 1 ? viewPath : `${viewPath}${page}/`
+
+const inView = (entry: NoteEntry, { kind, topic }: NotesView) =>
+  topic
+    ? entry.data.topics.includes(topic)
+    : kind
+      ? entry.data.kind === kind
+      : true
+
+/**
+ * The other locale's version of one Notes index page.
+ *
+ * Two answers, because they are two questions. `switchPath` is where the
+ * language switch goes, and a fallback is fine there. `alternatePath` is the
+ * same page in the other language — same filter, same page number — and it is
+ * `undefined` unless the other locale actually builds it, because an hreflang
+ * that names a different page is a one-way annotation search engines discard.
+ *
+ * Page counts mirror the routes: a filter is routed only when it has entries,
+ * while the unfiltered index always builds page 1, even when empty.
+ */
+export const resolveNotesCounterpart = ({
+  otherEntries,
+  otherBase,
+  page,
+  ...view
+}: NotesView & {
+  readonly otherEntries: readonly NoteEntry[]
+  /** `/notes` or `/es/notes`, without the trailing slash. */
+  readonly otherBase: string
+  readonly page: number
+}): { alternatePath: string | undefined; switchPath: string } => {
+  const filtered = Boolean(view.topic || view.kind)
+  const matching = otherEntries.filter((entry) => inView(entry, view)).length
+  const pages = Math.ceil(matching / NOTES_PER_PAGE)
+  const built = filtered ? pages : Math.max(1, pages)
+  const viewPath = getNotesViewPath(otherBase, view)
+  if (built === 0) {
+    return { alternatePath: undefined, switchPath: `${otherBase}/` }
+  }
+  if (page > built) return { alternatePath: undefined, switchPath: viewPath }
+  const alternatePath = getNotesPagePath(viewPath, page)
+  return { alternatePath, switchPath: alternatePath }
+}

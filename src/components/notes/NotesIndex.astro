@@ -16,7 +16,15 @@ import { getTopicLabel } from '@/data/taxonomy'
 import { getArchiveLabel } from '@/i18n/archive'
 import Layout from '@/layouts/Layout.astro'
 import { buildCollectionPageLd } from '@/lib/structured-data'
-import { countByKind, getAvailableKinds, getSupersededBy } from '@/lib/notes'
+import { getArchiveEntries } from '@/lib/content'
+import {
+  countByKind,
+  getAvailableKinds,
+  getNotesPagePath,
+  getNotesViewPath,
+  getSupersededBy,
+  resolveNotesCounterpart,
+} from '@/lib/notes'
 import '@/styles/global.css'
 import '@/styles/archive.css'
 import '@/styles/sections/notes.css'
@@ -41,17 +49,24 @@ const counts = countByKind(all)
 const kinds = getAvailableKinds(all)
 const base = getLocalizedPath('/notes', locale)
 
-// One place that knows how a Notes URL is built, for every axis and page.
-const viewPath = topic
-  ? `${base}/topic/${topic}/`
-  : kind
-    ? `${base}/type/${kind}/`
-    : `${base}/`
+const viewPath = getNotesViewPath(base, { kind, topic })
 /* Every page link, numbered or stepped, comes from here. Astro's
    `page.url.next` omits the trailing slash the routes are served under, which
    cost every "Older" click a redirect. */
-const pageHref = (target: number) =>
-  target === 1 ? viewPath : `${viewPath}${target}/`
+const pageHref = (target: number) => getNotesPagePath(viewPath, target)
+/* The language switch may fall back; hreflang may not. Page 2 of English is
+   not page 1 of Spanish, and a filter one locale lacks has no translation. */
+const otherLocale = getAlternateLocale(locale)
+const counterpart = resolveNotesCounterpart({
+  otherEntries: (await getArchiveEntries(
+    'notes',
+    otherLocale,
+  )) as CollectionEntry<'notes'>[],
+  otherBase: getLocalizedPath('/notes', otherLocale),
+  page: page.currentPage,
+  kind,
+  topic,
+})
 const topicLabel = topic ? getTopicLabel(topic, locale) : undefined
 
 // No lead entry: the stream is reverse-chronological, so the first card is
@@ -108,7 +123,8 @@ const collectionJsonLd = buildCollectionPageLd({
   title={title}
   description={description}
   jsonLd={collectionJsonLd}
-  counterpartPath={getLocalizedPath(viewPath, getAlternateLocale(locale))}
+  counterpartPath={counterpart.switchPath}
+  alternatePath={counterpart.alternatePath}
 >
   <main class="notes-index">
     <header class="notes-head">

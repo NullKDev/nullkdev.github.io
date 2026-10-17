@@ -60,7 +60,7 @@ const measures = [
   locale={locale}
   title={pageTitle(dictionary.nav.about)}
   description={metaDescription}
-  counterpartPath={getLocalizedPath('/about/', getAlternateLocale(locale))}
+  alternatePath={getLocalizedPath('/about/', getAlternateLocale(locale))}
   jsonLd={buildProfileLd({ profile, current, site: Astro.site })}
 >
   <main class="about-page">

@@ -22,6 +22,7 @@ import {
   getAdjacentEntries,
   getArchiveEntries,
   getDocumentsForEntry,
+  getEntryAlternatePath,
   getEntryCounterpartPath,
   getEntryDomain,
   getEntryPath,
@@ -53,6 +54,7 @@ const dictionary = getDictionary(locale)
 const domain = getEntryDomain(entry)
 const documents = await getDocumentsForEntry(entry)
 const counterpartPath = await getEntryCounterpartPath(entry)
+const alternatePath = await getEntryAlternatePath(entry)
 const series = await getNotesSeriesNavigation(entry)
 const adjacent = await getAdjacentEntries(entry)
 const relationships = await getEntryRelationships(entry)
@@ -131,6 +133,7 @@ const jsonLd = buildEntryArticleLd({
   title={pageTitle(entry.data.title)}
   description={entry.data.summary}
   counterpartPath={counterpartPath}
+  alternatePath={alternatePath}
   image={socialImage}
   imageAlt={banner ? entry.data.imageAlt : undefined}
   jsonLd={jsonLd}

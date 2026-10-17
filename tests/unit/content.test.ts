@@ -6,10 +6,12 @@ import {
   getAdjacentDocuments,
   getAdjacentEntries,
   getArchiveEntries,
+  getDocumentAlternatePath,
   getDocumentCounterpartPath,
   getDocumentPath,
   getDocumentRelationships,
   getDocumentsForEntry,
+  getEntryAlternatePath,
   getEntryCounterpartPath,
   getEntryDomain,
   getEntryPath,
@@ -161,6 +163,16 @@ describe('counterparts', () => {
     expect(await getEntryCounterpartPath(lonely)).toBe('/es/notes/')
   })
 
+  it('names an hreflang alternate only for a real translation', async () => {
+    const english = entry({ slug: 'hello', translationKey: 'k' })
+    const spanish = entry({ slug: 'hola', translationKey: 'k', locale: 'es' })
+    const lonely = entry({ slug: 'solo' })
+    seed([english, spanish, lonely])
+    expect(await getEntryAlternatePath(english)).toBe('/es/notes/hola/')
+    expect(await getEntryAlternatePath(spanish)).toBe('/notes/hello/')
+    expect(await getEntryAlternatePath(lonely)).toBeUndefined()
+  })
+
   it('needs both the entry and the document translated', async () => {
     const english = entry({ slug: 'hello', translationKey: 'k' })
     const spanish = entry({ slug: 'hola', translationKey: 'k', locale: 'es' })
@@ -177,6 +189,12 @@ describe('counterparts', () => {
     expect(await getDocumentCounterpartPath(english, untranslated)).toBe(
       '/es/notes/',
     )
+    expect(await getDocumentAlternatePath(english, part)).toBe(
+      '/es/notes/hola/parte/',
+    )
+    expect(
+      await getDocumentAlternatePath(english, untranslated),
+    ).toBeUndefined()
   })
 })
 

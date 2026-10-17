@@ -46,7 +46,7 @@ const collectionJsonLd = buildCollectionPageLd({
   locale={locale}
   title={pageTitle(dictionary.nav.gallery)}
   description={dictionary.section.gallery}
-  counterpartPath={getLocalizedPath('/gallery/', getAlternateLocale(locale))}
+  alternatePath={getLocalizedPath('/gallery/', getAlternateLocale(locale))}
   jsonLd={collectionJsonLd}
 >
   <main class="gallery-index">

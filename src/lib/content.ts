@@ -112,14 +112,21 @@ export const getCounterpartEntry = async (entry: ArchiveEntry) => {
   )
 }
 
-export const getEntryCounterpartPath = async (entry: ArchiveEntry) => {
+/** The real translation's URL, or `undefined` — the input to hreflang. */
+export const getEntryAlternatePath = async (
+  entry: ArchiveEntry,
+): Promise<string | undefined> => {
   const counterpart = await getCounterpartEntry(entry)
-  if (counterpart) return getEntryPath(counterpart)
-  return getLocalizedPath(
+  return counterpart ? getEntryPath(counterpart) : undefined
+}
+
+/** Where the language switch goes: the translation, else the section index. */
+export const getEntryCounterpartPath = async (entry: ArchiveEntry) =>
+  (await getEntryAlternatePath(entry)) ??
+  getLocalizedPath(
     `/${getEntryDomain(entry)}/`,
     getAlternateLocale(entry.data.locale),
   )
-}
 
 export const getCounterpartDocument = async (document: ArchiveDocument) => {
   const locale: Locale = document.data.locale === 'en' ? 'es' : 'en'
@@ -131,22 +138,30 @@ export const getCounterpartDocument = async (document: ArchiveDocument) => {
   )
 }
 
-export const getDocumentCounterpartPath = async (
+/** The subpost's real translation, or `undefined` — the input to hreflang. */
+export const getDocumentAlternatePath = async (
   entry: ArchiveEntry,
   document: ArchiveDocument,
-) => {
+): Promise<string | undefined> => {
   const [counterpartEntry, counterpartDocument] = await Promise.all([
     getCounterpartEntry(entry),
     getCounterpartDocument(document),
   ])
-  if (counterpartEntry && counterpartDocument) {
-    return getDocumentPath(counterpartEntry, counterpartDocument)
-  }
-  return getLocalizedPath(
+  return counterpartEntry && counterpartDocument
+    ? getDocumentPath(counterpartEntry, counterpartDocument)
+    : undefined
+}
+
+/** Where the language switch goes: the translation, else the section index. */
+export const getDocumentCounterpartPath = async (
+  entry: ArchiveEntry,
+  document: ArchiveDocument,
+) =>
+  (await getDocumentAlternatePath(entry, document)) ??
+  getLocalizedPath(
     `/${getEntryDomain(entry)}/`,
     getAlternateLocale(entry.data.locale),
   )
-}
 
 export const getAdjacentDocuments = async (
   entry: ArchiveEntry,
