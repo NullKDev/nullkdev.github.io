@@ -29,8 +29,6 @@ WHAT IT DOES NOT COVER
     public/fonts/switzer-variable.woff2        see SWITZER-LICENSE.txt
     public/fonts/ibm-plex-mono-regular.woff2   see IBM-PLEX-LICENSE.txt
     public/models/RobotExpressive.glb          CC0, by Tomás Laulhé
-    public/models/NeilArmstrong.glb            see NeilArmstrong-Apache-2.0-LICENSE.txt
-    public/models/RocketShip.glb               provenance not recorded
 
   Icons are resolved at build time from Lucide (ISC) and Simple Icons (CC0);
   both are development dependencies and neither ships to the browser.
