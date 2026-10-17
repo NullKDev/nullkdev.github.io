@@ -673,8 +673,9 @@ test('public records, series, and nested document adjacency resolve', async ({
   await page.goto('/notes/gof-patterns-android/')
   await expect(page.getByRole('navigation', { name: 'Series' })).toHaveCount(0)
   await page.goto('/notes/android-17-beta-3/')
+  // The series is named by its title, never its slug.
   await expect(page.getByRole('navigation', { name: 'Series' })).toContainText(
-    'android-17',
+    'Series: Android 17',
   )
   // Under it, the date pager says which way in time it goes rather than
   // offering a second, different "Previous".
@@ -685,7 +686,7 @@ test('public records, series, and nested document adjacency resolve', async ({
     /(Older|Newer) note/,
   )
   await page.goto('/notes/gof-patterns-android/proxy-facade/')
-  const navigation = page.getByRole('navigation', { name: 'Documents' })
+  const navigation = page.getByRole('navigation', { name: 'Parts' })
   await expect(navigation).toContainText('Observer & State')
   await expect(navigation).toContainText('Adapter & Factory')
   await page.getByRole('link', { name: 'View in Spanish' }).click()

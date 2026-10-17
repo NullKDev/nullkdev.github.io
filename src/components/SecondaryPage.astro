@@ -100,7 +100,7 @@ const pageJsonLd = buildWebPageLd({
               <section id={topic}>
                 <h2>{getTopicLabel(topic, locale)}</h2>
                 <p>
-                  {String(records.length).padStart(2, '0')}{' '}
+                  {records.length}{' '}
                   {records.length === 1
                     ? dictionary.archive.record
                     : dictionary.archive.records}
@@ -132,7 +132,7 @@ const pageJsonLd = buildWebPageLd({
           <>
             <p>{dictionary.secondary.colophonBody}</p>
             {dictionary.secondary.colophonSections.map((item) => (
-              <section>
+              <section id={'id' in item ? item.id : undefined}>
                 <h2>{item.title}</h2>
                 <p>{item.body}</p>
               </section>

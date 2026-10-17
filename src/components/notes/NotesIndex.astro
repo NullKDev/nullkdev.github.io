@@ -25,6 +25,7 @@ import {
   getSupersededBy,
   resolveNotesCounterpart,
 } from '@/lib/notes'
+import { getSeriesPosition } from '@/lib/series'
 import '@/styles/global.css'
 import '@/styles/archive.css'
 import '@/styles/sections/notes.css'
@@ -219,6 +220,7 @@ const collectionJsonLd = buildCollectionPageLd({
               minutes={meta[entry.id]?.minutes ?? 1}
               parts={meta[entry.id]?.parts ?? []}
               supersededBy={getSupersededBy(entry, all)}
+              series={getSeriesPosition(entry, all, locale)}
             />
           ))}
         </div>

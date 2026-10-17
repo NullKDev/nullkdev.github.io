@@ -715,6 +715,46 @@
 .entry-chips .status-chip {
   margin-bottom: 0;
 }
+/* The lifecycle chip links to the colophon section that defines the axes. */
+.entry-status-link {
+  display: inline-flex;
+  border-radius: 999px;
+  text-decoration: none;
+}
+.entry-status-link:hover .status-chip {
+  border-color: color-mix(in srgb, var(--tone) 60%, transparent);
+}
+.entry-status-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* A replaced or archived note says so under the title, before the banner,
+   so a reader arriving from search sees it above the fold. */
+.entry-superseded {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  max-width: 60ch;
+  margin: 1.1rem 0 0;
+  padding: 0.7rem 0.9rem;
+  border-left: 2px solid var(--line-strong);
+  background: var(--surface-raised);
+  color: var(--ink);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.entry-superseded svg {
+  flex: none;
+  align-self: center;
+  color: var(--ink-muted);
+}
+.entry-superseded a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
 .entry-kind {
   padding: 0.3rem 0.7rem;
   border: 1px solid var(--line-strong);

@@ -2,6 +2,8 @@ import { defineCollection } from 'astro:content'
 import { glob } from 'astro/loaders'
 import { z } from 'astro/zod'
 
+import { seriesIds } from './data/series'
+
 const id = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
 const locale = z.enum(['en', 'es'])
 const publicationVisibility = z.enum(['draft', 'public', 'unlisted'])
@@ -260,8 +262,9 @@ const notes = defineCollection({
       supersededBy: id.optional(),
       /** Who the piece is written for. Most useful on guides and references. */
       level: z.enum(['intro', 'working', 'deep']).optional(),
+      /** `id` must be declared in `src/data/series.ts`, which titles it. */
       series: z
-        .object({ id, order: z.number().int().positive() })
+        .object({ id: z.enum(seriesIds), order: z.number().int().positive() })
         .strict()
         .optional(),
       pdf: z

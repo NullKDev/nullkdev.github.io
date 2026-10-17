@@ -2,6 +2,8 @@ import { SITE_URL } from '../site.config.mjs'
 import { readdir, readFile } from 'node:fs/promises'
 import { join, relative, resolve, sep } from 'node:path'
 
+import { seriesIds } from '../src/data/series'
+
 const dist = resolve('dist')
 const walk = async (directory: string): Promise<string[]> =>
   (
@@ -29,8 +31,43 @@ interface BuiltPage {
 const pages = new Map<string, BuiltPage>()
 const subposts: { url: string; file: string }[] = []
 
+/* What a reader sees: text content plus the labels a screen reader announces.
+   Scripts, styles and the JSON-LD are not copy. */
+const readableCopy = (html: string) =>
+  [
+    html
+      .replaceAll(/<(script|style)\b[\s\S]*?<\/\1>/g, ' ')
+      .replaceAll(/<[^>]+>/g, ' '),
+    ...[...html.matchAll(/aria-label="([^"]*)"/g)].map((match) => match[1]),
+  ]
+    .join(' ')
+    .replaceAll(/\s+/g, ' ')
+
+/* Three slips the copy must never ship again: an internal collection name
+   ("Documents") as a label, a "1 / 1" count that says nothing, and a series
+   printed by its slug instead of its title. */
+const copyRules: { readonly pattern: RegExp; readonly message: string }[] = [
+  {
+    pattern: /(?<![\w-])Document(?:s|os)(?![\w-])/,
+    message: 'shows the internal collection name "Documents"',
+  },
+  {
+    pattern: /(?<![\d/])1 ?\/ ?1(?![\d/])|\b1 (?:of|de) 1\b/,
+    message: 'announces a count of one ("1 / 1")',
+  },
+  {
+    pattern: new RegExp(`Series?: (?:${seriesIds.join('|')})(?![\\w-])`),
+    message: 'prints a series by its raw id',
+  },
+]
+
 for (const file of htmlFiles) {
   const html = await readFile(file, 'utf8')
+  const copy = readableCopy(html)
+  for (const { pattern, message } of copyRules) {
+    const found = copy.match(pattern)
+    if (found) failures.push(`${file}: ${message} — "${found[0]}"`)
+  }
   const relativePath = relative(dist, file).split(sep).join('/')
   const sourcePath =
     relativePath === 'index.html'

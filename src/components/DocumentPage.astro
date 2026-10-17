@@ -11,6 +11,7 @@ import {
   getDocumentCounterpartPath,
   getDocumentPath,
   getDocumentRelationships,
+  getDocumentsForEntry,
   getEntryDomain,
   getEntryPath,
   type ArchiveDocument,
@@ -19,6 +20,7 @@ import {
 import { getTopicLabel } from '@/data/taxonomy'
 import { getArchiveLabel } from '@/i18n/archive'
 import { buildDocumentOutline, getCounterpartAnchors } from '@/lib/outline'
+import { formatPartOf } from '@/lib/series'
 import { buildDocumentArticleLd } from '@/lib/structured-data'
 import EntryContentsCompact from '@/components/entry/EntryContentsCompact.astro'
 import EntryOutline from '@/components/entry/EntryOutline.astro'
@@ -47,6 +49,13 @@ const alternatePath = await getDocumentAlternatePath(entry, document)
 const banner = getBannerSources(entry.data.image, locale)
 const socialImage = banner?.social
 const adjacent = await getAdjacentDocuments(entry, document)
+// "Part 3 of 4" says where the reader is; the old "NOTES / 03" named the
+// section and a zero-padded index nobody counts by.
+const partTotal = (await getDocumentsForEntry(entry)).length
+const partLabel =
+  partTotal > 1
+    ? formatPartOf(dictionary.archive.partOf, document.data.order, partTotal)
+    : getArchiveLabel('domain', domain, locale)
 const relationships = await getDocumentRelationships(document)
 const { Content, headings } = await render(document)
 // The same depth rule the subpost gets when its entry inlines it.
@@ -110,11 +119,9 @@ const jsonLd = buildDocumentArticleLd({
       >
     </nav>
     <header class="entry-heading">
-      <p class="kicker">
-        {getArchiveLabel('domain', domain, locale)} / {
-          String(document.data.order).padStart(2, '0')
-        }
-      </p><h1>{document.data.title}</h1><p class="lede">
+      <p class="kicker">{partLabel}</p><h1>{document.data.title}</h1><p
+        class="lede"
+      >
         {document.data.summary}
       </p>
     </header>
@@ -149,7 +156,7 @@ const jsonLd = buildDocumentArticleLd({
         </div>
       )
     }
-    <nav class="series-navigation" aria-label={dictionary.archive.documents}>
+    <nav class="series-navigation" aria-label={dictionary.archive.parts}>
       <div>
         {
           adjacent.previous && (

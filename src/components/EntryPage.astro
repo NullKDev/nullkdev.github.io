@@ -37,7 +37,14 @@ import { getTopicLabel } from '@/data/taxonomy'
 import { getArchiveLabel } from '@/i18n/archive'
 import { getRelatedLabEntries } from '@/lib/lab'
 import { renderIcon } from '@/lib/icons'
-import { getNeighbourAge, getReadingMinutes } from '@/lib/notes'
+import { formatDate, isoDate, isSameDay } from '@/lib/dates'
+import {
+  getNeighbourAge,
+  getNotesViewPath,
+  getReadingMinutes,
+  getSupersededBy,
+} from '@/lib/notes'
+import { formatPartOf, getSeriesPosition } from '@/lib/series'
 import {
   buildEntryOutline,
   getCounterpartAnchors,
@@ -155,8 +162,46 @@ const banner = getBannerSources(entry.data.image, locale)
 const socialImage = banner?.social
 
 const published = entry.data.publishedAt
-const updated = entry.data.updatedAt ?? entry.data.publishedAt
+// An update on the day of publication is not news; only a later one is shown.
+const updated =
+  entry.data.updatedAt && !isSameDay(entry.data.updatedAt, published)
+    ? entry.data.updatedAt
+    : undefined
 const role = 'role' in entry.data ? entry.data.role : undefined
+
+// Notes say where they stand: what replaced them, and which run they belong
+// to. Both resolve inside this locale, so the link lands on the translation
+// the reader is already in.
+const noteEntry =
+  domain === 'notes' ? (entry as CollectionEntry<'notes'>) : undefined
+const notesPool = noteEntry
+  ? ((await getArchiveEntries('notes', locale)) as CollectionEntry<'notes'>[])
+  : []
+const replacement = noteEntry
+  ? getSupersededBy(noteEntry, notesPool)
+  : undefined
+const isArchivedNote = noteEntry?.data.lifecycle === 'archived'
+const seriesPosition = noteEntry
+  ? getSeriesPosition(noteEntry, notesPool, locale)
+  : undefined
+
+// The lifecycle chip and the write-up maturity are separate axes, but on a
+// Lab record they often carry the same word ("Stable"). Saying it twice reads
+// as a glitch, so the maturity fact is shown only when it adds something.
+const labMaturity = labEntry
+  ? getArchiveLabel('maturity', labEntry.data.maturity, locale)
+  : undefined
+const showLabMaturity =
+  labMaturity !== undefined &&
+  labMaturity !== getArchiveLabel('lifecycle', entry.data.lifecycle, locale)
+
+// A note's topic opens the Notes list filtered on it; other sections have no
+// topic route, so they land on the topic in the tags hub.
+const topicHref = (topic: string) =>
+  domain === 'notes'
+    ? getNotesViewPath(getLocalizedPath('/notes', locale), { topic })
+    : getLocalizedPath(`/tags/#${topic}`, locale)
+const statusHref = getLocalizedPath('/colophon/#record-status', locale)
 
 // Typed link marks come from the shared registry so the same drawing is never
 // redefined per component.
@@ -228,10 +273,33 @@ const jsonLd = buildEntryArticleLd({
             </span>
           )
         }
-        <StatusChip lifecycle={entry.data.lifecycle} locale={locale} />
+        <a
+          class="entry-status-link"
+          href={statusHref}
+          title={dictionary.archive.lifecycleHint}
+        >
+          <StatusChip lifecycle={entry.data.lifecycle} locale={locale} />
+        </a>
       </p>
       <h1>{entry.data.title}</h1>
       <p class="lede">{entry.data.summary}</p>
+      {
+        replacement ? (
+          <p class="entry-superseded" data-superseded>
+            <Icon name="arrowRight" size={14} />
+            <span>
+              {dictionary.archive.supersededBy}{' '}
+              <a href={getEntryPath(replacement)}>{replacement.data.title}</a>
+            </span>
+          </p>
+        ) : (
+          isArchivedNote && (
+            <p class="entry-superseded" data-archived>
+              <span>{dictionary.archive.archivedNote}</span>
+            </p>
+          )
+        )
+      }
       <dl class="entry-facts">
         {
           role && (
@@ -246,22 +314,20 @@ const jsonLd = buildEntryArticleLd({
             <div class="fact">
               <dt>{dictionary.archive.published}</dt>
               <dd>
-                <time datetime={published.toISOString()}>
-                  {published.toLocaleDateString(locale, {
-                    dateStyle: 'medium',
-                  })}
+                <time datetime={isoDate(published)}>
+                  {formatDate(published, locale)}
                 </time>
               </dd>
             </div>
           )
         }
         {
-          updated && entry.data.updatedAt && (
+          updated && (
             <div class="fact">
               <dt>{dictionary.archive.updated}</dt>
               <dd>
-                <time datetime={updated.toISOString()}>
-                  {updated.toLocaleDateString(locale, { dateStyle: 'medium' })}
+                <time datetime={isoDate(updated)}>
+                  {formatDate(updated, locale)}
                 </time>
               </dd>
             </div>
@@ -274,17 +340,42 @@ const jsonLd = buildEntryArticleLd({
               <dd>{galleryItems.length}</dd>
             </div>
           ) : labEntry ? (
-            <div class="fact fact--text">
-              <dt>{dictionary.lab.maturity}</dt>
-              <dd>
-                {getArchiveLabel('maturity', labEntry.data.maturity, locale)}
-              </dd>
-            </div>
+            showLabMaturity && (
+              <div class="fact fact--text">
+                <dt>{dictionary.archive.writeUp}</dt>
+                <dd>{labMaturity}</dd>
+              </div>
+            )
           ) : (
             <div class="fact">
               <dt>{dictionary.archive.reading}</dt>
               <dd>
-                {readingMinutes} {dictionary.archive.readTime}
+                {readingMinutes} {dictionary.archive.minutes}
+              </dd>
+            </div>
+          )
+        }
+        {
+          noteEntry && (
+            <div class="fact fact--text">
+              <dt>{dictionary.archive.writeUp}</dt>
+              <dd>
+                {getArchiveLabel('maturity', noteEntry.data.maturity, locale)}
+              </dd>
+            </div>
+          )
+        }
+        {
+          seriesPosition && (
+            <div class="fact fact--text">
+              <dt>{dictionary.archive.series}</dt>
+              <dd data-series-position>
+                {formatPartOf(
+                  dictionary.archive.partOf,
+                  seriesPosition.order,
+                  seriesPosition.total,
+                )}{' '}
+                · {seriesPosition.title}
               </dd>
             </div>
           )
@@ -358,10 +449,15 @@ const jsonLd = buildEntryArticleLd({
             const DocumentContent = rendered.Content
             return (
               <section class="subpost" id={getPartAnchor(document.data.order)}>
-                <p class="subpost-index">
-                  {dictionary.archive.part} {document.data.order} /{' '}
-                  {documents.length}
-                </p>
+                {documents.length > 1 && (
+                  <p class="subpost-index">
+                    {formatPartOf(
+                      dictionary.archive.partOf,
+                      document.data.order,
+                      documents.length,
+                    )}
+                  </p>
+                )}
                 <h2>{document.data.title}</h2>
                 <DocumentContent />
               </section>
@@ -381,9 +477,7 @@ const jsonLd = buildEntryArticleLd({
           <ul class="topic-list">
             {entry.data.topics.map((topic) => (
               <li>
-                <a href={getLocalizedPath(`/tags#${topic}`, locale)}>
-                  {getTopicLabel(topic, locale)}
-                </a>
+                <a href={topicHref(topic)}>{getTopicLabel(topic, locale)}</a>
               </li>
             ))}
           </ul>
@@ -481,8 +575,10 @@ const jsonLd = buildEntryArticleLd({
                     </a>
                     {citation.accessedAt && (
                       <span class="citation-list__date">
-                        {dictionary.archive.updated}{' '}
-                        {citation.accessedAt.toLocaleDateString(locale)}
+                        {dictionary.archive.accessed}{' '}
+                        <time datetime={isoDate(citation.accessedAt)}>
+                          {formatDate(citation.accessedAt, locale)}
+                        </time>
                       </span>
                     )}
                   </li>
@@ -530,14 +626,18 @@ const jsonLd = buildEntryArticleLd({
     }
     <RelatedLab entries={relatedLab} locale={locale} />
     {
-      series && inSeries && (
+      series && inSeries && seriesPosition && (
         <nav class="series-navigation" aria-label={dictionary.archive.series}>
           <p>
             <strong>
-              {dictionary.archive.series}: {series.id}
+              {dictionary.archive.series}: {seriesPosition.title}
             </strong>
             <span>
-              {dictionary.archive.part} {series.order} / {series.total}
+              {formatPartOf(
+                dictionary.archive.partOf,
+                seriesPosition.order,
+                seriesPosition.total,
+              )}
             </span>
           </p>
           <div>
