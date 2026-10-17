@@ -443,13 +443,13 @@ export const banners: readonly BannerSpec[] = [
     copy: {
       en: {
         kicker: 'API 32 · Mar 2022',
-        title: ['Android 12L', 'No dessert name'],
+        title: ['Android 12L', 'Large screens'],
         meta: 'S_V2 · tablets and foldables',
         alt: 'Android 12L banner, with the Android robot.',
       },
       es: {
         kicker: 'API 32 · mar 2022',
-        title: ['Android 12L', 'Sin nombre de postre'],
+        title: ['Android 12L', 'Pantallas grandes'],
         meta: 'S_V2 · tablets y plegables',
         alt: 'Banner de Android 12L, con el robot de Android.',
       },
