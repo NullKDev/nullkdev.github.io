@@ -31,7 +31,12 @@ for (const file of htmlFiles) {
   const noindex = /<meta name="robots" content="noindex, nofollow"/.test(html)
   if (!/<html lang="(?:en|es)"/.test(html))
     failures.push(`${file}: missing lang`)
-  if (!canonical) failures.push(`${file}: missing canonical`)
+  /* An indexable page must name its canonical URL. A noindex page may omit
+     it: the 404 stands in for every missing path, and a canonical there told
+     crawlers the error page and the home page were one document. Legacy
+     compatibility pages keep theirs, pointing at the record that replaced
+     them. */
+  if (!canonical && !noindex) failures.push(`${file}: missing canonical`)
   if (!/<meta name="description" content="[^"]+"/.test(html)) {
     failures.push(`${file}: missing description`)
   }
