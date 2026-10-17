@@ -379,6 +379,7 @@ Invoke before working, matched by file and task.
 | [docs/architecture.md](docs/architecture.md) | adding a page, lib module or component |
 | [docs/design-system.md](docs/design-system.md) | building or restyling any UI |
 | [docs/content-schema.md](docs/content-schema.md) | adding an entry or a frontmatter field |
+| [docs/writing-notes.md](docs/writing-notes.md) | writing or revising any note, in either language |
 | [docs/decisions.md](docs/decisions.md) | before revisiting a settled question |
 | [docs/foundation.md](docs/foundation.md) | changing config or the pipeline |
 | [PRODUCT.md](PRODUCT.md) | what the site is for |

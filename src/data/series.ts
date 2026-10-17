@@ -7,6 +7,10 @@
  */
 export const series = {
   'android-17': { en: 'Android 17', es: 'Android 17' },
+  'android-versions': {
+    en: 'Android, version by version',
+    es: 'Android, versión por versión',
+  },
   'gof-android': {
     en: 'GoF patterns on Android',
     es: 'Patrones GoF en Android',

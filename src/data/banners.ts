@@ -169,6 +169,25 @@ export const banners: readonly BannerSpec[] = [
     ...PALETTE.android,
   },
   {
+    slug: 'android-6-marshmallow',
+    copy: {
+      en: {
+        kicker: 'Android 6.0 · API 23',
+        title: ['Permissions,', 'asked at runtime'],
+        meta: 'Marshmallow · 5 Oct 2015 · Doze',
+        alt: 'Android 6.0 Marshmallow banner — permissions asked at runtime.',
+      },
+      es: {
+        kicker: 'Android 6.0 · API 23',
+        title: ['Permisos pedidos', 'en ejecución'],
+        meta: 'Marshmallow · 5 oct 2015 · Doze',
+        alt: 'Banner de Android 6.0 Marshmallow — permisos pedidos en ejecución.',
+      },
+    },
+    art: 'api-locked',
+    ...PALETTE.android,
+  },
+  {
     slug: 'gof-patterns-android',
     copy: {
       en: {

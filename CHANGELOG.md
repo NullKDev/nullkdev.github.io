@@ -53,6 +53,13 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ### Agregado
 
+- Serie «Android, versión por versión»: una nota investigada por cada versión
+  desde la 4.4 KitKat, con nombre, nivel de API, seguridad, permisos y qué cambia
+  para tu app, en inglés y español. Empieza con Android 6.0 Marshmallow. Las
+  imágenes de una nota ahora pueden llevar pie de foto con su crédito
+  (`![alt](./assets/x.png 'Pie. Fuente · Licencia')`), que se compila a
+  `<figure>` en el build sin perder la optimización de imágenes.
+
 - Vuelven los diagramas de la nota de Codex Security: la arquitectura (qué parte
   corre en tu máquina y cuál queda cerrada en OpenAI) y los códigos de salida en
   CI. Ahora se compilan a SVG estático en el build con `beautiful-mermaid`, en
