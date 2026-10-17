@@ -1017,7 +1017,10 @@ test('unknown Spanish paths recover through the real localized 404', async ({
 }) => {
   await page.goto('/es/unknown-archive-record/')
   browserErrors.set(page, [])
-  await expect(page).toHaveURL(/\/es\/404\/$/)
+  // The redirect carries the missed address so the 404 can suggest notes.
+  await expect(page).toHaveURL(
+    /\/es\/404\/\?from=%2Fes%2Funknown-archive-record%2F$/,
+  )
   await expect(page.locator('html')).toHaveAttribute('lang', 'es')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Señal no encontrada.',
@@ -1600,8 +1603,30 @@ test('each locale links its own feed, and the Spanish feed is Spanish', async ({
 test('the 404 suggests the closest notes, in both languages', async ({
   page,
 }) => {
+  // Each missing path is served with a 404 status, which Chromium may log as
+  // a generic "Failed to load resource" console error for the document. That
+  // message cannot tell the document from a broken fetch, so the network is
+  // checked instead: no request other than the page itself may fail.
+  const failedSubresources: string[] = []
+  page.on('response', (response) => {
+    const request = response.request()
+    if (response.status() >= 400 && request.resourceType() !== 'document') {
+      failedSubresources.push(`${response.status()} ${request.url()}`)
+    }
+  })
+  const expectOnlyDocument404 = () => {
+    expect(failedSubresources).toEqual([])
+    browserErrors.set(
+      page,
+      (browserErrors.get(page) ?? []).filter(
+        (message) => !message.startsWith('Failed to load resource:'),
+      ),
+    )
+  }
+
   // A truncated slug: no such page, but three notes share its words.
   await page.goto('/notes/android-17-beta/')
+  expectOnlyDocument404()
   const english = page.locator('[data-not-found-suggestions]')
   await expect(english).toBeVisible()
   await expect(english.locator('a').first()).toHaveAttribute(
@@ -1611,6 +1636,7 @@ test('the 404 suggests the closest notes, in both languages', async ({
 
   await page.goto('/es/notes/android-17-beta/')
   await expect(page).toHaveURL(/\/es\/404\/\?from=/)
+  expectOnlyDocument404()
   const spanish = page.locator('[data-not-found-suggestions]')
   await expect(spanish).toBeVisible()
   await expect(spanish.locator('h2')).toHaveText(
@@ -1623,8 +1649,10 @@ test('the 404 suggests the closest notes, in both languages', async ({
 
   // Nothing close: the section stays hidden and the plain links remain.
   await page.goto('/zzqqxx/')
+  expectOnlyDocument404()
   await expect(page.locator('[data-not-found-suggestions]')).toBeHidden()
   await expect(page.locator('.hero-actions a')).toHaveCount(2)
+  expectOnlyDocument404()
 })
 
 test('a Lab tool stacks input and output on a phone', async ({ page }) => {
