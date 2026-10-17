@@ -51,6 +51,17 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ## [Unreleased]
 
+### Agregado
+
+- Vuelven los diagramas de la nota de Codex Security: la arquitectura (qué parte
+  corre en tu máquina y cuál queda cerrada en OpenAI) y los códigos de salida en
+  CI. Estaban retirados porque el motor de layout los dibujaba más grandes que
+  la columna. Se rediseñó la forma, no el CSS: un solo grupo con el modelo como
+  nodo punteado para que ninguna flecha cruce un título, y el abanico de salidas
+  en horizontal con etiquetas cortas. Los cuatro, en ambos idiomas, entran al
+  100% en la columna de escritorio y en un viewport de 390px, sin achicar el
+  texto y en los dos temas.
+
 ### Corregido
 
 - El logo, el selector de idioma y el botón de menú del encabezado anunciaban

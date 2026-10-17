@@ -58,7 +58,12 @@ did not fully cover the target" — and scans report coverage as `complete`,
 `partial` or `unknown`. A job that treats `2` as infrastructure flake and retries
 will happily paper over a scan that silently examined a fraction of your code.
 
-{/* Exit-code diagram removed — parked in issue #24, with its source. */}
+```mermaid
+flowchart LR
+  code([Exit code]) --> pass["<b>0</b> · pass, merge"]
+  code --> findings["<b>1</b> · findings, review"]
+  code --> hold["<b>2</b> · no evidence, hold"]
+```
 
 <Callout type="warn" title="Exit code 2 is not a pass">
   Treat `2` as an **unknown result**. If you are gating merges, an incomplete

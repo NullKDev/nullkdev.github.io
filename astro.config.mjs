@@ -100,7 +100,13 @@ export default defineConfig({
           // is what made a five-node flow 829px tall. Tighter ranks keep the
           // same drawing inside the viewer without scrolling it.
           rankSpacing: 36,
-          nodeSpacing: 36,
+          nodeSpacing: 24,
+          // Wrap labels at 170px so a fan-out stacks narrow boxes instead of
+          // stretching past a 390px viewport.
+          wrappingWidth: 170,
+          // Clear space under a group title, so an edge leaving the group's
+          // first node never runs through the title text.
+          subGraphTitleMargin: { top: 6, bottom: 10 },
           // Mermaid otherwise caps the SVG at its intrinsic width and scales the
           // whole drawing down to fit narrow screens — at 390px that took a
           // 651px diagram to 47%, and 12px labels with it. Sizing is handled in
