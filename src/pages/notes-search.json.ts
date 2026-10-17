@@ -3,6 +3,7 @@ import type { CollectionEntry } from 'astro:content'
 import { getTopicLabel } from '@/data/taxonomy'
 import { getArchiveLabel } from '@/i18n/archive'
 import { getArchiveEntries, getEntryPath } from '@/lib/content'
+import { formatDate } from '@/lib/dates'
 import {
   getAvailableKinds,
   getAvailableTopics,
@@ -47,11 +48,9 @@ export const buildNotesSearchIndex = async (locale: Locale) => {
     topics: entry.data.topics.map((topic) => getTopicLabel(topic, locale)),
     path: getEntryPath(entry),
     minutes: meta[entry.id]?.minutes ?? 1,
-    date:
-      entry.data.publishedAt?.toLocaleDateString(locale, {
-        month: 'short',
-        year: 'numeric',
-      }) ?? '',
+    date: entry.data.publishedAt
+      ? formatDate(entry.data.publishedAt, locale, 'month')
+      : '',
   }))
 
   return { entries: rows, filters }

@@ -1,4 +1,5 @@
 ---
+import { formatDate } from '@/lib/dates'
 import { bannerStyle, getBannerSources } from '@/lib/banners'
 import type { CollectionEntry } from 'astro:content'
 import { getDictionary, type Locale } from '@/i18n'
@@ -75,7 +76,7 @@ const domainLabel =
   ] ?? data.domains[0]
 
 const dateLabel = (value?: Date) =>
-  value?.toLocaleDateString(locale, { month: 'short', year: 'numeric' })
+  value ? formatDate(value, locale, 'month') : undefined
 const published = dateLabel(data.publishedAt)
 
 const lifecycle = getArchiveLabel('lifecycle', data.lifecycle, locale)

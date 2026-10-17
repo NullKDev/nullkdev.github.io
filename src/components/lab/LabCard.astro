@@ -1,4 +1,5 @@
 ---
+import { formatDate, isoDate } from '@/lib/dates'
 import type { CollectionEntry } from 'astro:content'
 import { getLabIcon } from '@/components/lab/lab-icons'
 import { getTopicLabel } from '@/data/taxonomy'
@@ -75,11 +76,8 @@ const featured = data.featuredRank != null
     <p class="lab-card__line">
       {
         updated && (
-          <time datetime={updated.toISOString()}>
-            {updated.toLocaleDateString(locale, {
-              month: 'short',
-              year: 'numeric',
-            })}
+          <time datetime={isoDate(updated)}>
+            {formatDate(updated, locale, 'month')}
           </time>
         )
       }
