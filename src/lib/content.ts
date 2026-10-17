@@ -68,21 +68,13 @@ export const getAllPublicEntries = async (locale?: Locale) => {
   )
 }
 
-export const getEntryBySlug = async (
-  domain: ArchiveDomain,
-  locale: Locale,
-  slug: string,
-) =>
-  (await getArchiveEntries(domain, locale)).find(
-    ({ data }) => data.slug === slug,
-  )
-
-export const getEntryDomain = (entry: ArchiveEntry): ArchiveDomain => {
-  if ('lifecycle' in entry.data && 'domains' in entry.data) return 'work'
-  if ('execution' in entry.data) return 'lab'
-  if ('citations' in entry.data) return 'notes'
-  return 'gallery'
-}
+/**
+ * The domain is the collection the record was loaded from. Inferring it from
+ * which fields exist filed any record by its first matching field — a gallery
+ * entry that gained `citations` would have become a note.
+ */
+export const getEntryDomain = (entry: ArchiveEntry): ArchiveDomain =>
+  entry.collection
 
 export const getEntryPath = (entry: ArchiveEntry) =>
   buildEntryPath(getEntryDomain(entry), entry.data.slug, entry.data.locale)
@@ -175,7 +167,7 @@ export const getAdjacentEntries = async (entry: ArchiveEntry) => {
 }
 
 export const getNotesSeriesNavigation = async (entry: ArchiveEntry) => {
-  if (!('citations' in entry.data) || !entry.data.series) return undefined
+  if (entry.collection !== 'notes' || !entry.data.series) return undefined
   const seriesId = entry.data.series.id
   const seriesOrder = entry.data.series.order
   const series = (await getArchiveEntries('notes', entry.data.locale))
@@ -237,23 +229,17 @@ export const getTopicIndex = async (locale: Locale) => {
   return topics
 }
 
-export const getFeaturedByDomain = async (locale: Locale) =>
-  Object.fromEntries(
-    await Promise.all(
-      archiveDomains.map(async (domain) => [
-        domain,
-        (await getArchiveEntries(domain, locale))[0],
-      ]),
-    ),
-  ) as Record<ArchiveDomain, ArchiveEntry | undefined>
-
 export interface HomeSection {
   domain: ArchiveDomain
   items: ArchiveEntry[]
   total: number
 }
 
-/** Most recent `limit` entries per domain, plus the domain total, in nav order. */
+/**
+ * The first `limit` entries per domain in archive order — featured entries by
+ * `featuredRank`, then the most recently updated — plus the domain total, in
+ * nav order.
+ */
 export const getHomeSections = async (
   locale: Locale,
   limit = 3,

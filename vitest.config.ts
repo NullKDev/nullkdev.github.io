@@ -47,11 +47,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
       include: ['src/lib/**/*.ts', 'src/content/**/*.ts'],
-      exclude: [
-        'src/**/*.d.ts',
-        'src/lib/content.ts',
-        'src/lib/protection/routes.ts',
-      ],
+      exclude: ['src/**/*.d.ts', 'src/lib/protection/routes.ts'],
       /* Tiered, and set just under the numbers the suite actually reaches.
          A threshold above reality is not a standard, it is a permanently red
          check that everyone learns to scroll past; one far below reality
@@ -65,11 +61,10 @@ export default defineConfig({
          statistic, it is readable private content. The content module
          validates the schemas every page is projected from.
 
-         src/lib/diagram-viewer.ts is still uncovered. It is browser-only
-         DOM code behind a feature that is currently switched off (issue #24),
-         and it is left in the numbers rather than excluded, so the gap stays
-         visible. Excluding a shipped module to make an average look better is
-         how a gate becomes decoration. */
+         Nothing shipped is excluded to make an average look better — that is
+         how a gate becomes decoration. `src/lib/content.ts` reads collections
+         through the `astro:content` stub, and the browser-only modules
+         (`diagram-viewer.ts`, `entry-enhancements.ts`) run under jsdom. */
       thresholds: {
         statements: 84,
         branches: 76,
