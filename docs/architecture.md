@@ -56,8 +56,34 @@ src/pages/                                   routing only
 | `src/components/entry/` | Long-form furniture shared by `EntryPage` and `DocumentPage`: the outline, evidence and relationship blocks, and the reading tools (diagram toolbar, progress bar, image viewer) |
 | `src/components/mdx/` | An authoring kit for `.mdx` entries (`Callout`, `Figure`, `ReadmeCard`, `BenchmarkBars`). A component here is kept even while no entry uses it |
 | `src/i18n/` | UI strings (`en.ts`, `es.ts`) and label registries (`archive.ts`) |
-| `src/styles/` | `global.css` (tokens, shell) and `archive.css` (archive surfaces) |
+| `src/styles/` | `global.css` (tokens, base, shell) and `archive.css` (primitives every page shares), both loaded by `Layout`; `sections/*.css` holds one stylesheet per surface, imported by the component that renders it |
 | `src/pages/` | File-based routes; EN unprefixed, ES under `/es` |
+
+### Stylesheets per surface
+
+A page ships `global.css` and `archive.css` plus only the section sheets its
+route imports — the home page never downloads the notes index or the lab
+console. A rule used by one surface goes in that surface's
+`src/styles/sections/<surface>.css`; a rule two unrelated surfaces share stays
+in `archive.css`. Keep every sheet under ~800 lines.
+
+The component that owns a surface imports, in this order:
+
+```astro
+import '@/styles/global.css'
+import '@/styles/archive.css'
+import '@/styles/sections/notes.css'
+```
+
+The first two lines are not redundant. Astro emits a page's CSS from the
+shallowest module first, so a sheet imported by `NotesIndex` would otherwise
+land **before** `Layout`'s and lose every equal-specificity tie to it. Importing
+the shared sheets first pins them ahead; Vite still ships them once.
+
+Order between two section sheets on the same route is decided by the bundler,
+not by the import list, so two sheets on one route must never compete for the
+same element at the same specificity. The colophon lives in `prose.css` for
+that reason: it is a `.prose` variant and its overrides must follow `.prose`.
 
 ### The derivation layer — `src/lib/`
 

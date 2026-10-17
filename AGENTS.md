@@ -103,6 +103,9 @@ Two mechanisms; never mix them.
 - React only where something genuinely runs in the browser, always with a
   hydration directive and a no-JS fallback.
 - Dark mode via `data-theme` on `<html>`; tokens in `src/styles/global.css`.
+- CSS is split per surface: `global.css` + `archive.css` for every page,
+  `src/styles/sections/<surface>.css` imported by the owning component after
+  the two shared sheets. See [docs/architecture.md](docs/architecture.md).
 - Anything that looks actionable works completely and is keyboard-operable, or
   it is omitted.
 - `src/components/ui/` belongs to shadcn; project components go in

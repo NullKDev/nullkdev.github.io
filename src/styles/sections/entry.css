@@ -1,0 +1,655 @@
+/* Entry and document pages — imported by EntryPage.astro and DocumentPage.astro.
+   Heading, facts, layout, outline, record blocks, relations and pager. */
+
+.entry-index,
+.status-note strong {
+  font-family: 'IBM Plex Mono', monospace;
+}
+.entry-heading {
+  max-width: 70rem;
+}
+.entry-heading h1 {
+  max-width: 20ch;
+  font-size: calc(clamp(2.3rem, 5vw, 4rem) * var(--display-mult));
+  line-height: 1;
+}
+.entry-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem 2.25rem;
+  margin: 1.85rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+.entry-facts .fact {
+  margin: 0;
+}
+.entry-facts dt {
+  margin: 0 0 0.25rem;
+  color: var(--ink-muted);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.entry-facts dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.entry-facts dd time {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.84rem;
+}
+.read-progress {
+  position: fixed;
+  z-index: 40;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: transparent;
+  pointer-events: none;
+}
+.read-progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: linear-gradient(90deg, var(--signal), var(--accent));
+}
+.subpost {
+  margin-top: 3.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line-strong);
+  scroll-margin-top: 5.5rem;
+}
+.subpost-index {
+  margin: 0 0 0.5rem;
+  color: var(--accent);
+  font:
+    0.7rem 'IBM Plex Mono',
+    monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.subpost > h2 {
+  margin: 0.4rem 0 1.2rem;
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  scroll-margin-top: 6rem;
+}
+.entry-banner {
+  margin: 2.25rem 0 0;
+}
+/* Light theme gets the light-ground variant of the same banner: same accent,
+   same artwork, same shadows — only the surface and the type invert.
+
+   Every banner surface, not just the entry hero. Wiring this to one component
+   left the five card surfaces rendering the dark artwork in light theme. */
+:root[data-theme='light'] .entry-banner img {
+  content: var(--banner-light);
+}
+
+.entry-banner img {
+  display: block;
+  width: 100%;
+  /* Fixed shape at every width. `height: auto` with `max-height` produced
+     three different crops of the same image — 3.76:1 at 1440px, 2.35:1 at
+     900px, 1.90:1 at 390px — so a banner composed on desktop lost half its
+     artwork and one composed on mobile overflowed the fold. One ratio means
+     the reserved box never changes and nothing shifts while the image loads. */
+  aspect-ratio: var(--banner-ratio);
+  height: auto;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+}
+.status-note {
+  max-width: 56rem;
+  margin: 3rem 0 0;
+  padding: 1.4rem 1.6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.status-note strong {
+  color: var(--accent);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+.status-note p {
+  margin-bottom: 0;
+  line-height: 1.6;
+}
+.entry-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 44rem) minmax(13rem, 17rem);
+  justify-content: space-between;
+  gap: clamp(2.5rem, 5vw, 5rem);
+  margin-top: 3rem;
+  min-width: 0;
+}
+.entry-layout > *,
+.document-page article,
+.document-page .prose > * {
+  min-width: 0;
+  max-width: 100%;
+}
+.entry-index {
+  position: sticky;
+  top: 7rem;
+  align-self: start;
+  border-top: 1px solid var(--line-strong);
+  font-size: 0.7rem;
+}
+.entry-index h2 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--ink-muted);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.entry-index a {
+  text-decoration: none;
+}
+/* Table of contents rail: a hairline the active segment lights up against. */
+.toc-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-left: 1px solid var(--line);
+}
+.toc-list li {
+  margin: 0;
+}
+.toc-list a {
+  position: relative;
+  display: block;
+  margin-left: -1px;
+  padding: 0.32rem 0 0.32rem 0.85rem;
+  border-left: 1px solid transparent;
+  color: var(--ink-muted);
+  font-size: 0.76rem;
+  line-height: 1.4;
+  transition:
+    color 0.16s ease,
+    border-color 0.16s ease;
+}
+/* The index is an outline, not a flat list: a part and a heading inside that
+   part must not read as siblings. Indent carries the nesting; weight and ink
+   carry the rank. Depth never lightens the text — only the top rung darkens —
+   so every rung keeps the contrast the muted token already passes. */
+.toc-list li[data-level='1'] > a {
+  color: var(--ink);
+  font-weight: 550;
+}
+.toc-list li[data-level='2'] > a {
+  padding-left: 1.7rem;
+}
+.toc-list li[data-level='3'] > a {
+  padding-left: 2.55rem;
+}
+/* Air before a new part, so groups separate without a rule between them. */
+.toc-list li[data-level='2'] + li[data-level='1'] > a,
+.toc-list li[data-level='3'] + li[data-level='1'] > a {
+  margin-top: 0.45rem;
+}
+
+.toc-list a:hover {
+  color: var(--ink);
+}
+.toc-list a[aria-current='true'] {
+  border-left-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+/* The record apparatus: the evidence backing that follows the writing. Quiet
+   section heads, colour-coded provenance, one consistent list grammar. */
+.entry-record {
+  margin-top: 4rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--line-strong);
+}
+.record-block {
+  margin-top: 2.75rem;
+}
+.record-block:first-child {
+  margin-top: 0;
+}
+.record-block__head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 1.4rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+.record-block__icon {
+  display: inline-flex;
+  color: var(--accent);
+}
+.record-block__icon svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+.record-block__head h2 {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.record-block__count {
+  margin-left: auto;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-muted);
+  font:
+    0.7rem 'IBM Plex Mono',
+    monospace;
+}
+
+/* Outcomes: verified statements, each on a raised card with an emerald mark. */
+.outcome-list {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.outcome {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.85rem;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+}
+.outcome__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--signal) 15%, transparent);
+  color: var(--signal);
+}
+.outcome__mark svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+.outcome__body {
+  min-width: 0;
+}
+.outcome__claim {
+  margin: 0.15rem 0 0;
+  font-size: 1.02rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* Citation line: shared by outcomes and the evidence register. */
+.cite-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.7rem;
+  margin: 0.7rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.cite-line li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.cite-line__source {
+  color: var(--ink-muted);
+  font-size: 0.84rem;
+}
+.cite-line a {
+  font:
+    0.78rem 'IBM Plex Mono',
+    monospace;
+  text-decoration: none;
+}
+.prov {
+  --pc: var(--ink-muted);
+  padding: 0.09rem 0.45rem;
+  border: 1px solid color-mix(in srgb, var(--pc) 32%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--pc) 9%, transparent);
+  color: color-mix(in srgb, var(--pc) 78%, var(--ink));
+  font-size: 0.63rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.prov[data-prov='first-party'] {
+  --pc: #047857;
+}
+.prov[data-prov='third-party'] {
+  --pc: var(--accent);
+}
+.prov[data-prov='derived'] {
+  --pc: #b45309;
+}
+.prov[data-prov='self-reported'] {
+  --pc: #64748b;
+}
+:root[data-theme='dark'] .prov[data-prov='first-party'] {
+  --pc: #34d399;
+}
+:root[data-theme='dark'] .prov[data-prov='derived'] {
+  --pc: #fbbf24;
+}
+:root[data-theme='dark'] .prov[data-prov='self-reported'] {
+  --pc: #94a3b8;
+}
+
+/* Operating conditions: a plain term → implication definition grid. */
+.condition-list {
+  display: grid;
+  margin: 0;
+}
+.condition {
+  display: grid;
+  grid-template-columns: minmax(11rem, 0.9fr) 1.3fr;
+  gap: 0.4rem 2rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--line);
+}
+.condition:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.condition dt {
+  margin: 0;
+  font-weight: 600;
+}
+.condition dd {
+  margin: 0;
+  color: var(--ink-muted);
+  line-height: 1.55;
+}
+
+/* Evidence register: claim over a citation footer. */
+.evidence-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.evidence-item {
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--line);
+}
+.evidence-item:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.evidence-item__claim {
+  margin: 0;
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+/* Citations: external reference rows. */
+.citation-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.citation-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 1rem;
+  padding: 0.85rem 0;
+  border-top: 1px solid var(--line);
+}
+.citation-list li:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.citation-list a {
+  text-decoration: none;
+}
+.citation-list a strong {
+  font-weight: 500;
+}
+.citation-list__date {
+  color: var(--ink-muted);
+  font:
+    0.75rem 'IBM Plex Mono',
+    monospace;
+}
+
+/* Links: labelled destination buttons with a per-kind icon. */
+.record-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.75rem;
+}
+.record-link {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+  text-decoration: none;
+  transition:
+    border-color 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.record-link:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  box-shadow: var(--shadow-1);
+  transform: translateY(-1px);
+}
+.record-link__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--accent);
+}
+.record-link__icon svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+.record-link__text {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+.record-link__kind {
+  color: var(--ink-muted);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.record-link__text strong {
+  overflow: hidden;
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.record-link__go {
+  margin-left: auto;
+  color: var(--ink-muted);
+  transition: transform 0.18s ease;
+}
+.record-link:hover .record-link__go {
+  color: var(--accent);
+  transform: translate(2px, -2px);
+}
+.back-link {
+  display: inline-block;
+  margin-top: 3rem;
+}
+
+/* Entry header chips and the Lab card's cost notice. */
+.entry-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1.35rem;
+}
+.entry-chips .status-chip {
+  margin-bottom: 0;
+}
+.entry-kind {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.series-navigation {
+  margin-top: 3rem;
+  padding: 1.4rem 0;
+  border-block: 1px solid var(--line-strong);
+  font-family: 'IBM Plex Mono', monospace;
+}
+.series-navigation p,
+.series-navigation div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.series-navigation a {
+  text-decoration: none;
+}
+.relationship-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.75rem;
+}
+.relationship-list a {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+  text-decoration: none;
+  transition:
+    border-color 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.relationship-list a:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  box-shadow: var(--shadow-1);
+  transform: translateY(-1px);
+}
+.relationship-list span {
+  color: var(--ink-muted);
+  font:
+    0.64rem 'IBM Plex Mono',
+    monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.relationship-list strong {
+  font-weight: 500;
+}
+
+/* Prev/next pager: the two neighbours in this domain's timeline. */
+.entry-pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+  margin-top: 3.5rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--line-strong);
+}
+.entry-pager > span:empty {
+  display: none;
+}
+.pager-link {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+  text-decoration: none;
+  transition:
+    border-color 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.pager-link[data-dir='next'] {
+  text-align: right;
+}
+.pager-link:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  box-shadow: var(--shadow-1);
+  transform: translateY(-1px);
+}
+.pager-link__label {
+  color: var(--ink-muted);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.pager-link:hover .pager-link__label {
+  color: var(--accent);
+}
+.pager-link__title {
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+@media (max-width: 760px) {
+  .entry-layout {
+    grid-template-columns: 1fr;
+  }
+  .entry-index {
+    position: static;
+  }
+  .entry-layout {
+    gap: 2rem;
+  }
+  .record-links {
+    grid-template-columns: 1fr;
+  }
+  .condition {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+  .entry-pager {
+    grid-template-columns: 1fr;
+  }
+  .pager-link[data-dir='next'] {
+    text-align: left;
+  }
+  .relationship-list {
+    grid-template-columns: 1fr;
+  }
+  .series-navigation p,
+  .series-navigation div {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

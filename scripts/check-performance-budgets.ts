@@ -171,6 +171,10 @@ export const assertRouteBudget = (
   }
 }
 
+// CSS is split per surface (src/styles/sections/*.css), so each route ships
+// the shared sheet plus only its own section CSS. The CSS budgets sit ~25%
+// above what that split ships, so a section stylesheet drifting back into the
+// shared one fails the build instead of passing under the old 30 KB ceiling.
 const routes: Record<string, { file: string; budget: RouteBudget }> = {
   home: {
     // The 3D glass hero (Three.js + R3F + drei) is code-split into a lazy chunk
@@ -181,7 +185,7 @@ const routes: Record<string, { file: string; budget: RouteBudget }> = {
     budget: {
       totalGzip: 320_000,
       jsGzip: 90_000,
-      cssGzip: 30_000,
+      cssGzip: 20_000,
       fontGzip: 330_000,
     },
   },
@@ -190,7 +194,7 @@ const routes: Record<string, { file: string; budget: RouteBudget }> = {
     budget: {
       totalGzip: 360_000,
       jsGzip: 20_000,
-      cssGzip: 30_000,
+      cssGzip: 20_000,
       fontGzip: 330_000,
     },
   },
@@ -201,7 +205,7 @@ const routes: Record<string, { file: string; budget: RouteBudget }> = {
     budget: {
       totalGzip: 370_000,
       jsGzip: 90_000,
-      cssGzip: 30_000,
+      cssGzip: 28_000,
       fontGzip: 330_000,
     },
   },
@@ -210,7 +214,7 @@ const routes: Record<string, { file: string; budget: RouteBudget }> = {
     budget: {
       totalGzip: 390_000,
       jsGzip: 20_000,
-      cssGzip: 30_000,
+      cssGzip: 28_000,
       fontGzip: 330_000,
       imageGzip: 30_000,
     },
@@ -220,7 +224,7 @@ const routes: Record<string, { file: string; budget: RouteBudget }> = {
     budget: {
       totalGzip: 470_000,
       jsGzip: 110_000,
-      cssGzip: 30_000,
+      cssGzip: 28_000,
       fontGzip: 330_000,
     },
   },

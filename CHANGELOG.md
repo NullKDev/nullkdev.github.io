@@ -145,6 +145,10 @@ este repo usa de verdad — no las genéricas del estándar.
   El enlace de cada pieza y el visor abren una versión WebP de hasta 2048 px,
   no el original de cámara. Las miniaturas del índice reservan su espacio, y
   un video sin póster ya no se muestra como imagen rota.
+- Cada página descarga solo el CSS de su sección, en lugar de una sola hoja con
+  el de todo el sitio. El inicio y el índice de Notas bajan de ~29 KB a ~15 KB
+  de CSS comprimido, la página 404 a ~13 KB, y las fichas y los índices de
+  sección a ~20 KB. También se eliminan reglas que ya no usaba ninguna página.
 
 ### Cambiado
 

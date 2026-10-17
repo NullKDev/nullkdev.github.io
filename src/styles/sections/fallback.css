@@ -1,0 +1,44 @@
+/* Fallback pages — imported by NotFoundPage.astro and CompatibilityPage.astro.
+   The 404 and legacy compatibility pages. */
+
+.compatibility-page {
+  display: grid;
+  align-content: center;
+  max-width: 60rem;
+  min-height: auto;
+  padding: calc(clamp(3rem, 6vw, 5rem) * var(--density)) 0;
+}
+.compatibility-page h1 {
+  max-width: 16ch;
+  margin: 0;
+  font-size: calc(clamp(2.4rem, 5vw, 4rem) * var(--display-mult));
+  font-weight: 460;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+}
+.compatibility-page > p:not(.kicker) {
+  max-width: 45rem;
+  color: var(--ink-muted);
+  font-size: 1.15rem;
+  line-height: 1.65;
+}
+.not-found-page {
+  display: grid;
+  align-content: center;
+  min-height: 60svh;
+  padding: calc(clamp(3rem, 6vw, 5rem) * var(--density)) 0;
+}
+.not-found-page h1 {
+  max-width: 10ch;
+  margin: 0;
+  font-size: calc(clamp(3rem, 7vw, 5.5rem) * var(--display-mult));
+  font-weight: 450;
+  line-height: 0.9;
+  letter-spacing: -0.06em;
+}
+.not-found-page > p:not(.kicker) {
+  max-width: 45rem;
+  color: var(--ink-muted);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}

@@ -1,0 +1,337 @@
+/* Work index — imported by ArchiveIndex.astro.
+   Product-spec work cards. */
+
+/* ================================================================
+   WORK — bespoke "product spec" index: breadcrumb header + vertical
+   cards with a folded status ribbon, version, and typed link icons.
+   ================================================================ */
+.work-head {
+  max-width: 48rem;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+.work-head h1 {
+  margin: 0;
+  font-size: calc(clamp(2.8rem, 6.5vw, 4.75rem) * var(--display-mult));
+  font-weight: 520;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+}
+.work-lead {
+  max-width: 56ch;
+  margin: 1.1rem 0 0;
+  color: var(--ink-muted);
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  line-height: 1.6;
+}
+.work-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin: 1.5rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.work-stats span:first-child {
+  color: var(--accent);
+}
+
+.work-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(19rem, 23rem));
+  justify-content: start;
+  gap: 1.25rem;
+}
+
+.work-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-1);
+  transition:
+    transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+}
+.work-card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  box-shadow: var(--shadow-2);
+}
+.work-card__hit {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.work-card__hit:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -3px;
+}
+
+/* Banner / preview — real image or an on-brand generated cover. */
+.wc-banner {
+  position: relative;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+.wc-banner img {
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--banner-ratio);
+  height: auto;
+  object-fit: cover;
+}
+.wc-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: clamp(1.3rem, 2.5vw, 1.7rem);
+}
+
+/* Folded corner ribbon — tucks under the card edges (overflow: hidden). */
+.wc-ribbon {
+  --ribbon: var(--accent);
+  position: absolute;
+  top: 1rem;
+  right: -2.75rem;
+  z-index: 3;
+  width: 10rem;
+  padding: 0.34rem 0;
+  transform: rotate(45deg);
+  background: var(--ribbon);
+  color: #ffffff;
+  text-align: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--ink) 28%, transparent);
+}
+.wc-ribbon::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  border: 0.42rem solid transparent;
+  border-top-color: color-mix(in srgb, var(--ribbon) 62%, #000);
+  border-left-color: color-mix(in srgb, var(--ribbon) 62%, #000);
+}
+.wc-ribbon::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 0;
+  border: 0.42rem solid transparent;
+  border-top-color: color-mix(in srgb, var(--ribbon) 62%, #000);
+  border-right-color: color-mix(in srgb, var(--ribbon) 62%, #000);
+}
+.wc-ribbon[data-lifecycle='shipped'],
+.wc-ribbon[data-lifecycle='maintained'] {
+  --ribbon: #047857;
+}
+.wc-ribbon[data-lifecycle='prototype'],
+.wc-ribbon[data-lifecycle='research'] {
+  --ribbon: #b45309;
+}
+.wc-ribbon[data-lifecycle='archived'] {
+  --ribbon: #64748b;
+}
+/* The ribbon carries white text, so the fill sets the contrast floor — it
+   cannot be lightened for the dark theme the way a text colour would be.
+   #059669 measured 3.76:1 and failed AA. */
+:root[data-theme='dark'] .wc-ribbon[data-lifecycle='shipped'],
+:root[data-theme='dark'] .wc-ribbon[data-lifecycle='maintained'] {
+  --ribbon: #047857;
+}
+:root[data-theme='dark'] .wc-ribbon[data-lifecycle='prototype'],
+:root[data-theme='dark'] .wc-ribbon[data-lifecycle='research'] {
+  --ribbon: #b45309;
+}
+
+.wc-manifest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.9rem;
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.01em;
+}
+.wc-version {
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.wc-license {
+  padding: 0.08rem 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-muted);
+  font-weight: 500;
+}
+.wc-featured {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0 0 0.75rem;
+  padding: 0.22rem 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+  border-radius: 999px;
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.wc-featured span {
+  font-size: 0.72rem;
+  line-height: 1;
+}
+/* Filled, as the glyph it replaces was: a featured star is a solid badge. */
+.wc-featured__mark svg {
+  fill: currentColor;
+}
+.wc-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 0.65rem;
+  margin: 0 0 0.35rem;
+}
+.wc-title {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.4vw, 1.85rem);
+  font-weight: 540;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+.wc-category {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.9rem;
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
+}
+.wc-category__text {
+  text-transform: uppercase;
+}
+.wc-summary {
+  margin: 0 0 1.1rem;
+  color: var(--ink-muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+.wc-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 1.1rem;
+  padding: 0;
+  list-style: none;
+}
+.wc-tech li {
+  padding: 0.22rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.wc-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+.wc-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1rem;
+  margin: 0;
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.wc-dates span:first-child {
+  color: var(--ink);
+}
+.wc-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.wc-link {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--ink-muted);
+  transition:
+    border-color 150ms ease,
+    color 150ms ease,
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+.wc-link:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: var(--surface-raised);
+  color: var(--accent);
+}
+.wc-view {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.wc-view span {
+  display: inline-block;
+  transition: transform 180ms ease;
+}
+.work-card:hover .wc-view span {
+  transform: translateX(3px);
+}
+@media (max-width: 760px) {
+  .work-grid {
+    grid-template-columns: 1fr;
+  }
+}
+:root[data-theme='light'] .wc-banner img {
+  content: var(--banner-light);
+}

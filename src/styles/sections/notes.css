@@ -1,0 +1,635 @@
+/* Notes index — imported by NotesIndex.astro.
+   Typed stream, filters, search, read state and pagination. */
+
+/* ================================================================
+   NOTES — a typed stream. The form of the writing is the organising
+   idea: a paper, a manual, and a field note are different objects and
+   are drawn as different objects. Type carries a colour and an index
+   tab; pagination and filtering are real routes, not client state.
+   ================================================================ */
+.notes-index {
+  padding: calc(clamp(2.5rem, 5vw, 4.5rem) * var(--density)) 0;
+}
+.notes-head {
+  margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+}
+.notes-head__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.notes-head h1 {
+  margin: 0;
+  font-size: calc(clamp(2.8rem, 6.5vw, 4.75rem) * var(--display-mult));
+  font-weight: 520;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+}
+.notes-head__count {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 1.35rem;
+  font-variant-numeric: tabular-nums;
+}
+.notes-head__count > span {
+  color: var(--ink-muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.notes-head__feed {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 0.6rem;
+  padding-left: 0.85rem;
+  border-left: 1px solid var(--line);
+  color: var(--ink-muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.notes-head__feed:hover {
+  color: var(--accent);
+}
+.notes-lead {
+  max-width: 62ch;
+  margin: 1.1rem 0 0;
+  color: var(--ink-muted);
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  line-height: 1.6;
+}
+
+/* Type filter — links, so every view is addressable and works without JS. */
+.notes-search {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  padding: 0.7rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  color: var(--ink-muted);
+  box-shadow: var(--shadow-1);
+  transition: border-color 160ms ease;
+}
+.notes-search:focus-within {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+}
+.notes-search .icon {
+  display: inline-flex;
+  flex: none;
+}
+.notes-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.94rem;
+}
+.notes-search input:focus {
+  outline: none;
+}
+.notes-search button {
+  flex: none;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.66rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.notes-search button:hover {
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+
+.notes-results__count {
+  margin: 0 0 1rem;
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+}
+.notes-results__list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+.notes-results__list a {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.4rem 1.25rem;
+  padding: 0.85rem 0.4rem;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+}
+.notes-results__list a:hover strong {
+  color: var(--accent);
+}
+/* A jump to a dedicated filter view sits above the entry matches and reads as
+   a destination rather than a result. */
+.notes-results__jump a {
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+.notes-results__jump .notes-results__kind {
+  color: var(--accent);
+}
+.notes-results__jump strong::after {
+  margin-left: 0.4rem;
+  color: var(--accent);
+  content: '→';
+}
+.notes-results__kind,
+.notes-results__meta {
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.notes-results__list strong {
+  font-weight: 540;
+  line-height: 1.3;
+}
+
+/* A local, private marker. `read` recedes; `revised` does the opposite — the
+   entry changed after this browser last saw it, so it comes back forward. */
+.note-row__state {
+  padding-left: 0.5rem;
+  border-left: 1px solid color-mix(in srgb, var(--kind) 30%, var(--line));
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+.note-row__state[hidden] {
+  display: none;
+}
+.note-row[data-read='read'] {
+  background: color-mix(in srgb, var(--surface) 55%, var(--surface-raised));
+}
+.note-row[data-read='read'] .note-row__thumb img {
+  opacity: 0.5;
+}
+.note-row[data-read='read'] .note-row__title,
+.note-row[data-read='read'] .note-row__dek {
+  color: var(--ink-muted);
+}
+.note-row[data-read='revised'] {
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+}
+.note-row[data-read='revised'] .note-row__type {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  background: var(--accent-soft);
+  color: color-mix(in srgb, var(--accent) 80%, var(--ink));
+}
+.note-row[data-read='revised'] .note-row__state {
+  border-left-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+}
+
+.notes-filter {
+  position: sticky;
+  z-index: 5;
+  top: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.5rem;
+  margin-bottom: clamp(1.25rem, 2.5vw, 1.75rem);
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(var(--fx-blur));
+}
+:root[data-fx-glass='off'] .notes-filter {
+  background: var(--paper);
+  backdrop-filter: none;
+}
+.notes-filter a {
+  --kind: var(--ink-muted);
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  padding-bottom: 0.55rem;
+  color: var(--ink-muted);
+  font-size: 0.86rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+.notes-filter a::after {
+  position: absolute;
+  right: 0;
+  bottom: -0.9rem;
+  left: 0;
+  height: 2px;
+  background: var(--kind);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  content: '';
+}
+.notes-filter a:hover {
+  color: var(--ink);
+}
+.notes-filter a[aria-current='page'] {
+  color: color-mix(in srgb, var(--kind) 72%, var(--ink));
+}
+.notes-filter a[aria-current='page']::after,
+.notes-filter a:hover::after {
+  transform: scaleX(1);
+}
+.notes-filter__n {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+.notes-filter a:first-child {
+  --kind: var(--accent);
+}
+[data-kind='article'] {
+  --kind: var(--kind-article);
+}
+[data-kind='note'] {
+  --kind: var(--kind-note);
+}
+[data-kind='guide'] {
+  --kind: var(--kind-guide);
+}
+[data-kind='paper'] {
+  --kind: var(--kind-paper);
+}
+[data-kind='decision'] {
+  --kind: var(--kind-decision);
+}
+[data-kind='reference'] {
+  --kind: var(--kind-reference);
+}
+/* As a grid item this is blockified from inline-flex to flex, so it needs
+   explicit self-alignment or it stretches to the whole row. */
+.note-row__type {
+  display: inline-flex;
+  align-self: start;
+  justify-self: start;
+  width: fit-content;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.65rem;
+  padding: 0.22rem 0.6rem 0.22rem 0.48rem;
+  border: 1px solid color-mix(in srgb, var(--kind) 28%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--kind) 9%, var(--surface-raised));
+  color: color-mix(in srgb, var(--kind) 74%, var(--ink));
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.note-row__type .icon {
+  display: inline-flex;
+  color: var(--kind);
+}
+.note-row__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.35rem;
+  margin: 0;
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* The stream. */
+/* A card grid, not a full-width list: on a wide screen a single-column row
+    stretches a two-line title across 1300px and reads badly. */
+.notes-stream {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(21rem, 1fr));
+  gap: 1rem;
+}
+.note-row {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-1);
+  transition:
+    transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+.note-row:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--kind) 45%, var(--line));
+  box-shadow: var(--shadow-2);
+}
+.note-row__hit {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+}
+/* Text is one cell and the preview is the other. Letting the preview span
+   several rows would make it distribute its height across them and open a gap
+   under the type tab. */
+.note-row__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  padding: 1.1rem 1.2rem 1.15rem;
+}
+.note-row__meta {
+  margin-top: auto;
+  padding-top: 0.9rem;
+}
+.note-row__level {
+  padding-left: 0.55rem;
+  border-left: 1px solid color-mix(in srgb, var(--kind) 30%, var(--line));
+  color: var(--ink-muted);
+  font-weight: 500;
+}
+.note-row__title {
+  max-width: 40ch;
+  margin: 0 0 0.4rem;
+  font-size: clamp(1.1rem, 1.6vw, 1.32rem);
+  font-weight: 560;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+}
+.note-row:hover .note-row__title {
+  color: color-mix(in srgb, var(--kind) 60%, var(--ink));
+}
+.note-row__dek {
+  max-width: 68ch;
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+.note-row__topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.65rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.note-row__topics li {
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+/* Above the card's overlay link, so a topic is its own destination. The
+   padding brings the hit area to the 24px WCAG 2.2 floor; the matching
+   negative margin keeps the visual rhythm of the row unchanged. */
+.note-row__topics a {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  margin-block: -0.36rem;
+  padding-block: 0.36rem;
+  color: inherit;
+  text-decoration: none;
+}
+.note-row__topics a:hover {
+  color: var(--kind);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.note-row__topics li + li::before {
+  margin-right: 0.4rem;
+  content: '·';
+}
+.notes-filter__topic {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.2rem 0.5rem 0.2rem 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: color-mix(in srgb, var(--accent) 80%, var(--ink));
+  font-size: 0.76rem;
+}
+.notes-filter__topic a {
+  display: inline-flex;
+  align-items: center;
+  color: inherit;
+  opacity: 0.7;
+}
+.notes-filter__topic a:hover {
+  opacity: 1;
+}
+
+/* Preview. Any entry that has an image shows one; the type decides its shape,
+   not whether it exists. */
+.note-row__thumb {
+  order: -1;
+  margin: 0;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+.note-row__thumb img {
+  display: block;
+  width: 100%;
+  /* Banner, not free-form media: same ratio as every other banner surface. */
+  aspect-ratio: var(--banner-ratio);
+  height: auto;
+  object-fit: cover;
+}
+/* The aspect still tells you what kind of thing this is. */
+.note-row[data-kind='article'] {
+  --thumb-h: 9.5rem;
+}
+.note-row[data-kind='note'] {
+  --thumb-h: 6.5rem;
+}
+.note-row[data-kind='paper'] {
+  --thumb-h: 12rem;
+}
+
+/* A field note is a jotting: tighter, no room taken. */
+.note-row[data-kind='note'] .note-row__title {
+  font-size: clamp(1.02rem, 1.4vw, 1.15rem);
+}
+
+/* A paper is a document: it sits in its own frame and leads with citations. */
+.note-row[data-kind='paper'] {
+  border-color: color-mix(in srgb, var(--kind) 26%, var(--line));
+  background: color-mix(in srgb, var(--kind) 4%, var(--surface-raised));
+}
+.note-row__citations {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  color: color-mix(in srgb, var(--kind) 70%, var(--ink));
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+}
+.note-row__citations .icon {
+  display: inline-flex;
+  color: var(--kind);
+}
+.note-row__pdf {
+  padding: 0.15rem 0.45rem;
+  border: 1px solid color-mix(in srgb, var(--kind) 35%, var(--line));
+  border-radius: var(--radius-sm);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+}
+
+/* A manual is a route through material: it shows the ground it covers. */
+.note-row__covers {
+  margin-top: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px dashed color-mix(in srgb, var(--kind) 30%, var(--line));
+  border-radius: var(--radius-md);
+}
+.note-row__covers-label {
+  margin: 0 0 0.55rem;
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.note-row__steps {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  counter-reset: cover;
+  list-style: none;
+}
+.note-row__steps li {
+  position: relative;
+  padding-left: 1.6rem;
+  font-size: 0.82rem;
+}
+.note-row__steps li::before {
+  position: absolute;
+  left: 0;
+  color: var(--kind);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.66rem;
+  font-weight: 600;
+  counter-increment: cover;
+  content: counter(cover, decimal-leading-zero);
+}
+
+/* Something replaced this. The pointer is the whole point of marking it. */
+.note-row[data-stale] .note-row__title {
+  color: var(--ink-muted);
+}
+.note-row__superseded {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.9rem 0 0;
+  color: var(--ink-muted);
+  font-size: 0.84rem;
+}
+.note-row__superseded a {
+  position: relative;
+  z-index: 2;
+  color: var(--accent);
+}
+
+.notes-empty {
+  margin: 3rem 0;
+  color: var(--ink-muted);
+}
+
+/* Pagination — shared primitive, used by any paginated index. */
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+.pagination__step {
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.pagination__step[data-disabled] {
+  color: var(--ink-muted);
+  opacity: 0.4;
+}
+.pagination__pages {
+  display: flex;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pagination__pages a,
+.pagination__pages span {
+  display: grid;
+  place-items: center;
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.76rem;
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+}
+.pagination__pages a:hover {
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+.pagination__pages [aria-current='page'] {
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  background: var(--accent-soft);
+  color: color-mix(in srgb, var(--accent) 80%, var(--ink));
+}
+
+@media (max-width: 760px) {
+  .notes-stream {
+    grid-template-columns: 1fr;
+  }
+  .notes-filter {
+    gap: 0.4rem 1.1rem;
+  }
+}
+:root[data-theme='light'] .note-row__thumb img {
+  content: var(--banner-light);
+}

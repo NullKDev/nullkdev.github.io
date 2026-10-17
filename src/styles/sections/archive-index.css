@@ -1,0 +1,244 @@
+/* Generic archive index — imported by ArchiveIndex.astro.
+   Archive card grid and its per-domain layouts. */
+
+.archive-grid {
+  display: grid;
+  gap: 1rem;
+}
+.archive-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 6rem 1fr minmax(15rem, 0.42fr);
+  gap: clamp(1.25rem, 3vw, 3rem);
+  align-items: start;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-1);
+  transition:
+    transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+}
+.archive-card::before {
+  position: absolute;
+  top: clamp(1.5rem, 3vw, 2.25rem);
+  bottom: clamp(1.5rem, 3vw, 2.25rem);
+  left: 0;
+  width: 2px;
+  background: linear-gradient(var(--accent), transparent);
+  opacity: 0;
+  transition: opacity 220ms ease;
+  content: '';
+}
+.archive-card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  box-shadow: var(--shadow-2);
+}
+.archive-card:hover::before {
+  opacity: 1;
+}
+.card-cover {
+  grid-column: 1 / -1;
+  margin: calc(-1 * clamp(1.5rem, 3vw, 2.25rem))
+    calc(-1 * clamp(1.5rem, 3vw, 2.25rem)) 0;
+}
+.card-cover img {
+  display: block;
+  width: 100%;
+  /* Banner, not free-form media: same ratio as every other banner surface. */
+  aspect-ratio: var(--banner-ratio);
+  height: auto;
+  object-fit: cover;
+  border-bottom: 1px solid var(--line);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--surface);
+}
+.archive-card:hover .card-cover img {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+}
+/* The reading-list layout stays text-first — no cover band. */
+.archive-index--notes .card-cover {
+  display: none;
+}
+.card-coordinate,
+.card-meta,
+.card-link {
+  font-family: 'IBM Plex Mono', monospace;
+}
+.card-coordinate,
+.card-meta {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+.card-coordinate {
+  color: var(--accent);
+  font-weight: 600;
+}
+.card-meta {
+  display: flex;
+  gap: 1rem;
+}
+.archive-card h2 {
+  margin: 0.45rem 0 0.8rem;
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  font-weight: 480;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.archive-card h2 a {
+  text-decoration: none;
+}
+.archive-card h2 a:hover {
+  color: var(--accent);
+}
+.archive-card > div > p:last-child {
+  max-width: 54ch;
+  margin: 0;
+  color: var(--ink-muted);
+  line-height: 1.6;
+}
+.archive-card footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.card-link {
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+/* ================================================================
+   Per-domain index layouts — each section is structurally distinct,
+   not the same grid recolored.
+   ================================================================ */
+
+/* WORK — built artifacts as large single-column case-study cards. */
+.archive-index--work .archive-grid {
+  gap: 1.25rem;
+}
+.archive-index--work .archive-card {
+  grid-template-columns: 7rem 1fr minmax(15rem, 0.4fr);
+  padding: clamp(1.75rem, 3.5vw, 3rem);
+}
+.archive-index--work .archive-card h2 {
+  font-size: clamp(2rem, 3.4vw, 3.4rem);
+}
+
+/* LAB — interactive tools as a compact multi-column tile grid. */
+.archive-index--lab .archive-grid {
+  grid-template-columns: repeat(auto-fill, minmax(18.5rem, 1fr));
+  gap: 1rem;
+}
+.archive-index--lab .archive-card {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 0.85rem;
+  padding: 1.5rem;
+}
+.archive-index--lab .archive-card h2 {
+  font-size: clamp(1.4rem, 2vw, 1.85rem);
+}
+.archive-index--lab .archive-card footer {
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+/* NOTES (legacy list layout, retained for the home domain grid). */
+.archive-index--notes .archive-grid {
+  gap: 0;
+  border-top: 1px solid var(--line);
+}
+.archive-index--notes .archive-card {
+  grid-template-columns: 7rem 1fr minmax(12rem, 0.32fr);
+  padding: clamp(1.75rem, 3vw, 2.5rem) 0.5rem;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.archive-index--notes .archive-card::before {
+  content: none;
+}
+.archive-index--notes .archive-card:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--surface-raised) 55%, transparent);
+}
+.archive-index--notes .archive-card h2 {
+  font-size: clamp(1.6rem, 2.6vw, 2.4rem);
+}
+
+/* GALLERY — visual collections as an asymmetric bento; first tile featured. */
+.archive-index--gallery .archive-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.archive-index--gallery .archive-card {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 1rem;
+  min-height: 18rem;
+  padding: clamp(1.75rem, 3vw, 2.5rem);
+  background:
+    radial-gradient(
+      120% 90% at 100% 0,
+      color-mix(in srgb, var(--accent-soft) 40%, transparent),
+      transparent 60%
+    ),
+    var(--surface-raised);
+}
+.archive-index--gallery .archive-card:first-child {
+  grid-column: 1 / -1;
+  min-height: 23rem;
+}
+.archive-index--gallery .archive-card:first-child h2 {
+  font-size: clamp(2.2rem, 4vw, 3.6rem);
+}
+.archive-index--gallery .archive-card h2 {
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+}
+.archive-index--gallery .archive-card footer {
+  margin-top: auto;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+@media (max-width: 760px) {
+  .archive-index--work .archive-card,
+  .archive-index--notes .archive-card {
+    grid-template-columns: 1fr;
+  }
+  .archive-index--gallery .archive-grid,
+  .archive-index--lab .archive-grid {
+    grid-template-columns: 1fr;
+  }
+  .archive-index--gallery .archive-card,
+  .archive-index--gallery .archive-card:first-child {
+    grid-column: auto;
+    min-height: 0;
+  }
+}
+:root[data-theme='light'] .card-cover img {
+  content: var(--banner-light);
+}
+
+@media (max-width: 760px) {
+  .archive-card {
+    grid-template-columns: 1fr;
+  }
+  .archive-card {
+    gap: 1rem;
+  }
+  .archive-card footer {
+    align-items: flex-end;
+  }
+}
