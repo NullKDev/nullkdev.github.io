@@ -93,6 +93,6 @@
   },
   "overrides": {
     "sharp": "^0.35.3",
-    "playwright-core": "1.62.0"
+    "playwright-core": "1.64.1"
   }
 }
