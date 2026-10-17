@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, security]
 image: /banners/android-5-0-lollipop.svg
-imageAlt: Banner de Android 5.0 Lollipop — ART reemplaza a Dalvik.
+imageAlt: 'Banner de Android 5.0 Lollipop, con el logo de la versión.'
 links:
   - label: APIs de Android 5.0
     href: https://developer.android.com/about/versions/lollipop/android-5.0

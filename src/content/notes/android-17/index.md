@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, security]
 image: /banners/android-17.svg
-imageAlt: Android 17 banner — adaptive layouts become mandatory and apps get a memory ceiling.
+imageAlt: 'Android 17 Cinnamon Bun banner, with the Android robot.'
 links:
   - label: Android 17 is here
     href: https://android-developers.googleblog.com/2026/06/Android-17.html

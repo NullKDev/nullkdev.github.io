@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, security]
 image: /banners/android-versions.svg
-imageAlt: Android, version by version banner — eighteen releases from 4.4 to 17.
+imageAlt: 'Android, version by version banner, with the Android robot.'
 links:
   - label: Codenames, tags, and build numbers
     href: https://source.android.com/docs/setup/reference/build-numbers

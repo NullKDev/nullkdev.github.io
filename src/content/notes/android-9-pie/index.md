@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, security, networking]
 image: /banners/android-9-pie.svg
-imageAlt: Android 9 Pie banner — idle apps cut off from the camera, microphone and sensors.
+imageAlt: 'Android 9 Pie banner, with the version logo.'
 links:
   - label: Android 9 features and APIs
     href: https://developer.android.com/about/versions/pie/android-9.0

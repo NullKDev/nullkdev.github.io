@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, security]
 image: /banners/android-10.svg
-imageAlt: Banner de Android 10 — almacenamiento acotado a cada app.
+imageAlt: 'Banner de Android 10 Quince Tart, con el logo de la versión.'
 links:
   - label: Funciones y APIs de Android 10
     href: https://developer.android.com/about/versions/10/features

@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis]
 image: /banners/android-7-1-nougat.svg
-imageAlt: Android 7.1 Nougat banner — app shortcuts from the launcher icon.
+imageAlt: 'Android 7.1 Nougat banner, with the version logo.'
 links:
   - label: Android 7.1 for Developers
     href: https://developer.android.com/about/versions/nougat/android-7.1

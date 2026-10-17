@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, security]
 image: /banners/android-13.svg
-imageAlt: Banner de Android 13 — el permiso de notificaciones y el acceso granular a medios.
+imageAlt: 'Banner de Android 13 Tiramisu, con el logo de la versión.'
 links:
   - label: Funciones y APIs de Android 13
     href: https://developer.android.com/about/versions/13/features

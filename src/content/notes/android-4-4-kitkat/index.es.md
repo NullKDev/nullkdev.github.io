@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, security, performance]
 image: /banners/android-4-4-kitkat.svg
-imageAlt: Banner de Android 4.4 KitKat — Android aligerado para caber en 512 MB de RAM.
+imageAlt: 'Banner de Android 4.4 KitKat, con el logo de la versión.'
 links:
   - label: Android KitKat
     href: https://developer.android.com/about/versions/kitkat

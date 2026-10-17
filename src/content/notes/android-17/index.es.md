@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, security]
 image: /banners/android-17.svg
-imageAlt: Banner de Android 17 — los diseños adaptables pasan a ser obligatorios y las apps tienen un techo de memoria.
+imageAlt: 'Banner de Android 17 Cinnamon Bun, con el robot de Android.'
 links:
   - label: Llegó Android 17 (Android 17 is here)
     href: https://android-developers.googleblog.com/2026/06/Android-17.html

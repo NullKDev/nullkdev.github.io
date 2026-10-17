@@ -60,7 +60,8 @@ este repo usa de verdad — no las genéricas del estándar.
   segundo plano, almacenamiento, seguridad, nombres). Las notas de Android 17
   se corrigieron contra las fuentes primarias (el GC generacional llegó en la
   QPR2 de Android 16, la API se fijó en la Beta 3, el plazo de Play para API 37
-  aún no está anunciado). Las
+  aún no está anunciado). Cada banner de la serie muestra el logo de su versión,
+  con «Android X» como titular y el nombre de la versión debajo. Las
   imágenes de una nota ahora pueden llevar pie de foto con su crédito
   (`![alt](./assets/x.png 'Pie. Fuente · Licencia')`), que se compila a
   `<figure>` en el build sin perder la optimización de imágenes.

@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, security]
 image: /banners/android-6-marshmallow.svg
-imageAlt: Android 6.0 Marshmallow banner — permissions asked at runtime.
+imageAlt: 'Android 6.0 Marshmallow banner, with the version logo.'
 links:
   - label: Android 6.0 APIs
     href: https://developer.android.com/about/versions/marshmallow/android-6.0

@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, security]
 image: /banners/android-16.svg
-imageAlt: Android 16 banner — adaptive layouts on large screens and the first minor SDK release.
+imageAlt: 'Android 16 Baklava banner, with the version logo.'
 links:
   - label: Android 16 features and APIs
     href: https://developer.android.com/about/versions/16/features

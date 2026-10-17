@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, security]
 image: /banners/android-14.svg
-imageAlt: Android 14 banner — typed foreground services and selected photo access.
+imageAlt: 'Android 14 Upside Down Cake banner, with the version logo.'
 links:
   - label: Android 14 features and APIs
     href: https://developer.android.com/about/versions/14/features

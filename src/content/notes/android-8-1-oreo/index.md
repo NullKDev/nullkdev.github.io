@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, performance]
 image: /banners/android-8-1-oreo.svg
-imageAlt: Android 8.1 Oreo banner — Android Go for low-RAM phones.
+imageAlt: 'Android 8.1 Oreo banner, with the version logo.'
 links:
   - label: Android 8.1 features and APIs
     href: https://developer.android.com/about/versions/oreo/android-8.1

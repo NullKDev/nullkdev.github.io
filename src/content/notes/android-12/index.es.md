@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, security]
 image: /banners/android-12.svg
-imageAlt: Banner de Android 12 — colores tomados del fondo de pantalla y un panel de privacidad.
+imageAlt: 'Banner de Android 12 Snow Cone, con el logo de la versión.'
 links:
   - label: Funciones y APIs de Android 12
     href: https://developer.android.com/about/versions/12/features

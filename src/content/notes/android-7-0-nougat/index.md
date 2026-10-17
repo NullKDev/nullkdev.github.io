@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, security]
 image: /banners/android-7-0-nougat.svg
-imageAlt: Android 7.0 Nougat banner — two apps sharing one screen.
+imageAlt: 'Android 7.0 Nougat banner, with the version logo.'
 links:
   - label: Android 7.0 for developers
     href: https://developer.android.com/about/versions/nougat/android-7.0

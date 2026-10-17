@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, security]
 image: /banners/android-11.svg
-imageAlt: Banner de Android 11 — permisos de una sola vez y scoped storage obligatorio.
+imageAlt: 'Banner de Android 11 Red Velvet Cake, con el logo de la versión.'
 links:
   - label: Funciones y APIs de Android 11
     href: https://developer.android.com/about/versions/11/features

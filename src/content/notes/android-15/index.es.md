@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, security]
 image: /banners/android-15.svg
-imageAlt: Banner de Android 15 — edge-to-edge obligatorio y el espacio privado.
+imageAlt: 'Banner de Android 15 Vanilla Ice Cream, con el logo de la versión.'
 links:
   - label: Funciones y APIs de Android 15
     href: https://developer.android.com/about/versions/15/features

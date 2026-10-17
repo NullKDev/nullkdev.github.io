@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, security, networking]
 image: /banners/android-9-pie.svg
-imageAlt: Banner de Android 9 Pie — apps inactivas sin acceso a cámara, micrófono ni sensores.
+imageAlt: 'Banner de Android 9 Pie, con el logo de la versión.'
 links:
   - label: Funciones y APIs de Android 9
     href: https://developer.android.com/about/versions/pie/android-9.0

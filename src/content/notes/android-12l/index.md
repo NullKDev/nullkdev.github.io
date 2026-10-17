@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis]
 image: /banners/android-12l.svg
-imageAlt: Android 12L banner — a taskbar and split screen for tablets and foldables.
+imageAlt: 'Android 12L banner, with the Android robot.'
 links:
   - label: 12L features and changes
     href: https://developer.android.com/about/versions/12/12L/summary

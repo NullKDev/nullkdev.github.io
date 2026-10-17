@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, security]
 image: /banners/android-8-0-oreo.svg
-imageAlt: Banner de Android 8.0 Oreo — el trabajo en segundo plano bajo nuevos límites.
+imageAlt: 'Banner de Android 8.0 Oreo, con el logo de la versión.'
 links:
   - label: Funciones y APIs de Android 8.0
     href: https://developer.android.com/about/versions/oreo/android-8.0
