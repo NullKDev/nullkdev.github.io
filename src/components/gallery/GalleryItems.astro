@@ -6,6 +6,7 @@ import { getArchiveLabel } from '@/i18n/archive'
 import GalleryLightbox from '@/components/gallery/GalleryLightbox.astro'
 import { isFile, isMedia } from '@/lib/gallery'
 import { formatBytes } from '@/lib/lab'
+import { serializeJsonForScript } from '@/lib/json-script'
 import type { IconName } from '@/lib/icons'
 
 interface Props {
@@ -103,7 +104,7 @@ const hostOf = (href: string) => {
 <script
   type="application/json"
   data-gallery-pieces
-  set:html={JSON.stringify(
+  set:html={serializeJsonForScript(
     media.map((item) => {
       const data = item.data
       return {

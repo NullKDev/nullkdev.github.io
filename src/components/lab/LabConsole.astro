@@ -9,6 +9,7 @@ import {
   getExecutionTone,
   getTotalDownloadBytes,
 } from '@/lib/lab'
+import { serializeJsonForScript } from '@/lib/json-script'
 
 interface Props {
   entry: CollectionEntry<'lab'>
@@ -123,11 +124,12 @@ const stateIcons = {
                   </li>
                 ))}
               </ul>
-              <p class="lab-panel__alert" role="status" hidden />
+              <p class="lab-panel__alert" aria-hidden="true" hidden />
+              <p class="sr-only" role="status" data-lab-capability-status />
               <script
                 type="application/json"
                 data-lab-capability-labels
-                set:html={JSON.stringify({
+                set:html={serializeJsonForScript({
                   states: capabilityStates,
                   icons: stateIcons,
                 })}
@@ -197,9 +199,18 @@ const stateIcons = {
     }
 
     if (missing > 0) {
+      const message = block.dataset.unsupported ?? ''
+      // The live region is rendered from the start and only its text changes:
+      // a region that appears together with its first message is often not
+      // registered in time, so screen readers miss the announcement. The
+      // visible box is a duplicate for sighted readers, hidden from the tree.
+      const status = block.querySelector<HTMLElement>(
+        '[data-lab-capability-status]',
+      )
+      if (status) status.textContent = message
       const alert = block.querySelector<HTMLElement>('.lab-panel__alert')
       if (alert) {
-        alert.textContent = block.dataset.unsupported ?? ''
+        alert.textContent = message
         alert.hidden = false
       }
     }

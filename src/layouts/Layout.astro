@@ -7,6 +7,7 @@ import Footer from '@components/Footer.astro'
 import Analytics from '@components/Analytics.astro'
 import DesignPanel from '@components/dev/DesignPanel.astro'
 import { getDictionary, type Locale } from '@i18n/index'
+import { serializeJsonForScript } from '@/lib/json-script'
 import '@styles/global.css'
 import '@styles/archive.css'
 
@@ -35,6 +36,15 @@ const {
 } = Astro.props
 const dictionary = getDictionary(locale)
 const canonical = new URL(canonicalPath ?? Astro.url.pathname, Astro.site)
+const counterpartUrl = counterpartPath
+  ? new URL(counterpartPath, Astro.site)
+  : undefined
+/* `x-default` names the page for a reader whose language matches neither
+   alternate. It is emitted only when a real reciprocal counterpart exists —
+   a lone page has no choice to default — and it always points at English, the
+   unprefixed locale. */
+const xDefaultUrl =
+  counterpartUrl && (locale === 'en' ? canonical : counterpartUrl)
 
 /* Theme has to resolve before the first paint or the page flashes the wrong
    one, which rules out an external file. That means one inline script — and an
@@ -68,8 +78,12 @@ const themeScriptHash = createHash('sha256')
 
    Styles keep `unsafe-inline` because a static build has no per-request nonce.
    Scripts do not: everything executable is either a bundled module from this
-   origin or the hashed theme script above. Keep this list closed — anything
-   added is something a compromised dependency is then allowed to reach. */
+   origin or a hashed inline script. `scripts/apply-csp.ts` replaces the
+   `script-src` below after the build, and it hashes only inline scripts it
+   expects — this <head>, Astro's own scripts, or a body script marked
+   `data-csp-inline` — and fails the build on any other. Keep this list
+   closed — anything added is something a compromised dependency is then
+   allowed to reach. */
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'sha256-${themeScriptHash}'`,
@@ -130,12 +144,17 @@ const csp = [
     />
     <link rel="alternate" hreflang={locale} href={canonical} />
     {
-      counterpartPath && (
+      counterpartUrl && (
         <link
           rel="alternate"
           hreflang={locale === 'en' ? 'es' : 'en'}
-          href={new URL(counterpartPath, Astro.site)}
+          href={counterpartUrl}
         />
+      )
+    }
+    {
+      xDefaultUrl && (
+        <link rel="alternate" hreflang="x-default" href={xDefaultUrl} />
       )
     }
     <meta property="og:type" content="website" />
@@ -166,7 +185,7 @@ const csp = [
         <script
           is:inline
           type="application/ld+json"
-          set:html={JSON.stringify(jsonLd)}
+          set:html={serializeJsonForScript(jsonLd)}
         />
       )
     }
