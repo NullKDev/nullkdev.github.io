@@ -153,9 +153,10 @@ describe('image viewer', () => {
 
 /* jsdom has no IntersectionObserver; capture the callback so a test can say
    which heading is in view. */
+let notify: (entries: Partial<IntersectionObserverEntry>[]) => void = () =>
+  undefined
+
 const stubObserver = () => {
-  let notify: (entries: Partial<IntersectionObserverEntry>[]) => void = () =>
-    undefined
   vi.stubGlobal(
     'IntersectionObserver',
     class {
@@ -293,7 +294,7 @@ describe('contents marker', () => {
       '<h2 id="one">One</h2>',
       '<ol data-toc><li><a href="#one">One</a></li></ol>',
     )
-    const seen: string[] = []
+    const seen: (string | null)[] = []
     mountTocHighlight(root, (id) => seen.push(id))
     show('one')
     show('one')
@@ -373,6 +374,56 @@ describe('language switch', () => {
     const { root, link } = switchPage()
     mountLocaleAnchor(root)('setup')
     expect(link.getAttribute('href')).toBe('/es/notes/x/')
+  })
+
+  it('returns the switch to the top once the reader is above every section', () => {
+    /* Scrolling back above the first heading left the last section's anchor
+       on the switch, so it landed mid-page. */
+    const show = stubObserver()
+    const { root, link } = switchPage('{"setup":"preparacion"}')
+    root.insertAdjacentHTML(
+      'beforeend',
+      '<ol data-toc><li><a href="#setup">Setup</a></li></ol>',
+    )
+    mountTocHighlight(root, mountLocaleAnchor(root))
+    show('setup')
+    expect(link.getAttribute('href')).toBe('/es/notes/x/#preparacion')
+    const heading = document.getElementById('setup')!
+    // The heading left the band through its bottom edge: it sits below it.
+    heading.getBoundingClientRect = () => rect(window.innerHeight * 0.5, 30)
+    notify([
+      {
+        isIntersecting: false,
+        target: heading,
+        boundingClientRect: rect(window.innerHeight * 0.5, 30),
+      },
+    ])
+    expect(link.getAttribute('href')).toBe('/es/notes/x/')
+    expect(root.querySelector('[aria-current]')).toBeNull()
+    // Back into the section: the anchor returns.
+    show('setup')
+    expect(link.getAttribute('href')).toBe('/es/notes/x/#preparacion')
+  })
+
+  it('keeps the last section once the reader is past it', () => {
+    const show = stubObserver()
+    const { root, link } = switchPage('{"setup":"preparacion"}')
+    root.insertAdjacentHTML(
+      'beforeend',
+      '<ol data-toc><li><a href="#setup">Setup</a></li></ol>',
+    )
+    mountTocHighlight(root, mountLocaleAnchor(root))
+    show('setup')
+    const heading = document.getElementById('setup')!
+    heading.getBoundingClientRect = () => rect(-400, 30)
+    notify([
+      {
+        isIntersecting: false,
+        target: heading,
+        boundingClientRect: rect(-400, 30),
+      },
+    ])
+    expect(link.getAttribute('href')).toBe('/es/notes/x/#preparacion')
   })
 
   it('ignores a malformed mapping instead of breaking the page', () => {

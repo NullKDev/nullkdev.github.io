@@ -124,7 +124,7 @@ export const es = {
     clearSearch: 'Limpiar búsqueda',
     or: 'o',
     browseTopics: 'explorar temas',
-    inSection: 'en §',
+    inSection: 'en la sección',
     feedTitle: 'Notas de {name}',
     feedDescription:
       'Notas de investigación, artículos y documentos de {name}, en español.',

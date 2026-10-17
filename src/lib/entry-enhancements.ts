@@ -120,6 +120,10 @@ const partGroupOf = (link: HTMLElement): HTMLDetailsElement | null =>
   ) ??
   null
 
+/** The reading band, as fractions of the viewport cut from top and bottom. */
+const BAND_TOP = 0.12
+const BAND_BOTTOM = 0.7
+
 /**
  * Table of contents: mark the section currently in view as active, in every
  * contents on the page (the desktop index and the phone contents list the same
@@ -129,7 +133,7 @@ const partGroupOf = (link: HTMLElement): HTMLDetailsElement | null =>
  */
 export const mountTocHighlight = (
   root: HTMLElement,
-  onActive?: (id: string) => void,
+  onActive?: (id: string | null) => void,
 ): void => {
   const tocLinks = Array.from(
     root.querySelectorAll<HTMLAnchorElement>('[data-toc] a[href^="#"]'),
@@ -185,6 +189,18 @@ export const mountTocHighlight = (
     })
     onActive?.(id)
   }
+  /* Above the first heading no section is being read: clear the marker, so
+     the language switch goes back to the top of the other page. Past the last
+     heading the last section simply stays active. */
+  const clearActive = () => {
+    if (activeId === null) return
+    activeId = null
+    tocLinks.forEach((link) => link.removeAttribute('aria-current'))
+    onActive?.(null)
+  }
+  const aboveFirst = () =>
+    targets.length > 0 &&
+    targets[0].getBoundingClientRect().top >= window.innerHeight * BAND_TOP
   const observer = new IntersectionObserver(
     (entries) => {
       const visible = entries
@@ -192,8 +208,12 @@ export const mountTocHighlight = (
         .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
       const first = visible[0]?.target
       if (first) setActive(idOf.get(first) ?? first.id)
+      else if (aboveFirst()) clearActive()
     },
-    { rootMargin: '-12% 0px -70% 0px', threshold: 0 },
+    {
+      rootMargin: `-${BAND_TOP * 100}% 0px -${BAND_BOTTOM * 100}% 0px`,
+      threshold: 0,
+    },
   )
   targets.forEach((target) => observer.observe(target))
 }
@@ -244,12 +264,12 @@ export const withAnchor = (
  * heading i → heading i mapping on the page only when both translations share
  * an outline (`getCounterpartAnchors`); here the switch's address follows the
  * active section, so a click, a middle-click and a copied link all land on the
- * same section in the other language. Without a mapping it is left alone and
- * lands at the top, as before.
+ * same section in the other language. Without a mapping, or above the first
+ * section, it lands at the top.
  */
 export const mountLocaleAnchor = (
   root: HTMLElement,
-): ((id: string) => void) => {
+): ((id: string | null) => void) => {
   const link = document.querySelector<HTMLAnchorElement>(
     '[data-locale-control]',
   )
@@ -262,7 +282,7 @@ export const mountLocaleAnchor = (
   const base = link?.getAttribute('href') ?? ''
   return (id) => {
     if (!link || !base) return
-    link.setAttribute('href', withAnchor(base, anchors[id]))
+    link.setAttribute('href', withAnchor(base, id ? anchors[id] : undefined))
   }
 }
 

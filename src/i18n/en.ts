@@ -122,7 +122,7 @@ export const en = {
     clearSearch: 'Clear search',
     or: 'or',
     browseTopics: 'browse topics',
-    inSection: 'in §',
+    inSection: 'in section',
     feedTitle: '{name} Notes',
     feedDescription: 'Research notes, articles, and papers from {name}.',
   },

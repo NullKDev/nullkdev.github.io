@@ -306,6 +306,7 @@ const collectionJsonLd = buildCollectionPageLd({
 
 <script>
   import {
+    matchesQuery,
     searchNotes,
     type SearchHit,
     type SearchRow,
@@ -424,9 +425,8 @@ const collectionJsonLd = buildCollectionPageLd({
       )
 
     const render = (query: string, data: Index) => {
-      const needle = query.toLowerCase()
       const jumps = data.filters.filter((filter) =>
-        filter.label.toLowerCase().includes(needle),
+        matchesQuery(filter.label, query),
       )
       const hits = searchNotes(data.entries, query)
       list.replaceChildren(...jumps.map(filterRow), ...hits.map(hitRow))

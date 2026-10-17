@@ -1524,7 +1524,7 @@ test('notes search finds a heading and links straight to its section', async ({
     /\/notes\/android-17-beta-3\/#alarmmanager-/,
   )
   await expect(hit.first().locator('.notes-results__section')).toHaveText(
-    /^in § AlarmManager/,
+    /^in section AlarmManager/,
   )
   // The type tabs drop their whole-collection counts while a query is active.
   await expect(page.locator('.notes-filter__n').first()).toBeHidden()

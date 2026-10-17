@@ -42,7 +42,7 @@ export const toSearchSections = (
 ): SearchSection[] => outline.map(({ slug, text }) => ({ slug, text }))
 
 /** Lowercase, without accents: "Diseño" and "diseno" are the same query. */
-const normalize = (value: string): string =>
+export const normalize = (value: string): string =>
   value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
 
 const toWords = (query: string): string[] =>
@@ -52,6 +52,13 @@ const matchesAll = (haystack: string, words: readonly string[]): boolean => {
   const text = normalize(haystack)
   return words.every((word) => text.includes(word))
 }
+
+/**
+ * Every word of the query appears in `text`, accents and case ignored. The
+ * one matching rule: the filter jump rows use it as the notes do.
+ */
+export const matchesQuery = (text: string, query: string): boolean =>
+  matchesAll(text, toWords(query))
 
 /**
  * Every word of the query has to match. A note whose title, summary, type or

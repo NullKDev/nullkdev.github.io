@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  matchesQuery,
+  normalize,
   searchNotes,
   suggestNotesForPath,
   toSearchSections,
@@ -34,6 +36,17 @@ describe('toSearchSections', () => {
       { slug: 'alarmmanager', text: 'AlarmManager' },
       { slug: 'part-1', text: 'Part one' },
     ])
+  })
+})
+
+describe('matchesQuery', () => {
+  /* The filter jump rows used a plain lowercase substring while note hits
+     ignored accents: "diseno" found the note but not the "Diseño" filter. */
+  it('matches a filter label the same way as a note, ignoring accents', () => {
+    expect(normalize('Diseño')).toBe('diseno')
+    expect(matchesQuery('Diseño de sistemas', 'diseno')).toBe(true)
+    expect(matchesQuery('Diseño de sistemas', 'DISEÑO sistemas')).toBe(true)
+    expect(matchesQuery('Diseño de sistemas', 'android')).toBe(false)
   })
 })
 
