@@ -51,6 +51,16 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ## [Unreleased]
 
+### Seguridad
+
+- Se cierran 34 de 35 advisories (16 high) en dependencias transitivas
+  (`devalue`, `brace-expansion`, `fast-uri`, `source-map-js`, `smol-toml`,
+  `sharp`, `undici`, `dompurify`, entre otras). Como en 0.4.0, los parches ya
+  cabían en los rangos de sus paquetes padre y bastó con volver a resolver el
+  lockfile; `package.json` no cambia. El `audit` en rojo bloqueaba todos los PR
+  de Dependabot. Queda un advisory low en `katex`, que `mermaid` fija en
+  `^0.16` y no alcanza la versión corregida.
+
 ## [0.4.0] — 2026-08-30
 
 ### Agregado
