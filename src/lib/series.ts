@@ -22,7 +22,13 @@ export interface SeriesPosition {
   readonly total: number
 }
 
-/** Where a note sits in its series, or `undefined` when there is no run. */
+/**
+ * Where a note sits in its series, or `undefined` when there is no run.
+ *
+ * `order` is the note's place among the siblings that exist in its language,
+ * not the raw `series.order`: a series written out of order (orders 2, 5, 7
+ * published, the rest still drafts) read "Part 7 of 3".
+ */
 export const getSeriesPosition = (
   entry: NoteEntry,
   pool: readonly NoteEntry[],
@@ -31,11 +37,21 @@ export const getSeriesPosition = (
   const membership = entry.data.series
   if (!membership) return undefined
   const title = getSeriesTitle(membership.id, locale)
-  const total = pool.filter(
-    (candidate) => candidate.data.series?.id === membership.id,
-  ).length
-  if (!title || total < 2) return undefined
-  return { id: membership.id, title, order: membership.order, total }
+  const siblings = pool
+    .filter(
+      (candidate) =>
+        candidate.data.series?.id === membership.id &&
+        candidate.data.locale === entry.data.locale,
+    )
+    .map((candidate) => candidate.data.series?.order ?? 0)
+    .sort((a, b) => a - b)
+  if (!title || siblings.length < 2) return undefined
+  return {
+    id: membership.id,
+    title,
+    order: siblings.indexOf(membership.order) + 1,
+    total: siblings.length,
+  }
 }
 
 /** `Part {order} of {total}` → "Part 2 of 3". */

@@ -115,6 +115,10 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ### Corregido
 
+- La navegación de una serie decía «Parte 7 de 6» cuando había notas aún sin
+  escribir entre medio: ahora cuenta la posición entre las notas publicadas en
+  ese idioma, no el número de orden crudo.
+
 - Las fechas ya no salen un día antes: una fecha del frontmatter
   (`2026-03-27`) es medianoche UTC y se formateaba en la zona del build
   (GMT-5), así que la página decía 26. Toda fecha pasa por `formatDate` en

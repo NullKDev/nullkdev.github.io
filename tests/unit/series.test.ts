@@ -51,6 +51,36 @@ describe('getSeriesPosition', () => {
     })
   })
 
+  it('counts the position among published siblings, not the raw order', () => {
+    // Orders 2, 5 and 7 with 1, 3, 4 and 6 not written yet read "Part 7 of 3".
+    const gapped = [
+      note('kitkat', { id: 'android-17', order: 2 }),
+      note('marshmallow', { id: 'android-17', order: 5 }),
+      note('nougat', { id: 'android-17', order: 7 }),
+    ]
+    expect(getSeriesPosition(gapped[2], gapped, 'en')).toMatchObject({
+      order: 3,
+      total: 3,
+    })
+    expect(getSeriesPosition(gapped[0], gapped, 'en')).toMatchObject({
+      order: 1,
+      total: 3,
+    })
+  })
+
+  it('counts each locale on its own', () => {
+    const mixed = [
+      note('a', { id: 'android-17', order: 1 }),
+      note('b', { id: 'android-17', order: 2 }),
+      note('b-es', { id: 'android-17', order: 2 }, 'es'),
+      note('c-es', { id: 'android-17', order: 3 }, 'es'),
+    ]
+    expect(getSeriesPosition(mixed[3], mixed, 'es')).toMatchObject({
+      order: 2,
+      total: 2,
+    })
+  })
+
   it('says nothing for a series of one or no series at all', () => {
     expect(getSeriesPosition(pool[3], pool, 'en')).toBeUndefined()
     expect(getSeriesPosition(pool[4], pool, 'en')).toBeUndefined()
