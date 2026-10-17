@@ -5,10 +5,13 @@ import {
   canAnimateRobot,
   canLoadRobot,
   getNextRobotAnimation,
+  readRobotPaused,
+  ROBOT_PAUSE_KEY,
   getRobotRepetitions,
   measureRobotVisibility,
   ROBOT_GAP_MS,
   supportsWebGL2,
+  writeRobotPaused,
 } from '@/components/hero/model-showcase-policy'
 
 describe('autonomous robot policy', () => {
@@ -49,6 +52,7 @@ describe('autonomous robot policy', () => {
       documentVisible: true,
       loaded: true,
       webglHealthy: true,
+      motionAllowed: true,
     }
 
     expect(canAnimateRobot(eligible)).toBe(true)
@@ -67,8 +71,58 @@ describe('autonomous robot policy', () => {
         documentVisible: true,
         loaded: true,
         webglHealthy: true,
+        motionAllowed: true,
       }),
     ).toBe(true)
+  })
+
+  it('stays still while the reader has paused it, whatever else is true', () => {
+    // WCAG 2.2.2: the pause control outranks every activity condition.
+    expect(
+      canAnimateRobot({
+        fullyVisible: true,
+        documentVisible: true,
+        loaded: true,
+        webglHealthy: true,
+        motionAllowed: false,
+      }),
+    ).toBe(false)
+  })
+
+  it('remembers a pause for the session and forgets a resume', () => {
+    const storage = new Map<string, string>()
+    const session = {
+      getItem: (key: string) => storage.get(key) ?? null,
+      setItem: (key: string, value: string) => void storage.set(key, value),
+      removeItem: (key: string) => void storage.delete(key),
+    }
+
+    expect(readRobotPaused(session)).toBe(false)
+    writeRobotPaused(session, true)
+    expect(storage.get(ROBOT_PAUSE_KEY)).toBe('1')
+    expect(readRobotPaused(session)).toBe(true)
+    writeRobotPaused(session, false)
+    expect(storage.has(ROBOT_PAUSE_KEY)).toBe(false)
+    expect(readRobotPaused(session)).toBe(false)
+  })
+
+  it('treats unavailable storage as never paused, without throwing', () => {
+    const blocked = {
+      getItem: () => {
+        throw new Error('SecurityError')
+      },
+      setItem: () => {
+        throw new Error('QuotaExceededError')
+      },
+      removeItem: () => {
+        throw new Error('SecurityError')
+      },
+    }
+
+    expect(readRobotPaused(blocked)).toBe(false)
+    expect(readRobotPaused(undefined)).toBe(false)
+    expect(() => writeRobotPaused(blocked, true)).not.toThrow()
+    expect(() => writeRobotPaused(undefined, true)).not.toThrow()
   })
 
   it('always starts Idle then Wave before choosing a random clip', () => {

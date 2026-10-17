@@ -8,6 +8,25 @@ Format: what was decided · why · what it rules out.
 
 ---
 
+## 2026-10-17 — The robot keeps moving, and the reader can stop it
+
+**Decided.** The home robot animates autonomously for every visitor,
+including under `prefers-reduced-motion`, and carries a visible pause/play
+toggle: 44px, keyboard-operable, constant accessible name with `aria-pressed`.
+A pause stops the running clip and the pending gap, is one more condition in
+the same activity gate as offscreen/hidden/WebGL loss, and is remembered in
+`sessionStorage` for the visit.
+
+**Why.** The owner asked for the robot to perform for everyone. WCAG 2.2.2
+requires that motion lasting over five seconds can be paused; a control
+satisfies that without taking the animation away from visitors who did not ask
+for stillness. Session rather than permanent memory: a returning visitor sees
+the default again instead of a months-old choice.
+
+**Rules out.** A static poster for reduced motion (the earlier `DESIGN.md`
+wording), hiding the toggle behind hover, and resuming motion on its own after
+the reader paused it.
+
 ## 2026-10-17 — Component scripts ship as files, never inline
 
 **Decided.** `vite.build.assetsInlineLimit` returns `false` for `.js`, so every

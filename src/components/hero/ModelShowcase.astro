@@ -1,6 +1,7 @@
 ---
 import ModelLoader from '@/components/hero/ModelLoader.astro'
 import type { Dictionary } from '@/i18n'
+import { renderIcon } from '@/lib/icons'
 
 interface Props {
   home: Dictionary['home']
@@ -30,6 +31,26 @@ const { home } = Astro.props
 
   <span data-model-visibility-sentinel aria-hidden="true"></span>
 
+  <button
+    type="button"
+    class="model-showcase__motion"
+    data-model-motion-toggle
+    aria-pressed="false"
+    aria-label={home.modelPause}
+    hidden
+  >
+    <span
+      class="model-showcase__motion-icon"
+      data-when="playing"
+      set:html={renderIcon('pause', 18)}
+    />
+    <span
+      class="model-showcase__motion-icon"
+      data-when="paused"
+      set:html={renderIcon('play', 18)}
+    />
+  </button>
+
   <p class="model-showcase__attribution">
     RobotExpressive by Tomás Laulhé · CC0
   </p>
@@ -44,17 +65,21 @@ const { home } = Astro.props
     getNextRobotAnimation,
     getRobotRepetitions,
     measureRobotVisibility,
+    readRobotPaused,
     ROBOT_GAP_MS,
     ROBOT_TIME_SCALE,
     supportsWebGL2,
     VISIBILITY_THRESHOLD,
+    writeRobotPaused,
     type RobotAnimationPhase,
   } from './model-showcase-policy'
 
-  type AnimationMixerBridge = {
-    _listeners?: Record<string, unknown[]>
-    addEventListener: (type: 'finished', listener: () => void) => void
-    removeEventListener: (type: 'finished', listener: () => void) => void
+  const sessionStore = (): Storage | undefined => {
+    try {
+      return window.sessionStorage
+    } catch {
+      return undefined
+    }
   }
 
   let modelViewerModule: Promise<unknown> | undefined
@@ -76,7 +101,12 @@ const { home } = Astro.props
     const visibilitySentinel = host.querySelector<HTMLElement>(
       '[data-model-visibility-sentinel]',
     )
-    if (!viewer || !loader || !status || !visibilitySentinel) continue
+    const motionToggle = host.querySelector<HTMLButtonElement>(
+      '[data-model-motion-toggle]',
+    )
+    if (!viewer || !loader || !status || !visibilitySentinel || !motionToggle) {
+      continue
+    }
 
     let webglHealthy = supportsWebGL2()
     let nearViewport = false
@@ -92,28 +122,17 @@ const { home } = Astro.props
     let gapTimer = 0
     let readyTimer = 0
     let disposed = false
-    const bridgedMixers: AnimationMixerBridge[] = []
+    let userPaused = readRobotPaused(sessionStore())
 
-    const relayMixerFinished = () => {
-      viewer.dispatchEvent(new CustomEvent('finished'))
-    }
-
-    const ensureFinishedEventBridge = () => {
-      const sceneSymbol = Object.getOwnPropertySymbols(viewer).find(
-        (symbol) => symbol.description === 'scene',
-      )
-      if (!sceneSymbol) return
-
-      const scene = (
-        viewer as unknown as Record<symbol, { mixers?: AnimationMixerBridge[] }>
-      )[sceneSymbol]
-      for (const mixer of scene.mixers ?? []) {
-        // model-viewer 4.3.1 subscribes before dynamic-source mixers exist.
-        // Bridge the real mixer completion only when the library has no listener.
-        if ((mixer._listeners?.finished?.length ?? 0) > 0) continue
-        mixer.addEventListener('finished', relayMixerFinished)
-        bridgedMixers.push(mixer)
-      }
+    /**
+     * The control only exists while there is motion to stop: it is revealed on
+     * `ready` and withdrawn on failure, so it never offers an action that does
+     * nothing. Its name stays constant; `aria-pressed` carries the state.
+     */
+    const syncMotionToggle = () => {
+      motionToggle.hidden = !loaded || !webglHealthy
+      motionToggle.setAttribute('aria-pressed', String(userPaused))
+      host.toggleAttribute('data-user-paused', userPaused)
     }
 
     const setStatus = (state: 'loading' | 'ready' | 'error') => {
@@ -136,6 +155,7 @@ const { home } = Astro.props
         documentVisible: document.visibilityState === 'visible',
         loaded,
         webglHealthy,
+        motionAllowed: !userPaused,
       })
 
     /**
@@ -151,7 +171,9 @@ const { home } = Astro.props
           : state === 'waiting'
             ? `${ROBOT_GAP_MS}ms gap`
             : state === 'paused'
-              ? `coverage ${host.dataset.visibilityCoverage ?? '?'}`
+              ? userPaused
+                ? 'by the reader'
+                : `coverage ${host.dataset.visibilityCoverage ?? '?'}`
               : state === 'stopped'
                 ? 'WebGL or load failed'
                 : (host.dataset.animation ?? '')
@@ -202,6 +224,7 @@ const { home } = Astro.props
       clearGapTimer()
       window.clearTimeout(readyTimer)
       host.removeAttribute('data-ready')
+      syncMotionToggle()
       setMotion('stopped')
       if (typeof viewer.pause === 'function') viewer.pause()
       setStatus('error')
@@ -226,19 +249,17 @@ const { home } = Astro.props
       viewer.pause()
       viewer.animationName = next.animation
       viewer.currentTime = 0
-      await viewer.updateComplete
-      if (
-        !clipPlaying ||
-        previousAnimation !== next.animation ||
-        !isEligible()
-      ) {
-        return
-      }
-      viewer.currentTime = 0
       clipRepetitions = getRobotRepetitions(next.animation)
+      host.dataset.animation = next.animation
+      await viewer.updateComplete
+      // Superseded by a failure or a newer clip while the element updated.
+      if (!clipPlaying || previousAnimation !== next.animation) return
+      viewer.currentTime = 0
+      // Paused or scrolled away meanwhile: the clip is set and stays pending;
+      // `applyPlaybackState` starts it, with its own repetitions, on resume.
+      if (!isEligible()) return
       viewer.timeScale = ROBOT_TIME_SCALE
       viewer.play({ repetitions: clipRepetitions, pingpong: false })
-      host.dataset.animation = next.animation
       host.dataset.motion = 'playing'
       logRobot('playing')
     }
@@ -272,7 +293,6 @@ const { home } = Astro.props
     }
 
     const handleLoad = () => {
-      ensureFinishedEventBridge()
       availableAnimations = ALLOWED_ROBOT_ANIMATIONS.filter((animation) =>
         viewer.availableAnimations.includes(animation),
       )
@@ -288,6 +308,7 @@ const { home } = Astro.props
       showIdlePose()
       host.setAttribute('data-ready', '')
       setStatus('ready')
+      syncMotionToggle()
       applyPlaybackState()
     }
 
@@ -295,11 +316,18 @@ const { home } = Astro.props
       if (!clipPlaying || !loaded || !webglHealthy) return
       clipPlaying = false
       gapPending = true
-      setMotion('waiting')
+      setMotion(isEligible() ? 'waiting' : 'paused')
       scheduleGap()
     }
 
     const handleError = () => fail()
+
+    const handleMotionToggle = () => {
+      userPaused = !userPaused
+      writeRobotPaused(sessionStore(), userPaused)
+      syncMotionToggle()
+      applyPlaybackState()
+    }
 
     const loadRobot = async () => {
       if (
@@ -369,11 +397,13 @@ const { home } = Astro.props
     viewer.addEventListener('load', handleLoad)
     viewer.addEventListener('error', handleError)
     viewer.addEventListener('finished', handleFinished)
+    motionToggle.addEventListener('click', handleMotionToggle)
     document.addEventListener('visibilitychange', handleActivityChange)
     window.addEventListener('scroll', scheduleMeasure, { passive: true })
     window.addEventListener('resize', scheduleMeasure, { passive: true })
     loadObserver.observe(host)
     animationObserver.observe(visibilitySentinel)
+    syncMotionToggle()
     measureVisibility()
 
     if (!webglHealthy) fail()
@@ -393,9 +423,7 @@ const { home } = Astro.props
         viewer.removeEventListener('load', handleLoad)
         viewer.removeEventListener('error', handleError)
         viewer.removeEventListener('finished', handleFinished)
-        for (const mixer of bridgedMixers) {
-          mixer.removeEventListener('finished', relayMixerFinished)
-        }
+        motionToggle.removeEventListener('click', handleMotionToggle)
         if (typeof viewer.pause === 'function') viewer.pause()
       },
       { once: true },

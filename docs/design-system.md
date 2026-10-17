@@ -102,7 +102,8 @@ They share the same drawing conventions.
 | `StatusChip.astro` | `lifecycle`, `locale`, `size` | Derives tone and label itself |
 | `Breadcrumb.astro` | `locale`, `trail[]` | Semantic `<ol>`; chevrons drawn in CSS so they never reach the a11y tree |
 | `Pagination.astro` | `current`, `total`, `href()`, `labels` | Route-based paging; used by Notes |
-| `BrandMark.astro` · `SignalMotif.astro` | — | Brand marks |
+| `BrandMark.astro` | — | The brand mark |
+| `DiagramControls.astro` | — | Zoom and fit controls for a compiled diagram |
 
 `src/components/ui/` is **shadcn's**. Do not add to it.
 
@@ -237,4 +238,4 @@ Work status ribbon had to keep their light-theme values in dark.
   or it is omitted.
 - Every block is conditional on real data. Prefer a shorter page to an empty heading.
 - Both themes ship together. A new accent/ink pair passes AA before it lands.
-- Motion: one authored moment per surface, neutralised under `prefers-reduced-motion`.
+- Motion: one authored moment per surface, neutralised under `prefers-reduced-motion` — except the home robot, which keeps animating and offers a pause toggle instead (see `docs/decisions.md`).
