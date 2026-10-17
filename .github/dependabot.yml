@@ -15,6 +15,11 @@ updates:
     open-pull-requests-limit: 5
     cooldown:
       default-days: 5
+    # astro check refuses TypeScript 7, so the bump breaks the whole build, not
+    # just lint. Lift this once @astrojs/check supports it.
+    ignore:
+      - dependency-name: typescript
+        versions: ['>=7']
     groups:
       # One PR per concern instead of a dozen: dev tooling churns constantly and
       # is not shipped to readers, so it does not deserve individual review.
