@@ -113,8 +113,11 @@ const build = (figure: HTMLElement, controls: HTMLTemplateElement): void => {
   })
 
   enableDrag(pane)
-  figure.append(bar)
+  // The readout is a live region, so each zoom is announced. Writing the first
+  // value before it joins the page keeps every diagram from announcing "100%"
+  // on load.
   if (readout) readout.textContent = '100%'
+  figure.append(bar)
 }
 
 /** Attach zoom controls to every diagram inside `selector`. */

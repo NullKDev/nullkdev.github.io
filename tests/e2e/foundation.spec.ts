@@ -591,6 +591,23 @@ test('long-form Work and Notes documents do not overflow at 320 or 390px', async
   }
 })
 
+test('a page that inlines two diagrams carries no duplicate id', async ({
+  page,
+}) => {
+  // The note inlines its CI subpost, so it holds both diagrams. Fixed marker
+  // ids (`arrowhead`) once appeared twice, and `url(#…)` resolved to the first.
+  await page.goto('/notes/codex-security-precision-gap/')
+  await expect(page.locator('.prose figure.diagram')).toHaveCount(2)
+  const duplicates = await page.evaluate(() => {
+    const seen = new Map<string, number>()
+    document.querySelectorAll('[id]').forEach(({ id }) => {
+      seen.set(id, (seen.get(id) ?? 0) + 1)
+    })
+    return [...seen].filter(([, count]) => count > 1).map(([id]) => id)
+  })
+  expect(duplicates).toEqual([])
+})
+
 test('diagrams ship as static SVG that fits the column and zooms on request', async ({
   page,
 }) => {
@@ -656,11 +673,13 @@ test('diagrams ship as static SVG that fits the column and zooms on request', as
 
   const fitted = (await svg.boundingBox())!.width
   const before = await layout()
+  // The readout is a live region, so a screen reader hears each zoom level.
+  await expect(readout).toHaveAttribute('role', 'status')
   await expect(readout).toHaveText('100%')
 
   await figure.getByRole('button', { name: 'Zoom in' }).click()
   await figure.getByRole('button', { name: 'Zoom in' }).click()
-  await expect(readout).toHaveText('150%')
+  await expect(figure.getByRole('status')).toHaveText('150%')
   await settleTransitions(page)
   // The viewer rounds to whole pixels.
   expect(
