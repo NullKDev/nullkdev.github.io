@@ -368,6 +368,11 @@
   line-height: 1.35;
   text-decoration: none;
 }
+/* Subsections, listed only when the note has a single section to offer. */
+.toc-mobile__sub a {
+  padding-left: 2.25rem;
+  color: var(--ink-muted);
+}
 .toc-mobile__list .toc-num {
   padding-top: 0;
   color: var(--accent);

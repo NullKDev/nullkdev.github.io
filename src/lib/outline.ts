@@ -133,6 +133,20 @@ export const getTopLevelOutline = (
 ): OutlineItem[] => items.filter(({ level }) => level === 1)
 
 /**
+ * The phone contents: the top rung when it offers a choice, otherwise the one
+ * section with its subsections — a long note with a single h2 and many h3s
+ * would else get an index on desktop and none on a phone. Empty when there is
+ * nowhere to jump but the one heading.
+ */
+export const getCompactOutline = (
+  items: readonly OutlineItem[],
+): OutlineItem[] => {
+  const top = getTopLevelOutline(items)
+  if (top.length > 1) return top
+  return items.length > 1 ? [...items] : []
+}
+
+/**
  * Heading i of this page → heading i of its translation, so switching
  * language keeps the reader's place. Only when both outlines have the same
  * length and the same nesting; otherwise heading i is not the same section,

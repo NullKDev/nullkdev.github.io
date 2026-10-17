@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   buildDocumentOutline,
   buildEntryOutline,
+  getCompactOutline,
   getCounterpartAnchors,
   getPartAnchor,
   getTopLevelOutline,
@@ -159,5 +160,32 @@ describe('counterpart anchors', () => {
 describe('part anchor', () => {
   it('is derived from the subpost order', () => {
     expect(getPartAnchor(3)).toBe('part-3')
+  })
+})
+
+describe('compact outline (phone contents)', () => {
+  const item = (slug: string, level: 1 | 2) => ({ slug, text: slug, level })
+
+  it('lists the top rung when it has at least two sections', () => {
+    const outline = [item('a', 1), item('a1', 2), item('b', 1)]
+    expect(getCompactOutline(outline).map(({ slug }) => slug)).toEqual([
+      'a',
+      'b',
+    ])
+  })
+
+  it('falls back to the one section and its subsections', () => {
+    // One h2 with many h3s: the wide index shows them, so the phone must too.
+    const outline = [item('only', 1), item('x', 2), item('y', 2)]
+    expect(getCompactOutline(outline).map(({ slug }) => slug)).toEqual([
+      'only',
+      'x',
+      'y',
+    ])
+  })
+
+  it('offers nothing when there is a single heading to jump to', () => {
+    expect(getCompactOutline([item('only', 1)])).toEqual([])
+    expect(getCompactOutline([])).toEqual([])
   })
 })
