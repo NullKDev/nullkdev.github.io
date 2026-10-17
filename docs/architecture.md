@@ -53,6 +53,7 @@ src/pages/                                   routing only
 | `src/components/primitives/` | Project-owned shared UI (`Icon`, `StatusChip`, `Breadcrumb`, `BrandMark`) |
 | `src/components/ui/` | **shadcn only.** `shadcn add` writes here and may overwrite — never put project components in it |
 | `src/components/{lab,notes,gallery}/` | One folder per domain; the index, its card, and anything only that section uses |
+| `src/components/entry/` | Long-form furniture shared by `EntryPage` and `DocumentPage`: the outline, evidence and relationship blocks, and the reading tools (diagram toolbar, progress bar, image viewer) |
 | `src/components/mdx/` | Components authors can use inside markdown |
 | `src/i18n/` | UI strings (`en.ts`, `es.ts`) and label registries (`archive.ts`) |
 | `src/styles/` | `global.css` (tokens, shell) and `archive.css` (archive surfaces) |
@@ -72,6 +73,9 @@ derive the same value, it belongs here.
 | `capabilities.ts` | Runtime browser capability probe (feature detection, never user-agent) |
 | `notes.ts` | Type/topic facets, `NOTES_PER_PAGE`, `getNotesMeta()` (reading time + subpost titles in one pass), `getSupersededBy()` |
 | `reading-log.ts` | Private localStorage record of when each note was opened, and `read` / `revised` state |
+| `outline.ts` | The "In this record" outline — one `h2`–`h3` rule for an entry and for a subpost on its own URL |
+| `structured-data.ts` | Every page's schema.org JSON-LD: `Article`/`TechArticle` for entries and subposts (with author and banner image), `CollectionPage`, `WebPage`, `WebSite`, `Person` |
+| `entry-enhancements.ts` · `diagram-viewer.ts` | Browser-side reading tools for long-form pages, mounted once through `mountEntryEnhancements()` |
 | `about.ts` | Career derivation — years of practice from `careerStart`, position periods and durations. **No figure on the About page is typed by hand** |
 | `gallery.ts` | `isMedia` / `isFile` type guards — `Array.filter` does not narrow a discriminated union |
 | `archive-routes.ts` · `rss.ts` · `protection/` | Path building, feed ordering, and the encrypted-content pipeline |
@@ -87,7 +91,7 @@ Registered in `package.json` and chained into `bun run build`.
 | `private:generate` · `private:copy` · `private:scan` | Encrypted-content pipeline and leak scan |
 | `performance:check` | Per-route gzip budgets for total, JS, CSS, images, fonts |
 | `banners:build` · `banners:check` | Renders every banner from `src/data/banners.ts` into SVG + PNG; verifies all are 1200×630 |
-| `csp:apply` | Seals each page's CSP with SHA-256 hashes of the inline scripts that actually shipped |
+| `csp:apply` | Seals each page's CSP with SHA-256 hashes of the inline scripts this archive expects (`<head>` scripts, Astro's hydration runtime, its processed component scripts, and `data-csp-inline` opt-ins); any other executable inline script fails the build |
 | `links:check` · `metadata:check` | Built-link crawl, and metadata/RSS/sitemap/JSON-LD/hreflang checks — including that every page shares its own image |
 | `commits:check` | Commit subjects and PR titles against the convention (not chained into the build; runs in CI and locally) |
 

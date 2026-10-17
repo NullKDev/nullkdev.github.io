@@ -81,6 +81,26 @@ este repo usa de verdad — no las genéricas del estándar.
   y solo cambia su texto.
 - Las páginas con traducción declaran `hreflang="x-default"` apuntando a la
   versión en inglés, para quien no lee ninguno de los dos idiomas.
+- Una subpublicación abierta en su propia URL ahora tiene las mismas
+  herramientas de lectura que dentro de su entrada: botón para copiar el código
+  y su lenguaje, barra de progreso, marcador de la sección activa en el índice
+  y visor de imágenes. Antes solo tenía el zoom de diagramas, y su índice
+  listaba todos los niveles de título mientras la entrada mostraba solo `h2` y
+  `h3`; ahora ambas siguen la misma regla.
+- El visor de imágenes de los artículos se puede usar con teclado: cada imagen
+  es un botón con nombre accesible, el visor es un diálogo modal nativo que
+  retiene el foco, se cierra con Escape y devuelve el foco a la imagen que lo
+  abrió. Siempre tiene nombre, aunque la imagen no tenga texto alternativo, y
+  el botón de cerrar usa el ícono del registro con un área de 44 px.
+
+### Cambiado
+
+- Los datos estructurados de cada página salen de un solo módulo. Las entradas
+  de Notas y Galería se declaran `Article`, y las de Trabajo y Lab
+  `TechArticle` (Lab usaba `SoftwareApplication`, que sin precio ni
+  valoración es un resultado enriquecido inválido); todas indican autor e
+  imagen, la misma que se comparte en redes. El build falla si una entrada
+  pierde cualquiera de las dos.
 
 ### Seguridad
 

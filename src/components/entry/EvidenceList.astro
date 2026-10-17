@@ -1,0 +1,47 @@
+---
+// The evidence register of an entry or a subpost: each claim, its source and
+// how that source was obtained.
+import Icon from '@/components/primitives/Icon.astro'
+import RecordBlockHead from '@/components/entry/RecordBlockHead.astro'
+import { getDictionary, type Locale } from '@/i18n'
+import { getArchiveLabel } from '@/i18n/archive'
+import type { ArchiveEntry } from '@/lib/content'
+
+interface Props {
+  items: ArchiveEntry['data']['evidence']
+  locale: Locale
+}
+const { items, locale } = Astro.props
+const dictionary = getDictionary(locale)
+---
+
+{
+  items.length > 0 && (
+    <section class="record-block">
+      <RecordBlockHead
+        icon="evidence"
+        title={dictionary.archive.evidence}
+        count={items.length}
+      />
+      <ul class="evidence-list">
+        {items.map((item) => (
+          <li class="evidence-item">
+            <p class="evidence-item__claim">{item.claim}</p>
+            <p class="cite-line">
+              <span class="cite-line__source">{item.source}</span>
+              <span class="prov" data-prov={item.provenance}>
+                {getArchiveLabel('provenance', item.provenance, locale)}
+              </span>
+              {item.url && (
+                <a href={item.url}>
+                  {dictionary.archive.source}
+                  <Icon name="external" size={13} />
+                </a>
+              )}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}

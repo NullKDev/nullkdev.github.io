@@ -156,6 +156,8 @@ export const es = {
     zoomIn: 'Acercar',
     zoomOut: 'Alejar',
     zoomReset: 'Ajustar al ancho',
+    openImage: 'Abrir imagen',
+    image: 'Imagen',
     documents: 'Documentos',
     evidence: 'Registro de evidencia',
     links: 'Referencias externas',

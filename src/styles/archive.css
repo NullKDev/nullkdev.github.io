@@ -2626,26 +2626,43 @@
   font-size: 0.72rem;
   font-variant-numeric: tabular-nums;
 }
-/* Image lightbox overlay. */
+/* Image viewer: a native modal dialog (`EntryLightbox.astro`). It fills the
+   viewport so a click around the image lands on the dialog itself and closes
+   it; the page behind is inert while it is open. */
+.lightbox:not([open]) {
+  display: none;
+}
+html:has(.lightbox[open]) {
+  overflow: hidden;
+}
 .lightbox {
   position: fixed;
   inset: 0;
-  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
   padding: clamp(1rem, 4vw, 3rem);
   border: 0;
   background: color-mix(in srgb, var(--paper) 82%, #000);
   backdrop-filter: blur(6px);
+  color: var(--ink);
   cursor: zoom-out;
 }
-.lightbox img {
+.lightbox::backdrop {
+  background: transparent;
+}
+.lightbox__image {
   max-width: 100%;
   max-height: 100%;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-2);
+  cursor: default;
 }
 .lightbox__close {
   position: absolute;
@@ -2654,14 +2671,34 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
   border: 1px solid var(--line);
   border-radius: 50%;
   background: var(--surface-raised);
   color: var(--ink);
-  font-size: 1.1rem;
   cursor: pointer;
+}
+.lightbox__close:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+/* The control that opens the viewer is the image itself, wrapped in a real
+   button so it is reachable and operable from the keyboard. */
+.prose .zoom-trigger {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  color: inherit;
+  cursor: zoom-in;
+}
+.prose .zoom-trigger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 @media (prefers-reduced-motion: reduce) {
   .prose [data-zoomable] {
@@ -2947,17 +2984,14 @@
   font-weight: 600;
 }
 
-.document-list,
-.record-section {
+.document-list {
   margin-top: 3.5rem;
   border-top: 1px solid var(--line-strong);
 }
-.document-list > header,
-.record-section > h2 {
+.document-list > header {
   padding: 1.25rem 0;
 }
-.document-list h2,
-.record-section > h2 {
+.document-list h2 {
   margin: 0;
   font-size: clamp(2rem, 4vw, 4rem);
   font-weight: 480;
@@ -4795,8 +4829,7 @@ html[data-js='true'] .lab-nojs-fallback {
   .entry-layout,
   .about-grid,
   .secondary-grid,
-  .lab-workbench,
-  .evidence-row {
+  .lab-workbench {
     grid-template-columns: 1fr;
   }
   .index-heading > p:last-child {

@@ -603,6 +603,42 @@ test('long-form Work and Notes documents do not overflow at 320 or 390px', async
   }
 })
 
+test('a subpost on its own URL gets the same reading tools as its entry', async ({
+  page,
+}) => {
+  // Subposts used to mount only the diagram viewer: the same code was
+  // copyable inside the entry and not on the subpost's own page.
+  await page.goto('/notes/gof-patterns-android/adapter-factory/')
+  const main = page.locator('main.entry-page')
+  const copy = main.locator('.code-block__copy')
+  await expect(copy.first()).toHaveText('Copy')
+  expect(await copy.count()).toBe(
+    await main.locator('.prose pre.astro-code').count(),
+  )
+  await expect(main.locator('.code-block__lang').first()).toHaveText('kotlin')
+  await expect(page.locator('[data-read-progress]')).toHaveCount(1)
+
+  // One outline rule on both pages: h2 and h3 only.
+  const outline = main.getByRole('navigation', { name: 'In this record' })
+  const links = outline.locator('[data-toc] a')
+  const levels = await outline
+    .locator('[data-toc] li')
+    .evaluateAll((items) => items.map((item) => item.dataset.level))
+  expect(levels.length).toBeGreaterThan(1)
+  expect(levels.every((level) => level === '1' || level === '2')).toBe(true)
+
+  const target = links.nth(1)
+  await target.click()
+  await expect(target).toHaveAttribute('aria-current', 'true')
+
+  const types = await page
+    .locator('script[type="application/ld+json"]')
+    .evaluateAll((scripts) =>
+      scripts.map((script) => JSON.parse(script.textContent ?? '{}')['@type']),
+    )
+  expect(types).toContain('TechArticle')
+})
+
 test('a page that inlines two diagrams carries no duplicate id', async ({
   page,
 }) => {

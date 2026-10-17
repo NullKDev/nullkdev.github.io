@@ -15,7 +15,12 @@ import {
 } from '@/lib/content'
 import { getTopicLabel } from '@/data/taxonomy'
 import { getArchiveLabel } from '@/i18n/archive'
-import DiagramControls from '@/components/primitives/DiagramControls.astro'
+import { buildDocumentOutline } from '@/lib/outline'
+import { buildDocumentArticleLd } from '@/lib/structured-data'
+import EntryOutline from '@/components/entry/EntryOutline.astro'
+import EntryReadingTools from '@/components/entry/EntryReadingTools.astro'
+import EvidenceList from '@/components/entry/EvidenceList.astro'
+import RelationshipList from '@/components/entry/RelationshipList.astro'
 import Icon from '@/components/primitives/Icon.astro'
 
 interface Props {
@@ -30,6 +35,8 @@ const counterpartPath = await getDocumentCounterpartPath(entry, document)
 const adjacent = await getAdjacentDocuments(entry, document)
 const relationships = await getDocumentRelationships(document)
 const { Content, headings } = await render(document)
+// The same depth rule the subpost gets when its entry inlines it.
+const outline = buildDocumentOutline(headings)
 
 /* Just the subpost. Concatenating the parent title produced 153-character
    <title> elements that a search result truncates into uselessness — "How
@@ -37,6 +44,16 @@ const { Content, headings } = await render(document)
    relationship is already carried by the breadcrumb, the canonical URL and the
    JSON-LD; the title does not need to restate it. */
 const documentTitle = pageTitle(document.data.title)
+const jsonLd = buildDocumentArticleLd({
+  title: document.data.title,
+  summary: document.data.summary,
+  locale,
+  path: getDocumentPath(entry, document),
+  parentPath: getEntryPath(entry),
+  publishedAt: document.data.publishedAt,
+  updatedAt: document.data.updatedAt,
+  site: Astro.site,
+})
 ---
 
 <Layout
@@ -44,17 +61,14 @@ const documentTitle = pageTitle(document.data.title)
   title={documentTitle}
   description={document.data.summary}
   counterpartPath={counterpartPath}
-  jsonLd={{
-    '@context': 'https://schema.org',
-    '@type': 'TechArticle',
-    headline: document.data.title,
-    description: document.data.summary,
-    inLanguage: locale,
-    isPartOf: new URL(getEntryPath(entry), Astro.site).toString(),
-  }}
+  jsonLd={jsonLd}
 >
-  <main class="entry-page document-page">
-    <DiagramControls locale={locale} />
+  <main
+    class="entry-page document-page"
+    data-copy={dictionary.archive.copy}
+    data-copied={dictionary.archive.copied}
+  >
+    <EntryReadingTools locale={locale} />
     <nav class="breadcrumbs" aria-label={dictionary.archive.breadcrumb}>
       <a href={getLocalizedPath(`/${domain}`, locale)}
         >{dictionary.nav[domain]}</a
@@ -78,22 +92,9 @@ const documentTitle = pageTitle(document.data.title)
         class="entry-index"
         aria-label={dictionary.archive.contents}
       >
-        {
-          headings.length > 0 && (
-            <>
-              <>
-                <h2>{dictionary.archive.contents}</h2>
-                <ol>
-                  {headings.map((heading) => (
-                    <li>
-                      <a href={`#${heading.slug}`}>{heading.text}</a>
-                    </li>
-                  ))}
-                </ol>
-              </>
-            </>
-          )
-        }<h2>{dictionary.archive.topics}</h2><ul class="topic-list">
+        <EntryOutline items={outline} locale={locale} /><h2>
+          {dictionary.archive.topics}
+        </h2><ul class="topic-list">
           {
             document.data.topics.map((topic) => (
               <li>{getTopicLabel(topic, locale)}</li>
@@ -103,50 +104,15 @@ const documentTitle = pageTitle(document.data.title)
       </aside>
     </div>
     {
-      document.data.evidence.length > 0 && (
-        <section class="record-section">
-          <h2>{dictionary.archive.evidence}</h2>
-          {document.data.evidence.map((item) => (
-            <div class="evidence-row">
-              <strong>{item.claim}</strong>
-              <p>
-                {item.source} ·{' '}
-                {getArchiveLabel('provenance', item.provenance, locale)}
-                {item.url && (
-                  <>
-                    {' '}
-                    ·{' '}
-                    <a href={item.url}>
-                      {dictionary.archive.source}
-                      <Icon name="external" size={13} />
-                    </a>
-                  </>
-                )}
-              </p>
-            </div>
-          ))}
-        </section>
-      )
-    }
-    {
-      relationships.length > 0 && (
-        <section class="record-section">
-          <h2>{dictionary.archive.references}</h2>
-          <div class="relationship-list">
-            {relationships.map(({ reference, entry: target }) => (
-              <a href={getEntryPath(target)}>
-                <span>
-                  {getArchiveLabel(
-                    'relationship',
-                    reference.relationship,
-                    locale,
-                  )}
-                </span>
-                <strong>{target.data.title}</strong>
-              </a>
-            ))}
-          </div>
-        </section>
+      (document.data.evidence.length > 0 || relationships.length > 0) && (
+        <div class="entry-record">
+          <EvidenceList items={document.data.evidence} locale={locale} />
+          <RelationshipList
+            title={dictionary.archive.references}
+            items={relationships}
+            locale={locale}
+          />
+        </div>
       )
     }
     <nav class="series-navigation" aria-label={dictionary.archive.documents}>
@@ -177,10 +143,11 @@ const documentTitle = pageTitle(document.data.title)
 </Layout>
 
 <script>
-  import { mountDiagramViewers } from '@/lib/diagram-viewer'
+  import { mountEntryEnhancements } from '@/lib/entry-enhancements'
 
-  // A subpost read on its own URL gets the same diagram viewer as the entry
-  // that inlines it; without this the identical diagram is zoomable in one
-  // place and fixed in the other.
-  mountDiagramViewers()
+  // A subpost read on its own URL gets the same reading tools as the entry
+  // that inlines it: copy buttons, figures and the image viewer, diagram zoom,
+  // reading progress and the active-section marker. Mounting only the diagram
+  // viewer left the same code block copyable in one place and not the other.
+  mountEntryEnhancements(document.querySelector<HTMLElement>('.entry-page'))
 </script>

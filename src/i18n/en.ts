@@ -154,6 +154,8 @@ export const en = {
     zoomIn: 'Zoom in',
     zoomOut: 'Zoom out',
     zoomReset: 'Fit to width',
+    openImage: 'Open image',
+    image: 'Image',
     documents: 'Documents',
     evidence: 'Evidence register',
     links: 'External references',

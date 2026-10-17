@@ -1,0 +1,30 @@
+---
+// The "In this record" index of a long-form page. The items — which headings,
+// at which level — are derived in `src/lib/outline.ts`; this only renders
+// them. `data-toc` is what the active-section marker in
+// `src/lib/entry-enhancements.ts` looks for.
+import { getDictionary, type Locale } from '@/i18n'
+import type { OutlineItem } from '@/lib/outline'
+
+interface Props {
+  items: readonly OutlineItem[]
+  locale: Locale
+}
+const { items, locale } = Astro.props
+const dictionary = getDictionary(locale)
+---
+
+{
+  items.length > 0 && (
+    <nav class="toc" aria-label={dictionary.archive.contents}>
+      <h2>{dictionary.archive.contents}</h2>
+      <ol class="toc-list" data-toc>
+        {items.map((item) => (
+          <li data-level={item.level}>
+            <a href={`#${item.slug}`}>{item.text}</a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
