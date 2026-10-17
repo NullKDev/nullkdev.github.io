@@ -439,20 +439,27 @@
   align-items: start;
   gap: 1rem;
 }
-.lab-workbench:has(.lab-pane:not(.output-pane)) {
-  grid-template-columns: 1fr 1fr;
-}
 .lab-controls,
 .lab-actions {
   grid-column: 1 / -1;
 }
-.lab-workbench:has(.lab-pane:not(.output-pane)) .lab-pane:not(.output-pane) {
-  grid-column: 1;
-  grid-row: 2;
-}
-.lab-workbench:has(.lab-pane:not(.output-pane)) .output-pane {
-  grid-column: 2;
-  grid-row: 2;
+/* Side by side only where each pane still gets a usable width. A phone used
+   to keep both columns at ~150px each: the stacking rule below 760px lost to
+   these `:has()` selectors on specificity, so it never applied. Gating the
+   two-column layout itself leaves nothing to override; below the breakpoint
+   the panes stack in source order — input, actions, output. */
+@media (min-width: 761px) {
+  .lab-workbench:has(.lab-pane:not(.output-pane)) {
+    grid-template-columns: 1fr 1fr;
+  }
+  .lab-workbench:has(.lab-pane:not(.output-pane)) .lab-pane:not(.output-pane) {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .lab-workbench:has(.lab-pane:not(.output-pane)) .output-pane {
+    grid-column: 2;
+    grid-row: 2;
+  }
 }
 .lab-pane {
   display: grid;
@@ -544,14 +551,4 @@ html[data-js='true'] .lab-nojs-fallback {
   grid-column: 1 / -1;
   margin: 0;
   color: var(--destructive);
-}
-
-@media (max-width: 760px) {
-  .lab-workbench {
-    grid-template-columns: 1fr;
-  }
-  .lab-pane,
-  .output-pane {
-    grid-column: 1;
-  }
 }
