@@ -8,6 +8,38 @@ Format: what was decided · why · what it rules out.
 
 ---
 
+## 2026-10-17 — Component scripts ship as files, never inline
+
+**Decided.** `vite.build.assetsInlineLimit` returns `false` for `.js`, so every
+processed component `<script>` is emitted as `/_astro/*.js` and covered by
+`script-src 'self'`. `scripts/apply-csp.ts` no longer accepts a bare inline
+`<script type="module">` in `<body>`.
+
+**Why.** Astro inlined component scripts under 4 KB as a bare module script,
+and the sealer had to hash them. A script injected at build time — raw HTML in
+an entry, a compromised dependency writing markup — looks exactly like one, so
+the allowance was a hole the CSP could not close. Externalising costs one
+cached request per component script; every route stayed inside its budget.
+
+**Rules out.** Re-allowing bare inline module scripts in the sealer. A body
+script that must be inline opts in with `data-csp-inline` and is reviewed as
+such.
+
+## 2026-10-17 — `.md` and `.mdx` share the unified processor
+
+**Decided.** `markdown.processor` is `unified({ rehypePlugins })` from
+`@astrojs/markdown-remark`, a direct dependency. MDX inherits the plugins from
+it.
+
+**Why.** Astro 7 defaults `.md` to Sätteri, but MDX always runs unified, and
+`satteri({ hastPlugins })` never reaches `.mdx` — measured as 0 table wrappers
+on a page that had 2. The deprecated `markdown.rehypePlugins` was already
+coerced into `unified()` at config load; declaring it directly produced a
+byte-identical build without the warning.
+
+**Rules out.** Sätteri for `.md` until MDX can inherit its plugins — otherwise
+the two formats render tables and diagrams differently.
+
 ## 2026-10-17 — Diagrams are compiled at build, not drawn in the browser
 
 **Decided.** Mermaid fences compile to static SVG during the build with

@@ -36,14 +36,29 @@ describe('inline script sealing', () => {
     expect(report.hashes).toEqual([hashOf(body)])
   })
 
-  it("hashes Astro's processed module scripts outside entry content", () => {
+  it('hashes a module script in <head>, which only the layout writes', () => {
+    const body = 'var e=document.querySelector(`[data-gallery-pieces]`)'
+    const report = classifyInlineScripts(
+      page(`<script type="module">${body}</script>`, ''),
+    )
+
+    expect(report.violations).toEqual([])
+    expect(report.hashes).toEqual([hashOf(body)])
+  })
+
+  /* Component scripts ship as `/_astro/*.js` files (`assetsInlineLimit` in
+     astro.config.mjs), so a bare inline module in the body is no longer
+     something Astro writes — and a build-time injection would look exactly
+     like one. */
+  it('rejects a bare module script in the body', () => {
     const body = 'var e=document.querySelector(`[data-gallery-pieces]`)'
     const report = classifyInlineScripts(
       page('', `<main><script type="module">${body}</script></main>`),
     )
 
-    expect(report.violations).toEqual([])
-    expect(report.hashes).toEqual([hashOf(body)])
+    expect(report.hashes).toEqual([])
+    expect(report.violations).toHaveLength(1)
+    expect(report.violations[0]?.reason).toMatch(/<body>/)
   })
 
   it("hashes Astro's hydration runtime even inside an <article>", () => {

@@ -1,5 +1,6 @@
 import { SITE_URL } from './site.config.mjs'
 import mdx from '@astrojs/mdx'
+import { unified } from '@astrojs/markdown-remark'
 import react from '@astrojs/react'
 import sitemap from '@astrojs/sitemap'
 import tailwindcss from '@tailwindcss/vite'
@@ -103,25 +104,23 @@ export default defineConfig({
     routing: { prefixDefaultLocale: false },
   },
   markdown: {
-    /* Wraps every table in its own scroll container and marks numeric columns,
-       neither of which markdown table syntax can express. See the module.
+    /* `.md` and `.mdx` share one unified pipeline, declared here once.
 
-       This option is deprecated in Astro 7, and the replacements were both
-       measured against it rather than assumed:
+       hastTables wraps every table in its own scroll container and marks
+       numeric columns, neither of which markdown table syntax can express.
+       hastDiagrams compiles ```mermaid fences to static SVG. See each module.
 
-       - `processor: satteri({ hastPlugins })` is the native path and silences
-         the warning, but Sätteri only renders `.md`. MDX keeps its own unified
-         pipeline, so every `.mdx` entry silently lost the treatment — verified
-         as 0 wrappers on a page that had 2.
-       - `mdx({ rehypePlugins })` is deprecated as well and did not apply.
+       Astro 7 defaults `.md` to Sätteri, which renders only `.md`; MDX always
+       runs unified. Declaring `processor: unified()` keeps both formats on the
+       same renderer, and @astrojs/mdx inherits `processor.options.rehypePlugins`
+       when the processor is unified, so one list reaches both. The deprecated
+       `markdown.rehypePlugins` did the same thing — Astro coerced it into
+       `unified()` at config load — and only added a warning.
 
-       Reaching a clean log would mean moving the whole site onto the unified
-       processor: a different renderer for 168 pages in exchange for one table
-       fix. The deprecated option works on both `.md` and `.mdx` today, so it
-       stays until the Sätteri and MDX pipelines converge.
-
-       hastDiagrams compiles ```mermaid fences to static SVG; see the module. */
-    rehypePlugins: [hastTables, hastDiagrams],
+       Not `satteri({ hastPlugins })`: MDX would not inherit them, and every
+       `.mdx` entry silently lost the treatment (0 wrappers on a page that had
+       2). Not `mdx({ rehypePlugins })`: deprecated, and redundant here. */
+    processor: unified({ rehypePlugins: [hastTables, hastDiagrams] }),
     // Shiki runs before the plugins above. Excluding mermaid leaves the fence
     // as plain `code.language-mermaid` with its `title` meta for hastDiagrams.
     syntaxHighlight: { type: 'shiki', excludeLangs: ['math', 'mermaid'] },
@@ -144,5 +143,15 @@ export default defineConfig({
   },
   vite: {
     plugins: [tailwindcss(), galleryAssets()],
+    build: {
+      /* Astro inlines a component script under this limit as a bare
+         `<script type="module">`, which the CSP sealer cannot tell apart from
+         one injected at build time. `false` for `.js` keeps every processed
+         script a `/_astro/*.js` file that `script-src 'self'` covers; any
+         other asset returns `undefined`, which keeps the default 4 KB rule
+         (it is what inlines small stylesheets). See `scripts/apply-csp.ts`. */
+      assetsInlineLimit: (filePath) =>
+        filePath.endsWith('.js') ? false : undefined,
+    },
   },
 })

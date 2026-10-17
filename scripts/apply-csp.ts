@@ -5,11 +5,11 @@
  * the policy has to travel inside the document. That rules out a nonce — there
  * is no request to generate one per — which leaves hashes.
  *
- * Astro inlines small component scripts into the HTML rather than emitting
- * them as files, and there is no build flag to stop it. Hand-maintaining those
- * hashes would be a trap: the gallery pages carry data payloads that change
- * whenever the content changes, so a checked-in list would rot silently and the
- * page would break in production while every local check stayed green.
+ * Astro inlines its hydration runtime into the HTML whenever a page carries an
+ * island, and there is no build flag to stop it. Hand-maintaining those hashes
+ * would be a trap: an Astro upgrade changes the bytes, so a checked-in list
+ * would rot silently and the page would break in production while every local
+ * check stayed green.
  *
  * So the hashes are derived from the bytes that actually shipped, after the
  * build, on the same footing as the link and metadata checks. Edit anything and
@@ -27,10 +27,12 @@
  * - Astro's hydration runtime, compared byte for byte against the copy in the
  *   installed `astro` package, wherever an island puts it — `<article>`
  *   included, because islands live inside entries;
- * - Astro's processed component scripts, which it inlines as a bare
- *   `<script type="module">` (no other attribute) when they are small — never
- *   inside `<article>`, `<svg>` or `<template>`, where only content renders;
  * - a body script that opts in with `data-csp-inline`.
+ *
+ * Component scripts are not on that list. Astro would inline the small ones as
+ * a bare `<script type="module">`, which is indistinguishable from an injected
+ * one, so `vite.build.assetsInlineLimit` in `astro.config.mjs` keeps every
+ * processed script an external `/_astro/*.js` file that `'self'` covers.
  *
  * Any other executable inline script fails the build, naming the file.
  */
@@ -72,7 +74,7 @@ const EXECUTABLE_TYPES = new Set([
   'importmap',
 ])
 
-/** Where only content renders, so no processed component script belongs. */
+/** Where only content renders; named in the failure so it can be traced. */
 const CONTENT_REGIONS = new Set(['article', 'svg', 'template'])
 
 const OPT_IN = 'dataCspInline'
@@ -190,15 +192,6 @@ const verdict = (
   const region = ancestors.find((name) => CONTENT_REGIONS.has(name))
 
   if (type === '' && runtimeScripts.has(body)) return null
-  if (type === 'module') {
-    const attributes = Object.keys(element.properties)
-    if (attributes.length !== 1) {
-      return 'a module script with attributes other than type="module" is not one Astro inlined'
-    }
-    return region
-      ? `a module script inside <${region}>, where only content renders`
-      : null
-  }
   return region
     ? `an unexpected inline script inside <${region}>`
     : 'an unexpected inline script in <body>'

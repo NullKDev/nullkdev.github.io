@@ -329,10 +329,13 @@ describing it must say so. `private:scan` fails the build if plaintext reaches
   (`PRIVATE_CONTENT_KEY_*`) must be at least 16 characters or the build fails.
 - CSP is emitted by `src/layouts/Layout.astro` and **sealed after the build** by
   `scripts/apply-csp.ts`, which hashes only the inline scripts it expects —
-  `<head>`, Astro's hydration runtime, Astro's inlined component scripts
-  outside `<article>`/`<svg>`/`<template>`, and body scripts marked
+  `<head>`, Astro's hydration runtime, and body scripts marked
   `data-csp-inline` — and fails the build on any other. Never hand-maintain
   those hashes.
+- Component `<script>` blocks ship as `/_astro/*.js` files, never inline:
+  `vite.build.assetsInlineLimit` in `astro.config.mjs` returns `false` for
+  `.js`. An inline bare `<script type="module">` in `<body>` fails the build,
+  because it is indistinguishable from an injected one.
 - JSON written into a `<script>` goes through `serializeJsonForScript`
   (`src/lib/json-script.ts`), never a bare `JSON.stringify`.
 - `script-src` is `'self'` plus hashes. `'unsafe-inline'` is styles only.
