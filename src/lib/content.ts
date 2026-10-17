@@ -8,6 +8,7 @@ import {
 } from '@/content/integrity'
 import type { Locale } from '@/i18n'
 import { buildDocumentPath, buildEntryPath } from '@/lib/archive-routes'
+import { itemsInCollection, summarizeGallery } from '@/lib/gallery'
 
 export const archiveDomains = ['work', 'lab', 'notes', 'gallery'] as const
 export type ArchiveDomain = (typeof archiveDomains)[number]
@@ -347,6 +348,17 @@ export const assertTrackedContentIntegrity = async () => {
  * do, and those are bilingual inside the record.
  */
 export const getGalleryItems = async (entry: ArchiveEntry) =>
-  (await getCollection('galleryItems'))
-    .filter(({ data }) => data.collection === entry.data.translationKey)
-    .toSorted((left, right) => left.data.order - right.data.order)
+  itemsInCollection(
+    await getCollection('galleryItems'),
+    entry.data.translationKey,
+  )
+
+/**
+ * The Gallery index's contact sheets and totals, from one read of the item
+ * manifest — the same grouping `getGalleryItems` uses for a detail page.
+ */
+export const getGallerySheets = async <
+  Entry extends CollectionEntry<'gallery'>,
+>(
+  entries: readonly Entry[],
+) => summarizeGallery(entries, await getCollection('galleryItems'))

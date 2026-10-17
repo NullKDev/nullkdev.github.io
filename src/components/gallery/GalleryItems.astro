@@ -1,10 +1,12 @@
 ---
+import { getImage } from 'astro:assets'
 import type { CollectionEntry } from 'astro:content'
+import GalleryImage from '@/components/gallery/GalleryImage.astro'
 import Icon from '@/components/primitives/Icon.astro'
 import { getDictionary, type Locale } from '@/i18n'
 import { getArchiveLabel } from '@/i18n/archive'
 import GalleryLightbox from '@/components/gallery/GalleryLightbox.astro'
-import { isFile, isMedia } from '@/lib/gallery'
+import { isFile, isMedia, resolveGalleryImage } from '@/lib/gallery'
 import { formatBytes } from '@/lib/lab'
 import { serializeJsonForScript } from '@/lib/json-script'
 import type { IconName } from '@/lib/icons'
@@ -22,6 +24,23 @@ const dictionary = getDictionary(locale)
 // list with sizes and destinations.
 const media = items.filter(isMedia)
 const files = items.filter(isFile)
+
+/* What opening a piece shows — the no-JS link and the viewer alike. A raster
+   is re-encoded once at a viewing size instead of handing over the camera
+   original; vectors and videos are served as authored. */
+const VIEW_WIDTH = 2048
+const viewSources = await Promise.all(
+  media.map(async ({ data }) => {
+    const image = data.type === 'image' && resolveGalleryImage(data.src)
+    if (!image) return data.src
+    const view = await getImage({
+      src: image,
+      width: Math.min(image.width, VIEW_WIDTH),
+      format: 'webp',
+    })
+    return view.src
+  }),
+)
 
 const fileIcon: Record<string, IconName> = {
   document: 'paper',
@@ -56,7 +75,7 @@ const hostOf = (href: string) => {
                 script upgrades it into the viewer. */}
             <a
               class="gallery-piece__open"
-              href={data.src}
+              href={viewSources[index]}
               data-piece={index}
               aria-label={data.alt[locale]}
             >
@@ -69,13 +88,16 @@ const hostOf = (href: string) => {
                   preload="metadata"
                 />
               ) : (
-                <img
+                <GalleryImage
                   src={data.src}
                   alt={data.alt[locale]}
-                  width={width}
-                  height={height}
-                  loading="lazy"
-                  decoding="async"
+                  dimensions={data.dimensions}
+                  widths={[480, 960, 1440]}
+                  sizes={
+                    ratio > 1.7
+                      ? '(min-width: 48rem) 50vw, 100vw'
+                      : '(min-width: 48rem) 25vw, 100vw'
+                  }
                 />
               )}
               <span class="gallery-piece__veil">
@@ -105,10 +127,10 @@ const hostOf = (href: string) => {
   type="application/json"
   data-gallery-pieces
   set:html={serializeJsonForScript(
-    media.map((item) => {
+    media.map((item, index) => {
       const data = item.data
       return {
-        src: data.src,
+        src: viewSources[index],
         type: data.type,
         alt: data.alt[locale],
         caption: data.caption?.[locale] ?? '',
@@ -213,6 +235,7 @@ const hostOf = (href: string) => {
 
   if (source && dialog && stage && counter) {
     const pieces = JSON.parse(source.textContent ?? '[]') as Piece[]
+    const seedTemplate = dialog.dataset.seedTemplate ?? '{seed}'
     let current = 0
 
     const set = (field: string, value: string) => {
@@ -250,7 +273,7 @@ const hostOf = (href: string) => {
       set('dimensions', piece.dimensions)
       set('size', piece.size)
       set('prompt-text', piece.prompt)
-      set('seed', piece.seed ? `Seed ${piece.seed}` : '')
+      set('seed', piece.seed ? seedTemplate.replace('{seed}', piece.seed) : '')
 
       toggle('model', Boolean(piece.model))
       toggle('dimensions', Boolean(piece.dimensions))
@@ -284,8 +307,19 @@ const hostOf = (href: string) => {
       ?.addEventListener('click', () => dialog.close())
 
     dialog.addEventListener('keydown', (event) => {
+      // Arrow keys on a video's own controls seek and change the volume; they
+      // must not also flip to another piece.
+      if (event.target instanceof Element && event.target.closest('video'))
+        return
       if (event.key === 'ArrowRight') show(current + 1)
       if (event.key === 'ArrowLeft') show(current - 1)
+    })
+
+    // A closed viewer must not keep playing sound nobody can see the source
+    // of. Emptying the stage stops and releases whatever was in it.
+    dialog.addEventListener('close', () => {
+      stage.querySelector('video')?.pause()
+      stage.replaceChildren()
     })
 
     // Clicking the backdrop closes, but clicking the panel or image does not.

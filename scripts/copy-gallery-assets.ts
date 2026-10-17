@@ -3,6 +3,12 @@
  * `src/content/gallery/<collection>/assets/`, so everything about a collection
  * lives in one folder. Astro does not serve `src/`, so the built site gets a
  * copy at `dist/gallery/<collection>/` — the path recorded in `items.yml`.
+ *
+ * Pages no longer display these files: rasters render through `astro:assets`
+ * (resized AVIF/WebP, see `src/components/gallery/GalleryImage.astro`). The
+ * copy stays for what still links to the authored path — documents, archives,
+ * videos, vectors, and an entry's `image` frontmatter, which feeds its card
+ * and social preview.
  */
 import { existsSync } from 'node:fs'
 import { cp, mkdir, readdir } from 'node:fs/promises'
