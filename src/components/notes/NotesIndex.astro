@@ -6,7 +6,12 @@ import NoteRow from '@/components/notes/NoteRow.astro'
 import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
 import Icon from '@/components/primitives/Icon.astro'
 import Pagination from '@/components/primitives/Pagination.astro'
-import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import {
+  getAlternateLocale,
+  getDictionary,
+  getLocalizedPath,
+  type Locale,
+} from '@/i18n'
 import { getTopicLabel } from '@/data/taxonomy'
 import { getArchiveLabel } from '@/i18n/archive'
 import Layout from '@/layouts/Layout.astro'
@@ -100,9 +105,7 @@ const collectionJsonLd = buildCollectionPageLd({
   title={title}
   description={description}
   jsonLd={collectionJsonLd}
-  counterpartPath={locale === 'en'
-    ? `/es${viewPath}`
-    : viewPath.replace('/es', '')}
+  counterpartPath={getLocalizedPath(viewPath, getAlternateLocale(locale))}
 >
   <main class="notes-index">
     <header class="notes-head">
@@ -140,9 +143,7 @@ const collectionJsonLd = buildCollectionPageLd({
       class="notes-search"
       role="search"
       data-notes-search
-      data-endpoint={locale === 'en'
-        ? '/notes-search.json'
-        : '/es/notes-search.json'}
+      data-endpoint={getLocalizedPath('/notes-search.json', locale)}
       hidden
     >
       <label for="notes-q" class="sr-only">{dictionary.notes.search}</label>

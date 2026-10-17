@@ -3,7 +3,12 @@ import type { CollectionEntry } from 'astro:content'
 import { pageTitle } from '@/data/brand'
 import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
 import StatusChip from '@/components/primitives/StatusChip.astro'
-import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import {
+  getAlternateLocale,
+  getDictionary,
+  getLocalizedPath,
+  type Locale,
+} from '@/i18n'
 import { getArchiveLabel } from '@/i18n/archive'
 import Layout from '@/layouts/Layout.astro'
 import { buildCollectionPageLd } from '@/lib/structured-data'
@@ -38,7 +43,7 @@ const collectionJsonLd = buildCollectionPageLd({
   locale={locale}
   title={pageTitle(dictionary.nav.gallery)}
   description={dictionary.section.gallery}
-  counterpartPath={locale === 'en' ? '/es/gallery/' : '/gallery/'}
+  counterpartPath={getLocalizedPath('/gallery/', getAlternateLocale(locale))}
   jsonLd={collectionJsonLd}
 >
   <main class="gallery-index">

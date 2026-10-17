@@ -3,7 +3,12 @@ import Icon from '@/components/primitives/Icon.astro'
 import { pageTitle } from '@/data/brand'
 import type { IconName } from '@/lib/icons'
 import { about, type ChannelKind } from '@/data/about'
-import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import {
+  getAlternateLocale,
+  getDictionary,
+  getLocalizedPath,
+  type Locale,
+} from '@/i18n'
 import {
   formatDuration,
   formatPeriod,
@@ -52,7 +57,7 @@ const measures = [
   locale={locale}
   title={pageTitle(dictionary.nav.about)}
   description={metaDescription}
-  counterpartPath={locale === 'en' ? '/es/about/' : '/about/'}
+  counterpartPath={getLocalizedPath('/about/', getAlternateLocale(locale))}
   jsonLd={buildProfileLd({ profile, current, site: Astro.site })}
 >
   <main class="about-page">

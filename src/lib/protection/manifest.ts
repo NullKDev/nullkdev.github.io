@@ -1,4 +1,4 @@
-import type { Locale } from '@i18n/index'
+import type { Locale } from '@/i18n'
 
 export type ProtectedDomain = 'work' | 'lab' | 'notes' | 'gallery'
 

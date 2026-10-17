@@ -1,12 +1,10 @@
-import brandMark from '@assets/brand/carlosdev-mark.svg?raw'
-import orbitDivider from '@assets/illustrations/orbit-divider.svg?raw'
-import fieldGrid from '@assets/patterns/field-grid.svg?raw'
-import { getAmbientSceneMode } from '@components/ambient/scene-policy'
-import { validateContentIntegrity } from '@content/integrity'
-import { taxonomy } from '@data/taxonomy'
-import { getDictionary } from '@i18n/index'
-import { cn } from '@lib/utils'
-import * as hooksBoundary from '@hooks/index'
+import brandMark from '@/assets/brand/carlosdev-mark.svg?raw'
+import orbitDivider from '@/assets/illustrations/orbit-divider.svg?raw'
+import fieldGrid from '@/assets/patterns/field-grid.svg?raw'
+import { validateContentIntegrity } from '@/content/integrity'
+import { taxonomy } from '@/data/taxonomy'
+import { getDictionary } from '@/i18n'
+import { cn } from '@/lib/utils'
 
 import { describe, expect, it } from 'vitest'
 
@@ -16,21 +14,13 @@ import { describe, expect, it } from 'vitest'
 const inheritColour = [orbitDivider, fieldGrid]
 const allAssets = [brandMark, ...inheritColour]
 
-describe('workspace aliases', () => {
-  it('resolve representative UI, component, lib, content, i18n, data, and asset imports', () => {
+describe('workspace alias', () => {
+  it('resolves lib, content, i18n, data, and asset imports through `@/`', () => {
     expect(cn('field', undefined, 'atlas')).toBe('field atlas')
     expect(getDictionary('es').nav.work).toBe('Trabajo')
     expect(taxonomy.topics.architecture.en).toBe('Architecture')
     expect(validateContentIntegrity([])).toEqual([])
-    expect(
-      getAmbientSceneMode({
-        webglAvailable: false,
-        reducedMotion: false,
-        isVisible: true,
-      }),
-    ).toBe('fallback')
     expect(brandMark).toContain('<svg')
-    expect(Object.keys(hooksBoundary)).toEqual([])
   })
 })
 

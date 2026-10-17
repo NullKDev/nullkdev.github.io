@@ -4,7 +4,12 @@ import { pageTitle } from '@/data/brand'
 import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
 import LabCard from '@/components/lab/LabCard.astro'
 import { getTopicLabel } from '@/data/taxonomy'
-import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import {
+  getAlternateLocale,
+  getDictionary,
+  getLocalizedPath,
+  type Locale,
+} from '@/i18n'
 import { getArchiveLabel } from '@/i18n/archive'
 import Layout from '@/layouts/Layout.astro'
 import { buildCollectionPageLd } from '@/lib/structured-data'
@@ -73,7 +78,7 @@ const collectionJsonLd = buildCollectionPageLd({
   locale={locale}
   title={pageTitle(dictionary.nav.lab)}
   description={dictionary.section.lab}
-  counterpartPath={locale === 'en' ? '/es/lab/' : '/lab/'}
+  counterpartPath={getLocalizedPath('/lab/', getAlternateLocale(locale))}
   jsonLd={collectionJsonLd}
 >
   <main class="lab-index">

@@ -279,6 +279,15 @@ export const es = {
       'La demo anterior no se republica porque su implementación no fue migrada, atribuida, explicada y probada por completo. Continuá hacia la Nota preservada con sus fuentes.',
     continue: 'Continuar al archivo',
   },
+  notFound: {
+    title: 'Registro no encontrado',
+    description: 'El registro solicitado no existe.',
+    kicker: '404 / Fuera del índice',
+    heading: 'Señal no encontrada.',
+    body: 'El registro solicitado puede haberse movido, seguir siendo privado o nunca haber ingresado al archivo público.',
+    home: 'Volver al archivo',
+    notes: 'Explorar Notas',
+  },
   galleryNotice:
     'Galería archiva actualmente estudios propios del sistema visual. Las rutas fotográficas anteriores se conservan como avisos honestos de retiro; no se republica material sin verificar.',
   protection: {

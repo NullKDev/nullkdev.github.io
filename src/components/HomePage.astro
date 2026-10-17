@@ -1,9 +1,14 @@
 ---
 import HomeCard from '@/components/HomeCard.astro'
 import ModelShowcase from '@/components/hero/ModelShowcase.astro'
-import { getDictionary, getLocalizedPath, type Locale } from '@i18n/index'
-import Layout from '@layouts/Layout.astro'
-import { buttonVariants } from '@ui/button'
+import {
+  getAlternateLocale,
+  getDictionary,
+  getLocalizedPath,
+  type Locale,
+} from '@/i18n'
+import Layout from '@/layouts/Layout.astro'
+import { buttonVariants } from '@/components/ui/button'
 import { getTopicLabel } from '@/data/taxonomy'
 import { getHomeSections, getTopicIndex } from '@/lib/content'
 import { buildHomeLd } from '@/lib/structured-data'
@@ -25,7 +30,7 @@ const tagsPath = getLocalizedPath('/tags', locale)
   locale={locale}
   title={dictionary.meta.title}
   description={dictionary.meta.description}
-  counterpartPath={locale === 'en' ? '/es/' : '/'}
+  counterpartPath={getLocalizedPath('/', getAlternateLocale(locale))}
   jsonLd={buildHomeLd({
     description: dictionary.meta.description,
     locale,

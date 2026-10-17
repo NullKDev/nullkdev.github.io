@@ -54,7 +54,7 @@ src/pages/                                   routing only
 | `src/components/ui/` | **shadcn only.** `shadcn add` writes here and may overwrite — never put project components in it |
 | `src/components/{lab,notes,gallery}/` | One folder per domain; the index, its card, and anything only that section uses |
 | `src/components/entry/` | Long-form furniture shared by `EntryPage` and `DocumentPage`: the outline, evidence and relationship blocks, and the reading tools (diagram toolbar, progress bar, image viewer) |
-| `src/components/mdx/` | Components authors can use inside markdown |
+| `src/components/mdx/` | An authoring kit for `.mdx` entries (`Callout`, `Figure`, `ReadmeCard`, `BenchmarkBars`). A component here is kept even while no entry uses it |
 | `src/i18n/` | UI strings (`en.ts`, `es.ts`) and label registries (`archive.ts`) |
 | `src/styles/` | `global.css` (tokens, shell) and `archive.css` (archive surfaces) |
 | `src/pages/` | File-based routes; EN unprefixed, ES under `/es` |
@@ -78,7 +78,8 @@ derive the same value, it belongs here.
 | `entry-enhancements.ts` · `diagram-viewer.ts` | Browser-side reading tools for long-form pages, mounted once through `mountEntryEnhancements()` |
 | `about.ts` | Career derivation — years of practice from `careerStart`, position periods and durations. **No figure on the About page is typed by hand** |
 | `gallery.ts` | `isMedia` / `isFile` type guards (`Array.filter` does not narrow a discriminated union); `summarizeGallery` sheets and totals for the index (read through `getGallerySheets` in `content.ts`); `resolveGalleryImage` maps an `items.yml` path to its imported raster so `astro:assets` can resize it |
-| `archive-routes.ts` · `rss.ts` · `protection/` | Path building, feed ordering, and the encrypted-content pipeline |
+| `archive-routes.ts` · `rss.ts` · `protection/` | Path building, feed ordering, and the encrypted-content pipeline. Every locale prefix goes through `getLocalizedPath()` in `src/i18n/index.ts`; `/es` is never written by hand |
+| `legacy-routes.ts` | `getLegacyStaticPaths(section, locale)` — the one `getStaticPaths` behind all eight `/blog`, `/projects`, `/tools`, `/photos` compatibility routes |
 
 ### Build scripts — `scripts/`
 
@@ -91,7 +92,7 @@ Registered in `package.json` and chained into `bun run build`.
 | `private:generate` · `private:copy` · `private:scan` | Encrypted-content pipeline and leak scan |
 | `performance:check` | Per-route gzip budgets for total, JS, CSS, images, fonts |
 | `banners:build` · `banners:check` | Renders every banner from `src/data/banners.ts` into SVG + PNG; verifies all are 1200×630 |
-| `csp:apply` | Seals each page's CSP with SHA-256 hashes of the inline scripts this archive expects (`<head>` scripts, Astro's hydration runtime, its processed component scripts, and `data-csp-inline` opt-ins); any other executable inline script fails the build |
+| `csp:apply` | Seals each page's CSP with SHA-256 hashes of the inline scripts this archive expects (`<head>` scripts, Astro's hydration runtime, and `data-csp-inline` opt-ins); any other executable inline script fails the build. Component scripts are never inline — `assetsInlineLimit` in `astro.config.mjs` keeps them `/_astro/*.js` files |
 | `links:check` · `metadata:check` | Built-link crawl, and metadata/RSS/sitemap/JSON-LD/hreflang checks — including that every page shares its own image |
 | `commits:check` | Commit subjects and PR titles against the convention (not chained into the build; runs in CI and locally) |
 

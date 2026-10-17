@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 
-import { getDictionary, type Locale } from '@i18n/index'
-import { decryptPayload } from '@lib/protection/crypto'
-import { isProtectedManifest } from '@lib/protection/manifest'
-import { Button } from '@ui/button'
+import { getDictionary, type Locale } from '@/i18n'
+import { decryptPayload } from '@/lib/protection/crypto'
+import { isProtectedManifest } from '@/lib/protection/manifest'
+import { Button } from '@/components/ui/button'
 
 interface UnlockContentProps {
   entryId: string

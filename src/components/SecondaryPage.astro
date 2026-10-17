@@ -3,7 +3,12 @@ import { stack } from '@/data/stack'
 import { brand, pageTitle } from '@/data/brand'
 import { uses } from '@/data/uses'
 import { getTopicLabel } from '@/data/taxonomy'
-import { getDictionary, type Locale } from '@/i18n'
+import {
+  getAlternateLocale,
+  getDictionary,
+  getLocalizedPath,
+  type Locale,
+} from '@/i18n'
 import { getArchiveLabel } from '@/i18n/archive'
 import Layout from '@/layouts/Layout.astro'
 import { buildWebPageLd } from '@/lib/structured-data'
@@ -41,7 +46,7 @@ const pageJsonLd = buildWebPageLd({
   locale={locale}
   title={pageTitle(title)}
   description={description}
-  counterpartPath={locale === 'en' ? `/es/${section}/` : `/${section}/`}
+  counterpartPath={getLocalizedPath(`/${section}/`, getAlternateLocale(locale))}
   jsonLd={pageJsonLd}
 >
   <main class="secondary-page">

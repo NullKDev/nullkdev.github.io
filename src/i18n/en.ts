@@ -277,6 +277,15 @@ export const en = {
       'The former demo is not republished because its implementation has not been fully migrated, attributed, disclosed, and tested. Continue to the preserved source-linked Note.',
     continue: 'Continue to the archive',
   },
+  notFound: {
+    title: 'Record not found',
+    description: 'The requested archive record does not exist.',
+    kicker: '404 / Outside the index',
+    heading: 'Signal not found.',
+    body: 'The requested record may have moved, remained private, or never entered the public archive.',
+    home: 'Return to the archive',
+    notes: 'Browse Notes',
+  },
   galleryNotice:
     'Gallery currently archives first-party visual system studies. Previous photo URLs are retained as honest retirement notices; unverified media is not republished.',
   protection: {

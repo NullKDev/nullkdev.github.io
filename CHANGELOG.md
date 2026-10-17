@@ -70,6 +70,10 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ### Corregido
 
+- Las páginas 404 ya no declaran como canónica la portada (`/` y `/es/`), lo
+  que les decía a los buscadores que el error y el archivo eran el mismo
+  documento. Siguen fuera del índice y sus textos se traducen desde los
+  diccionarios.
 - Sin JavaScript, el encabezado ya no ofrece controles que no funcionan: el
   botón de menú y el de tema se ocultan, y bajo 760 px los enlaces de sección
   quedan visibles en su propia fila en lugar de esconderse detrás de un botón
@@ -143,10 +147,12 @@ este repo usa de verdad — no las genéricas del estándar.
   en `katex`, se fue con `mermaid` al compilar los diagramas en el build.
 - La CSP ya no autoriza cualquier script inline que salga del build: solo
   sella los del `<head>`, el runtime de hidratación de Astro (comparado byte a
-  byte con el paquete instalado), los scripts de componentes que Astro inserta
-  fuera de `<article>`, `<svg>` y `<template>`, y los marcados con
-  `data-csp-inline`. Cualquier otro hace fallar el build, en vez de quedar
-  permitido sin que nadie lo note. `'wasm-unsafe-eval'` queda solo en las
+  byte con el paquete instalado) y los marcados con `data-csp-inline`.
+  Cualquier otro hace fallar el build, en vez de quedar permitido sin que
+  nadie lo note. Los scripts de componentes ya no se insertan en el HTML: se
+  sirven como archivos `/_astro/*.js`, así que un `<script type="module">`
+  inline en el `<body>`, indistinguible de uno inyectado, también hace fallar
+  el build. `'wasm-unsafe-eval'` queda solo en las
   páginas que muestran el robot 3D, cuyo visor compila WebAssembly al cargar;
   el resto del sitio ya no lo concede.
 - El JSON que se escribe dentro de un `<script>` (JSON-LD, la galería, la

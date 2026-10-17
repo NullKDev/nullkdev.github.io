@@ -6,7 +6,7 @@ import {
   type IntegrityDocument,
   type IntegrityEntry,
 } from '@/content/integrity'
-import type { Locale } from '@/i18n'
+import { getAlternateLocale, getLocalizedPath, type Locale } from '@/i18n'
 import { buildDocumentPath, buildEntryPath } from '@/lib/archive-routes'
 import { itemsInCollection, summarizeGallery } from '@/lib/gallery'
 
@@ -115,8 +115,10 @@ export const getCounterpartEntry = async (entry: ArchiveEntry) => {
 export const getEntryCounterpartPath = async (entry: ArchiveEntry) => {
   const counterpart = await getCounterpartEntry(entry)
   if (counterpart) return getEntryPath(counterpart)
-  const locale: Locale = entry.data.locale === 'en' ? 'es' : 'en'
-  return `${locale === 'es' ? '/es' : ''}/${getEntryDomain(entry)}/`
+  return getLocalizedPath(
+    `/${getEntryDomain(entry)}/`,
+    getAlternateLocale(entry.data.locale),
+  )
 }
 
 export const getCounterpartDocument = async (document: ArchiveDocument) => {
@@ -140,8 +142,10 @@ export const getDocumentCounterpartPath = async (
   if (counterpartEntry && counterpartDocument) {
     return getDocumentPath(counterpartEntry, counterpartDocument)
   }
-  const locale: Locale = entry.data.locale === 'en' ? 'es' : 'en'
-  return `${locale === 'es' ? '/es' : ''}/${getEntryDomain(entry)}/`
+  return getLocalizedPath(
+    `/${getEntryDomain(entry)}/`,
+    getAlternateLocale(entry.data.locale),
+  )
 }
 
 export const getAdjacentDocuments = async (
