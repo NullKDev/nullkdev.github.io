@@ -156,8 +156,6 @@ only their own files on shared storage, background location became a
 permission of its own, and apps lost IMEI and serial number. Users got gesture
 navigation and a system-wide dark theme.
 
-![The Android 10 wordmark: the word android followed by the number 10, in black](./assets/android-10-logo.svg 'Android 10 logo, shown on a light plate. Wikimedia Commons · Public domain (PD-textlogo) · Trademark of Google LLC')
-
 ## At a glance
 
 |                                 |                                                                            |

@@ -139,8 +139,6 @@ apps con target API 31 les exigió `android:exported` y la mutabilidad de cada
 `PendingIntent`, y les impidió iniciar servicios en primer plano desde segundo
 plano.
 
-![El logotipo de Android 12: la palabra android seguida del número 12, en negro](./assets/android-12-logo.svg 'Logo de Android 12, sobre una placa clara. Wikimedia Commons · Dominio público (PD-textlogo) · Marca registrada de Google LLC')
-
 ## De un vistazo
 
 |                                    |                                                                                           |

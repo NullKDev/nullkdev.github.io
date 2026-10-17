@@ -165,8 +165,6 @@ audio, and shipped a photo picker that needs no permission. For developers the
 rest was a short list: per-app languages, themed icons, and stricter intent
 delivery.
 
-![The Android 13 wordmark: the word android followed by the number 13, in black](./assets/android-13-logo.svg 'Android 13 logo, shown on a light plate. Wikimedia Commons · Public domain (PD-textlogo) · Trademark of Google LLC')
-
 ## At a glance
 
 |                                 |                                                                    |

@@ -120,8 +120,6 @@ Design restyled the whole system. Underneath, JobScheduler started batching
 background work, SELinux became enforcing for every domain, and phones got
 multiple users and a guest mode.
 
-![Android 5.0 Lollipop logo](./assets/android-lollipop-logo.svg 'Android Lollipop logo. Wikimedia Commons · Public domain (PD-textlogo) · Trademark of Google LLC')
-
 ## At a glance
 
 |                                 |                                                                              |

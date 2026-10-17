@@ -128,8 +128,6 @@ Pixel, two months before any Nexus got it. For users it brought Night Light and
 seamless updates. For developers, API 25 added app shortcuts on the launcher
 icon, round icons and a way for keyboards to send images.
 
-![Android Nougat logo](./assets/android-nougat-logo.svg 'Android Nougat logo, shared by 7.0 and 7.1. Wikimedia Commons · Public domain (PD-textlogo) · Trademark of Google LLC')
-
 ## At a glance
 
 |                                 |                                                                       |

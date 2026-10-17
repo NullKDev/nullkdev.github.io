@@ -138,8 +138,6 @@ cut off every app's camera and microphone. For developers targeting API 31 it
 made `android:exported` and `PendingIntent` mutability mandatory, and it stopped
 foreground services from starting in the background.
 
-![The Android 12 wordmark: the word android followed by the number 12, in black](./assets/android-12-logo.svg 'Android 12 logo, shown on a light plate. Wikimedia Commons · Public domain (PD-textlogo) · Trademark of Google LLC')
-
 ## At a glance
 
 |                                 |                                                                               |

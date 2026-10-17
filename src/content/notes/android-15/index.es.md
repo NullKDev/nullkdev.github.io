@@ -126,8 +126,6 @@ defecto, y los foreground services de tipo `dataSync` tienen un límite de
 tiempo diario. Para el usuario trajo el espacio privado, una zona con bloqueo
 que oculta apps del resto del teléfono.
 
-![El logotipo de Android 15: la palabra Android seguida del número 15, en negro](./assets/android-15-logo.svg 'Logotipo de Android 15, sobre una placa clara. Wikimedia Commons · Dominio público (PD-textlogo) · Marca registrada de Google LLC')
-
 ## De un vistazo
 
 |                                    |                                                                                                     |

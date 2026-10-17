@@ -130,8 +130,6 @@ notification has to belong to a channel the user controls. Underneath,
 Project Treble split the Android framework from the vendor code, so a phone
 could be updated without the chip maker reworking it first.
 
-![Android 8.0 Oreo logo, a cookie-shaped letter O](./assets/android-oreo-logo.svg 'The Android 8.0 Oreo logo shown by the system Easter egg. Wikimedia Commons · Public domain (PD-shape) · Trademark of Google LLC')
-
 ## At a glance
 
 |                                 |                                                                                         |

@@ -132,8 +132,6 @@ default, and calls into hidden platform APIs started to fail. Users got a
 pill-shaped home button with swipe navigation, Adaptive Battery, and the last
 dessert name Google used in public.
 
-![Android 9 Pie logo, a white letter P on a green outline](./assets/android-pie-logo.svg 'Android 9 Pie logo. Wikimedia Commons · Public domain (PD-shape) · Trademark of Google LLC')
-
 ## At a glance
 
 |                                 |                                                                                      |

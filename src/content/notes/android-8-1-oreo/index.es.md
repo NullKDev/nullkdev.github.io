@@ -126,8 +126,6 @@ Networks API, que ejecuta modelos de aprendizaje automático en el propio
 dispositivo. Para quien desarrolla fue un nivel de API pequeño sobre
 [Android 8.0](/es/notes/android-8-0-oreo/), sin permisos nuevos.
 
-![Logo de Android 8.1 Oreo: una galleta oscura con una capa de crema blanca y el robot de Android encima](./assets/android-oreo-8-1-logo.svg 'Logo del Easter egg de Android 8.1 Oreo. Wikimedia Commons · CC BY 3.0 (robot de Android) y dominio público (PD-shape) · Marca registrada de Google LLC')
-
 ## De un vistazo
 
 |                                    |                                                                                                 |

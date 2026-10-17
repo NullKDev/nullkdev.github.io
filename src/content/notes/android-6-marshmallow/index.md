@@ -138,8 +138,6 @@ while it runs, and the user can say no. It also added Doze, which parks
 background work on an idle phone, and a security patch level that devices
 report as a date.
 
-![Android 6.0 Marshmallow logo](./assets/android-marshmallow-logo.svg 'Android 6.0 Marshmallow logo. Wikimedia Commons · Public domain (PD-logo) · Trademark of Google LLC')
-
 ## At a glance
 
 |                                 |                                                                  |

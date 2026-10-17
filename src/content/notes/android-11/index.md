@@ -149,8 +149,6 @@ microphone and location requests gained "Only this time", and apps nobody opened
 for months lost their grants. For developers it closed the scoped storage
 opt-out and hid the list of installed apps from apps targeting API 30.
 
-![The Android 11 wordmark: the word android followed by the number 11, in black](./assets/android-11-logo.svg 'Android 11 logo, shown on a light plate. Wikimedia Commons · Public domain (PD-textlogo) · Trademark of Google LLC')
-
 ## At a glance
 
 |                                 |                                                                        |

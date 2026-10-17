@@ -136,8 +136,6 @@ fábrica, y llamadas en HD voice. Para el desarrollador sumó
 `SubscriptionManager`, una forma de dar privilegios especiales a las apps del
 operador y el aviso de obsolescencia del cliente HTTP de Apache.
 
-![Logo de Android Lollipop](./assets/android-lollipop-logo.svg 'Logo de Android Lollipop, compartido por 5.0 y 5.1. Wikimedia Commons · Dominio público (PD-textlogo) · Marca registrada de Google LLC')
-
 El resto de Lollipop llegó con 5.0 y está en la
 [nota de Android 5.0 Lollipop](/es/notes/android-5-0-lollipop/). Esta nota
 cubre solo lo que agregó 5.1.

@@ -120,8 +120,6 @@ rediseñó el sistema entero. Por debajo, JobScheduler empezó a agrupar el
 trabajo en segundo plano, SELinux pasó a imponerse en todos los dominios y los
 teléfonos ganaron varios usuarios y un modo invitado.
 
-![Logo de Android 5.0 Lollipop](./assets/android-lollipop-logo.svg 'Logo de Android Lollipop. Wikimedia Commons · Dominio público (PD-textlogo) · Marca registrada de Google LLC')
-
 ## De un vistazo
 
 |                                    |                                                                                        |

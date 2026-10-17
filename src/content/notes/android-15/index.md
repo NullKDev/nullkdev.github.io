@@ -126,8 +126,6 @@ long-running `dataSync` foreground services get a daily time limit. For users
 it brought the private space, a locked area that hides apps from the rest of
 the phone.
 
-![The Android 15 wordmark: the word Android followed by the number 15, in near-black](./assets/android-15-logo.svg 'Android 15 logo, shown on a light plate. Wikimedia Commons · Public domain (PD-textlogo) · Trademark of Google LLC')
-
 ## At a glance
 
 |                                 |                                                                                   |

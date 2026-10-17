@@ -126,8 +126,6 @@ Networks API, which runs machine-learning models on the device. For
 developers it was a small API level on top of
 [Android 8.0](/notes/android-8-0-oreo/), with no new permissions.
 
-![Android 8.1 Oreo logo: a dark cookie with a white cream layer and the Android robot on top](./assets/android-oreo-8-1-logo.svg 'Android 8.1 Oreo Easter egg logo. Wikimedia Commons · CC BY 3.0 (Android robot) and public domain (PD-shape) · Trademark of Google LLC')
-
 ## At a glance
 
 |                                 |                                                                                       |

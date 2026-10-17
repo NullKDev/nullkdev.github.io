@@ -135,8 +135,6 @@ phone locked after a factory reset, and HD voice calls. For developers it added
 `SubscriptionManager`, a way for carrier apps to hold special privileges, and a
 deprecation notice for the Apache HTTP client.
 
-![Android Lollipop logo](./assets/android-lollipop-logo.svg 'Android Lollipop logo, shared by 5.0 and 5.1. Wikimedia Commons · Public domain (PD-textlogo) · Trademark of Google LLC')
-
 The rest of Lollipop arrived in 5.0 and is covered in the
 [Android 5.0 Lollipop note](/notes/android-5-0-lollipop/). This note covers
 only what 5.1 added.

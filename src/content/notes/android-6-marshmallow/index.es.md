@@ -138,8 +138,6 @@ peligroso mientras corre, y el usuario puede negarlo. También trajo Doze, que
 aparca el trabajo en segundo plano cuando el teléfono está quieto, y un nivel de
 parche de seguridad que los dispositivos informan como una fecha.
 
-![Logo de Android 6.0 Marshmallow](./assets/android-marshmallow-logo.svg 'Logo de Android 6.0 Marshmallow. Wikimedia Commons · Dominio público (PD-logo) · Marca registrada de Google LLC')
-
 ## De un vistazo
 
 |                                    |                                                                           |

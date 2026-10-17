@@ -153,8 +153,6 @@ framework, printing, NFC host card emulation and immersive full-screen mode.
 It also put SELinux into enforcing mode and closed shared storage behind
 `READ_EXTERNAL_STORAGE`.
 
-![Android KitKat logo: the word Android in red, inside a white oval on a red bar, in the style of the KitKat chocolate wrapper](./assets/android-kitkat-logo.svg 'Android 4.4 KitKat logo. Wikimedia Commons · Public domain (PD-textlogo) · Trademark of Google LLC')
-
 ## At a glance
 
 |                                 |                                                              |

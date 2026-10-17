@@ -153,8 +153,6 @@ framework, la impresión, la emulación de tarjetas NFC (host card emulation) y
 el modo inmersivo a pantalla completa. También puso SELinux en modo enforcing y
 cerró el almacenamiento compartido detrás de `READ_EXTERNAL_STORAGE`.
 
-![Logo de Android KitKat: la palabra Android en rojo, dentro de un óvalo blanco sobre una barra roja, al estilo del envoltorio del chocolate KitKat](./assets/android-kitkat-logo.svg 'Logo de Android 4.4 KitKat. Wikimedia Commons · Dominio público (PD-textlogo) · Marca registrada de Google LLC')
-
 ## De un vistazo
 
 |                                    |                                                                                  |

@@ -131,8 +131,6 @@ usuario. Por debajo, Project Treble separó el framework de Android del código
 del fabricante, para que un teléfono pudiera actualizarse sin que el fabricante
 del chip tuviera que rehacer su trabajo primero.
 
-![Logo de Android 8.0 Oreo, una letra O con forma de galleta](./assets/android-oreo-logo.svg 'El logo de Android 8.0 Oreo que muestra el Easter egg del sistema. Wikimedia Commons · Dominio público (PD-shape) · Marca registrada de Google LLC')
-
 ## De un vistazo
 
 |                                    |                                                                                                                  |

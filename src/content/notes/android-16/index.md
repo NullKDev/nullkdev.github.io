@@ -117,8 +117,6 @@ to resize, and predictive back and edge-to-edge stopped being optional. It was
 also the first Android with two SDK releases in one year: the major one in
 June, and a minor one, 36.1, in December.
 
-![The Android 16 wordmark: the word Android followed by the number 16, in black](./assets/android-16-logo.svg 'Android 16 logo, shown on a light plate. Wikimedia Commons · Public domain (PD-textlogo) · Trademark of Google LLC')
-
 ## At a glance
 
 |                                 |                                                                                   |

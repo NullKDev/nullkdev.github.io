@@ -129,8 +129,6 @@ declarado y un permiso que le corresponda, y el usuario puede darle a una app
 unas pocas fotos en lugar de toda la galería. En cualquier dispositivo, las
 apps con target menor a API 23 ya no se pueden instalar.
 
-![El logotipo de Android 14: la palabra Android seguida del número 14, en negro](./assets/android-14-logo.svg 'Logo de Android 14, sobre una placa clara. Wikimedia Commons · Dominio público (PD-textlogo) · Marca registrada de Google LLC')
-
 ## De un vistazo
 
 |                                    |                                                                                          |

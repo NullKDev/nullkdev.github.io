@@ -132,8 +132,6 @@ notification, and Doze that also works while the phone moves in a pocket.
 Developers got file-based encryption with Direct Boot, a declarative network
 security config, and a crash for apps that still share `file://` URIs.
 
-![Android Nougat logo](./assets/android-nougat-logo.svg 'Android Nougat logo. Wikimedia Commons · Public domain (PD-textlogo) · Trademark of Google LLC')
-
 ## At a glance
 
 |                                 |                                                         |

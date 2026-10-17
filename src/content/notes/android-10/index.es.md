@@ -157,8 +157,6 @@ la ubicación en segundo plano pasó a ser un permiso propio y las apps perdiero
 el acceso al IMEI y al número de serie. Los usuarios recibieron la navegación por
 gestos y un tema oscuro para todo el sistema.
 
-![El logotipo de Android 10: la palabra android seguida del número 10, en negro](./assets/android-10-logo.svg 'Logo de Android 10, sobre una placa clara. Wikimedia Commons · Dominio público (PD-textlogo) · Marca registrada de Google LLC')
-
 ## De un vistazo
 
 |                                    |                                                                                           |

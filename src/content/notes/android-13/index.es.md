@@ -165,8 +165,6 @@ imágenes, video y audio, y trajo un selector de fotos que no necesita permisos.
 Para quien desarrolla, el resto fue una lista corta: idioma por app, íconos
 temáticos y una entrega de intents más estricta.
 
-![El logotipo de Android 13: la palabra android seguida del número 13, en negro](./assets/android-13-logo.svg 'Logo de Android 13, sobre una placa clara. Wikimedia Commons · Dominio público (PD-textlogo) · Marca registrada de Google LLC')
-
 ## De un vistazo
 
 |                                    |                                                                                 |

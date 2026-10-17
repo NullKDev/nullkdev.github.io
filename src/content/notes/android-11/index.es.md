@@ -150,8 +150,6 @@ que nadie abría en meses perdieron sus permisos. Para quien desarrolla, cerró 
 salida del scoped storage y ocultó la lista de apps instaladas a las apps con
 target API 30.
 
-![El logotipo de Android 11: la palabra android seguida del número 11, en negro](./assets/android-11-logo.svg 'Logo de Android 11, sobre una placa clara. Wikimedia Commons · Dominio público (PD-textlogo) · Marca registrada de Google LLC')
-
 ## De un vistazo
 
 |                                    |                                                                           |

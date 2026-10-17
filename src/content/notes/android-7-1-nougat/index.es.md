@@ -129,8 +129,6 @@ trajo Night Light y las actualizaciones sin interrupción. A los desarrolladores
 API 25 les dio accesos directos en el icono del launcher, iconos redondos y una
 forma de que los teclados envíen imágenes.
 
-![Logo de Android Nougat](./assets/android-nougat-logo.svg 'Logo de Android Nougat, compartido por 7.0 y 7.1. Wikimedia Commons · Dominio público (PD-textlogo) · Marca registrada de Google LLC')
-
 ## De un vistazo
 
 |                                    |                                                                               |

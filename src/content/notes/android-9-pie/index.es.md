@@ -133,8 +133,6 @@ fallar. Los usuarios recibieron un botón de inicio en forma de píldora con
 navegación por deslizamiento, Adaptive Battery y el último nombre de postre que
 Google usó en público.
 
-![Logo de Android 9 Pie, una letra P blanca con contorno verde](./assets/android-pie-logo.svg 'Logo de Android 9 Pie. Wikimedia Commons · Dominio público (PD-shape) · Marca registrada de Google LLC')
-
 ## De un vistazo
 
 |                                    |                                                                                               |

@@ -129,8 +129,6 @@ permission, and users can hand an app a few photos instead of the whole
 library. On every device, apps that target an API level below 23 can no longer
 be installed.
 
-![The Android 14 wordmark: the word Android followed by the number 14, in black](./assets/android-14-logo.svg 'Android 14 logo, shown on a light plate. Wikimedia Commons · Public domain (PD-textlogo) · Trademark of Google LLC')
-
 ## At a glance
 
 |                                 |                                                                                  |

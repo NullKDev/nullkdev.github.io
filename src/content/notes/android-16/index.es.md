@@ -118,8 +118,6 @@ edge-to-edge dejaron de ser opcionales. También fue el primer Android con dos
 versiones del SDK en un mismo año: la mayor en junio y una menor, la 36.1, en
 diciembre.
 
-![El logotipo de Android 16: la palabra Android seguida del número 16, en negro](./assets/android-16-logo.svg 'Logo de Android 16, sobre una placa clara. Wikimedia Commons · Dominio público (PD-textlogo) · Marca registrada de Google LLC')
-
 ## De un vistazo
 
 |                                    |                                                                                                  |

@@ -133,8 +133,6 @@ el teléfono en movimiento. Los desarrolladores recibieron el cifrado por
 archivo con Direct Boot, una configuración de seguridad de red declarativa y un
 crash para las apps que todavía comparten URIs `file://`.
 
-![Logo de Android Nougat](./assets/android-nougat-logo.svg 'Logo de Android Nougat. Wikimedia Commons · Dominio público (PD-textlogo) · Marca registrada de Google LLC')
-
 ## De un vistazo
 
 |                                    |                                                                    |
