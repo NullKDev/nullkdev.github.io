@@ -28,6 +28,7 @@
  * list of fragments, and a figure with no name is an axe failure.
  */
 
+import { createHash } from 'node:crypto'
 import { renderMermaidSVG } from 'beautiful-mermaid'
 import { fromHtml } from 'hast-util-from-html'
 
@@ -52,6 +53,29 @@ const textOf = (node) => {
   return node.children.map(textOf).join('')
 }
 
+/**
+ * Suffix every id in one SVG, and every reference to it. Node ids come from the
+ * mermaid source (`code`, `open`…) and the arrow markers are fixed
+ * (`arrowhead`), so two diagrams on one page — a note inlines its subposts —
+ * shared ids, and an id could collide with a heading anchor. The suffix hashes
+ * the diagram, so it is stable across builds.
+ */
+const scopeIds = (svg, source, title) => {
+  const suffix = createHash('sha256')
+    .update(`${title}\n${source}`)
+    .digest('hex')
+    .slice(0, 8)
+  const ids = new Set([...svg.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]))
+  return svg
+    .replace(/(\sid=")([^"]+)"/g, `$1$2-${suffix}"`)
+    .replace(/url\(#([^)]+)\)/g, (match, id) =>
+      ids.has(id) ? `url(#${id}-${suffix})` : match,
+    )
+    .replace(/(href=")#([^"]+)"/g, (match, attribute, id) =>
+      ids.has(id) ? `${attribute}#${id}-${suffix}"` : match,
+    )
+}
+
 const mermaidCode = (node) => {
   if (node.type !== 'element' || node.tagName !== 'pre') return undefined
   const code = node.children.find(
@@ -66,9 +90,13 @@ const mermaidCode = (node) => {
  * the sizing and stripping can be tested without a markdown pipeline.
  */
 export const renderDiagram = (source, title) => {
-  const svg = renderMermaidSVG(source, LAYOUT)
-    .replace(/<style>[\s\S]*?<\/style>/, '')
-    .replace(/^<svg([^>]*?)\sstyle="[^"]*"/, '<svg$1')
+  const svg = scopeIds(
+    renderMermaidSVG(source, LAYOUT)
+      .replace(/<style>[\s\S]*?<\/style>/, '')
+      .replace(/^<svg([^>]*?)\sstyle="[^"]*"/, '<svg$1'),
+    source,
+    title,
+  )
 
   const [, , width, height] = svg
     .match(/viewBox="([^"]+)"/)[1]

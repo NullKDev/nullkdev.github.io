@@ -101,6 +101,35 @@ describe('hastDiagrams', () => {
     expect(width).toBe(min)
   })
 
+  it('gives every diagram its own ids, so two on one page never collide', () => {
+    // Node ids come from the mermaid source (`code`, `open`…) and the arrow
+    // markers are fixed (`arrowhead`), so without a suffix two diagrams — or
+    // a diagram and a heading anchor — share an id and `url(#…)` resolves to
+    // whichever came first.
+    const idsOf = (html: string) =>
+      [...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1])
+    const first = toHtml(renderDiagram(FLOW, 'Scan flow') as never)
+    const second = toHtml(
+      renderDiagram(
+        'flowchart LR\n  a[Scan] --> c[Ship]',
+        'Ship flow',
+      ) as never,
+    )
+
+    expect(idsOf(first).filter((id) => idsOf(second).includes(id))).toEqual([])
+    expect(idsOf(first)).not.toContain('arrowhead')
+    expect(idsOf(first)).not.toContain('a')
+    for (const html of [first, second]) {
+      const references = [
+        ...html.matchAll(/url\(#([^)]+)\)|href="#([^"]+)"/g),
+      ].map((match) => match[1] ?? match[2])
+      expect(references.length).toBeGreaterThan(0)
+      for (const reference of references) {
+        expect(idsOf(html)).toContain(reference)
+      }
+    }
+  })
+
   it('renders the same bytes on every build', () => {
     expect(toHtml(renderDiagram(FLOW, 'Scan flow') as never)).toBe(
       toHtml(renderDiagram(FLOW, 'Scan flow') as never),
