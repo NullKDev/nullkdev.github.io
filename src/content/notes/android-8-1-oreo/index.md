@@ -20,7 +20,13 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: developer-preview-1
+    slug: developer-preview-1
+    order: 1
+  - documentId: developer-preview-2
+    slug: developer-preview-2
+    order: 2
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -136,6 +142,18 @@ citations:
   - title: StatusBar.java at android-8.1.0_r1 (AOSP)
     url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-8.1.0_r1/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBar.java
     accessedAt: 2026-10-17
+  - title: Android 8.1 Developer Preview release notes (archived 1 December 2017)
+    url: http://web.archive.org/web/20171201164609/https://developer.android.com/preview/release-notes.html
+    accessedAt: 2026-10-18
+  - title: Google launches Android 8.1 Developer Preview for Pixel and Nexus devices (9to5Google)
+    url: https://9to5google.com/2017/10/25/google-android-8-1-dev-preview-pixel-nexus/
+    accessedAt: 2026-10-18
+  - title: "Google hasn't actually enabled Pixel Visual Core in 8.1 Oreo DP1 (Android Police)"
+    url: https://www.androidpolice.com/2017/10/31/google-hasnt-actually-enabled-pixel-visual-core-8-1-oreo-dp1-updates-docs-say-itll-come-dp2/
+    accessedAt: 2026-10-18
+  - title: Android 8.1 Developer Preview 2 rolling out with near-final system images (9to5Google)
+    url: https://9to5google.com/2017/11/27/google-android-8-1-dev-preview-2-pixel-nexus/
+    accessedAt: 2026-10-18
 ---
 
 Android 8.1 Oreo is the release that made Android fit phones with 1 GB of RAM
@@ -162,7 +180,9 @@ API level 27, and Play opened to apps targeting it that day. Google announced
 the final release at Google for India on Monday 4 December and posted the
 details on 5 December, with the update "rolling out" to Pixel and Nexus "over
 the next week". MobileSyrup reported the rollout the same day. Partner devices,
-including Go edition phones, were promised "in the months ahead".
+including Go edition phones, were promised "in the months ahead". The two previews have their own parts below:
+[Developer Preview 1](/notes/android-8-1-oreo/developer-preview-1/) and
+[Developer Preview 2](/notes/android-8-1-oreo/developer-preview-2/).
 
 ![The Android 8.1 home screen on a Nexus 5X: a date and weather line at the top, a pink and purple wallpaper, round folders named Google, Erstellen and Play, the Play Store icon, a dock with Phone, Messages, Chrome, Gmail and Camera, and a Google search bar above the back, home and recents buttons](./assets/android-8-1-home-screen.png 'Android 8.1 on a Nexus 5X, captured on 3 November 2017 during the developer preview. Wikimedia Commons · Apache License 2.0')
 

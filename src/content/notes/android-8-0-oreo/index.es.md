@@ -20,7 +20,19 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: developer-preview-1
+    slug: developer-preview-1
+    order: 1
+  - documentId: developer-preview-2
+    slug: developer-preview-2
+    order: 2
+  - documentId: developer-preview-3
+    slug: developer-preview-3
+    order: 3
+  - documentId: developer-preview-4
+    slug: developer-preview-4
+    order: 4
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -145,6 +157,24 @@ citations:
   - title: 'RIP Blobs: Google Redesigns Emojis (Emojipedia)'
     url: https://blog.emojipedia.org/rip-blobs-google-redesigns-emojis/
     accessedAt: 2026-10-17
+  - title: "What's New in Android: O Developer Preview 2 & More"
+    url: https://android-developers.googleblog.com/2017/05/whats-new-in-android-o-developer.html
+    accessedAt: 2026-10-18
+  - title: 'Developer Preview 4 now available, official Android O coming soon!'
+    url: https://android-developers.googleblog.com/2017/07/developer-preview-4-now-available.html
+    accessedAt: 2026-10-18
+  - title: android-o-preview-1 tag, platform/build (AOSP)
+    url: https://android.googlesource.com/platform/build/+/refs/tags/android-o-preview-1
+    accessedAt: 2026-10-18
+  - title: 'Android O enters Beta Program with Developer Preview 2, adds Notification Dots, Autofill (9to5Google)'
+    url: https://9to5google.com/2017/05/17/android-o-developer-preview-2-beta/
+    accessedAt: 2026-10-18
+  - title: 'Android O Developer Preview 3 rolling out to Pixel/Nexus w/ final APIs, Play Store publishing (9to5Google)'
+    url: https://9to5google.com/2017/06/08/android-o-developer-preview-3/
+    accessedAt: 2026-10-18
+  - title: "Android O Developer Preview 4 rolling out w/ 'near-final system images' for Pixel, Nexus (9to5Google)"
+    url: https://9to5google.com/2017/07/24/android-o-developer-preview-4/
+    accessedAt: 2026-10-18
 ---
 
 Android 8.0 Oreo es la versión que le puso correa al trabajo en segundo plano.
@@ -171,7 +201,7 @@ del chip tuviera que rehacer su trabajo primero.
 | Plazo de target API en Google Play | Apps nuevas desde agosto de 2018, actualizaciones de apps existentes desde noviembre de 2018                                                                                                                                      |
 
 La primera developer preview salió el 21 de marzo de 2017, para Nexus 5X,
-Nexus 6P, Nexus Player, Pixel, Pixel XL y Pixel C. Google congeló la API el 8 de junio de 2017 y ese mismo día abrió Play a las
+Nexus 6P, Nexus Player, Pixel, Pixel XL y Pixel C; las cuatro developer previews son las partes que siguen a esta vista general. Google congeló la API el 8 de junio de 2017 y ese mismo día abrió Play a las
 apps con target API 26. El 21 de agosto publicó el código en AOSP, actualizó
 los dispositivos de Android Beta y anunció que las versiones para Pixel, Nexus
 5X, Nexus 6P, Pixel C y Nexus Player estaban en pruebas con los operadores. Las

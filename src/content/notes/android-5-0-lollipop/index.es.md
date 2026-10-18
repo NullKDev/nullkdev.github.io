@@ -20,7 +20,16 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: l-developer-preview
+    slug: l-developer-preview
+    order: 1
+  - documentId: google-fit-preview
+    slug: preview-google-fit
+    order: 2
+  - documentId: final-preview-images
+    slug: imagenes-preview-finales
+    order: 3
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -124,6 +133,30 @@ citations:
   - title: Codenames, tags, and build numbers
     url: https://source.android.com/docs/setup/reference/build-numbers
     accessedAt: 2026-10-17
+  - title: New in Android - L Developer Preview and Google Play Services 5.0 (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2014/06/developer-preview-and-play-services-5.html
+    accessedAt: 2026-10-18
+  - title: Android L Developer Preview and Android Studio Beta (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2014/06/android-l-developer-preview-and-android.html
+    accessedAt: 2026-10-18
+  - title: L Developer Preview support and release notes (developer.android.com, archived 8 October 2014)
+    url: https://web.archive.org/web/20141008055227/http://developer.android.com/preview/support.html
+    accessedAt: 2026-10-18
+  - title: Google Fit Developer Preview (developers.google.com, archived 8 August 2014)
+    url: https://web.archive.org/web/20140808114534/https://developers.google.com/fit/preview
+    accessedAt: 2026-10-18
+  - title: Android L Developer Preview with final APIs (developer.android.com, archived 20 October 2014)
+    url: https://web.archive.org/web/20141020185231/http://developer.android.com/preview/index.html
+    accessedAt: 2026-10-18
+  - title: Initial hands-on with the Android L Developer Preview on the Nexus 5 (Android Police)
+    url: https://www.androidpolice.com/2014/06/26/initial-hands-on-android-l-developer-preview-on-the-nexus-5/
+    accessedAt: 2026-10-18
+  - title: Google releases new Android L images as build LPV81C (Droid Life)
+    url: https://www.droid-life.com/2014/08/07/google-releases-new-android-l-images-as-build-lpv81c/
+    accessedAt: 2026-10-18
+  - title: New Android 5.0 Lollipop developer preview and SDK now out (GSMArena)
+    url: https://www.gsmarena.com/new_android_50_lollipop_developer_preview_and_sdk_now_out-news-9968.php
+    accessedAt: 2026-10-18
 ---
 
 Android 5.0 Lollipop es la versión que cambió el motor y la pintura a la vez.
@@ -150,7 +183,11 @@ Google mostró la versión por primera vez como "Android L" en Google I/O, el 25
 de junio de 2014. Al día siguiente publicó la L Developer Preview para Nexus 5
 y Nexus 7 (2013): era la primera vez que daba a los desarrolladores una versión
 de Android antes de su lanzamiento. No tenía nivel de API, y las apps
-compiladas contra ella no se podían publicar en Play.
+compiladas contra ella no se podían publicar en Play. Antes del lanzamiento hubo tres builds preview, cada una en su parte más abajo:
+la [L Developer Preview](/es/notes/android-5-0-lollipop/l-developer-preview/),
+la [actualización para Google Fit](/es/notes/android-5-0-lollipop/preview-google-fit/)
+de agosto y el [SDK final con sus imágenes preview](/es/notes/android-5-0-lollipop/imagenes-preview-finales/)
+de octubre.
 
 Google anunció Lollipop junto con los tres dispositivos de lanzamiento el 15 de
 octubre de 2014. Dos días después publicó el SDK final y abrió Play a las apps

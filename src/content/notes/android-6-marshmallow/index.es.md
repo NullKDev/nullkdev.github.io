@@ -20,7 +20,16 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: developer-preview-1
+    slug: developer-preview-1
+    order: 1
+  - documentId: developer-preview-2
+    slug: developer-preview-2
+    order: 2
+  - documentId: developer-preview-3
+    slug: developer-preview-3
+    order: 3
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -169,6 +178,39 @@ citations:
   - title: 'File:Android Marshmallow screenshot.png (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Android_Marshmallow_screenshot.png
     accessedAt: 2026-10-17
+  - title: 'M Developer Preview Gets Its First Update'
+    url: https://android-developers.googleblog.com/2015/07/m-developer-preview-gets-its-first.html
+    accessedAt: 2026-10-18
+  - title: 'M Developer Preview support and release notes (archived September 2015)'
+    url: https://web.archive.org/web/20150905054342/http://developer.android.com/preview/support.html
+    accessedAt: 2026-10-18
+  - title: 'M Developer Preview program overview (archived June 2015)'
+    url: https://web.archive.org/web/20150616223626/http://developer.android.com/preview/overview.html
+    accessedAt: 2026-10-18
+  - title: 'M Developer Preview program overview (archived August 2015)'
+    url: https://web.archive.org/web/20150820165942/http://developer.android.com/preview/overview.html
+    accessedAt: 2026-10-18
+  - title: 'Set up the Preview SDK (archived June 2015)'
+    url: https://web.archive.org/web/20150618120428/http://developer.android.com/preview/setup-sdk.html
+    accessedAt: 2026-10-18
+  - title: 'Android M Developer Preview images are live now for Nexus 5, 6, 9, and Player (Android Police)'
+    url: https://www.androidpolice.com/2015/05/28/download-android-m-developer-preview-images-are-live-now-for-nexus-5-6-9-and-player/
+    accessedAt: 2026-10-18
+  - title: 'Google announces Android M Developer Preview 2 (Android Police)'
+    url: https://www.androidpolice.com/2015/07/09/google-announces-android-m-developer-preview-2-coming-to-eligible-nexus-devices-over-the-next-few-days/
+    accessedAt: 2026-10-18
+  - title: 'Google releases second Android M developer preview (9to5Google)'
+    url: https://9to5google.com/2015/07/09/dev-preview-2-android-m/
+    accessedAt: 2026-10-18
+  - title: "Marshmallow's 'Dark mode' confirmed to be ditched, but it might make a comeback (9to5Google)"
+    url: https://9to5google.com/2015/09/10/marshmallows-dark-mode-confirmed-to-be-ditched-but-it-might-make-a-comeback/
+    accessedAt: 2026-10-18
+  - title: 'Unsurprisingly, Android M Developer Preview 3 has been delayed (Android Police)'
+    url: https://www.androidpolice.com/2015/07/31/android-m-developer-preview-3-delayed/
+    accessedAt: 2026-10-18
+  - title: 'Android M Developer Preview 3 images now available for the Nexus 5, 6, 9, and Player (Android Police)'
+    url: https://www.androidpolice.com/2015/08/18/android-m-developer-preview-3-images-now-available-for-download-for-the-nexus-5-nexus-6-nexus-9-and-nexus-player/
+    accessedAt: 2026-10-18
 ---
 
 Android 6.0 Marshmallow es la versión en la que las apps dejaron de recibir
@@ -198,7 +240,11 @@ final, le dio el nombre Marshmallow y abrió Play a las apps con target API 23.
 El 29 de septiembre anunció que la actualización llegaría "a partir de la
 próxima semana" a Nexus 5, 6, 7 (2013), 9, Nexus Player y Android One. El
 blog oficial de Android anunció el 5 de octubre que el despliegue empezaba ese
-mismo día, y Phone Scoop informó la misma fecha.
+mismo día, y Phone Scoop informó la misma fecha. Las tres vistas previas para
+desarrolladores anteriores al lanzamiento son las partes que siguen a esta
+nota: [Preview 1](/es/notes/android-6-marshmallow/developer-preview-1/),
+[Preview 2](/es/notes/android-6-marshmallow/developer-preview-2/) y
+[Preview 3](/es/notes/android-6-marshmallow/developer-preview-3/).
 
 En el mismo evento del 29 de septiembre se presentó la tablet Pixel C, que usa
 Marshmallow; sus primeras compilaciones en AOSP son de Android 6.0.1. Android

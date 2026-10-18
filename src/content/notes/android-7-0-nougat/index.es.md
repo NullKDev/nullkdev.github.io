@@ -20,7 +20,22 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: developer-preview-1
+    slug: developer-preview-1
+    order: 1
+  - documentId: developer-preview-2
+    slug: developer-preview-2
+    order: 2
+  - documentId: developer-preview-3
+    slug: developer-preview-3
+    order: 3
+  - documentId: developer-preview-4
+    slug: developer-preview-4
+    order: 4
+  - documentId: developer-preview-5
+    slug: developer-preview-5
+    order: 5
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -148,6 +163,33 @@ citations:
   - title: 'File:Android 7.0-en.png (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Android_7.0-en.png
     accessedAt: 2026-10-17
+  - title: 'Android N Developer Preview 2, out today!'
+    url: https://android-developers.googleblog.com/2016/04/android-n-developer-preview-2-out-today.html
+    accessedAt: 2026-10-18
+  - title: "What's new in Android: the N-Release, Virtual Reality, Android Studio 2.2 and more"
+    url: https://android-developers.googleblog.com/2016/05/whats-new-in-android-n-release-virtual-reality-android-studio.html
+    accessedAt: 2026-10-18
+  - title: 'Final Developer Preview before Android 7.0 Nougat begins rolling out'
+    url: https://android-developers.googleblog.com/2016/07/final-developer-preview.html
+    accessedAt: 2026-10-18
+  - title: 'Android N Developer Preview release notes (archived 19 August 2016)'
+    url: https://web.archive.org/web/20160819071615/https://developer.android.com/preview/support.html
+    accessedAt: 2026-10-18
+  - title: "Android N's first developer preview is dropping soon (9to5Google)"
+    url: https://9to5google.com/2016/03/09/android-n-developer-preview-download/
+    accessedAt: 2026-10-18
+  - title: 'Android N Developer Preview 2 is now available (9to5Google)'
+    url: https://9to5google.com/2016/04/13/android-n-developer-preview-2-download-nexus-6p-5x-pixel/
+    accessedAt: 2026-10-18
+  - title: 'First Android N beta to be released by Google later today (9to5Google)'
+    url: https://9to5google.com/2016/05/18/android-n-beta-by-google-today/
+    accessedAt: 2026-10-18
+  - title: 'Android N Developer Preview 4 is now available (9to5Google)'
+    url: https://9to5google.com/2016/06/15/android-n-developer-preview-4-download/
+    accessedAt: 2026-10-18
+  - title: 'Final Android 7.0 Nougat Developer Preview 5 now available (9to5Google)'
+    url: https://9to5google.com/2016/07/18/android-n-developer-preview-5-download/
+    accessedAt: 2026-10-18
 ---
 
 Android 7.0 Nougat es la versión que puso dos apps en la pantalla de un
@@ -181,7 +223,7 @@ llegó a AOSP y Ars Technica publicó su reseña.
 
 La primera vista previa para desarrolladores salió el 9 de marzo de 2016.
 Burke la llamó "early… really early", y el nuevo Android Beta Program la
-entregó por OTA a los mismos Nexus y al Pixel C. En el lanzamiento también pasó
+entregó por OTA a los mismos Nexus y al Pixel C. Sus cinco vistas previas para desarrolladores, de marzo a julio, siguen a esta vista general como partes, de la [Developer Preview 1](/es/notes/android-7-0-nougat/developer-preview-1/) a la [Developer Preview 5](/es/notes/android-7-0-nougat/developer-preview-5/). En el lanzamiento también pasó
 Nougat a "a new regular maintenance schedule over the coming quarters". Los
 teléfonos con Snapdragon 800 y 801 de Qualcomm, que movían casi todos los
 modelos de gama alta de fines de 2013 a fines de 2014, quedaron fuera: Ars

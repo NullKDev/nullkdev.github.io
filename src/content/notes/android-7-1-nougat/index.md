@@ -8,6 +8,7 @@ summary: API 25, October 2016. It shipped first on the Pixel. Apps got launcher 
 visibility: public
 maturity: stable
 publishedAt: 2026-10-17
+updatedAt: 2026-10-18
 topics: [android, platform-apis]
 image: /banners/android-7-1-nougat.svg
 imageAlt: 'Android 7.1 Nougat banner, with the version logo.'
@@ -20,7 +21,19 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: developer-preview-1
+    slug: developer-preview-1
+    order: 1
+  - documentId: developer-preview-2
+    slug: developer-preview-2
+    order: 2
+  - documentId: 7-1-2-beta-1
+    slug: 7-1-2-beta-1
+    order: 3
+  - documentId: 7-1-2-beta-2
+    slug: 7-1-2-beta-2
+    order: 4
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -79,7 +92,7 @@ citations:
   - title: Factory images for Nexus and Pixel devices
     url: https://developers.google.com/android/images
     accessedAt: 2026-10-17
-  - title: Android 7.1 Developer Preview (Android Developers Blog)
+  - title: 'Coming soon: Android 7.1 Developer Preview (Android Developers Blog)'
     url: https://android-developers.googleblog.com/2016/10/android-71-developer-preview.html
     accessedAt: 2026-10-17
   - title: Final update to Android 7.1 Developer Preview (Android Developers Blog)
@@ -136,6 +149,48 @@ citations:
   - title: 'File:Android Nougat Logo.svg (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Android_Nougat_Logo.svg
     accessedAt: 2026-10-17
+  - title: 'Now available: Android 7.1 Developer Preview (Android Developers Blog)'
+    url: https://android-developers.googleblog.com/2016/10/android71-dev-preview-available.html
+    accessedAt: 2026-10-18
+  - title: 'Test on Android 7.1 Developer Preview in Firebase Test Lab (Android Developers Blog)'
+    url: https://android-developers.googleblog.com/2016/11/android-dev-preview-in-firebase-test-lab.html
+    accessedAt: 2026-10-18
+  - title: 'Android 7.1 Preview, Test on a Device: Developer Preview 1 images (Android Developers, archived)'
+    url: http://web.archive.org/web/20161103210120/https://developer.android.com/preview/download.html
+    accessedAt: 2026-10-18
+  - title: 'Android 7.1 Preview, Test on a Device: Developer Preview 2 images (Android Developers, archived)'
+    url: http://web.archive.org/web/20161203235041/https://developer.android.com/preview/download.html
+    accessedAt: 2026-10-18
+  - title: 'Android 7.1.2 Public Beta Release Notes (Android Developers, archived)'
+    url: http://web.archive.org/web/20170207120510/https://developer.android.com/preview/support-712.html
+    accessedAt: 2026-10-18
+  - title: 'Android 7.1.2 Public Beta Images, first beta (Android Developers, archived)'
+    url: http://web.archive.org/web/20170206092420/https://developer.android.com/preview/download-712.html
+    accessedAt: 2026-10-18
+  - title: 'Android 7.1.2 Public Beta Images, second beta (Android Developers, archived)'
+    url: http://web.archive.org/web/20170328021326/https://developer.android.com/preview/download-712.html
+    accessedAt: 2026-10-18
+  - title: "Here's everything new in the Android 7.1 Dev Preview running on a Nexus device (9to5Google)"
+    url: https://9to5google.com/2016/10/19/android-7-1-nougat-nexus-gallery/
+    accessedAt: 2026-10-18
+  - title: 'Android 7.1 Developer Preview 2 now available for Nexus 5X, 6P, 9, and Pixel C (9to5Google)'
+    url: https://9to5google.com/2016/11/22/android-7-1-dev-preview-2/
+    accessedAt: 2026-10-18
+  - title: 'Android 7.1 developer preview 2 images are live for the Nexus 6P, Nexus 5X, and Pixel C (Android Police)'
+    url: https://www.androidpolice.com/2016/11/22/android-7-1-developer-preview-2-images-live-nexus-6p-nexus-5x-pixel-c/
+    accessedAt: 2026-10-18
+  - title: 'Android 7.1.2 available via Android Beta Program today for Pixel, Nexus devices (9to5Google)'
+    url: https://9to5google.com/2017/01/30/android-7-1-2-available-via-android-beta-program-today-for-pixel-nexus-devices/
+    accessedAt: 2026-10-18
+  - title: 'Google announces Android 7.1.2 Beta, includes Pixels, Nexus 5X, Player, 6P, and Pixel C (Android Police)'
+    url: https://www.androidpolice.com/2017/01/30/google-announces-android-7-1-2-beta-includes-pixels-nexus-5x-player-6p-and-pixel-c/
+    accessedAt: 2026-10-18
+  - title: 'Second public beta of Android 7.1.2 rolling out to Pixel and Nexus devices (9to5Google)'
+    url: https://9to5google.com/2017/03/20/android-7-1-2-second-public-beta-pixel-nexus/
+    accessedAt: 2026-10-18
+  - title: "Here's everything new in Android 7.1.2 beta 2 (9to5Google)"
+    url: https://9to5google.com/2017/03/20/whats-new-android-7-1-2-beta-2/
+    accessedAt: 2026-10-18
 ---
 
 Android 7.1 is the Nougat update that shipped first on Google's own phone, the
@@ -151,7 +206,7 @@ icon, round icons and a way for keyboards to send images.
 | API level                       | 25                                                                    |
 | Name                            | Nougat, public (same name as 7.0)                                     |
 | `Build.VERSION_CODES`           | `N_MR1`                                                               |
-| Play accepts API 25 apps        | 22 November 2016, with Developer Preview 2                            |
+| Play accepts API 25 apps        | 19 October 2016, with Developer Preview 1                             |
 | Release                         | On the Pixel, October 2016. Nexus rollout of 7.1.1 began 5 December   |
 | Launch devices                  | Pixel and Pixel XL, announced and opened for pre-order 4 October 2016 |
 | Google Play target-API deadline | None. Play's target-API rule started in 2018, at API 26               |
@@ -159,8 +214,10 @@ icon, round icons and a way for keyboards to send images.
 Google announced the Pixel on 4 October 2016 with "Android 7.1 Nougat" on
 board. The first Pixel factory images, build NDE63H, are dated October 2016. On
 11 October Google said a developer preview for Nexus devices would come "later
-this month" and the final release "in early December". The preview's second
-build, on 22 November, let developers publish apps targeting API 25 to Play.
+this month" and the final release "in early December". The preview's first
+build, on 19 October, already had the final API 25 and opened Play to apps
+targeting it. The two developer previews and the two 7.1.2 betas are the four
+parts that follow this overview.
 
 7.1 is a point release on top of [Android 7.0](/notes/android-7-0-nougat/).
 Everything 7.0 introduced, from multi-window to file-based encryption, is

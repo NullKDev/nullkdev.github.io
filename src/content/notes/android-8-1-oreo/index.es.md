@@ -20,7 +20,13 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: developer-preview-1
+    slug: vista-previa-1
+    order: 1
+  - documentId: developer-preview-2
+    slug: vista-previa-2
+    order: 2
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -136,6 +142,18 @@ citations:
   - title: StatusBar.java at android-8.1.0_r1 (AOSP)
     url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-8.1.0_r1/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBar.java
     accessedAt: 2026-10-17
+  - title: Android 8.1 Developer Preview release notes (archived 1 December 2017)
+    url: http://web.archive.org/web/20171201164609/https://developer.android.com/preview/release-notes.html
+    accessedAt: 2026-10-18
+  - title: Google launches Android 8.1 Developer Preview for Pixel and Nexus devices (9to5Google)
+    url: https://9to5google.com/2017/10/25/google-android-8-1-dev-preview-pixel-nexus/
+    accessedAt: 2026-10-18
+  - title: "Google hasn't actually enabled Pixel Visual Core in 8.1 Oreo DP1 (Android Police)"
+    url: https://www.androidpolice.com/2017/10/31/google-hasnt-actually-enabled-pixel-visual-core-8-1-oreo-dp1-updates-docs-say-itll-come-dp2/
+    accessedAt: 2026-10-18
+  - title: Android 8.1 Developer Preview 2 rolling out with near-final system images (9to5Google)
+    url: https://9to5google.com/2017/11/27/google-android-8-1-dev-preview-2-pixel-nexus/
+    accessedAt: 2026-10-18
 ---
 
 Android 8.1 Oreo es la versión que hizo caber Android en teléfonos con 1 GB de
@@ -163,7 +181,9 @@ versión final en Google for India el lunes 4 de diciembre y publicó los
 detalles el 5, con la actualización llegando a Pixel y Nexus "over the next
 week". MobileSyrup informó del despliegue ese mismo día. Los dispositivos de
 fabricantes, incluidos los teléfonos con edición Go, quedaron para "the months
-ahead".
+ahead". Las dos vistas previas tienen su propia parte abajo:
+[Developer Preview 1](/es/notes/android-8-1-oreo/vista-previa-1/) y
+[Developer Preview 2](/es/notes/android-8-1-oreo/vista-previa-2/).
 
 ![La pantalla de inicio de Android 8.1 en un Nexus 5X: una línea con la fecha y el clima arriba, un fondo rosa y violeta, carpetas redondas llamadas Google, Erstellen y Play, el ícono de Play Store, un dock con Teléfono, Mensajes, Chrome, Gmail y Cámara, y una barra de búsqueda de Google sobre los botones de atrás, inicio y recientes](./assets/android-8-1-home-screen.png 'Android 8.1 en un Nexus 5X, capturado el 3 de noviembre de 2017 durante la vista previa para desarrolladores. Wikimedia Commons · Apache License 2.0')
 
