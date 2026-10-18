@@ -51,6 +51,8 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-10-18
+
 ### Agregado
 
 - Cada subpost dentro de su nota abre con una tarjeta de parte: «Parte N de M ·
@@ -59,17 +61,22 @@ este repo usa de verdad — no las genéricas del estándar.
   capítulos en lugar de una sola columna sin cortes.
 
 - Serie «Android, versión por versión»: una nota investigada por cada versión
-  desde la 4.4 KitKat hasta la 17, con nombre, nivel de API, seguridad, permisos y
-  qué cambia para tu app, en inglés y español: 18 notas más una nota principal
-  con la tabla de todas las versiones y los hilos que las cruzan (permisos,
-  segundo plano, almacenamiento, seguridad, nombres). Las notas de Android 17
-  se corrigieron contra las fuentes primarias (el GC generacional llegó en la
-  QPR2 de Android 16, la API se fijó en la Beta 3, el plazo de Play para API 37
-  aún no está anunciado). Las cuatro notas de Android 17 pasan a ser una sola,
-  con sus partes en orden: Beta 1, Beta 2, Beta 3, Beta 4, la versión estable y
-  los límites de memoria. Cada banner de la serie muestra el logo de su versión,
-  con «Android X» como titular y el nombre de la versión debajo. Las
-  imágenes de una nota ahora pueden llevar pie de foto con su crédito
+  desde la 4.4 KitKat hasta la 17 (18 notas, en inglés y español) más una nota
+  principal con la tabla de todas las versiones y los hilos que las cruzan
+  (permisos, segundo plano, almacenamiento, seguridad, nombres). Cada nota da el
+  nombre y el nivel de API, qué trajo, seguridad, permisos, qué cambia para tu
+  app y una captura del sistema con su licencia. Las developer previews y betas
+  de cada versión, desde la L Preview de 2014, son partes de su nota en orden
+  cronológico, cada una con el anuncio oficial de Google como fuente; la 4.4 y
+  la 5.1 no tuvieron previews públicas. Las cuatro notas de Android 17 pasan a
+  ser una sola con seis partes (Beta 1 a 4, la versión estable y los límites de
+  memoria), corregidas contra las fuentes primarias. Contrastar con Wikipedia
+  corrigió datos de la propia serie: el primer teléfono con Android 8.0 fue el
+  Sony Xperia XZ1, con Android 10 el OnePlus 7T y con Android 11 el vivo V20, y
+  el Nexus 5X y 6P sí recibieron el gesto en el sensor de huella en la 7.1.2.
+  Cada banner de la serie muestra el emblema de su versión con «Android X» como
+  titular y el nombre de la versión debajo. Las imágenes de una nota pueden
+  llevar pie de foto con su crédito
   (`![alt](./assets/x.png 'Pie. Fuente · Licencia')`), que se compila a
   `<figure>` en el build sin perder la optimización de imágenes.
 
