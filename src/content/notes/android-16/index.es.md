@@ -188,6 +188,63 @@ citations:
   - title: Update on Plans for Privacy Sandbox Technologies (Privacy Sandbox)
     url: https://privacysandbox.com/news/update-on-plans-for-privacy-sandbox-technologies/
     accessedAt: 2026-10-18
+  - title: Compatibility framework changes (Android 16)
+    url: https://developer.android.com/about/versions/16/reference/compat-framework-changes
+    accessedAt: 2026-10-18
+  - title: Compatibility framework tools (test and debug)
+    url: https://developer.android.com/guide/app-compatibility/test-debug
+    accessedAt: 2026-10-18
+  - title: 'Android Gradle plugin: minimum versions of tools for each API level'
+    url: https://developer.android.com/build/releases/about-agp
+    accessedAt: 2026-10-18
+  - title: Set up the Android 16 SDK
+    url: https://developer.android.com/about/versions/16/setup-sdk
+    accessedAt: 2026-10-18
+  - title: Local network permission
+    url: https://developer.android.com/privacy-and-security/local-network-permission
+    accessedAt: 2026-10-18
+  - title: Health Services permissions (migrate to support API level 36)
+    url: https://developer.android.com/health-and-fitness/health-services/permissions
+    accessedAt: 2026-10-18
+  - title: Get started with Health Connect (privacy policy activity)
+    url: https://developer.android.com/health-and-fitness/guides/health-connect/develop/get-started
+    accessedAt: 2026-10-18
+  - title: Manifest.permission reference
+    url: https://developer.android.com/reference/android/Manifest.permission
+    accessedAt: 2026-10-18
+  - title: HealthPermissions reference
+    url: https://developer.android.com/reference/android/health/connect/HealthPermissions
+    accessedAt: 2026-10-18
+  - title: 'Lint check GestureBackNavigation: Usage of KeyEvent.KEYCODE_BACK'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/GestureBackNavigation.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check LockedOrientationActivity: Incompatible screenOrientation value'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/LockedOrientationActivity.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check SourceLockedOrientationActivity: Incompatible setRequestedOrientation value'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/SourceLockedOrientationActivity.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check NonResizeableActivity: Activity is set to be non-resizeable'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/NonResizeableActivity.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check Aligned16KB: Native library dependency not 16 KB aligned'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/Aligned16KB.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check UnsafeIntentLaunch: Launched Unsafe Intent'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/UnsafeIntentLaunch.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check IntentWithNullActionLaunch: Unsafe intent launched with no action set'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/IntentWithNullActionLaunch.md.html
+    accessedAt: 2026-10-18
+  - title: Google rolls out Android 16 to Pixel phones (TechCrunch)
+    url: https://techcrunch.com/2025/06/10/google-is-rolling-out-android-16-to-pixel-phones-announces-ai-powered-edit-suggestion-to-google-photos/
+    accessedAt: 2026-10-18
+  - title: Google confirms Android 16 stable release lands today (Android Police)
+    url: https://www.androidpolice.com/google-confirms-android-16-stable-release-lands-today/
+    accessedAt: 2026-10-18
+  - title: Android 16 is officially here, and Pixels get first dibs on new features (Android Central)
+    url: https://www.androidcentral.com/apps-software/android-os/android-16-is-officially-here
+    accessedAt: 2026-10-18
 ---
 
 Android 16 es la versión que volvió obligatorias las pantallas grandes. En
@@ -210,9 +267,17 @@ diciembre.
 | Lanzamiento                        | Despliegue en Pixel desde el 10 de junio de 2025                                                 |
 | Dispositivos de lanzamiento        | Samsung Galaxy Z Fold7, Z Flip7 y Z Flip7 FE, anunciados el 9 de julio de 2025                   |
 | Plazo de target API en Google Play | Apps nuevas y actualizaciones desde el 31 de agosto de 2026 (prórroga posible al 1 de noviembre) |
+| Herramientas                       | `compileSdk 36`, Android Gradle Plugin 8.9.1 o posterior (Studio abajo)                          |
+
+La tabla de compatibilidad de Google indica Android Studio Meerkat (2024.3.1
+Patch 1) y AGP 8.9.1 como mínimo para API 36, y Narwhal 3 Feature Drop
+(2025.1.3) con AGP 8.13.0 para API 36.1. La página de configuración del SDK de
+Android 16 recomienda Meerkat 2024.3.1 o superior y AGP 8.9.0-rc01 o superior.
+Usa la tabla más nueva cuando no coinciden.
 
 Google lanzó Android 16 el 10 de junio de 2025 para los Pixel 6 y posteriores,
-incluidos el Pixel 6a, el Pixel Tablet y el Pixel Fold. Su anuncio para el
+incluidos el Pixel 6a, el Pixel Tablet y el Pixel Fold; TechCrunch, Android
+Police y Android Central informaron del despliegue ese día. Su anuncio para el
 público dijo que era "the earliest Android has launched a major release in the
 last few years". El primer build de AOSP, `BP2A.250605.031.A2`, lleva el parche
 de seguridad de junio de 2025.
@@ -290,87 +355,6 @@ abren en ventanas que se pueden mover y redimensionar, además de los modos de
 una sola app y de pantalla dividida. Google dijo que llegaría a dispositivos
 compatibles más adelante en 2025.
 
-## Seguridad y privacidad
-
-- **Advanced Protection.** Un solo interruptor, en Security & privacy, activa
-  los ajustes de dispositivo más estrictos de Google para personas en riesgo,
-  como periodistas. Bloquea la instalación de apps desde fuera de la tienda,
-  apaga 2G y WEP, activa el etiquetado de memoria (MTE) en dispositivos
-  compatibles, protege el USB, reinicia un teléfono bloqueado durante 72 horas
-  y puede guardar registros de intrusión cifrados. Las apps lo consultan con
-  `AdvancedProtectionManager` y el permiso `QUERY_ADVANCED_PROTECTION_MODE`.
-- **Protección contra redirección de intents.** Android 16 bloquea por defecto
-  la redirección general de intents, para todas las apps. Una app que necesita
-  reenviar un intent anidado puede salir con
-  `Intent.removeLaunchSecurityProtection()`.
-- **Intents más seguros, opcional.** Con
-  `android:intentMatchingFlags="enforceIntentFilter"`, un intent explícito debe
-  coincidir con el intent filter del destino, y un intent sin acción no
-  coincide con ninguno.
-- **Compartir claves.** `KeyStoreManager.grantKeyAccess()` permite que una app
-  dé acceso a otra, por UID, a una clave del Android Keystore.
-- **Versión de MediaStore.** `MediaStore.getVersion()` devuelve un valor
-  distinto para cada app; no hay que interpretarlo ni suponer su formato.
-- **Filtro de llamadas a la GPU.** En los Pixel 6 a 9, los IOCTL de GPU Mali
-  obsoletos o de desarrollo quedan bloqueados en builds de producción.
-
-## Permisos
-
-- **Sensores de salud.** Para apps con target 36, `BODY_SENSORS` da paso a
-  permisos granulares de `android.permissions.health`, como `READ_HEART_RATE`,
-  y `BODY_SENSORS_BACKGROUND` a `READ_HEALTH_DATA_IN_BACKGROUND`. Las apps de
-  teléfono también deben mostrar una actividad con la política de privacidad, o
-  el permiso se revoca.
-- **Red local, en prueba.** Google anunció que el acceso a la red local (mDNS,
-  SSDP, `NsdManager`, sockets a rangos privados) pedirá un permiso en tiempo de
-  ejecución. En Android 16 solo se activa para probar:
-  `adb shell am compat enable RESTRICT_LOCAL_NETWORK <package>`. Con esa opción
-  activa, `NEARBY_WIFI_DEVICES` devuelve el acceso.
-- **Acceso limitado a fotos.** Para apps con target 36, las fotos que creó la
-  app aparecen preseleccionadas cuando el usuario concede acceso parcial.
-- **Permisos nuevos para funciones.** `QUERY_ADVANCED_PROTECTION_MODE` (ver
-  arriba). Live Updates sumó `POST_PROMOTED_NOTIFICATIONS` en QPR2.
-
-## Qué cambió para tu app
-
-### Todas las apps en Android 16
-
-| Cambio                                                                                                                                                             | Qué hacer                                                                                                 |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
-| Las cuotas de JobScheduler también alcanzan al bucket `active`, a los jobs que siguen después de ocultarse la app y a los que corren junto a un foreground service | Registrar `getStopReason()`; usar jobs de transferencia iniciados por el usuario para esas transferencias |
-| Un job cuyo `JobParameters` recolecta el GC antes de `jobFinished()` se detiene con `STOP_REASON_TIMEOUT_ABANDONED`                                                | Guardar una referencia a `JobParameters` y llamar siempre a `jobFinished()`                               |
-| `setImportantWhileForeground()` se ignora                                                                                                                          | Quitar la llamada                                                                                         |
-| La prioridad de broadcasts ordenados solo vale dentro de un proceso                                                                                                | Coordinar procesos con un bound service o AIDL, no con `android:priority`                                 |
-| Cambiaron detalles internos de ART, también en Android 12+ vía actualizaciones del sistema de Google Play                                                          | Dejar las interfaces fuera del SDK; revisar librerías contra la lista de problemas conocidos de Google    |
-| Una app alineada a 4 KB en un dispositivo con páginas de 16 KB corre en modo de compatibilidad y el usuario ve un diálogo                                          | Alinear las librerías nativas a 16 KB; `android:pageSizeCompat` oculta el diálogo                         |
-| `announceForAccessibility()` queda obsoleto                                                                                                                        | Usar títulos de panel, live regions o `setError()`                                                        |
-| La redirección de intents está bloqueada por defecto                                                                                                               | Probar los flujos que lanzan un intent recibido de otra app                                               |
-| La búsqueda de dispositivos acompañantes ya no termina con `RESULT_DISCOVERY_TIMEOUT`                                                                              | Tratar `RESULT_USER_REJECTED` como el fallo                                                               |
-| Si se pierde el vínculo Bluetooth, el sistema conserva el bond, desconecta y pide volver a emparejar                                                               | Quitar la lógica propia de reemparejado                                                                   |
-
-### Apps con target API 36
-
-| Cambio                                                                                                                        | Qué hacer                                                                                                                       |
-| ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| En pantallas `sw600dp` o más anchas se ignoran `screenOrientation`, `resizeableActivity`, `minAspectRatio` y `maxAspectRatio` | Hacer diseños para cualquier tamaño y orientación, y guardar el estado de la UI al recrearse                                    |
-| `windowOptOutEdgeToEdgeEnforcement` queda desactivado                                                                         | Manejar los insets; edge-to-edge es obligatorio                                                                                 |
-| El gesto atrás predictivo está activo: no se llama a `onBackPressed()` ni se envía `KEYCODE_BACK`                             | Pasar a `OnBackPressedCallback` u `OnBackInvokedCallback`; `android:enableOnBackInvokedCallback="false"` lo desactiva por ahora |
-| `elegantTextHeight` se ignora                                                                                                 | Revisar diseños en árabe, tailandés, tamil y otras escrituras afectadas                                                         |
-| `scheduleAtFixedRate` ejecuta como máximo una ejecución perdida cuando la app vuelve                                          | No depender de ejecuciones de recuperación                                                                                      |
-| `BODY_SENSORS` se reemplaza por permisos de salud                                                                             | Pedir el permiso granular y declarar una actividad con la política de privacidad                                                |
-| Bluetooth envía `ACTION_KEY_MISSING` y `ACTION_ENCRYPTION_CHANGE`                                                             | Usarlos como señales de vínculo perdido y recuperado                                                                            |
-
-Los juegos quedan exentos de la regla de pantallas grandes si declaran
-`android:appCategory="game"`, y el usuario aún puede elegir el comportamiento
-anterior de la app en los ajustes de relación de aspecto del dispositivo.
-Quien desarrolla tuvo una salida temporal, la propiedad
-`android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY`, que según
-Google deja de aplicar cuando la app tiene target API 37.
-
-Edge-to-edge ya era obligatorio para apps con target 35 en
-[Android 15](/es/notes/android-15/), que todavía aceptaba el atributo para
-evitarlo. Android 16 quitó esa salida.
-
 ## Android 16 QPR2 y el primer SDK menor
 
 Android 16 cambió el modelo de versiones de Android. Google anunció una versión
@@ -429,6 +413,204 @@ Qué trajo QPR2:
   decodificación de audio IAMF y pasos que Health Connect registra desde el
   propio dispositivo.
 
+## Seguridad y privacidad
+
+- **Advanced Protection.** Un solo interruptor, en Security & privacy, activa
+  los ajustes de dispositivo más estrictos de Google para personas en riesgo,
+  como periodistas. Bloquea la instalación de apps desde fuera de la tienda,
+  apaga 2G y WEP, activa el etiquetado de memoria (MTE) en dispositivos
+  compatibles, protege el USB, reinicia un teléfono bloqueado durante 72 horas
+  y puede guardar registros de intrusión cifrados. Las apps lo consultan con
+  `AdvancedProtectionManager` y el permiso `QUERY_ADVANCED_PROTECTION_MODE`.
+- **Protección contra redirección de intents.** Android 16 bloquea por defecto
+  la redirección general de intents, para todas las apps. Una app que necesita
+  reenviar un intent anidado puede salir con
+  `Intent.removeLaunchSecurityProtection()`.
+- **Intents más seguros, opcional.** Con
+  `android:intentMatchingFlags="enforceIntentFilter"`, un intent explícito debe
+  coincidir con el intent filter del destino, y un intent sin acción no
+  coincide con ninguno.
+- **Compartir claves.** `KeyStoreManager.grantKeyAccess()` permite que una app
+  dé acceso a otra, por UID, a una clave del Android Keystore.
+- **Versión de MediaStore.** Para apps con target 36, `MediaStore.getVersion()`
+  deja de servir como huella digital; ver
+  [la tabla de target](#apps-con-target-api-36).
+- **Filtro de llamadas a la GPU.** En los Pixel 6 a 9, los IOCTL de GPU Mali
+  obsoletos o de desarrollo quedan bloqueados en builds de producción.
+
+## Permisos
+
+Android 16 pasó el acceso a sensores corporales a permisos de salud para las
+apps con target 36. De los permisos que agregó, dos son para apps comunes, y
+QPR2 sumó uno para Live Updates:
+
+| Permiso                                                    | Qué cambió en API 36                                                                                                            | Qué declarar                                                                                         | Qué quitar o limitar                              |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `BODY_SENSORS`                                             | Para apps con target 36, las APIs de ritmo cardíaco que protegía piden un permiso de salud                                      | Mantenlo para dispositivos hasta Android 15                                                          | `android:maxSdkVersion="35"`                      |
+| `BODY_SENSORS_BACKGROUND`                                  | Para apps con target 36, lo reemplaza `READ_HEALTH_DATA_IN_BACKGROUND`                                                          | Mantenlo para dispositivos hasta Android 15                                                          | `android:maxSdkVersion="35"`                      |
+| `android.permission.health.READ_HEART_RATE` y similares    | Ahora protegen los sensores de ritmo cardíaco, SpO2 y temperatura de la piel en uso (`Sensor.TYPE_HEART_RATE`, Health Services) | Uno por tipo de dato; las apps de teléfono también necesitan una actividad de política de privacidad | Nada                                              |
+| `android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND` | Ahora protege la lectura de sensores corporales en segundo plano                                                                | Decláralo junto al permiso de uso en primer plano                                                    | Nada                                              |
+| `READ_MEDIA_VISUAL_USER_SELECTED`                          | Para apps con target 36, las fotos propias de la app aparecen preseleccionadas cuando el usuario limita el acceso               | Nada nuevo                                                                                           | Nada                                              |
+| `NEARBY_WIFI_DEVICES`                                      | Devuelve el acceso a la red local mientras la opción de prueba `RESTRICT_LOCAL_NETWORK` está activa                             | Decláralo solo para probar la restricción de red local                                               | Nada; Android 17 lo pasa a `ACCESS_LOCAL_NETWORK` |
+| `QUERY_ADVANCED_PROTECTION_MODE`                           | Nuevo; permite saber si Advanced Protection está activo                                                                         | Decláralo si llamas a `AdvancedProtectionManager`                                                    | Nada                                              |
+| `RANGING`                                                  | Permiso nuevo en tiempo de ejecución para el módulo genérico de medición de distancia (`RangingManager`)                        | Decláralo y pídelo antes de medir                                                                    | Nada                                              |
+| `POST_PROMOTED_NOTIFICATIONS`                              | Nuevo en 36.1 (QPR2); un permiso normal que Live Updates necesita además de `POST_NOTIFICATIONS`                                | Decláralo si publicas Live Updates                                                                   | Nada                                              |
+
+Un manifest para una app que lee el ritmo cardíaco y publica Live Updates en
+Android 15 y anteriores y en 16 y posteriores. Deja solo los bloques que tu app
+necesita:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Ritmo cardíaco: sensores corporales hasta API 35, permisos de salud desde 36 -->
+    <uses-permission
+        android:name="android.permission.BODY_SENSORS"
+        android:maxSdkVersion="35" />
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
+
+    <!-- Lectura en segundo plano: la misma división -->
+    <uses-permission
+        android:name="android.permission.BODY_SENSORS_BACKGROUND"
+        android:maxSdkVersion="35" />
+    <uses-permission
+        android:name="android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND" />
+
+    <!-- Live Updates, desde Android 16 QPR2 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
+
+    <application>
+        <!-- Apps de teléfono con permisos de salud: la pantalla que muestra tu
+             política de privacidad, o el permiso se revoca -->
+        <activity-alias
+            android:name="ViewPermissionUsageActivity"
+            android:exported="true"
+            android:targetActivity=".PermissionsRationaleActivity"
+            android:permission="android.permission.START_VIEW_PERMISSION_USAGE">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+                <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
+            </intent-filter>
+        </activity-alias>
+    </application>
+</manifest>
+```
+
+Los pares con `maxSdkVersion="35"` vienen de la guía de migración de Health
+Services de Google, y el alias de la guía de Health Connect, que además declara
+`androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE` en la propia actividad para
+Android 13 y anteriores. La página de cambios de comportamiento de Google
+escribe el espacio de nombres como `android.permissions.health`; las constantes
+son `android.permission.health.*`.
+
+**Red local, en prueba.** Google anunció que el acceso a la red local (mDNS,
+SSDP, `NsdManager`, sockets a rangos privados) pedirá un permiso en tiempo de
+ejecución. En Android 16 solo se activa para probar:
+`adb shell am compat enable RESTRICT_LOCAL_NETWORK <package>` y un reinicio.
+Con esa opción activa, `NEARBY_WIFI_DEVICES` devuelve el acceso.
+
+## Qué cambió para tu app
+
+### Todas las apps en Android 16
+
+| Cambio                                                                                                                                                             | Qué hacer                                                                                                 | Cómo comprobarlo                                                       |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Las cuotas de JobScheduler también alcanzan al bucket `active`, a los jobs que siguen después de ocultarse la app y a los que corren junto a un foreground service | Registrar `getStopReason()`; usar jobs de transferencia iniciados por el usuario para esas transferencias | `adb shell am set-standby-bucket <package> active` y los demás buckets |
+| Un job cuyo `JobParameters` recolecta el GC antes de `jobFinished()` se detiene con `STOP_REASON_TIMEOUT_ABANDONED`                                                | Guardar una referencia a `JobParameters` y llamar siempre a `jobFinished()`                               |                                                                        |
+| `setImportantWhileForeground()` se ignora                                                                                                                          | Quitar la llamada                                                                                         |                                                                        |
+| La prioridad de broadcasts ordenados solo vale dentro de un proceso                                                                                                | Coordinar procesos con un bound service o AIDL, no con `android:priority`                                 |                                                                        |
+| Cambiaron detalles internos de ART, también en Android 12+ vía actualizaciones del sistema de Google Play                                                          | Dejar las interfaces fuera del SDK; revisar librerías contra la lista de problemas conocidos de Google    |                                                                        |
+| Una app alineada a 4 KB en un dispositivo con páginas de 16 KB corre en modo de compatibilidad y el usuario ve un diálogo                                          | Alinear las librerías nativas a 16 KB; `android:pageSizeCompat` oculta el diálogo                         | Lint `Aligned16KB`                                                     |
+| `announceForAccessibility()` queda obsoleto                                                                                                                        | Usar títulos de panel, live regions o `setError()`                                                        |                                                                        |
+| Mantener presionado atrás en la navegación de 3 botones muestra el destino                                                                                         | Nada, si ya pasaste al gesto atrás predictivo                                                             |                                                                        |
+| La redirección de intents está bloqueada por defecto                                                                                                               | Probar los flujos que lanzan un intent recibido de otra app                                               | Lint `UnsafeIntentLaunch`                                              |
+| La búsqueda de dispositivos acompañantes ya no termina con `RESULT_DISCOVERY_TIMEOUT`                                                                              | Tratar `RESULT_USER_REJECTED` como el fallo                                                               |                                                                        |
+| Si se pierde el vínculo Bluetooth, el sistema conserva el bond, desconecta y pide volver a emparejar                                                               | Quitar la lógica propia de reemparejado                                                                   |                                                                        |
+
+La página de Google también da dos cambios de compatibilidad que levantan las
+cuotas nuevas de jobs en un dispositivo de prueba,
+`OVERRIDE_QUOTA_ENFORCEMENT_TO_TOP_STARTED_JOBS` y
+`OVERRIDE_QUOTA_ENFORCEMENT_TO_FGS_JOBS`, que se activan con
+`adb shell am compat enable <name> <package>`.
+
+### Apps con target API 36
+
+| Cambio                                                                                                                                                     | Qué hacer                                                                                                                       | Cómo comprobarlo                                                                                                                                  |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| En pantallas `sw600dp` o más anchas se ignoran `screenOrientation`, `resizeableActivity`, `minAspectRatio`, `maxAspectRatio` y `setRequestedOrientation()` | Hacer diseños para cualquier tamaño y orientación, y guardar el estado de la UI al recrearse                                    | Lint `LockedOrientationActivity`, `SourceLockedOrientationActivity`, `NonResizeableActivity`; compat `UNIVERSAL_RESIZABLE_BY_DEFAULT` (357141415) |
+| `windowOptOutEdgeToEdgeEnforcement` queda desactivado                                                                                                      | Manejar los insets; edge-to-edge es obligatorio                                                                                 |                                                                                                                                                   |
+| El gesto atrás predictivo está activo: no se llama a `onBackPressed()` ni se envía `KEYCODE_BACK`                                                          | Pasar a `OnBackPressedCallback` u `OnBackInvokedCallback`; `android:enableOnBackInvokedCallback="false"` lo desactiva por ahora | Lint `GestureBackNavigation`                                                                                                                      |
+| `elegantTextHeight` se ignora                                                                                                                              | Revisar diseños en árabe, tailandés, tamil y otras escrituras afectadas                                                         |                                                                                                                                                   |
+| `scheduleAtFixedRate` ejecuta como máximo una ejecución perdida cuando la app vuelve                                                                       | No depender de ejecuciones de recuperación                                                                                      | Compat `STPE_SKIP_MULTIPLE_MISSED_PERIODIC_TASKS` (288912692)                                                                                     |
+| `BODY_SENSORS` se reemplaza por permisos de salud                                                                                                          | Pedir el permiso granular y declarar una actividad con la política de privacidad; ver [Permisos](#permisos)                     |                                                                                                                                                   |
+| `MediaStore.getVersion()` es distinto para cada app                                                                                                        | No interpretarlo ni compararlo con el valor de otra app                                                                         |                                                                                                                                                   |
+| Las fotos propias de la app aparecen preseleccionadas cuando el usuario limita el acceso a medios                                                          | Contar con que el usuario las desmarque, lo que revoca el acceso                                                                |                                                                                                                                                   |
+| Bluetooth envía `ACTION_KEY_MISSING` y `ACTION_ENCRYPTION_CHANGE`                                                                                          | Usarlos como señales de vínculo perdido y recuperado                                                                            |                                                                                                                                                   |
+
+Los juegos quedan exentos de la regla de pantallas grandes si declaran
+`android:appCategory="game"`, y el usuario aún puede elegir el comportamiento
+anterior de la app en los ajustes de relación de aspecto del dispositivo.
+Quien desarrolla tuvo una salida temporal, la propiedad
+`android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY`, que según
+Google deja de aplicar cuando la app tiene target API 37.
+
+Edge-to-edge ya era obligatorio para apps con target 35 en
+[Android 15](/es/notes/android-15/), que todavía aceptaba el atributo para
+evitarlo. Android 16 quitó esa salida.
+
+La lista de compatibilidad solo tiene esos dos cambios ligados al target; sus
+otras entradas son ajustes para pruebas, como orientaciones forzadas o reducir
+la resolución de pantalla.
+
+## Migrar a API 36
+
+De `targetSdk 35` a 36, en este orden:
+
+1. **Actualiza las herramientas.** Pon `compileSdk 36` y usa AGP 8.9.1 o
+   posterior con Android Studio Meerkat o más nuevo. Si lo saltas, `BAKLAVA`,
+   `RANGING` e `Intent.removeLaunchSecurityProtection()` no compilan.
+   Comprueba: el proyecto compila y lint no muestra errores nuevos.
+2. **Haz adaptable cada actividad.** Quita los bloqueos de orientación,
+   `resizeableActivity="false"` y los límites de relación de aspecto, y guarda
+   el estado de la UI al recrearse. Si lo saltas, los diseños se estiran y se
+   pierde el estado en tablets y plegables. Comprueba: lint
+   `LockedOrientationActivity`, `SourceLockedOrientationActivity` y
+   `NonResizeableActivity`, y luego gira y cambia el tamaño en un emulador de
+   pantalla grande. La salida `PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY`
+   solo da tiempo hasta API 37.
+3. **Cambia el manejo de atrás.** Reemplaza las sobrescrituras de
+   `onBackPressed()` y el manejo de `KEYCODE_BACK` por `OnBackPressedCallback`
+   u `OnBackInvokedCallback`. Si lo saltas, el gesto atrás se salta tu lógica y
+   cierra la pantalla. Comprueba: lint `GestureBackNavigation` y el gesto atrás
+   en cada pantalla con comportamiento propio.
+4. **Maneja los insets en todas partes.** Quita
+   `windowOptOutEdgeToEdgeEnforcement`. Si lo saltas, el contenido queda
+   debajo de las barras de estado y de navegación. Comprueba: cada pantalla en
+   Android 16, con navegación por gestos y de 3 botones.
+5. **Cambia el acceso a sensores corporales**, si lees ritmo cardíaco u otros
+   sensores: los permisos de salud, `maxSdkVersion="35"` en los antiguos y la
+   actividad de política de privacidad en teléfonos. Si lo saltas, la lectura
+   del ritmo cardíaco falla y una app de teléfono sin esa pantalla pierde el
+   permiso. Comprueba: el flujo del permiso en Android 16 y en Android 15.
+6. **Revisa las filas menores** de la tabla de target que te apliquen: el
+   texto en las escrituras afectadas por `elegantTextHeight`,
+   `scheduleAtFixedRate`, `MediaStore.getVersion()`, las fotos propias de la
+   app y los intents de vínculo Bluetooth.
+7. **Prueba el resultado** en un dispositivo o emulador con Android 16 y
+   `targetSdk 36`. Para aislar el cambio de pantallas grandes o el de
+   ejecución periódica, cámbialo en una build depurable en Developer options >
+   "App Compatibility Changes", o con
+   `adb shell am compat disable <change ID> <package>`.
+
+Opcional ya que estás: activa `android:intentMatchingFlags="enforceIntentFilter"`
+(lint `IntentWithNullActionLaunch` encuentra lanzamientos sin acción) y prueba
+la restricción de red local con `RESTRICT_LOCAL_NETWORK`, porque Android 17 la
+aplica a las apps con target 37.
+
+Si saltas varios niveles a la vez: haz los pasos de cada versión en orden,
+desde [Android 15](/es/notes/android-15/) si tu target es 34 o menos.
+
 ## Qué perduró
 
 - **Pantallas grandes.** [Android 17](/es/notes/android-17/estable/) quitó la
@@ -462,3 +644,7 @@ Qué trajo QPR2:
   that don't support HDR color".
 - Android 16 fue la única versión de 2025 con cambios de comportamiento
   planificados; Google lo dijo en su post de lanzamiento.
+- La cuenta de desarrolladores de Google anunció la fecha de lanzamiento solo
+  un día antes, algo que Android Police calificó de raro para una versión
+  mayor. Los Pixel que ya estaban en la beta de QPR1 no recibieron la versión
+  estable sin salir de la beta y borrar el teléfono.
