@@ -276,6 +276,37 @@ describe('adjacency', () => {
     expect(last.next).toBeUndefined()
   })
 
+  it('calls the entry listed above "previous", also for same-day series notes', async () => {
+    const hub = entry({
+      slug: 'hub',
+      publishedAt: '2026-10-17',
+      series: { id: 'android-versions', order: 1 },
+    })
+    const kitkat = entry({
+      slug: 'kitkat',
+      publishedAt: '2026-10-17',
+      series: { id: 'android-versions', order: 2 },
+    })
+    const lollipop = entry({
+      slug: 'lollipop',
+      publishedAt: '2026-10-17',
+      series: { id: 'android-versions', order: 3 },
+    })
+    seed([lollipop, hub, kitkat])
+    const listed = (await getArchiveEntries('notes', 'en')).map(
+      ({ data }) => data.slug,
+    )
+    const around = await getAdjacentEntries(kitkat)
+    expect(around.previous?.data.slug).toBe(
+      listed[listed.indexOf('kitkat') - 1],
+    )
+    expect(around.next?.data.slug).toBe(listed[listed.indexOf('kitkat') + 1])
+    expect([around.previous?.data.slug, around.next?.data.slug]).toEqual([
+      'hub',
+      'lollipop',
+    ])
+  })
+
   it('steps through entries in archive order, and not for hidden ones', async () => {
     const a = entry({ slug: 'a', featuredRank: 1 })
     const b = entry({ slug: 'b', featuredRank: 2 })

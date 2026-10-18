@@ -38,18 +38,19 @@ export const getSeriesPosition = (
   if (!membership) return undefined
   const title = getSeriesTitle(membership.id, locale)
   const siblings = pool
-    .filter(
-      (candidate) =>
-        candidate.data.series?.id === membership.id &&
-        candidate.data.locale === entry.data.locale,
+    .flatMap(({ data }) =>
+      data.series?.id === membership.id && data.locale === entry.data.locale
+        ? [data.series.order]
+        : [],
     )
-    .map((candidate) => candidate.data.series?.order ?? 0)
     .sort((a, b) => a - b)
-  if (!title || siblings.length < 2) return undefined
+  const position = siblings.indexOf(membership.order)
+  // A note missing from its own pool has no place to report; "Part 0" is wrong.
+  if (!title || siblings.length < 2 || position === -1) return undefined
   return {
     id: membership.id,
     title,
-    order: siblings.indexOf(membership.order) + 1,
+    order: position + 1,
     total: siblings.length,
   }
 }

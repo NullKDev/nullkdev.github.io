@@ -83,6 +83,15 @@ describe('getSeriesPosition', () => {
     })
   })
 
+  it('places nothing when the note is missing from the pool it is ranked in', () => {
+    const pool = [
+      note('a', { id: 'android-versions', order: 1 }),
+      note('b', { id: 'android-versions', order: 2 }),
+    ]
+    const outsider = note('c', { id: 'android-versions', order: 3 })
+    expect(getSeriesPosition(outsider, pool, 'en')).toBeUndefined()
+  })
+
   it('says nothing for a series of one or no series at all', () => {
     expect(getSeriesPosition(pool[3], pool, 'en')).toBeUndefined()
     expect(getSeriesPosition(pool[4], pool, 'en')).toBeUndefined()
