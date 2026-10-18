@@ -112,6 +112,18 @@ citations:
   - title: 'File:Notification panel of android 5.0.png (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Notification_panel_of_android_5.0.png
     accessedAt: 2026-10-17
+  - title: 'File:Android Lollipop Easter Egg.png (Wikimedia Commons)'
+    url: https://commons.wikimedia.org/wiki/File:Android_Lollipop_Easter_Egg.png
+    accessedAt: 2026-10-17
+  - title: 'New in Android: L Developer Preview and Google Play Services 5.0'
+    url: https://android-developers.googleblog.com/2014/06/developer-preview-and-play-services-5.html
+    accessedAt: 2026-10-17
+  - title: Android L Developer Preview and Android Studio Beta
+    url: https://android-developers.googleblog.com/2014/06/android-l-developer-preview-and-android.html
+    accessedAt: 2026-10-17
+  - title: Codenames, tags, and build numbers
+    url: https://source.android.com/docs/setup/reference/build-numbers
+    accessedAt: 2026-10-17
 ---
 
 Android 5.0 Lollipop es la versión que cambió el motor y la pintura a la vez.
@@ -134,13 +146,24 @@ teléfonos ganaron varios usuarios y un modo invitado.
 | Dispositivos de lanzamiento        | Nexus 6 (Motorola), Nexus 9 (HTC) y Nexus Player (Asus)                                |
 | Plazo de target API en Google Play | Ninguno. La regla de target API de Play empezó en 2018, con API 26                     |
 
+Google mostró la versión por primera vez como "Android L" en Google I/O, el 25
+de junio de 2014. Al día siguiente publicó la L Developer Preview para Nexus 5
+y Nexus 7 (2013): era la primera vez que daba a los desarrolladores una versión
+de Android antes de su lanzamiento. No tenía nivel de API, y las apps
+compiladas contra ella no se podían publicar en Play.
+
 Google anunció Lollipop junto con los tres dispositivos de lanzamiento el 15 de
 octubre de 2014. Dos días después publicó el SDK final y abrió Play a las apps
 con target API 21. La Nexus 9 salió a la venta con 5.0 el 3 de noviembre. Droid
 Life y The Next Web informaron que la OTA para Nexus 5, Nexus 7 (Wi-Fi) y Nexus
-10 empezó el 12 de noviembre; el Nexus 4 llegó después.
+10 empezó el 12 de noviembre; el Nexus 4 llegó después. Siguieron dos
+versiones de mantenimiento con el mismo nivel de API: 5.0.1 (`LRX22C`) y 5.0.2
+(`LRX22G`).
 
 ## Qué trajo
+
+El anuncio de Google habla de "over 5,000 new APIs" (más de 5000 API nuevas).
+Estas son las que definieron las apps:
 
 - **ART por defecto.** ART compila cada app por adelantado al instalarla, con
   `dex2oat`, en lugar de la compilación just-in-time de Dalvik en cada
@@ -165,6 +188,8 @@ Life y The Next Web informaron que la OTA para Nexus 5, Nexus 7 (Wi-Fi) y Nexus
   se cumplen sus condiciones: carga, red sin límite de datos, reposo o un plazo.
   `adb shell dumpsys batterystats` alimenta a Battery Historian. Google dijo que
   Battery saver alarga la batería "by up to 90 minutes" (hasta 90 minutos).
+  Ars Technica cuenta que pinta de naranja las barras de estado y de navegación
+  y que puede activarse solo al 5 o al 15 % de batería.
 - **Camera2.** `android.hardware.camera2` sucede a la clase `Camera`, obsoleta
   desde API 21. Añade ráfagas, ajustes por fotograma, enfoque, ISO y exposición
   manuales, y captura RAW en los dispositivos que la soportan.
@@ -314,3 +339,8 @@ ejecución llegaron un año después, con
 - Al desbloquear el egg, el sistema guarda la hora en
   `Settings.System.EGG_MODE`, con el comentario "For posterity: the moment this
   user unlocked the easter egg".
+- El CDD de 5.0 fija la memoria mínima según la densidad de pantalla y la ABI.
+  Un teléfono de 32 bits con xhdpi o menos necesita 512 MB disponibles para el
+  kernel y el espacio de usuario; con una ABI de 64 bits, 832 MB.
+
+![L Land en Android 5.0: el robot verde de Android vuela junto a una piruleta naranja que cuelga desde arriba en un cielo nocturno, con el marcador 0 en un recuadro rojo](./assets/l-land-easter-egg.png 'L Land, el juego Easter egg de Android 5.0. Wikimedia Commons · Licencia Apache 2.0')

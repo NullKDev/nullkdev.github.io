@@ -127,6 +127,21 @@ citations:
   - title: 'File:Android Lollipop Logo.svg (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Android_Lollipop_Logo.svg
     accessedAt: 2026-10-17
+  - title: 'File:Android Lollipop screenshot.png (Wikimedia Commons)'
+    url: https://commons.wikimedia.org/wiki/File:Android_Lollipop_screenshot.png
+    accessedAt: 2026-10-17
+  - title: 'Google: Android 5.1 memory leak has been fixed internally, no timeline for release yet (Android Police)'
+    url: https://www.androidpolice.com/2015/03/15/google-android-5-1-memory-leak-has-been-fixed-internally-no-timeline-for-release-yet/
+    accessedAt: 2026-10-17
+  - title: Android Open Source Project updated with code for 5.1.1 (LMY47V) (Android Police)
+    url: https://www.androidpolice.com/2015/04/21/android-open-source-project-updated-with-code-for-5-1-1-lmy47v/
+    accessedAt: 2026-10-17
+  - title: Google Play services updates for Android Lollipop end (9to5Google)
+    url: https://9to5google.com/2024/07/11/android-lollipop-google-play-services/
+    accessedAt: 2026-10-17
+  - title: Fire OS overview (Amazon Developer)
+    url: https://developer.amazon.com/docs/fire-tv/fire-os-overview.html
+    accessedAt: 2026-10-17
 ---
 
 Android 5.1 is a small update to Lollipop with its own API level. For users it
@@ -138,6 +153,8 @@ deprecation notice for the Apache HTTP client.
 The rest of Lollipop arrived in 5.0 and is covered in the
 [Android 5.0 Lollipop note](/notes/android-5-0-lollipop/). This note covers
 only what 5.1 added.
+
+![Android 5.1.1 home screen on a Nexus 5 emulator: Google search bar at the top, a five-icon dock with the round app-drawer button in the middle, and the back, home and recents keys at the bottom](./assets/android-5-1-home-screen.png 'Android 5.1.1 on a Nexus 5 emulator image. Wikimedia Commons · Free screenshot, Apache 2.0 (Android Open Source Project)')
 
 ## At a glance
 
@@ -159,12 +176,25 @@ updates over the next few weeks. The first AOSP build, LMY47D
 (`android-5.1.0_r1`), covers the Nexus 5, 6, 7 (2012), 10 and Nexus Player.
 Android 5.1.1 builds followed under the same API level.
 
+Android 5.1.1 reached AOSP on 21 April 2015 as LMY47V (`android-5.1.1_r1`),
+first for the Nexus 7, Nexus 10 and Nexus Player. It mattered for the memory
+leak that users had reported since 5.0: Android Police found the leak still
+present in 5.1, Google said on its issue tracker that it was "fixed
+internally". When 5.1.1 reached AOSP, Android Police wrote that Google
+claimed a fix for a significant memory leak in it. The last 5.1.1
+build, LMY49M (`android-5.1.1_r38`), went to the Nexus 10 with the 5 July
+2016 security patch level.
+
 Before the announcement, Google's Android One site for Indonesia listed 5.1 on
 the spec sheets of phones from Evercoss, Mito and Nexian. Android Police
 reported it on 4 February 2015, and Ars Technica called it a premature launch.
 Google's own post on Android One in Indonesia says only "Lollipop".
 
 ## What it brought
+
+Google's own description of 5.1 was an update that "improves stability and
+performance", plus a few new features. Ars Technica read it the same way: a
+minor update.
 
 - **Multiple SIM cards.** A device with two or more SIM slots can use more
   than one carrier SIM at a time. The developer blog calls it important for
@@ -294,6 +324,13 @@ constant in AOSP carries a one-line joke instead of the change list that
 - **Device Protection** is still there. Google's help today says a reset
   device asks for "any Google Account previously added and synced to the
   device", and cannot be used without it.
+- **Google Play services** stopped updating on Lollipop (API 21 and 22) in
+  July 2024. Google said Lollipop was under 1% of active devices; Play
+  services updates now need Android 6.0 (API 23). Apps that depend on new Play
+  services features cannot count on them below API 23.
+- **Fire OS 5**, Amazon's fork, is based on Android 5.1 at API level 22. It
+  runs on Fire TV models released from 2014 to 2017, so an app that supports
+  them needs a `minSdkVersion` of 22 or lower.
 
 ## Worth knowing
 

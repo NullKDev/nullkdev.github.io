@@ -118,6 +118,21 @@ citations:
   - title: Google Releases Android 7.1.2 (Phone Scoop)
     url: https://www.phonescoop.com/articles/article.php?a=18962
     accessedAt: 2026-10-17
+  - title: Android 7.1.2 leaves beta, arrives on Pixel and Nexus devices (Ars Technica)
+    url: https://arstechnica.com/gadgets/2017/04/android-7-1-2-leaves-beta-arrives-on-pixel-and-nexus-devices/
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin, October 2019
+    url: https://source.android.com/docs/security/bulletin/2019-10-01
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin, November 2019
+    url: https://source.android.com/docs/security/bulletin/2019-11-01
+    accessedAt: 2026-10-17
+  - title: Why isn't your old phone getting Nougat? There's blame enough to go around (Ars Technica)
+    url: https://arstechnica.com/gadgets/2016/08/why-isnt-your-old-phone-getting-nougat-theres-blame-enough-to-go-around/
+    accessedAt: 2026-10-17
+  - title: 'Investing in long-lasting design: Android 7 for the Fairphone 2 (Fairphone, archived)'
+    url: https://web.archive.org/web/20190423041631/https://www.fairphone.com/en/2018/11/13/investing-in-long-lasting-design-android-7-for-fairphone-2/
+    accessedAt: 2026-10-17
   - title: 'File:Android Nougat Logo.svg (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Android_Nougat_Logo.svg
     accessedAt: 2026-10-17
@@ -161,7 +176,10 @@ en esa nota.
 | 7.1.2   | Abril 2017     | Pixel, Pixel XL, Pixel C, Nexus 5X, 6P y Nexus Player. Google la describió como una actualización de mantenimiento: correcciones, optimizaciones y algunos cambios para operadores y usuarios |
 
 El Nexus 6 y el Nexus 9 nunca recibieron 7.1.2. Sus últimas imágenes de fábrica
-son compilaciones de 7.1.1 de octubre de 2017.
+son compilaciones de 7.1.1 de octubre de 2017. Con 7.1.2 el Pixel C recibió el
+Pixel Launcher, los iconos redondos y una cuadrícula de apps recientes pensada
+para tablet, y todos los dispositivos una pantalla "Battery usage alerts", según
+Ars Technica.
 
 ## Qué trajo
 
@@ -208,8 +226,9 @@ su cajón de apps que se abre deslizando hacia arriba, Google Assistant, la copi
 ilimitada en calidad original en Google Photos, la pestaña de soporte en
 Settings y los nuevos botones de navegación. Los Nexus con 7.1.1 recibieron la
 lista de la plataforma. El Nexus 5X y el 6P tampoco tuvieron el gesto de
-deslizar en el sensor de huellas para abrir las notificaciones, porque su
-sensor no lo permitía, según Android Police.
+deslizar en el sensor de huellas para abrir las notificaciones. Android Police
+informó que su sensor no lo permitía, pero el registro de cambios de Google para
+7.1.2 incluye "Fingerprint swipe on 5X/6P", según Ars Technica.
 
 ## Seguridad y privacidad
 
@@ -230,6 +249,9 @@ sensor no lo permitía, según Android Police.
   preguntar, con dos excepciones: el verificador de paquetes y el gestor de
   almacenamiento que atiende `ACTION_MANAGE_STORAGE`. Esa segunda excepción es
   nueva en 7.1.
+- **Fin de los parches de seguridad.** El boletín de seguridad de octubre de
+  2019 es el último que incluye 7.1.1 y 7.1.2 entre las versiones de AOSP
+  actualizadas. Desde noviembre de 2019 la versión más antigua listada es 8.0.
 
 ## Permisos
 
@@ -307,3 +329,7 @@ contenido enriquecido.
 - Google ya no garantizaba nuevas versiones al Nexus 6 y al 9 después de
   octubre de 2016, señaló Ars Technica. Los dos recibieron 7.1.1 de todos
   modos, y ahí se quedaron.
+- En 2016 Ars Technica comprobó que Qualcomm no daba soporte a Nougat en los
+  Snapdragon 800 y 801. El Fairphone 2 usa un 801 y aun así recibió una
+  actualización oficial a 7.1.2 en noviembre de 2018. Fairphone afirma que fue
+  el único teléfono con 801 que dio ese salto.

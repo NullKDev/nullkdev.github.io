@@ -112,6 +112,18 @@ citations:
   - title: 'File:Notification panel of android 5.0.png (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Notification_panel_of_android_5.0.png
     accessedAt: 2026-10-17
+  - title: 'File:Android Lollipop Easter Egg.png (Wikimedia Commons)'
+    url: https://commons.wikimedia.org/wiki/File:Android_Lollipop_Easter_Egg.png
+    accessedAt: 2026-10-17
+  - title: 'New in Android: L Developer Preview and Google Play Services 5.0'
+    url: https://android-developers.googleblog.com/2014/06/developer-preview-and-play-services-5.html
+    accessedAt: 2026-10-17
+  - title: Android L Developer Preview and Android Studio Beta
+    url: https://android-developers.googleblog.com/2014/06/android-l-developer-preview-and-android.html
+    accessedAt: 2026-10-17
+  - title: Codenames, tags, and build numbers
+    url: https://source.android.com/docs/setup/reference/build-numbers
+    accessedAt: 2026-10-17
 ---
 
 Android 5.0 Lollipop is the release that swapped the engine and the paint at
@@ -134,13 +146,23 @@ multiple users and a guest mode.
 | Launch devices                  | Nexus 6 (Motorola), Nexus 9 (HTC) and Nexus Player (Asus)                    |
 | Google Play target-API deadline | None. Play's target-API rule started in 2018, at API 26                      |
 
+Google first showed the release as "Android L" at Google I/O on 25 June 2014.
+The L Developer Preview followed the next day for the Nexus 5 and Nexus 7
+(2013), the first time Google gave developers an upcoming Android release
+early. It had no API level, and apps compiled against it could not be
+published on Play.
+
 Google announced Lollipop with the three launch devices on 15 October 2014. Two
 days later it published the final SDK and opened Play to apps targeting API 21.
 The Nexus 9 went on sale with 5.0 on 3 November. Droid Life and The Next Web
 reported the OTA for the Nexus 5, Nexus 7 (Wi-Fi) and Nexus 10 starting on 12
-November; the Nexus 4 came later.
+November; the Nexus 4 came later. Two maintenance releases followed on the
+same API level: 5.0.1 (`LRX22C`) and 5.0.2 (`LRX22G`).
 
 ## What it brought
+
+Google's launch post counts "over 5,000 new APIs". These are the ones that
+shaped apps:
 
 - **ART by default.** ART compiles each app ahead of time at install with
   `dex2oat`, instead of Dalvik's just-in-time compilation on every run. Ars
@@ -162,7 +184,9 @@ November; the Nexus 4 came later.
 - **Project Volta.** `JobScheduler` (`android.app.job`) runs work when its
   conditions hold: charging, unmetered network, idle, or a deadline.
   `adb shell dumpsys batterystats` feeds Battery Historian. Google said Battery
-  saver extends battery life "by up to 90 minutes".
+  saver extends battery life "by up to 90 minutes". Ars Technica notes it turns
+  the status and navigation bars orange and can switch on by itself at 5 or 15
+  percent battery.
 - **Camera2.** `android.hardware.camera2` succeeds the `Camera` class,
   deprecated in API 21. It adds bursts, per-frame settings, manual focus, ISO
   and exposure, and RAW capture on devices that support it.
@@ -302,3 +326,8 @@ year later, in [Android 6.0](/notes/android-6-marshmallow/).
 - When you unlock the egg, the system stores the time in
   `Settings.System.EGG_MODE`, with the comment "For posterity: the moment
   this user unlocked the easter egg".
+- The 5.0 CDD sets minimum memory by screen density and ABI. A 32-bit phone at
+  xhdpi or lower needs 512 MB available to the kernel and userspace; with a
+  64-bit ABI it needs 832 MB.
+
+![L Land on Android 5.0: the green Android robot flies past an orange lollipop hanging from the top of a night sky, with the score 0 in a red box](./assets/l-land-easter-egg.png 'L Land, the Easter egg game of Android 5.0. Wikimedia Commons · Apache License 2.0')

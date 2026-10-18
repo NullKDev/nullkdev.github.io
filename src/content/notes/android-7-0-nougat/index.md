@@ -124,6 +124,30 @@ citations:
   - title: 'File:Android Nougat Logo.svg (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Android_Nougat_Logo.svg
     accessedAt: 2026-10-17
+  - title: First Preview of Android N — Developer APIs & Tools
+    url: https://android-developers.googleblog.com/2016/03/first-preview-of-android-n-developer.html
+    accessedAt: 2026-10-17
+  - title: Future of Java 8 language feature support on Android
+    url: https://android-developers.googleblog.com/2017/03/future-of-java-8-language-feature.html
+    accessedAt: 2026-10-17
+  - title: libcore at android-7.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/libcore/+/refs/tags/android-7.0.0_r1/
+    accessedAt: 2026-10-17
+  - title: frameworks/base history at android-7.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+log/refs/tags/android-7.0.0_r1
+    accessedAt: 2026-10-17
+  - title: Android N switches to OpenJDK, Google tells Oracle it is protected by the GPL (Ars Technica)
+    url: https://arstechnica.com/tech-policy/2016/01/android-n-switches-to-openjdk-google-tells-oracle-it-is-protected-by-the-gpl/
+    accessedAt: 2026-10-17
+  - title: Why isn't your old phone getting Nougat? There's blame enough to go around (Ars Technica)
+    url: https://arstechnica.com/gadgets/2016/08/why-isnt-your-old-phone-getting-nougat-theres-blame-enough-to-go-around/
+    accessedAt: 2026-10-17
+  - title: Google is calling Android N "New York Cheesecake" (NYC) internally (Android Police)
+    url: https://www.androidpolice.com/2016/03/15/google-is-calling-android-n-new-york-cheesecake-nyc-internally/
+    accessedAt: 2026-10-17
+  - title: 'File:Android 7.0-en.png (Wikimedia Commons)'
+    url: https://commons.wikimedia.org/wiki/File:Android_7.0-en.png
+    accessedAt: 2026-10-17
 ---
 
 Android 7.0 Nougat is the release that put two apps on one phone screen.
@@ -131,6 +155,8 @@ Users got split-screen multi-window, replies typed straight into a
 notification, and Doze that also works while the phone moves in a pocket.
 Developers got file-based encryption with Direct Boot, a declarative network
 security config, and a crash for apps that still share `file://` URIs.
+
+![The Android 7.0 home screen: a Google search bar at the top, a pink and purple wallpaper with a mountain silhouette, app icons for Google, Create, Play and Play Store, and a dock with Phone, Messages, the app drawer, Chrome and Camera above the back, home and recents buttons](./assets/android-7-0-home-screen.png 'The Android 7.0 home screen with the default Nougat wallpaper. Wikimedia Commons · Apache License 2.0')
 
 ## At a glance
 
@@ -151,6 +177,14 @@ could publish updates that compile against, and optionally target, API 24. On
 several weeks to the Nexus 6, 5X, 6P, 9, Nexus Player, Pixel C and General
 Mobile 4G (Android One). The source went to AOSP the same day, and Ars Technica
 published its review.
+
+The first developer preview came out on 9 March 2016. Burke called it "early…
+really early", and the new Android Beta Program delivered it over the air to
+the same Nexus devices and the Pixel C. At launch he also moved Nougat to "a
+new regular maintenance schedule over the coming quarters". Phones built on
+Qualcomm's Snapdragon 800 and 801, which powered most flagships from late 2013
+to late 2014, were left out: Ars Technica found an official Nougat update for
+them "very difficult if not completely impossible".
 
 ## What it brought
 
@@ -188,6 +222,14 @@ flowchart TD
   `Tile` class. Users can rearrange the tiles.
 - **Display size.** Users scale the whole interface, not only the text,
   down to a minimum width of `sw320dp`.
+- **OpenJDK and Java 8.** The core `java.*` libraries now come from OpenJDK
+  instead of Apache Harmony. AOSP's `libcore` at `android-7.0.0_r1` has an
+  `ojluni` tree that 6.0.1 lacks. With the Jack toolchain, lambdas work back to
+  Gingerbread; default and static interface methods and streams need API 24.
+- **Emoji.** Nougat supports Unicode 9, 72 new emoji by Ars Technica's count,
+  and is the first version with skin tone modifiers. Apps check that a glyph
+  exists with `Paint.hasGlyph()` before inserting it; keyboards should offer
+  the skin tones.
 - **Smaller additions.** Multi-locale settings with `LocaleList`, a subset of
   ICU4J under `android.icu`, number blocking (`BlockedNumberContract`), call
   screening (`CallScreeningService`), OpenGL ES 3.2, VR mode, the keyboard
@@ -299,12 +341,17 @@ flowchart TD
   Android 10. It could not be combined with adoptable storage on 7.0 to 8.1.
 - **A/B updates** got streaming in Android 8.0, and Virtual A/B replaced the
   original layout in Android 10.
+- **Jack** did not last either. In March 2017 Google deprecated it and moved
+  Java 8 language support into the standard `javac` and `dx` tools.
 - **Scoped directory access** did not last. `createAccessIntent()` was
   deprecated in API 29 and returns `RESULT_CANCELED` on Android 10.
 
 ## Worth knowing
 
 - The `N` constant in AOSP carries the comment `N is for ¯\_(ツ)_/¯.`
+- Inside Google, N was "New York Cheesecake", Android Police reported in
+  March 2016. AOSP history at the 7.0 tag shows the initials in branch names
+  such as `nyc-dev` and `nyc-release`.
 - Google asked the public for names on android.com under `#NameAndroidN`,
   with entries closing on 8 June 2016. It was a call for suggestions, not a
   vote. Google kept the final choice and revealed Nougat on 30 June 2016.

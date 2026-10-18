@@ -127,6 +127,21 @@ citations:
   - title: 'File:Android Lollipop Logo.svg (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Android_Lollipop_Logo.svg
     accessedAt: 2026-10-17
+  - title: 'File:Android Lollipop screenshot.png (Wikimedia Commons)'
+    url: https://commons.wikimedia.org/wiki/File:Android_Lollipop_screenshot.png
+    accessedAt: 2026-10-17
+  - title: 'Google: Android 5.1 memory leak has been fixed internally, no timeline for release yet (Android Police)'
+    url: https://www.androidpolice.com/2015/03/15/google-android-5-1-memory-leak-has-been-fixed-internally-no-timeline-for-release-yet/
+    accessedAt: 2026-10-17
+  - title: Android Open Source Project updated with code for 5.1.1 (LMY47V) (Android Police)
+    url: https://www.androidpolice.com/2015/04/21/android-open-source-project-updated-with-code-for-5-1-1-lmy47v/
+    accessedAt: 2026-10-17
+  - title: Google Play services updates for Android Lollipop end (9to5Google)
+    url: https://9to5google.com/2024/07/11/android-lollipop-google-play-services/
+    accessedAt: 2026-10-17
+  - title: Fire OS overview (Amazon Developer)
+    url: https://developer.amazon.com/docs/fire-tv/fire-os-overview.html
+    accessedAt: 2026-10-17
 ---
 
 Android 5.1 es una actualización pequeña de Lollipop con su propio nivel de
@@ -139,6 +154,8 @@ operador y el aviso de obsolescencia del cliente HTTP de Apache.
 El resto de Lollipop llegó con 5.0 y está en la
 [nota de Android 5.0 Lollipop](/es/notes/android-5-0-lollipop/). Esta nota
 cubre solo lo que agregó 5.1.
+
+![Pantalla de inicio de Android 5.1.1 en un emulador de Nexus 5: la barra de búsqueda de Google arriba, un dock de cinco íconos con el botón redondo del cajón de apps en el centro y las teclas de atrás, inicio y recientes abajo](./assets/android-5-1-home-screen.png 'Android 5.1.1 en una imagen de emulador de Nexus 5. Wikimedia Commons · Free screenshot, Apache 2.0 (Android Open Source Project)')
 
 ## De un vistazo
 
@@ -160,12 +177,25 @@ semanas para Nexus 4, 5, 6, 7, 9, 10 y Nexus Player. La primera build de AOSP,
 LMY47D (`android-5.1.0_r1`), cubre Nexus 5, 6, 7 (2012), 10 y Nexus Player.
 Después llegaron builds de Android 5.1.1 con el mismo nivel de API.
 
+Android 5.1.1 llegó a AOSP el 21 de abril de 2015 como LMY47V
+(`android-5.1.1_r1`), primero para Nexus 7, Nexus 10 y Nexus Player. Importó
+por la fuga de memoria que los usuarios reportaban desde 5.0: Android Police
+comprobó que seguía en 5.1, Google dijo en su issue tracker que estaba "fixed
+internally". Cuando 5.1.1 llegó a AOSP, Android Police escribió que Google
+afirmaba haber corregido en ella una fuga de memoria importante. La última
+build de 5.1.1, LMY49M (`android-5.1.1_r38`), fue para el Nexus 10 con el
+nivel de parche de seguridad del 5 de julio de 2016.
+
 Antes del anuncio, el sitio de Android One para Indonesia ya mostraba 5.1 en
 las fichas de teléfonos de Evercoss, Mito y Nexian. Android Police lo informó
 el 4 de febrero de 2015, y Ars Technica lo llamó un lanzamiento prematuro. La
 entrada de Google sobre Android One en Indonesia solo dice "Lollipop".
 
 ## Qué trajo
+
+Google describió 5.1 como una actualización que "mejora la estabilidad y el
+rendimiento", más algunas funciones nuevas. Ars Technica la leyó igual: una
+actualización menor.
 
 - **Varias tarjetas SIM.** Un dispositivo con dos o más ranuras puede usar más
   de una SIM de operador a la vez. El blog de desarrolladores lo considera
@@ -303,6 +333,14 @@ la lista de cambios que tiene `LOLLIPOP` (ver abajo).
   dispositivo restablecido pide "cualquier cuenta de Google que se haya
   agregado y sincronizado antes en el dispositivo", y que sin ella no se puede
   usar.
+- **Google Play services** dejó de actualizarse en Lollipop (API 21 y 22) en
+  julio de 2024. Google dijo que Lollipop era menos del 1% de los dispositivos
+  activos; las actualizaciones de Play services ahora piden Android 6.0
+  (API 23). Una app que dependa de funciones nuevas de Play services no puede
+  contar con ellas por debajo de API 23.
+- **Fire OS 5**, el fork de Amazon, se basa en Android 5.1 con nivel de API 22.
+  Corre en modelos de Fire TV lanzados entre 2014 y 2017, así que una app que
+  los soporte necesita un `minSdkVersion` de 22 o menor.
 
 ## Para saber
 

@@ -130,6 +130,45 @@ citations:
   - title: 'File:Android 6.0+ Permissions.png (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Android_6.0%2B_Permissions.png
     accessedAt: 2026-10-17
+  - title: Get ready for the sweet taste of Android 6.0 Marshmallow
+    url: https://android.googleblog.com/2015/10/get-ready-for-sweet-taste-of-android-60.html
+    accessedAt: 2026-10-17
+  - title: Android M Developer Preview & Tools
+    url: https://android-developers.googleblog.com/2015/05/android-m-developer-preview-tools.html
+    accessedAt: 2026-10-17
+  - title: Codenames, tags, and build numbers
+    url: https://source.android.com/docs/setup/reference/build-numbers
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin — August 2018
+    url: https://source.android.com/docs/security/bulletin/2018-08-01
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin — September 2018
+    url: https://source.android.com/docs/security/bulletin/2018-09-01
+    accessedAt: 2026-10-17
+  - title: Set up Google Play services
+    url: https://developers.google.com/android/guides/setup
+    accessedAt: 2026-10-17
+  - title: Google Play Services drops support for Android 6.0 (OSnews)
+    url: https://www.osnews.com/story/145599/google-play-services-drops-support-for-android-6-0/
+    accessedAt: 2026-10-17
+  - title: Google announces Pixel C Android tablet with magnetic keyboard add-on (TechCrunch)
+    url: https://techcrunch.com/2015/09/29/google-announces-pixel-c-android-tablet-with-magnetic-keyboard-add-on/
+    accessedAt: 2026-10-17
+  - title: Android 6.0.1 adds a ton of new emoji, and we've got the full list (Ars Technica)
+    url: https://arstechnica.com/gadgets/2015/12/android-6-0-1-adds-a-ton-of-new-emoji-and-weve-got-the-full-list/
+    accessedAt: 2026-10-17
+  - title: Android 6.0.1 factory images now available (Android Police)
+    url: https://www.androidpolice.com/2015/12/07/android-6-0-1-factory-images-now-available-adds-many-new-emoji-and-possibly-a-new-tablet-navbar/
+    accessedAt: 2026-10-17
+  - title: The LG G5 and Galaxy S7 won't support Android 6.0's adoptable storage (Ars Technica)
+    url: https://arstechnica.com/gadgets/2016/02/the-lg-g5-and-galaxy-s7-wont-support-android-6-0s-adoptable-storage/
+    accessedAt: 2026-10-17
+  - title: Google's internal code name for Android M is Macadamia Nut Cookie (Android Police)
+    url: https://www.androidpolice.com/2015/05/23/googles-internal-code-name-for-android-m-is-macadamia-nut-cookie-mnc/
+    accessedAt: 2026-10-17
+  - title: 'File:Android Marshmallow screenshot.png (Wikimedia Commons)'
+    url: https://commons.wikimedia.org/wiki/File:Android_Marshmallow_screenshot.png
+    accessedAt: 2026-10-17
 ---
 
 Android 6.0 Marshmallow es la versión en la que las apps dejaron de recibir
@@ -137,6 +176,8 @@ todos sus permisos al instalarse. Desde API 23, una app pide cada permiso
 peligroso mientras corre, y el usuario puede negarlo. También trajo Doze, que
 aparca el trabajo en segundo plano cuando el teléfono está quieto, y un nivel de
 parche de seguridad que los dispositivos informan como una fecha.
+
+![La pantalla de inicio de Android 6.0 en el emulador: una barra de búsqueda de Google, un widget de reloj, un acceso a Camera y un dock con Phone, Contacts, el cajón de apps, Messaging y Browser](./assets/home-screen.png 'Pantalla de inicio de Android 6.0 sin capa del fabricante, en el emulador de Android con el perfil de un Nexus 5. Wikimedia Commons · Apache License 2.0')
 
 ## De un vistazo
 
@@ -151,10 +192,18 @@ parche de seguridad que los dispositivos informan como una fecha.
 | Dispositivos de lanzamiento        | Nexus 5X (LG) y Nexus 6P (Huawei), anunciados el 29 de septiembre de 2015 |
 | Plazo de target API en Google Play | Ninguno. La regla de target API de Play empezó en 2018, con API 26        |
 
-Google publicó el SDK final el 17 de agosto de 2015 y ese mismo día abrió Play a
-las apps con target API 23. El 29 de septiembre anunció que la actualización
-llegaría "a partir de la próxima semana" a Nexus 5, 6, 7 (2013), 9, Nexus Player
-y Android One. Phone Scoop informó que el envío empezó el 5 de octubre.
+Google lanzó la primera vista previa para desarrolladores, entonces llamada
+Android M, en Google I/O el 28 de mayo de 2015. El 17 de agosto publicó el SDK
+final, le dio el nombre Marshmallow y abrió Play a las apps con target API 23.
+El 29 de septiembre anunció que la actualización llegaría "a partir de la
+próxima semana" a Nexus 5, 6, 7 (2013), 9, Nexus Player y Android One. El
+blog oficial de Android anunció el 5 de octubre que el despliegue empezaba ese
+mismo día, y Phone Scoop informó la misma fecha.
+
+En el mismo evento del 29 de septiembre se presentó la tablet Pixel C, que usa
+Marshmallow; sus primeras compilaciones en AOSP son de Android 6.0.1. Android
+6.0.1 llegó el 7 de diciembre de 2015 con el parche de seguridad de diciembre,
+los emoji de Unicode 8 y la vuelta de "until next alarm" en No molestar.
 
 ## Qué trajo
 
@@ -175,7 +224,8 @@ y Android One. Phone Scoop informó que el envío empezó el 5 de octubre.
   límite es de 25 MB por app y no cuenta contra la cuota de Drive.
 - **Almacenamiento adoptable.** El usuario puede formatear una tarjeta SD como
   almacenamiento interno. Las apps deben pedir las rutas con `getFilesDir()` y
-  `getCacheDir()` en lugar de escribirlas a mano.
+  `getCacheDir()` en lugar de escribirlas a mano. Samsung y LG lo dejaron
+  fuera del Galaxy S7 y el LG G5, así que no des por hecho que existe.
 - **Assist API.** Las apps pueden pasarle contexto al asistente con
   `Activity#onProvideAssistContent()`. Ars Technica describe Google Now on Tap
   como la función que se apoya en ella: una pulsación larga en inicio envía la
@@ -260,16 +310,17 @@ después de un rechazo agregaba la casilla "Never ask again".
 
 ### Todas las apps en Android 6.0
 
-| Cambio                                                                             | Qué hacer                                                                                                                                                                                    |
-| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Doze y App Standby                                                                 | Prueba con `adb shell dumpsys deviceidle force-idle` y `adb shell am set-inactive <package> true`. Usa `setAndAllowWhileIdle()` o `setExactAndAllowWhileIdle()` para alarmas que deben sonar |
-| El usuario puede desactivar permisos en cualquier app                              | Prueba con los permisos apagados, aunque no tengas target API 23                                                                                                                             |
-| La MAC devuelve `02:00:00:00:00:00`                                                | No la uses como identificador del dispositivo                                                                                                                                                |
-| Se eliminaron las APIs de marcadores                                               | Guarda los marcadores en tu propio almacenamiento                                                                                                                                            |
-| `setStreamSolo()` y `setStreamMute()` quedan obsoletos                             | Usa `requestAudioFocus()` y `adjustStreamVolume()`                                                                                                                                           |
-| El Keystore deja de soportar DSA                                                   | Usa ECDSA                                                                                                                                                                                    |
-| El acceso a la cámara sigue la prioridad del proceso                               | Maneja `onError()` (Camera) u `onDisconnected()` (Camera2)                                                                                                                                   |
-| Un APK al que le falta un archivo declarado en el manifiesto se considera corrupto | Vuelve a firmar tras quitar contenido                                                                                                                                                        |
+| Cambio                                                                             | Qué hacer                                                                                                                                                                                                                                                                                             |
+| ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Doze y App Standby                                                                 | Prueba con `adb shell dumpsys deviceidle force-idle` y `adb shell am set-inactive <package> true`. Usa `setAndAllowWhileIdle()` o `setExactAndAllowWhileIdle()` para alarmas que deben sonar. Envía los push urgentes como mensajes FCM de alta prioridad: reciben acceso breve a la red durante Doze |
+| Apps que quieren quedar fuera de Doze                                              | `ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS` lleva al usuario a Ajustes. `ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` lo pide directamente, pero la política de Play solo lo permite cuando Doze rompe la función principal de la app                                                               |
+| El usuario puede desactivar permisos en cualquier app                              | Prueba con los permisos apagados, aunque no tengas target API 23                                                                                                                                                                                                                                      |
+| La MAC devuelve `02:00:00:00:00:00`                                                | No la uses como identificador del dispositivo                                                                                                                                                                                                                                                         |
+| Se eliminaron las APIs de marcadores                                               | Guarda los marcadores en tu propio almacenamiento                                                                                                                                                                                                                                                     |
+| `setStreamSolo()` y `setStreamMute()` quedan obsoletos                             | Usa `requestAudioFocus()` y `adjustStreamVolume()`                                                                                                                                                                                                                                                    |
+| El Keystore deja de soportar DSA                                                   | Usa ECDSA                                                                                                                                                                                                                                                                                             |
+| El acceso a la cámara sigue la prioridad del proceso                               | Maneja `onError()` (Camera) u `onDisconnected()` (Camera2)                                                                                                                                                                                                                                            |
+| Un APK al que le falta un archivo declarado en el manifiesto se considera corrupto | Vuelve a firmar tras quitar contenido                                                                                                                                                                                                                                                                 |
 
 El cliente HTTP de Apache salió del SDK, así que con `compileSdkVersion 23` ya
 no compila. Cambia a `HttpURLConnection` o agrega
@@ -303,6 +354,12 @@ android:required="false"/>`.
   archivos en Android 7.0 a 8.1. Desde Android 9, ambos funcionan juntos.
 - **Los boletines mensuales** se siguen publicando. El requisito de target API
   de Play, que no existía en 2015, empezó en 2018 y sube cada año.
+- **Fin del soporte.** El boletín de agosto de 2018 fue el último en incluir
+  Android 6.0 y 6.0.1 entre sus versiones de AOSP actualizadas. La última
+  compilación de Marshmallow en la lista de Google, `android-6.0.1_r81`
+  (MOI10E), tiene el nivel de parche de octubre de 2017. Google Play services
+  hoy exige como mínimo Android 7.0 (API 24); OSnews informó el abandono de 6.0
+  el 24 de julio de 2026.
 
 ## Para saber
 
@@ -312,3 +369,5 @@ android:required="false"/>`.
   llamado `:sweetsweetdesserts`.
 - `02:00:00:00:00:00` es lo que toda app en Marshmallow lee como dirección MAC
   de Wi-Fi y Bluetooth.
+- Android Police informó en mayo de 2015 que el nombre interno era Macadamia
+  Nut Cookie, de ahí el nombre de la rama `mnc-dev` en AOSP.

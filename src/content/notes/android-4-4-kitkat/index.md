@@ -145,6 +145,33 @@ citations:
   - title: 'File:Android KitKat logo.svg (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Android_KitKat_logo.svg
     accessedAt: 2026-10-17
+  - title: HomeSettings.java at android-4.4_r1 (AOSP)
+    url: https://android.googlesource.com/platform/packages/apps/Settings/+/refs/tags/android-4.4_r1/src/com/android/settings/HomeSettings.java
+    accessedAt: 2026-10-17
+  - title: Settings.java at android-4.4_r1 (AOSP)
+    url: https://android.googlesource.com/platform/packages/apps/Settings/+/refs/tags/android-4.4_r1/src/com/android/settings/Settings.java
+    accessedAt: 2026-10-17
+  - title: ActionBarPolicy.java at android-4.4_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-4.4_r1/core/java/com/android/internal/view/ActionBarPolicy.java
+    accessedAt: 2026-10-17
+  - title: ActionBarPolicy.java at android-4.3_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-4.3_r1/core/java/com/android/internal/view/ActionBarPolicy.java
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin, October 2017
+    url: https://source.android.com/docs/security/bulletin/2017-10-01
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin, November 2017
+    url: https://source.android.com/docs/security/bulletin/2017-11-01
+    accessedAt: 2026-10-17
+  - title: Google's Android KitKat surprise (BBC News)
+    url: https://www.bbc.co.uk/news/technology-23926938
+    accessedAt: 2026-10-17
+  - title: How Google shrunk Android for version 4.4 KitKat (ReadWrite, archived)
+    url: https://web.archive.org/web/20151019083327/http://readwrite.com/2013/11/25/how-google-shrunk-android-for-version-44-kitkat
+    accessedAt: 2026-10-17
+  - title: 'File:Nexus 5 (Android 4.4.2) Screenshot.jpg (Wikimedia Commons)'
+    url: https://commons.wikimedia.org/wiki/File:Nexus_5_(Android_4.4.2)_Screenshot.jpg
+    accessedAt: 2026-10-17
 ---
 
 Android 4.4 KitKat is the release Google slimmed down so it could run on
@@ -182,6 +209,8 @@ not have a default background if the theme does not set one.
 
 ## What it brought
 
+![The Nexus 5 home screen on Android 4.4.2, with see-through status and navigation bars over the wallpaper, white status icons, and Hangouts in the dock](./assets/android-4-4-nexus-5-home.jpg 'The Nexus 5 on Android 4.4.2. The status and navigation bars are translucent and the status icons are white. Wikimedia Commons · Apache 2.0')
+
 - **Project Svelte.** Google's name for the effort to cut Android's memory use
   "so Android can run comfortably on only 512MB of RAM", from the kernel up to
   Google's own apps such as Chrome and YouTube. The details are under
@@ -210,6 +239,10 @@ not have a default background if the theme does not set one.
   that app receives `SMS_DELIVER_ACTION` and can write to the SMS provider.
   Ars Technica found Hangouts replacing the Messaging app as the default on
   the Nexus 5.
+- **Default launcher.** Settings gained a "Home" screen that sets the
+  preferred `CATEGORY_HOME` activity. It appears only once two or more home
+  apps are installed, and then stays: AOSP's comment reads "Once we decide to
+  show Home settings, keep showing it forever".
 - **Screen recording.** `adb shell screenrecord` records the display to MP4,
   without audio, for up to three minutes.
 - **Smaller additions.** The transitions framework (`android.transition`),
@@ -284,9 +317,14 @@ flowchart TD
 | Only the default SMS app can write to the SMS provider | Declare the receivers, activity and service that make you eligible as default; other apps read through `SMS_RECEIVED_ACTION` |
 | WebView is based on Chromium                           | Test your web content; apps targeting API 18 or lower run in a "quirks mode"                                                 |
 | Low-RAM devices exist                                  | Check `ActivityManager.isLowRamDevice()` and turn off memory-heavy features                                                  |
+| The action bar always shows its overflow button        | Expect users to reach overflow actions on screen, even on devices with a Menu key                                            |
 
 A messaging app that is not the default does not crash when it writes to the
 SMS provider. Google warned that the write "will silently fail".
+
+The overflow change is in AOSP's `ActionBarPolicy`. In 4.3,
+`showsOverflowMenuButton()` returned `true` only when the device had no
+permanent Menu key or was a TV. In 4.4 it always returns `true`.
 
 ### Apps targeting API 19
 
@@ -306,7 +344,12 @@ isValidFragment(String) to verify that the Fragment class is valid!"
 ### What changed for low-RAM devices
 
 The archived "Low RAM" guide on source.android.com lists what Project Svelte
-did. The kernel side validated Kernel Same-page Merging (KSM) and swap to
+did. Google's team built the target first. Dave Burke, Android's head of
+engineering, told ReadWrite they ran a Nexus 4 at 512 MB, at 960×540, on two
+CPU cores instead of four and at a lower clock, and used it as their daily
+phone.
+
+The kernel side validated Kernel Same-page Merging (KSM) and swap to
 ZRAM. The framework killed cached processes that grew too large and started
 background services one at a time. `system_server` and SystemUI shrank, and
 the new `ArrayMap` and `ArraySet` replaced `HashMap` and `HashSet` across much
@@ -335,12 +378,19 @@ A device with less than 512 MB must return `true` from
 - **Play services** stopped updating on KitKat in August 2023. Google said
   KitKat devices were under 1% of active devices and that they would get no
   Play services version beyond 23.30.99.
+- **Security patches** ended earlier. The October 2017 bulletin is the last
+  to list 4.4.4 among the updated AOSP versions; from November 2017 the oldest
+  is 5.0.2.
 
 ## Worth knowing
 
 - **The name.** Nestlé and Google announced "Android KitKat" on 3 September
   2013, with more than 50 million KitKat bars branded for it in 19 markets.
-  Nestlé said many commentators had expected "Key Lime Pie".
+  Nestlé said many commentators had expected "Key Lime Pie". Developers
+  kept calling it "KLP" internally. John Lagerling, Google's director of
+  Android global partnerships, told the BBC: "We realised that very few people
+  actually know the taste of a key lime pie," and that it was "not a
+  money-changing-hands kind of deal".
 - **AOSP comments.** `Build.java` calls API 19 "KitKat, another tasty treat"
   and API 20 "KitKat for watches, snacks on the run."
 - **The Easter egg.** Tapping "Android version" in About phone three times
