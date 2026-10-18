@@ -9,7 +9,19 @@ import { parse } from 'yaml'
  * written as `"quoted" (Android Central)` passed lint, Prettier and every
  * other content test, then failed the build with "Unexpected scalar".
  */
-const FRONTMATTER = /^---\n([\s\S]*?)\n---/
+const FRONTMATTER = /^---\n([\s\S]*?)\n---(?:\n|$)/
+
+/** The YAML between the fences, or an error string for a block that opens and
+    never closes. BOM and CRLF are normalised first, so neither can make a
+    malformed file slip past unread. Undefined when there is no frontmatter. */
+const readFrontmatter = (
+  text: string,
+): { yaml: string } | { error: string } | undefined => {
+  const normalised = text.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n')
+  if (!normalised.startsWith('---\n')) return undefined
+  const match = FRONTMATTER.exec(normalised)
+  return match ? { yaml: match[1] } : { error: 'frontmatter is never closed' }
+}
 const SUMMARY_LIMIT = 180
 
 const contentFiles = async (): Promise<string[]> => {
@@ -26,10 +38,14 @@ describe('content frontmatter', () => {
   it('parses as YAML in every file', async () => {
     const failures: string[] = []
     for (const file of await contentFiles()) {
-      const match = FRONTMATTER.exec(await readFile(file, 'utf8'))
-      if (!match) continue
+      const block = readFrontmatter(await readFile(file, 'utf8'))
+      if (!block) continue
+      if ('error' in block) {
+        failures.push(`${file}: ${block.error}`)
+        continue
+      }
       try {
-        parse(match[1])
+        parse(block.yaml)
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error)
         failures.push(`${file}: ${message.split('\n')[0]}`)
@@ -44,14 +60,27 @@ describe('content frontmatter', () => {
   it('keeps every summary within the 180-character cap', async () => {
     const tooLong: string[] = []
     for (const file of await contentFiles()) {
-      const match = FRONTMATTER.exec(await readFile(file, 'utf8'))
-      if (!match) continue
-      const data = parse(match[1]) as { summary?: unknown } | null
+      const block = readFrontmatter(await readFile(file, 'utf8'))
+      if (!block || 'error' in block) continue
+      const data = parse(block.yaml) as { summary?: unknown } | null
       const summary = data?.summary
       if (typeof summary === 'string' && summary.length > SUMMARY_LIMIT) {
         tooLong.push(`${file}: ${summary.length}`)
       }
     }
     expect(tooLong).toEqual([])
+  })
+
+  it('reads frontmatter written with a BOM or CRLF and flags an open block', () => {
+    expect(readFrontmatter('\uFEFF---\ntitle: a\n---\nbody')).toEqual({
+      yaml: 'title: a',
+    })
+    expect(readFrontmatter('---\r\ntitle: a\r\n---\r\nbody')).toEqual({
+      yaml: 'title: a',
+    })
+    expect(readFrontmatter('---\ntitle: a\nbody')).toEqual({
+      error: 'frontmatter is never closed',
+    })
+    expect(readFrontmatter('# no frontmatter')).toBeUndefined()
   })
 })
