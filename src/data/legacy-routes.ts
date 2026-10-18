@@ -28,16 +28,6 @@ const migrated = {
     'pretext/react-demo': 'notes/pretext-text-layout',
   },
   projects: { 'keyboard-simple': 'work/keyboard-simple' },
-  tools: {
-    'json-formatter': 'lab/json-formatter',
-    'yaml-validator': 'lab/yaml-validator',
-    'base64-encoder': 'lab/base64-encoder',
-    'password-generator': 'lab/password-generator',
-    'docker-converter': 'lab/docker-to-kubernetes',
-    'ascii-converter': 'lab/unicode-inspector',
-    'subnet-calculator': 'lab/subnet-calculator',
-    'ip-dns-lookup': 'lab',
-  },
 } as const
 
 const spanishTargets: Record<string, string> = {
@@ -59,14 +49,6 @@ const spanishTargets: Record<string, string> = {
   'notes/pretext-text-layout/how-it-works':
     'notes/pretext-layout-de-texto/como-funciona',
   'work/keyboard-simple': 'work/teclado-simple',
-  'lab/json-formatter': 'lab/formateador-json',
-  'lab/yaml-validator': 'lab/validador-yaml',
-  'lab/base64-encoder': 'lab/codificador-base64',
-  'lab/password-generator': 'lab/generador-contrasenas',
-  'lab/docker-to-kubernetes': 'lab/docker-a-kubernetes',
-  'lab/unicode-inspector': 'lab/inspector-unicode',
-  'lab/subnet-calculator': 'lab/calculadora-subred',
-  lab: 'lab',
 }
 
 const route = (
@@ -89,6 +71,8 @@ export const getLegacyRoutes = (): LegacyRoute[] => {
     routes.push(
       route('blog', 'notes', locale),
       route('projects', 'work', locale),
+      // The retired tools are gone, and so are their URLs; only the section
+      // root still points readers at the Lab.
       route('tools', 'lab', locale),
       route('photos', 'gallery', locale, 'retired', 'photo'),
       route('photos/palo-alto', 'gallery', locale, 'retired', 'photo'),

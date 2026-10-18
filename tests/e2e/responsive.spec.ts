@@ -79,7 +79,7 @@ const PAGES = [
   '/work/',
   '/work/keyboard-simple/',
   '/lab/',
-  '/lab/subnet-calculator/',
+  '/lab/android-migration-planner/',
   '/notes/',
   '/notes/type/article/',
   '/notes/2/',

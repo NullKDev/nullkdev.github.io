@@ -52,13 +52,14 @@ test('header facts read "N min" and skip an update on the publication day', asyn
     /^\d{4}-\d{2}-\d{2}$/,
   )
 
-  // Published and updated on 2026-07-23: one date, not two.
-  await page.goto('/lab/base64-encoder/')
+  // Published and updated on the same day: one date, not two.
+  await page.goto('/lab/android-migration-planner/')
   await expect(page.locator('.entry-facts')).not.toContainText('Updated')
-  // The chip says "Stable"; the write-up is also stable, so it is said once.
-  await expect(page.locator('.entry-heading')).toContainText('Stable')
+  // Lifecycle "Active" and maturity "Growing" are different words, so both
+  // are said, each once. (No Lab record shares the two words today; the
+  // de-duplication in EntryPage has nothing to collapse.)
   await expect(
-    page.locator('.entry-heading').getByText('Stable', { exact: true }),
+    page.locator('.entry-heading').getByText('Active', { exact: true }),
   ).toHaveCount(1)
 })
 

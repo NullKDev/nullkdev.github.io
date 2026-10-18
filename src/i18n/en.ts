@@ -89,6 +89,184 @@ export const en = {
     unsupported: 'This browser is missing something this entry needs.',
     needs: 'Needs',
   },
+  planner: {
+    rangeLegend: 'Plan a targetSdk migration',
+    from: 'Current targetSdk',
+    to: 'New targetSdk',
+    swap: 'Swap current and new',
+    invalidRange:
+      'Pick a new targetSdk above the current one to see the steps between them.',
+    levels: 'Levels',
+    steps: 'Steps',
+    done: 'Done',
+    planReady:
+      'Plan from API {from} to API {to}: {levels} levels, {steps} steps.',
+    scopeLegend: 'Changes to show',
+    scopeTargeting: 'Triggered by the new target',
+    scopeAll: 'Also on every app',
+    filter: 'Filter changes',
+    filterPlaceholder: 'Permission, API or lint check',
+    filterCount: '{shown} of {total} changes match.',
+    fromLevel: 'Migrating from API {from}',
+    progress: '{done} of {total}',
+    verify: 'Verify',
+    noChecklist: 'This note has no migration checklist yet.',
+    targeting: 'When you target API {api}',
+    allApps: 'On Android {version}, for every app',
+    permissions: 'Permissions',
+    noTargeting: 'Nothing changes on the target alone.',
+    noMatches: 'No change here matches the filter.',
+    change: 'Change',
+    whatToDo: 'What to do',
+    howToCheck: 'How to check',
+    changed: 'What changed',
+    declare: 'What to declare',
+    remove: 'What to remove or limit',
+    readNote: 'Read the Android {version} note',
+    copy: 'Copy',
+    copyCommand: 'Copy command',
+    copied: 'Copied.',
+    copyFailed: 'Copy failed. Select the text and copy it instead.',
+    export: 'Export',
+    copyPlan: 'Copy as Markdown',
+    downloadPlan: 'Download .md',
+    planCopied: 'Plan copied as Markdown, with your ticks.',
+    planDownloaded: 'Plan downloaded as Markdown, with your ticks.',
+    fileName: 'android-migration-api-{from}-to-{to}.md',
+    markdownTitle: 'Android targetSdk migration plan',
+    markdownRange: 'From API {from} to API {to}',
+    markdownTargeting: 'Changes when you target this level',
+    savedLocally: 'Ticks are saved in this browser only.',
+    disclaimer:
+      "Built from this site's Android version notes, one per level. It cannot see your code or your libraries, so run lint and test on a device after every level. Commands are shown to copy into your own terminal; nothing runs from this page.",
+    noScript:
+      'Without JavaScript this is the plan from API {from} to API {to}. Choosing a range, ticking steps, checking a manifest and exporting need JavaScript. Nothing you enter leaves your browser.',
+    manifest: {
+      heading: 'Check a merged manifest',
+      optional: 'Optional',
+      intro:
+        'Paste or open the merged AndroidManifest.xml of your app to see which of the changes in this range it already shows.',
+      label: 'Merged AndroidManifest.xml',
+      hint: 'In Android Studio, open AndroidManifest.xml and choose the Merged Manifest tab, or take the file from app/build/intermediates/merged_manifest/.',
+      file: 'Open a file',
+      analyze: 'Analyze',
+      clear: 'Clear',
+      privacy:
+        'Read with your browser’s DOMParser. Nothing you paste or open leaves this page.',
+      results: 'Manifest findings',
+      summary: '{detected} detected · {check} to check · {na} not applicable',
+      detected: 'Detected',
+      check: 'Check',
+      notApplicable: 'Not applicable',
+      atLevel: 'API {api}',
+      outOfRange: 'Outside this range.',
+      notPresent: 'Nothing in this manifest.',
+      runLint: 'Run lint',
+      testDevice: 'Test it on a device: the manifest alone cannot tell.',
+      targetSdk: 'This manifest targets API {api}.',
+      useTarget: 'Plan from API {api}',
+      findings: 'Manifest findings at this level',
+      errors: {
+        empty: 'Paste a manifest or open a file first.',
+        'too-large': 'That file is larger than 2 MB, too large for a manifest.',
+        malformed:
+          'That is not well-formed XML. Copy the whole merged manifest, from <manifest> to </manifest>.',
+        'not-manifest':
+          'That XML has no <manifest> root. Paste the merged AndroidManifest.xml.',
+        read: 'The file could not be read.',
+      },
+      rules: {
+        cleartext: {
+          title: 'Cleartext HTTP is blocked by default',
+          detected:
+            '`android:usesCleartextTraffic="true"` allows HTTP for the whole app. Move to HTTPS, or allow cleartext only for named domains in a network security configuration.',
+          check:
+            'HTTP requests fail unless a network security configuration allows them. Use HTTPS, and keep `cleartextTrafficPermitted="true"` to named domains.',
+        },
+        'foreground-service-permission': {
+          title: '`startForeground()` needs `FOREGROUND_SERVICE`',
+          detected:
+            'These services declare a foreground service type, but the manifest does not declare `FOREGROUND_SERVICE`:',
+          check:
+            'If the app calls `startForeground()`, declare `FOREGROUND_SERVICE`. It is a normal permission, granted at install.',
+        },
+        'background-location': {
+          title: 'Background location is its own permission',
+          detected: '',
+          check:
+            '`ACCESS_BACKGROUND_LOCATION` is declared. Request it after foreground location, only for a feature that needs it. Targeting API 30, the user grants it in Settings.',
+        },
+        'legacy-external-storage': {
+          title: '`requestLegacyExternalStorage` stops working',
+          detected:
+            'Targeting API 30, scoped storage is enforced and this flag is ignored. Move to `MediaStore` and the Storage Access Framework, and migrate legacy files before you raise the target.',
+          check: '',
+        },
+        'write-storage-cap': {
+          title: '`WRITE_EXTERNAL_STORAGE` grants nothing extra',
+          detected:
+            'Cap it with `android:maxSdkVersion="29"` and write to your own directories or to `MediaStore` collections:',
+          check: '',
+        },
+        'package-visibility': {
+          title: 'Installed apps are filtered from package queries',
+          detected:
+            '`QUERY_ALL_PACKAGES` is declared. Prefer `<queries>`: Google Play reviews this permission and allows it only when the core function needs every app.',
+          check:
+            'The manifest has no `<queries>`. If the app looks up other apps or sends intents to them, declare those packages or intents in `<queries>`.',
+        },
+        'phone-numbers': {
+          title: 'Phone numbers need `READ_PHONE_NUMBERS`',
+          detected: '',
+          check:
+            '`READ_PHONE_STATE` is declared without `READ_PHONE_NUMBERS`. If the app calls `getLine1Number()` or `getMsisdn()`, declare `READ_PHONE_NUMBERS`, and cap `READ_PHONE_STATE` at `android:maxSdkVersion="29"` if the number was its only use.',
+        },
+        'exported-intent-filter': {
+          title: 'Components with an intent filter declare `android:exported`',
+          detected:
+            'Without it the app does not install once it targets API 31. Set `true` for the launcher activity and anything other apps call, `false` otherwise:',
+          check: '',
+        },
+        'bluetooth-permissions': {
+          title: 'Bluetooth moves to the Nearby devices permissions',
+          detected:
+            'Cap `BLUETOOTH` and `BLUETOOTH_ADMIN` at `android:maxSdkVersion="30"`, then declare and request `BLUETOOTH_SCAN`, `BLUETOOTH_CONNECT` or `BLUETOOTH_ADVERTISE`:',
+          check: '',
+        },
+        'exact-alarm': {
+          title: 'Exact alarms need `SCHEDULE_EXACT_ALARM`',
+          detected: '',
+          check:
+            '`SCHEDULE_EXACT_ALARM` is declared. Call `canScheduleExactAlarms()` before each exact alarm; from Android 14 it is denied by default on new installs.',
+        },
+        'exact-alarm-both': {
+          title: 'One exact alarm permission per device',
+          detected:
+            '`USE_EXACT_ALARM` and `SCHEDULE_EXACT_ALARM` are both declared. Cap `SCHEDULE_EXACT_ALARM` at `android:maxSdkVersion="32"`, and keep `USE_EXACT_ALARM` only for an alarm clock, timer or calendar:',
+          check: '',
+        },
+        'post-notifications': {
+          title: 'Notifications become a runtime permission',
+          detected:
+            'A foreground service always posts a notification, but `POST_NOTIFICATIONS` is not declared. Declare it and request it after a user action:',
+          check:
+            '`POST_NOTIFICATIONS` is not declared. If the app posts notifications, declare it and request it in context.',
+        },
+        'read-storage-cap': {
+          title: '`READ_EXTERNAL_STORAGE` no longer reads others’ media',
+          detected:
+            'Cap it at `android:maxSdkVersion="32"`, use the photo picker for images and video, and request `READ_MEDIA_*` only for what it cannot do:',
+          check: '',
+        },
+        'foreground-service-type': {
+          title: 'Every foreground service declares its type',
+          detected:
+            'Declare `android:foregroundServiceType` on each foreground service, and the `FOREGROUND_SERVICE_*` permission for each type. Missing:',
+          check: '',
+        },
+      },
+    },
+  },
   notes: {
     lead: 'Field notes, long-form articles, manuals, and decision records — written while building, kept current or explicitly marked stale.',
     all: 'All',

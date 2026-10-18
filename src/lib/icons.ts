@@ -116,6 +116,11 @@ const registry = {
   stop: 'lucide:square',
   loading: 'lucide:loader-circle',
   upload: 'lucide:upload',
+  /* The migration planner's actions: copy a command or the whole plan, save
+     the plan as a file, and swap the two ends of the range. */
+  copy: 'lucide:copy',
+  download: 'lucide:download',
+  swap: 'lucide:arrow-left-right',
   fast: 'lucide:zap',
   slow: 'lucide:turtle',
 

@@ -5,21 +5,12 @@ export interface LabImplementation {
   reason?: string
 }
 
-const localReactTool: LabImplementation = {
-  component: '@/components/lab/LabWorkbench',
-  framework: 'react',
-  hydration: 'idle',
-  reason:
-    'Stateful local transformations benefit from one shared, keyboard-accessible workspace.',
-}
-
 export const labImplementations = {
-  'json-formatter': localReactTool,
-  'yaml-validator': localReactTool,
-  'base64-encoder': localReactTool,
-  'password-generator': localReactTool,
-  'subnet-calculator': localReactTool,
-  'timestamp-converter': localReactTool,
-  'docker-converter': localReactTool,
-  'ascii-converter': localReactTool,
+  'android-migration-planner': {
+    component: '@/components/lab/AndroidMigrationPlanner.astro',
+    framework: 'react',
+    hydration: 'idle',
+    reason:
+      'The plan is built from the Android version notes at build time and server-rendered; the island adds the range picker, ticks, filters, the manifest check and export, all in the browser.',
+  },
 } satisfies Record<string, LabImplementation>

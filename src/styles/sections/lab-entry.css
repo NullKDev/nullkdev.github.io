@@ -1,9 +1,6 @@
 /* Lab entry — imported by EntryPage.astro.
-   Console frame, setup panel, spec, related tools and the workbench. */
-
-.lab-workbench {
-  font-family: 'IBM Plex Mono', monospace;
-}
+   Console frame, setup panel, spec and related tools. What runs inside the
+   console has its own sheet (lab-planner.css). */
 
 /* ================================================================
    LAB CONSOLE — a shape-agnostic frame around whatever an entry runs.
@@ -430,110 +427,10 @@
     border-bottom: 1px solid var(--line);
   }
 }
-/* Input and output sit side by side when both exist; a generator that only
-   produces output keeps a single full-width column instead of a half-empty
-   grid. Placement only — the tool's own markup is untouched. */
-.lab-workbench {
-  display: grid;
-  grid-template-columns: 1fr;
-  align-items: start;
-  gap: 1rem;
-}
-.lab-controls,
-.lab-actions {
-  grid-column: 1 / -1;
-}
-/* Side by side only where each pane still gets a usable width. A phone used
-   to keep both columns at ~150px each: the stacking rule below 760px lost to
-   these `:has()` selectors on specificity, so it never applied. Gating the
-   two-column layout itself leaves nothing to override; below the breakpoint
-   the panes stack in source order — input, actions, output. */
-@media (min-width: 761px) {
-  .lab-workbench:has(.lab-pane:not(.output-pane)) {
-    grid-template-columns: 1fr 1fr;
-  }
-  .lab-workbench:has(.lab-pane:not(.output-pane)) .lab-pane:not(.output-pane) {
-    grid-column: 1;
-    grid-row: 2;
-  }
-  .lab-workbench:has(.lab-pane:not(.output-pane)) .output-pane {
-    grid-column: 2;
-    grid-row: 2;
-  }
-}
-.lab-pane {
-  display: grid;
-  gap: 0.5rem;
-}
-.lab-pane > span,
-.lab-controls > label {
-  color: var(--ink-muted);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-.lab-pane textarea {
-  min-height: 17rem;
-  resize: vertical;
-  padding: 1rem;
-  border: 1px solid var(--line);
-  border-radius: 0;
-  background: var(--paper);
-  color: var(--ink);
-  font:
-    0.85rem/1.55 'IBM Plex Mono',
-    monospace;
-}
-.lab-controls {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-.lab-controls label {
-  display: grid;
-  gap: 0.4rem;
-}
-.lab-controls input,
-.lab-controls select {
-  min-height: 2.5rem;
-  padding: 0.4rem;
-  border: 1px solid var(--line);
-  background: var(--paper);
-  color: var(--ink);
-}
-.lab-controls fieldset {
-  display: flex;
-  gap: 1rem;
-  border: 1px solid var(--line);
-}
-.lab-controls fieldset label {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  text-transform: none;
-}
-.lab-actions {
-  grid-column: 1 / -1;
-  display: flex;
-  gap: 0.7rem;
-}
-.lab-actions button,
-.lab-workbench > button {
-  min-height: 2.8rem;
-  padding: 0.6rem 1rem;
-  border: 1px solid var(--action);
-  background: var(--action);
-  color: var(--action-foreground);
-  cursor: pointer;
-}
-.lab-actions button:disabled {
-  cursor: wait;
-  opacity: 0.55;
-}
+/* The no-JS notice for a Lab entry; hidden once the head script marks the
+   page as running JavaScript. */
 .lab-noscript {
-  grid-column: 1 / -1;
-  margin: 1rem 0 0;
+  margin: 0 0 1rem;
   padding: 0.8rem 1rem;
   border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
   border-radius: var(--radius-md);
@@ -541,14 +438,4 @@
 }
 html[data-js='true'] .lab-nojs-fallback {
   display: none;
-}
-.lab-actions .quiet-button,
-.lab-workbench > .quiet-button {
-  background: transparent;
-  color: var(--ink);
-}
-.tool-error {
-  grid-column: 1 / -1;
-  margin: 0;
-  color: var(--destructive);
 }

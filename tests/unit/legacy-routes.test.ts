@@ -21,6 +21,16 @@ describe('legacy compatibility routes', () => {
     expect(routes.every(({ source, target }) => source !== target)).toBe(true)
   })
 
+  it('keeps no URL of the retired tools, only the section root', () => {
+    const tools = getLegacyRoutes().filter(({ source }) =>
+      /^(\/es)?\/tools\//.test(source),
+    )
+    expect(tools.map(({ source, target }) => [source, target])).toEqual([
+      ['/tools/', '/lab/'],
+      ['/es/tools/', '/es/lab/'],
+    ])
+  })
+
   it('retires unverified photos honestly to Gallery', () => {
     const photos = getLegacyRoutes().filter(
       ({ retirement }) => retirement === 'photo',

@@ -223,7 +223,7 @@ const routes: Record<string, { file: string; budget: RouteBudget }> = {
     },
   },
   lab: {
-    file: 'lab/json-formatter/index.html',
+    file: 'lab/android-migration-planner/index.html',
     budget: {
       totalGzip: 470_000,
       jsGzip: 110_000,

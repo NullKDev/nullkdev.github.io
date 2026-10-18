@@ -10,65 +10,11 @@ const open = (extra = '') =>
   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"${extra}>`
 
 const glyphs: Record<string, string> = {
-  // Braces — structured text in, structured text out.
-  'json-formatter': `${open()}
-    <path d="M9.6 4c-1.8 0-2.6.8-2.6 2.6v2.6c0 1.6-.7 2.4-2 2.5v.6c1.3.1 2 .9 2 2.5v2.6c0 1.8.8 2.6 2.6 2.6"/>
-    <path d="M14.4 4c1.8 0 2.6.8 2.6 2.6v2.6c0 1.6.7 2.4 2 2.5v.6c-1.3.1-2 .9-2 2.5v2.6c0 1.8-.8 2.6-2.6 2.6"/>
-  </svg>`,
-
-  // Indented key tree — the shape of a YAML document.
-  'yaml-validator': `${open()}
-    <circle cx="3.8" cy="6" r="1.15" fill="currentColor" stroke="none"/>
-    <path d="M7.4 6h12.4"/>
-    <circle cx="9.4" cy="12" r="1.15" fill="currentColor" stroke="none"/>
-    <path d="M13 12h6.8"/>
-    <circle cx="9.4" cy="18" r="1.15" fill="currentColor" stroke="none"/>
-    <path d="M13 18h4"/>
-  </svg>`,
-
-  // Two-way transform.
-  'base64-encoder': `${open()}
-    <path d="M3.6 9h15.6l-3.4-3.4"/>
-    <path d="M20.4 15H4.8l3.4 3.4"/>
-  </svg>`,
-
-  // Key.
-  'password-generator': `${open()}
-    <circle cx="8" cy="12" r="4.2"/>
-    <path d="M12.2 12h9"/>
-    <path d="M17.4 12v3.2"/>
-    <path d="M20.4 12v2.2"/>
-  </svg>`,
-
-  // Router over two hosts.
-  'subnet-calculator': `${open()}
-    <rect x="8.8" y="3" width="6.4" height="4.6" rx="1.2"/>
-    <rect x="2.4" y="16.4" width="6.4" height="4.6" rx="1.2"/>
-    <rect x="15.2" y="16.4" width="6.4" height="4.6" rx="1.2"/>
-    <path d="M12 7.6v4.2"/>
-    <path d="M5.6 16.4v-4.6h12.8v4.6"/>
-  </svg>`,
-
-  // Clock.
-  'timestamp-converter': `${open()}
-    <circle cx="12" cy="12" r="8.2"/>
-    <path d="M12 7.2V12l3.2 2"/>
-  </svg>`,
-
-  // A character in its cell.
-  'ascii-converter': `${open()}
-    <rect x="3" y="4.2" width="18" height="15.6" rx="2.2"/>
-    <path d="M8.4 15.8 12 8.2l3.6 7.6"/>
-    <path d="M9.7 13.2h4.6"/>
-  </svg>`,
-
-  // A ribbed container, translated outward.
-  'docker-converter': `${open()}
-    <rect x="2.2" y="8.2" width="8.8" height="7.6" rx="1.5"/>
-    <path d="M5.1 8.2v7.6"/>
-    <path d="M8 8.2v7.6"/>
-    <path d="M13.6 12h6.6"/>
-    <path d="m17.4 9.2 2.8 2.8-2.8 2.8"/>
+  // A staircase of API levels, climbed one step at a time toward the target.
+  'android-migration-planner': `${open()}
+    <path d="M3.4 19.6h4.2v-4.2h4.2v-4.2H16V7h4.6"/>
+    <path d="m17.8 4.2 2.8 2.8-2.8 2.8"/>
+    <circle cx="5.5" cy="15.8" r="1.1" fill="currentColor" stroke="none"/>
   </svg>`,
 }
 

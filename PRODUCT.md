@@ -38,7 +38,7 @@ It is a working developer's own archive, not a marketing portfolio: content orga
 - **Static-host boundary (hard constraint):** no SSR, runtime secrets, authenticated APIs, response-header control, live collections, or real private-content authorization. Static encrypted payloads are accepted as a **deterrent only** — content is public even if client-obfuscated. Build secrets must never enter generated HTML, JS, source maps, or logs. Any "privacy"/"protected" claim must be accurate to this boundary.
 - Content collections: `work`, `lab`, `notes`, `gallery`, `documents`, plus per-locale `about` / `uses` / `stack` registries and a canonical taxonomy (`src/data/taxonomy.ts`).
 - **Separate controlled vocabularies** (never overload one `status`/`tags` field): domains (`web · mobile · desktop · iot · cloud · ai`), surfaces, topics, technologies; publication visibility (`draft · public · unlisted`), editorial maturity (`seed · growing · stable · archived`), project lifecycle (`research · prototype · active · shipped · maintained · archived`).
-- Standalone in-browser developer tools (JSON formatter, YAML validator, Base64, password generator, converters, subnet calculator, etc.). **Most run entirely client-side; some do not** — IP/DNS lookup queries third parties (`ipapi.co`, `dns.google`, `api.ipify.org`). Every tool must disclose its true execution/network behavior; never claim "all local" when requests leave the browser.
+- Standalone in-browser developer tools. Today there is one, the Android targetSdk migration planner, and it runs entirely client-side. Every tool must disclose its true execution/network behavior; never claim "all local" when requests leave the browser.
 - Content protection: entries can be password-gated; treated as an audited deterrent, not authorization (see boundary above).
 - Full EN/ES bilingual UI and content, default English unprefixed + explicit `/es` counterparts.
 - No CMS, PWA, analytics, Pagefind, animation framework, or 3D engine by default; every dependency needs a named consumer, cost, and removal path.
@@ -57,7 +57,7 @@ Author: Carlos Alarcon — mobile & multiplatform developer (Kotlin · Jetpack C
 
 - Real project artifacts: **Keyboard Simple** (Java/Kotlin Android, GitHub source, EN+ES case study) and this site's own source repository.
 - Bilingual field notes (Android beta coverage, GoF patterns for Android, Compose remote, "pretext"), each in EN + ES; several are multi-part series.
-- Working local developer tools under `/tools/*` (ten in the backup).
+- One working local tool in the Lab: the Android targetSdk migration planner, built from the Android version notes. The eight generic tools from the backup era (JSON, YAML, Base64, passwords, subnets, timestamps, Docker, ASCII) were removed with their `/tools/*` URLs on 2026-10-18.
 - Photo material in the backup (albums + imported assets) available for curated Gallery collections after captions/alt/ordering/rights pass.
 - Illustrated avatar asset (`/avatar.png`); self-hosted IBM Plex Sans/Mono.
 - **Absences to respect — must NOT be fabricated:** the backup carried invented metrics (e.g. "100k+ MAU", "99.8% crash-free", "500k+ users", "42 posts") that are not backed by any system. There are no client testimonials, no verified traffic metrics, and no press coverage. Future work states only what exists and derives counts from validated records; absences stay absent.

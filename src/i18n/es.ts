@@ -91,6 +91,190 @@ export const es = {
     unsupported: 'A este navegador le falta algo que esta entrada necesita.',
     needs: 'Necesita',
   },
+  planner: {
+    rangeLegend: 'Planifica una migración de targetSdk',
+    from: 'targetSdk actual',
+    to: 'targetSdk nuevo',
+    swap: 'Intercambiar actual y nuevo',
+    invalidRange:
+      'Elige un targetSdk nuevo mayor que el actual para ver los pasos entre ambos.',
+    levels: 'Niveles',
+    steps: 'Pasos',
+    done: 'Hechos',
+    planReady:
+      'Plan de API {from} a API {to}: {levels} niveles, {steps} pasos.',
+    scopeLegend: 'Cambios a mostrar',
+    scopeTargeting: 'Los que activa el target nuevo',
+    scopeAll: 'También los de toda app',
+    filter: 'Filtrar cambios',
+    filterPlaceholder: 'Permiso, API o comprobación de lint',
+    filterCount: '{shown} de {total} cambios coinciden.',
+    fromLevel: 'Migración desde API {from}',
+    progress: '{done} de {total}',
+    verify: 'Comprueba',
+    noChecklist: 'Esta nota todavía no tiene lista de migración.',
+    targeting: 'Al apuntar a API {api}',
+    allApps: 'En Android {version}, para toda app',
+    permissions: 'Permisos',
+    noTargeting: 'Nada cambia solo por el target.',
+    noMatches: 'Ningún cambio de aquí coincide con el filtro.',
+    change: 'Cambio',
+    whatToDo: 'Qué hacer',
+    howToCheck: 'Cómo comprobarlo',
+    changed: 'Qué cambió',
+    declare: 'Qué declarar',
+    remove: 'Qué quitar o limitar',
+    readNote: 'Lee la nota de Android {version}',
+    copy: 'Copiar',
+    copyCommand: 'Copiar comando',
+    copied: 'Copiado.',
+    copyFailed: 'No se pudo copiar. Selecciona el texto y cópialo.',
+    export: 'Exportar',
+    copyPlan: 'Copiar como Markdown',
+    downloadPlan: 'Descargar .md',
+    planCopied: 'Plan copiado como Markdown, con tus marcas.',
+    planDownloaded: 'Plan descargado como Markdown, con tus marcas.',
+    fileName: 'migracion-android-api-{from}-a-{to}.md',
+    markdownTitle: 'Plan de migración de targetSdk en Android',
+    markdownRange: 'De API {from} a API {to}',
+    markdownTargeting: 'Cambios al apuntar a este nivel',
+    savedLocally: 'Las marcas se guardan solo en este navegador.',
+    disclaimer:
+      'Construido a partir de las notas de versiones de Android de este sitio, una por nivel. No puede ver tu código ni tus librerías: ejecuta lint y prueba en un dispositivo después de cada nivel. Los comandos se muestran para copiarlos en tu terminal; nada se ejecuta desde esta página.',
+    noScript:
+      'Sin JavaScript, este es el plan de API {from} a API {to}. Elegir un rango, marcar pasos, revisar un manifiesto y exportar necesitan JavaScript. Nada de lo que ingreses sale de tu navegador.',
+    manifest: {
+      heading: 'Revisa un manifiesto combinado',
+      optional: 'Opcional',
+      intro:
+        'Pega o abre el AndroidManifest.xml combinado de tu app para ver cuáles de los cambios de este rango ya se notan en él.',
+      label: 'AndroidManifest.xml combinado',
+      hint: 'En Android Studio, abre AndroidManifest.xml y elige la pestaña Merged Manifest, o toma el archivo de app/build/intermediates/merged_manifest/.',
+      file: 'Abrir un archivo',
+      analyze: 'Analizar',
+      clear: 'Limpiar',
+      privacy:
+        'Se lee con el DOMParser de tu navegador. Nada de lo que pegues o abras sale de esta página.',
+      results: 'Hallazgos del manifiesto',
+      summary:
+        '{detected} detectados · {check} por comprobar · {na} no aplican',
+      detected: 'Detectado',
+      check: 'Comprobar',
+      notApplicable: 'No aplica',
+      atLevel: 'API {api}',
+      outOfRange: 'Fuera de este rango.',
+      notPresent: 'Nada en este manifiesto.',
+      runLint: 'Ejecuta lint',
+      testDevice:
+        'Pruébalo en un dispositivo: el manifiesto por sí solo no lo dice.',
+      targetSdk: 'Este manifiesto apunta a API {api}.',
+      useTarget: 'Planificar desde API {api}',
+      findings: 'Hallazgos del manifiesto en este nivel',
+      errors: {
+        empty: 'Primero pega un manifiesto o abre un archivo.',
+        'too-large':
+          'Ese archivo pesa más de 2 MB, demasiado para un manifiesto.',
+        malformed:
+          'Eso no es XML bien formado. Copia el manifiesto combinado completo, de <manifest> a </manifest>.',
+        'not-manifest':
+          'Ese XML no tiene una raíz <manifest>. Pega el AndroidManifest.xml combinado.',
+        read: 'No se pudo leer el archivo.',
+      },
+      rules: {
+        cleartext: {
+          title: 'El HTTP sin cifrar se bloquea por defecto',
+          detected:
+            '`android:usesCleartextTraffic="true"` permite HTTP en toda la app. Pasa a HTTPS, o permite tráfico sin cifrar solo para dominios concretos en una configuración de seguridad de red.',
+          check:
+            'Las peticiones HTTP fallan salvo que una configuración de seguridad de red las permita. Usa HTTPS y limita `cleartextTrafficPermitted="true"` a dominios concretos.',
+        },
+        'foreground-service-permission': {
+          title: '`startForeground()` necesita `FOREGROUND_SERVICE`',
+          detected:
+            'Estos servicios declaran un tipo de servicio en primer plano, pero el manifiesto no declara `FOREGROUND_SERVICE`:',
+          check:
+            'Si la app llama a `startForeground()`, declara `FOREGROUND_SERVICE`. Es un permiso normal que se concede al instalar.',
+        },
+        'background-location': {
+          title: 'La ubicación en segundo plano es un permiso aparte',
+          detected: '',
+          check:
+            '`ACCESS_BACKGROUND_LOCATION` está declarado. Pídelo después de la ubicación en primer plano y solo para una función que lo necesite. Con target API 30, el usuario lo concede en Ajustes.',
+        },
+        'legacy-external-storage': {
+          title: '`requestLegacyExternalStorage` deja de funcionar',
+          detected:
+            'Con target API 30 se impone el almacenamiento acotado y este atributo se ignora. Pasa a `MediaStore` y al Storage Access Framework, y migra los archivos antiguos antes de subir el target.',
+          check: '',
+        },
+        'write-storage-cap': {
+          title: '`WRITE_EXTERNAL_STORAGE` no da nada extra',
+          detected:
+            'Limítalo con `android:maxSdkVersion="29"` y escribe en tus propios directorios o en colecciones de `MediaStore`:',
+          check: '',
+        },
+        'package-visibility': {
+          title: 'Las apps instaladas se filtran en las consultas de paquetes',
+          detected:
+            '`QUERY_ALL_PACKAGES` está declarado. Prefiere `<queries>`: Google Play revisa este permiso y lo permite solo cuando la función principal necesita todas las apps.',
+          check:
+            'El manifiesto no tiene `<queries>`. Si la app busca otras apps o les envía intents, declara esos paquetes o intents en `<queries>`.',
+        },
+        'phone-numbers': {
+          title: 'Los números de teléfono necesitan `READ_PHONE_NUMBERS`',
+          detected: '',
+          check:
+            '`READ_PHONE_STATE` está declarado sin `READ_PHONE_NUMBERS`. Si la app llama a `getLine1Number()` o `getMsisdn()`, declara `READ_PHONE_NUMBERS` y limita `READ_PHONE_STATE` con `android:maxSdkVersion="29"` si el número era su único uso.',
+        },
+        'exported-intent-filter': {
+          title:
+            'Los componentes con filtro de intents declaran `android:exported`',
+          detected:
+            'Sin él, la app no se instala cuando apunta a API 31. Pon `true` en la actividad de inicio y en lo que llamen otras apps, y `false` en lo demás:',
+          check: '',
+        },
+        'bluetooth-permissions': {
+          title: 'Bluetooth pasa a los permisos de dispositivos cercanos',
+          detected:
+            'Limita `BLUETOOTH` y `BLUETOOTH_ADMIN` con `android:maxSdkVersion="30"`, y declara y pide `BLUETOOTH_SCAN`, `BLUETOOTH_CONNECT` o `BLUETOOTH_ADVERTISE`:',
+          check: '',
+        },
+        'exact-alarm': {
+          title: 'Las alarmas exactas necesitan `SCHEDULE_EXACT_ALARM`',
+          detected: '',
+          check:
+            '`SCHEDULE_EXACT_ALARM` está declarado. Llama a `canScheduleExactAlarms()` antes de cada alarma exacta; desde Android 14 se deniega por defecto en instalaciones nuevas.',
+        },
+        'exact-alarm-both': {
+          title: 'Un solo permiso de alarma exacta por dispositivo',
+          detected:
+            '`USE_EXACT_ALARM` y `SCHEDULE_EXACT_ALARM` están declarados a la vez. Limita `SCHEDULE_EXACT_ALARM` con `android:maxSdkVersion="32"` y conserva `USE_EXACT_ALARM` solo en un despertador, temporizador o calendario:',
+          check: '',
+        },
+        'post-notifications': {
+          title:
+            'Las notificaciones pasan a ser un permiso en tiempo de ejecución',
+          detected:
+            'Un servicio en primer plano siempre publica una notificación, pero `POST_NOTIFICATIONS` no está declarado. Decláralo y pídelo después de una acción del usuario:',
+          check:
+            '`POST_NOTIFICATIONS` no está declarado. Si la app publica notificaciones, decláralo y pídelo en contexto.',
+        },
+        'read-storage-cap': {
+          title:
+            '`READ_EXTERNAL_STORAGE` ya no lee el contenido multimedia de otros',
+          detected:
+            'Limítalo con `android:maxSdkVersion="32"`, usa el selector de fotos para imágenes y video, y pide `READ_MEDIA_*` solo para lo que el selector no cubre:',
+          check: '',
+        },
+        'foreground-service-type': {
+          title: 'Todo servicio en primer plano declara su tipo',
+          detected:
+            'Declara `android:foregroundServiceType` en cada servicio en primer plano, y el permiso `FOREGROUND_SERVICE_*` de cada tipo. Falta:',
+          check: '',
+        },
+      },
+    },
+  },
   notes: {
     lead: 'Notas de campo, artículos largos, manuales y registros de decisión — escritos mientras construyo, mantenidos al día o marcados como obsoletos de forma explícita.',
     all: 'Todas',

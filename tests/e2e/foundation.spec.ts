@@ -697,7 +697,7 @@ test('public records, series, and nested document adjacency resolve', async ({
   )
 })
 
-test('local Lab provides bounded localized operations without network requests', async ({
+test('the Lab planner runs in Spanish without any network request', async ({
   page,
 }) => {
   const externalRequests: string[] = []
@@ -706,45 +706,52 @@ test('local Lab provides bounded localized operations without network requests',
       externalRequests.push(request.url())
     }
   })
-  await page.goto('/es/lab/formateador-json/')
-  await expect(page.locator('.lab-workbench')).toHaveAttribute(
+  await page.goto('/es/lab/planificador-migracion-android/')
+  await expect(page.locator('.planner')).toHaveAttribute(
     'data-hydrated',
     'true',
   )
-  await page.selectOption('select', 'minify')
-  // getByLabel matches on substring, so 'Entrada' also caught the
-  // 'Entradas relacionadas' region and the 'Más entradas' pager. Name the role.
-  await page
-    .getByRole('textbox', { name: 'Entrada', exact: true })
-    .fill('{"signal":true}')
-  await page.getByRole('button', { name: 'Ejecutar localmente' }).click()
+  await page.getByLabel('targetSdk actual').selectOption('30')
+  await page.getByLabel('targetSdk nuevo').selectOption('33')
+  await expect(page.locator('.planner-level h3')).toHaveText([
+    'Android 12 · API 31',
+    'Android 12L · API 32',
+    'Android 13 · API 33',
+  ])
   await expect(
-    page.getByRole('textbox', { name: 'Resultado', exact: true }),
-  ).toHaveValue('{"signal":true}')
+    page.getByRole('link', { name: /Lee la nota de Android 13/ }),
+  ).toHaveAttribute('href', /^\/es\/notes\/android-13\/#migrar-a-api-33$/)
   expect(externalRequests).toEqual([])
   await expectNoAxeViolations(page)
 })
 
-test('Lab SSR and no-JS state cannot submit destructively', async ({
+test('without JavaScript the Lab planner is a full static plan', async ({
   browser,
   request,
 }) => {
-  const response = await request.get('/lab/json-formatter/')
-  const html = await response.text()
-  expect(html).toMatch(/<button type="submit" disabled/)
-  expect(html).toContain('JavaScript is required')
+  const html = await (
+    await request.get('/lab/android-migration-planner/')
+  ).text()
+  expect(html).toContain('Without JavaScript this is the plan from API')
 
   const context = await browser.newContext({
     baseURL: 'http://127.0.0.1:4321',
     javaScriptEnabled: false,
   })
   const page = await context.newPage()
-  await page.goto('/lab/json-formatter/')
-  await expect(page.getByRole('button', { name: 'Run locally' })).toBeDisabled()
-  await expect(page.getByText('JavaScript is required')).toBeVisible()
-  const before = page.url()
-  await page.getByLabel('Input').press('Enter')
-  await expect(page).toHaveURL(before)
+  await page.goto('/lab/android-migration-planner/')
+  await expect(
+    page.getByText('Without JavaScript this is the plan from API'),
+  ).toBeVisible()
+  const levels = page.locator('.planner-level')
+  expect(await levels.count()).toBeGreaterThan(0)
+  await expect(
+    levels.first().locator('.planner-checklist li').first(),
+  ).toBeVisible()
+  await expect(page.getByLabel('Current targetSdk')).toBeDisabled()
+  await expect(
+    page.getByRole('button', { name: 'Copy as Markdown' }),
+  ).toBeDisabled()
   await context.close()
 })
 
@@ -1210,30 +1217,19 @@ test('notes type and topic filters and pagination are real URLs', async ({
   await expect(page.locator('.note-row').first()).toBeVisible()
 })
 
-test('Lab topic filter narrows the grid and reports what it shows', async ({
+test('Lab index offers no filter that could not narrow anything', async ({
   page,
 }) => {
+  // A facet on every listed entry hides nothing (FACET_COVERAGE_LIMIT), so
+  // with the planner as the only entry the bar is omitted, not left inert.
   await page.goto('/lab/')
-  const bar = page.locator('[data-lab-filter]')
-  await expect(bar).toBeVisible()
-  const facets = bar.locator('button[data-facet]:not([data-facet=""])')
-  const facet = facets.first()
-  await facet.click()
-  await expect(facet).toHaveAttribute('aria-pressed', 'true')
-  await expect(bar.locator('button[data-facet=""]')).toHaveAttribute(
-    'aria-pressed',
-    'false',
-  )
-
-  const shown = await page.locator('[data-lab-grid] > li:visible').count()
-  const total = await page.locator('[data-lab-grid] > li').count()
-  await expect(page.locator('[data-lab-status]')).toHaveText(
-    `Showing ${shown} of ${total}.`,
-  )
-
-  await bar.locator('button[data-facet=""]').click()
-  await expect(page.locator('[data-lab-grid] > li:visible')).toHaveCount(total)
-  await expect(page.locator('[data-lab-status]')).toHaveText('')
+  await expect(page.locator('[data-lab-grid] > li')).toHaveCount(1)
+  await expect(page.locator('[data-lab-filter]')).toHaveCount(0)
+  await expect(
+    page
+      .locator('[data-lab-grid]')
+      .getByRole('link', { name: /Android targetSdk migration planner/ }),
+  ).toBeVisible()
 })
 
 test('gallery serves resized modern formats and a keyboard-operable viewer', async ({
@@ -1657,21 +1653,26 @@ test('the 404 suggests the closest notes, in both languages', async ({
   expectOnlyDocument404()
 })
 
-test('a Lab tool stacks input and output on a phone', async ({ page }) => {
+test('the Lab planner stacks its range on a phone and never scrolls sideways', async ({
+  page,
+}) => {
   for (const [width, columns] of [
     [390, 1],
     [1280, 2],
   ] as const) {
     await page.setViewportSize({ width, height: 900 })
-    await page.goto('/lab/json-formatter/')
-    const inputBox = await page
-      .locator('.lab-pane:not(.output-pane)')
-      .boundingBox()
-    const outputBox = await page.locator('.output-pane').boundingBox()
-    expect(inputBox && outputBox).toBeTruthy()
-    const sideBySide = Math.abs(inputBox!.y - outputBox!.y) < 1
+    await page.goto('/lab/android-migration-planner/')
+    const from = await page.getByLabel('Current targetSdk').boundingBox()
+    const to = await page.getByLabel('New targetSdk').boundingBox()
+    expect(from && to).toBeTruthy()
+    const sideBySide = Math.abs(from!.y - to!.y) < 1
     expect(sideBySide ? 2 : 1, `${width}px`).toBe(columns)
-    if (columns === 1) expect(inputBox!.width).toBeGreaterThan(300)
+    const overflow = await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth -
+        document.documentElement.clientWidth,
+    )
+    expect(overflow, `${width}px`).toBeLessThanOrEqual(0)
   }
 })
 

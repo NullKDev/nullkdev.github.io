@@ -1,0 +1,808 @@
+/* Android migration planner — imported by EntryPage.astro, which renders it
+   inside the Lab console. One column of controls, then the plan as a numbered
+   path of levels: each level a raised card holding its checklist and the
+   folded tables from its note. */
+
+.planner {
+  /* Status tones reuse tokens that already pass AA as text in both themes. */
+  --tone-detected: var(--destructive);
+  --tone-check: var(--kind-guide);
+  --tone-done: var(--signal);
+  display: grid;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.planner code {
+  padding: 0.1rem 0.32rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font:
+    0.84em 'IBM Plex Mono',
+    monospace;
+  /* Permission names and manifest attributes have no spaces to break at; at
+     390px one of them would otherwise widen the whole console. */
+  overflow-wrap: anywhere;
+}
+.planner a {
+  color: var(--accent);
+}
+/* A link inside running text is underlined: indigo against ink measures
+   under 3:1, so colour alone would not mark it (WCAG 1.4.1). */
+.planner a:not(.planner-level__note) {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.planner p {
+  margin: 0;
+}
+
+/* ----------------------------------------------------------------
+   Range: current → new, the one decision the page is about.
+   ---------------------------------------------------------------- */
+.planner-range {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: end;
+  gap: 1rem 0.75rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.planner-range legend {
+  margin-bottom: 0.9rem;
+  padding: 0;
+  color: var(--ink);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.planner-range__pick {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+}
+.planner-range__pick label,
+.planner-filter label,
+.planner-manifest__form > label {
+  color: var(--ink-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+.planner select,
+.planner input[type='search'],
+.planner textarea {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.95rem;
+}
+.planner select {
+  font-variant-numeric: tabular-nums;
+}
+.planner select[aria-invalid='true'] {
+  border-color: var(--tone-detected);
+}
+.planner-stats {
+  display: flex;
+  flex-wrap: wrap;
+  grid-column: 1 / -1;
+  gap: 0.5rem;
+  margin: 0;
+}
+.planner-stats div {
+  display: flex;
+  flex: 1 1 5.5rem;
+  min-width: 0;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.planner-stats dt {
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+}
+.planner-stats dd {
+  margin: 0;
+  color: var(--ink);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ----------------------------------------------------------------
+   Buttons
+   ---------------------------------------------------------------- */
+.planner-button,
+.planner-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.95rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease;
+}
+.planner-button:hover:not(:disabled),
+.planner-icon-button:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line-strong));
+  background: color-mix(in srgb, var(--accent-soft) 45%, var(--surface-raised));
+}
+.planner-button[data-variant='primary'] {
+  border-color: var(--action);
+  background: var(--action);
+  color: var(--action-foreground);
+}
+.planner-button[data-variant='primary']:hover:not(:disabled) {
+  border-color: var(--action-hover);
+  background: var(--action-hover);
+}
+.planner-button[data-variant='quiet'] {
+  border-color: transparent;
+  background: transparent;
+}
+.planner-button:disabled,
+.planner-icon-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.planner-icon-button {
+  width: 2.75rem;
+  padding: 0;
+}
+.planner-icon-button span,
+.planner-button span {
+  display: inline-flex;
+}
+.planner-link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 560;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+/* ----------------------------------------------------------------
+   Toolbar: what to show, a filter, and export
+   ---------------------------------------------------------------- */
+.planner-toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(12rem, 1fr) auto;
+  align-items: end;
+  gap: 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+.planner-scope {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.planner-scope legend {
+  margin-bottom: 0.4rem;
+  padding: 0;
+  color: var(--ink-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+.planner-segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  padding: 0.2rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.planner-scope label {
+  position: relative;
+  display: inline-flex;
+  flex: 1 1 auto;
+  justify-content: center;
+  align-items: center;
+  min-height: 2.35rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: calc(var(--radius-md) - 2px);
+  color: var(--ink-muted);
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+.planner-scope input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.planner-scope label:has(input:checked) {
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-1);
+  color: var(--ink);
+  font-weight: 560;
+}
+.planner-scope label:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.planner-filter {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+}
+.planner-filter__count {
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+}
+.planner-export {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.planner-disclaimer {
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--ink-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+.planner-error {
+  color: var(--tone-detected);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.planner-saved {
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+}
+
+/* ----------------------------------------------------------------
+   Manifest check — a disclosure, optional by design
+   ---------------------------------------------------------------- */
+.planner-manifest {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+}
+.planner-manifest__head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 3.25rem;
+  padding: 0.75rem 1.1rem;
+  cursor: pointer;
+  list-style: none;
+}
+.planner-manifest__head::-webkit-details-marker {
+  display: none;
+}
+.planner-manifest__head::before,
+.planner-group summary::before {
+  width: 0.45rem;
+  height: 0.45rem;
+  flex: none;
+  border-right: 1.7px solid var(--ink-muted);
+  border-bottom: 1.7px solid var(--ink-muted);
+  content: '';
+  transform: rotate(-45deg);
+  transition: transform 160ms ease;
+}
+.planner-manifest[open] > .planner-manifest__head::before,
+.planner-group[open] > summary::before {
+  transform: rotate(45deg);
+}
+.planner-manifest__head h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.planner-tag {
+  padding: 0.12rem 0.45rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink-muted);
+  font-size: 0.75rem;
+}
+.planner-manifest__intro,
+.planner-manifest__form,
+.planner-results {
+  margin: 0 1.1rem;
+}
+.planner-manifest__intro {
+  color: var(--ink-muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+.planner-manifest__form {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 1rem;
+  margin-bottom: 1.1rem;
+}
+.planner textarea {
+  min-height: 11rem;
+  resize: vertical;
+  font:
+    0.82rem/1.55 'IBM Plex Mono',
+    monospace;
+}
+.planner textarea[aria-invalid='true'] {
+  border-color: var(--tone-detected);
+}
+.planner-hint,
+.planner-privacy {
+  color: var(--ink-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.planner-privacy {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.planner-privacy span {
+  display: inline-flex;
+  flex: none;
+  color: var(--tone-done);
+}
+.planner-manifest__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.planner-results {
+  display: grid;
+  gap: 1rem;
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--line);
+}
+.planner-results h4 {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+.planner-results__summary,
+.planner-results__target {
+  color: var(--ink-muted);
+  font-size: 0.88rem;
+}
+.planner-results__group h5 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+}
+.planner-results__group > ul,
+.planner-findings ul {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.planner-result {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.planner-results__group[data-status='not-applicable'] .planner-result {
+  padding: 0.5rem 0.9rem;
+  background: var(--surface);
+  color: var(--ink-muted);
+}
+.planner-result__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.6rem;
+  font-weight: 560;
+}
+.planner-result__api {
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.planner-result__items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.planner-result__how {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+}
+
+/* Status: a word, tinted, never colour alone. */
+.planner-status {
+  --tone: var(--ink-muted);
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--tone) 12%, transparent);
+  color: color-mix(in srgb, var(--tone) 80%, var(--ink));
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+[data-status='detected'] .planner-status {
+  --tone: var(--tone-detected);
+}
+[data-status='check'] .planner-status {
+  --tone: var(--tone-check);
+}
+
+/* ----------------------------------------------------------------
+   The plan: a numbered path of levels
+   ---------------------------------------------------------------- */
+.planner-steps {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.planner-level {
+  position: relative;
+  padding-left: 3.1rem;
+}
+/* The path between levels: order is the point, so it is drawn. */
+.planner-level:not(:last-child)::before {
+  position: absolute;
+  top: 2.4rem;
+  bottom: -1.25rem;
+  left: 1.1rem;
+  width: 1px;
+  background: var(--line-strong);
+  content: '';
+}
+.planner-level > section {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  padding: clamp(1rem, 2.5vw, 1.4rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-1);
+}
+.planner-level__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem 1rem;
+}
+.planner-level__index {
+  position: absolute;
+  top: 0.15rem;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  border-radius: 50%;
+  background: var(--surface-raised);
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.planner-level[data-complete] .planner-level__index {
+  border-color: var(--tone-done);
+  background: color-mix(in srgb, var(--tone-done) 14%, var(--surface-raised));
+  color: color-mix(in srgb, var(--tone-done) 80%, var(--ink));
+}
+.planner-level__title {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+.planner-level__title h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.planner-level__title p {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+}
+.planner-level__progress {
+  display: grid;
+  justify-items: end;
+  gap: 0.35rem;
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+.planner-meter {
+  display: block;
+  width: 6.5rem;
+  height: 0.3rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--surface);
+}
+.planner-meter span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.planner-level[data-complete] .planner-meter span {
+  background: var(--tone-done);
+}
+.planner-level__intro,
+.planner-level__outro {
+  color: var(--ink-muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+/* Findings from a pasted manifest, placed at the level they belong to. */
+.planner-findings {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.planner-findings__label {
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.planner-findings li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.55rem;
+  font-size: 0.9rem;
+}
+
+/* The checklist: the note's own steps, ticked in this browser. */
+.planner-checklist {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.planner-checklist > li {
+  display: grid;
+  grid-template-columns: 1.25rem minmax(0, 1fr);
+  gap: 0.75rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--line);
+}
+.planner-checklist > li:first-child {
+  border-top: 0;
+  padding-top: 0.2rem;
+}
+.planner-checklist input {
+  width: 1.2rem;
+  height: 1.2rem;
+  margin: 0.2rem 0 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.planner-checklist label {
+  display: block;
+  color: var(--ink);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  cursor: pointer;
+}
+.planner-checklist label strong {
+  font-weight: 600;
+}
+.planner-checklist li:has(input:checked) label {
+  color: var(--ink-muted);
+}
+.planner-verify {
+  margin-top: 0.4rem !important;
+  color: var(--ink-muted);
+  font-size: 0.87rem;
+  line-height: 1.55;
+}
+.planner-verify > span:first-child {
+  margin-right: 0.45rem;
+  color: color-mix(in srgb, var(--tone-done) 85%, var(--ink));
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+/* The note's tables, folded under the checklist. */
+.planner-groups {
+  display: grid;
+  gap: 0.5rem;
+}
+.planner-group {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+.planner-group summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.92rem;
+  font-weight: 560;
+  cursor: pointer;
+  list-style: none;
+}
+.planner-group summary::-webkit-details-marker {
+  display: none;
+}
+.planner-group__count {
+  margin-left: auto;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+.planner-group__empty {
+  padding: 0 0.85rem 0.85rem;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+.planner-rows {
+  display: grid;
+  margin: 0;
+  padding: 0 0.85rem 0.3rem;
+  list-style: none;
+}
+.planner-row {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--line);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+.planner-row__title {
+  font-weight: 560;
+}
+.planner-row dl {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+}
+.planner-row dl > div {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  gap: 0.75rem;
+}
+.planner-row dt {
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+  line-height: 1.9;
+}
+.planner-row dd {
+  min-width: 0;
+  margin: 0;
+}
+.planner-command {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  max-width: 100%;
+}
+.planner-command .planner-icon-button {
+  width: 2rem;
+  min-height: 2rem;
+  flex: none;
+}
+.planner-icon-button[data-state='done'] {
+  border-color: var(--tone-done);
+  color: var(--tone-done);
+}
+.planner-level__note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  justify-self: start;
+  font-size: 0.92rem;
+  font-weight: 560;
+  text-decoration: none;
+}
+.planner-level__note:hover {
+  text-decoration: underline;
+}
+
+/* ----------------------------------------------------------------
+   Narrow screens: one column, nothing wider than the phone
+   ---------------------------------------------------------------- */
+@media (max-width: 760px) {
+  .planner-range {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .planner-range__swap {
+    justify-self: center;
+    transform: rotate(90deg);
+  }
+  .planner-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+  }
+  .planner-export .planner-button {
+    flex: 1;
+  }
+  .planner-level {
+    padding-left: 0;
+  }
+  .planner-level:not(:last-child)::before {
+    display: none;
+  }
+  .planner-level__index {
+    position: static;
+    width: 2rem;
+    height: 2rem;
+  }
+  .planner-level__head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .planner-level__progress {
+    grid-column: 1 / -1;
+    justify-items: start;
+    grid-auto-flow: column;
+    align-items: center;
+  }
+  .planner-row dl > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .planner-meter span,
+  .planner-manifest__head::before,
+  .planner-group summary::before,
+  .planner-button,
+  .planner-icon-button {
+    transition: none;
+  }
+}

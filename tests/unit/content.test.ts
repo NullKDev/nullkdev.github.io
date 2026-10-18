@@ -18,6 +18,7 @@ import {
   getEntryRelationships,
   getHomeSections,
   getNotesSeriesNavigation,
+  getPlannerSources,
   type ArchiveDocument,
   type ArchiveEntry,
 } from '@/lib/content'
@@ -385,5 +386,63 @@ describe('relationships', () => {
         ({ entry }) => entry.data.slug,
       ),
     ).toEqual(['target'])
+  })
+})
+
+describe('planner sources', () => {
+  it('hands over the series version notes of one locale with their rendered headings', async () => {
+    const headings = [{ depth: 2, slug: 'permissions', text: 'Permissions' }]
+    const version = {
+      ...entry({
+        slug: 'android-13',
+        series: { id: 'android-versions', order: 15 },
+        extra: { title: 'Android 13' },
+      }),
+      body: '## Permissions',
+      rendered: { html: '', metadata: { headings } },
+    } as unknown as ArchiveEntry
+    seed([
+      version,
+      entry({
+        slug: 'android-versions',
+        series: { id: 'android-versions', order: 1 },
+      }),
+      entry({ slug: 'other', series: { id: 'gof', order: 1 } }),
+      entry({
+        slug: 'android-14',
+        locale: 'es',
+        series: { id: 'android-versions', order: 16 },
+      }),
+      entry({
+        slug: 'android-15',
+        visibility: 'draft',
+        series: { id: 'android-versions', order: 17 },
+      }),
+    ])
+    const sources = await getPlannerSources('en')
+    expect(
+      sources.map(({ slug, locale, title, href, headings }) => ({
+        slug,
+        locale,
+        title,
+        href,
+        headings,
+      })),
+    ).toEqual([
+      {
+        slug: 'android-13',
+        locale: 'en',
+        title: 'Android 13',
+        href: '/notes/android-13/',
+        headings,
+      },
+    ])
+    // The body arrives lexed, so the planner needs no parser of its own.
+    expect(
+      sources[0].tokens.map((token) => [
+        token.type,
+        'text' in token && token.text,
+      ]),
+    ).toEqual([['heading', 'Permissions']])
   })
 })

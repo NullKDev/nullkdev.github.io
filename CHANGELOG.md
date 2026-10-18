@@ -11,14 +11,6 @@ real.
 **Se escribe al mergear cada PR, no en el release.** El autor agrega su línea
 bajo `## [Unreleased]`, en la categoría que corresponda. Es parte del review.
 
-### Cambiado
-
-- Las tablas de texto de tres columnas o más se leen como tarjetas: una por
-  fila, con la primera columna como título y cada campo con su etiqueta. Una
-  tabla de permisos medía 1.375 px en una columna de 704 px y su última
-  columna no se veía; ahora no hay desplazamiento lateral. Las tablas con
-  números siguen siendo tablas.
-
 **Una feature sin publicar es UNA sola entrada** (regla _single-story_).
 Mientras vive bajo `## [Unreleased]`, la feature y cualquier corrección o
 continuación posterior — aunque sean commits o sesiones distintas — se pliegan
@@ -58,6 +50,35 @@ este repo usa de verdad — no las genéricas del estándar.
 ---
 
 ## [Unreleased]
+
+### Agregado
+
+- Planificador de migración de targetSdk en el Lab
+  (`/lab/android-migration-planner/`, `/es/lab/planificador-migracion-android/`):
+  eliges el targetSdk actual y el nuevo y muestra, nivel por nivel, la lista
+  «Migrar a API N» de cada nota con casillas que se guardan en el navegador,
+  los cambios por target, los de toda app y los de permisos, con filtro y
+  comandos para copiar. Todo se lee al compilar de las notas de versiones
+  (`src/lib/migration-planner.ts`); un test comprueba que cada ancla existe. Un
+  manifiesto combinado pegado o abierto se revisa en el navegador con 14 reglas
+  deterministas (`src/lib/manifest-rules.ts`), cada una ligada a la nota que la
+  respalda. El plan se exporta como Markdown. Nada se envía ni se ejecuta.
+
+### Cambiado
+
+- Las tablas de texto de tres columnas o más se leen como tarjetas: una por
+  fila, con la primera columna como título y cada campo con su etiqueta. Una
+  tabla de permisos medía 1.375 px en una columna de 704 px y su última
+  columna no se veía; ahora no hay desplazamiento lateral. Las tablas con
+  números siguen siendo tablas.
+
+### Eliminado
+
+- Las ocho herramientas genéricas del Lab (formateador JSON, validador YAML,
+  Base64, generador de contraseñas, calculadora de subred, conversor de
+  timestamps, conversor Docker y conversor ASCII), con `LabWorkbench`,
+  `src/lib/tools.ts` y sus URL antiguas en `/tools/*`. Solo `/tools/` sigue
+  llevando al Lab.
 
 ## [0.5.0] — 2026-10-18
 

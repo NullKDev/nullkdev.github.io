@@ -13,7 +13,7 @@ import Icon from '@/components/primitives/Icon.astro'
 import StatusChip from '@/components/primitives/StatusChip.astro'
 import LabConsole from '@/components/lab/LabConsole.astro'
 import LabSpec from '@/components/lab/LabSpec.astro'
-import LabWorkbench from '@/components/lab/LabWorkbench'
+import AndroidMigrationPlanner from '@/components/lab/AndroidMigrationPlanner.astro'
 import GalleryItems from '@/components/gallery/GalleryItems.astro'
 import RelatedLab from '@/components/lab/RelatedLab.astro'
 import { render } from 'astro:content'
@@ -33,6 +33,7 @@ import {
   getEntryRelationships,
   getGalleryItems,
   getNotesSeriesNavigation,
+  getPlannerSources,
   type ArchiveEntry,
 } from '@/lib/content'
 import { getTopicLabel } from '@/data/taxonomy'
@@ -59,6 +60,7 @@ import '@/styles/archive.css'
 import '@/styles/sections/entry.css'
 import '@/styles/sections/prose.css'
 import '@/styles/sections/lab-entry.css'
+import '@/styles/sections/lab-planner.css'
 import '@/styles/sections/gallery-detail.css'
 
 interface Props {
@@ -81,6 +83,12 @@ const { Content, headings } = await render(entry)
 const galleryItems = domain === 'gallery' ? await getGalleryItems(entry) : []
 const isLab = domain === 'lab'
 const labEntry = isLab ? (entry as CollectionEntry<'lab'>) : undefined
+// The one Lab implementation: the Android migration planner reads the version
+// notes of this locale. Bound by `implementationId`, see implementations/lab.ts.
+const plannerSources =
+  labEntry?.data.implementationId === 'android-migration-planner'
+    ? await getPlannerSources(locale)
+    : []
 const relatedLab = labEntry
   ? getRelatedLabEntries(
       labEntry,
@@ -421,17 +429,13 @@ const jsonLd = buildEntryArticleLd({
     {
       labEntry && labEntry.data.implementationId && (
         <LabConsole entry={labEntry} locale={locale}>
-          <LabWorkbench
-            client:idle
-            implementationId={labEntry.data.implementationId}
-            locale={locale}
-          />
-          <noscript>
-            <p class="lab-noscript">{dictionary.archive.labNoScript}</p>
-          </noscript>
-          <p class="lab-noscript lab-nojs-fallback">
-            {dictionary.archive.labNoScript}
-          </p>
+          {plannerSources.length > 0 ? (
+            <AndroidMigrationPlanner sources={plannerSources} locale={locale} />
+          ) : (
+            <p class="lab-noscript lab-nojs-fallback">
+              {dictionary.archive.labNoScript}
+            </p>
+          )}
         </LabConsole>
       )
     }

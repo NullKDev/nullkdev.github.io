@@ -73,7 +73,7 @@ every sheet any of them imports, on every page it builds. Today that means:
 | `notes/**` indexes and filters                                             | shared + `notes.css`                                                                                           |
 | `404.astro`, legacy compatibility pages                                    | shared + `fallback.css`                                                                                        |
 | `[section].astro` — Work, Lab, Gallery, About, Uses, Stack, Tags, Colophon | shared + one bundle of `archive-index`, `work`, `lab-index`, `gallery-index`, `about`, `secondary` and `prose` |
-| `[domain]/[slug].astro` — every entry                                      | shared + `entry`, `prose`, `lab-entry` and `gallery-detail`                                                    |
+| `[domain]/[slug].astro` — every entry                                      | shared + `entry`, `prose`, `lab-entry`, `lab-planner` and `gallery-detail`                                     |
 | `[domain]/[slug]/[document].astro` — subposts                              | shared + `entry` and `prose`                                                                                   |
 
 Narrowing the last three further means one route file per section, not moving
@@ -109,6 +109,8 @@ derive the same value, it belongs here.
 | `status.ts`                                    | `getLifecycleTone()` — every collection's lifecycle vocabulary onto one shared tone                                                                                                                                                                                                                  |
 | `icons.ts`                                     | The single icon registry, and the only seam to the icon packs (Lucide · Simple Icons). **No inline `<svg>` in components**                                                                                                                                                                           |
 | `lab.ts`                                       | Execution tone, `sendsDataTo` hostnames, `formatBytes`, download totals, related entries                                                                                                                                                                                                             |
+| `migration-planner.ts`                         | Parses the Android version notes into the planner's per-level model (checklists, change and permission rows, anchors from rendered headings); ranges, step splitting, the inline-markdown nodes the island renders, Markdown export, per-viewer progress                                     |
+| `manifest-rules.ts`                            | Parses a merged `AndroidManifest.xml` with `DOMParser` and runs the planner's deterministic rules (`detected` · `check` · `not-applicable`), each tied to the note that documents it                                                                                                                 |
 | `capabilities.ts`                              | Runtime browser capability probe (feature detection, never user-agent)                                                                                                                                                                                                                               |
 | `notes.ts`                                     | Type/topic facets, `NOTES_PER_PAGE`, `getNotesMeta()` (reading time + subpost titles in one pass), `getSupersededBy()`                                                                                                                                                                               |
 | `reading-log.ts`                               | Private localStorage record of when each note was opened, and `read` / `revised` state                                                                                                                                                                                                               |
@@ -167,7 +169,7 @@ axes are routes. `[section].astro` explicitly excludes `notes` for this reason.
 ## Islands
 
 React is used only where something genuinely runs in the browser: the Lab
-workbench and protected-content unlocking. Everything else is static Astro.
+migration planner and protected-content unlocking. Everything else is static Astro.
 An island always gets a hydration directive and a no-JS fallback.
 
 ## i18n
@@ -175,7 +177,7 @@ An island always gets a hydration directive and a no-JS fallback.
 Two independent mechanisms, do not mix them:
 
 - **Content** — separate records per locale (`index.md` / `index.es.md`) linked by
-  `translationKey`. Spanish slugs are translated (`/es/lab/calculadora-subred/`).
+  `translationKey`. Spanish slugs are translated (`/es/lab/planificador-migracion-android/`).
   A missing translation stays missing; English never leaks under a `/es` URL.
 - **UI strings** — `src/i18n/en.ts` and `es.ts`, same shape, enforced by the
   `Dictionary` type. Controlled-vocabulary labels live in `src/i18n/archive.ts`.

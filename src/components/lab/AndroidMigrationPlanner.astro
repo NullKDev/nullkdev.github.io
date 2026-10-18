@@ -1,0 +1,44 @@
+---
+import MigrationPlanner from '@/components/lab/MigrationPlanner'
+import type { PlannerIcons } from '@/components/lab/planner/icons'
+import { getDictionary, type Locale } from '@/i18n'
+import { renderIcon } from '@/lib/icons'
+import {
+  buildPlannerModel,
+  getDefaultRange,
+  type PlannerSource,
+} from '@/lib/migration-planner'
+
+interface Props {
+  /** The Android version notes of this locale, from `getPlannerSources()`. */
+  sources: readonly PlannerSource[]
+  locale: Locale
+}
+
+const { sources, locale } = Astro.props
+const dictionary = getDictionary(locale)
+
+// Parsed at build time from the notes themselves; a note whose shape the
+// planner cannot read fails the build here rather than shipping a gap.
+const model = buildPlannerModel(sources)
+const defaultRange = getDefaultRange(model)
+
+// Registry marks rendered now, so neither icon pack reaches the browser.
+const icons: PlannerIcons = {
+  copy: renderIcon('copy', 16),
+  download: renderIcon('download', 16),
+  swap: renderIcon('swap', 18),
+  arrow: renderIcon('arrowRight', 16),
+  upload: renderIcon('upload', 16),
+  shield: renderIcon('shield', 15),
+}
+---
+
+<MigrationPlanner
+  client:idle
+  model={model}
+  defaultRange={defaultRange}
+  strings={dictionary.planner}
+  icons={icons}
+  locale={locale}
+/>

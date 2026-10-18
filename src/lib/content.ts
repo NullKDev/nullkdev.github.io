@@ -1,4 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content'
+import { marked } from 'marked'
 
 import {
   validateContentIntegrity,
@@ -9,6 +10,11 @@ import {
 import { getAlternateLocale, getLocalizedPath, type Locale } from '@/i18n'
 import { buildDocumentPath, buildEntryPath } from '@/lib/archive-routes'
 import { itemsInCollection, summarizeGallery } from '@/lib/gallery'
+import {
+  isPlannerVersionNote,
+  type PlannerHeading,
+  type PlannerSource,
+} from '@/lib/migration-planner'
 
 export const archiveDomains = ['work', 'lab', 'notes', 'gallery'] as const
 export type ArchiveDomain = (typeof archiveDomains)[number]
@@ -404,3 +410,29 @@ export const getGallerySheets = async <
 >(
   entries: readonly Entry[],
 ) => summarizeGallery(entries, await getCollection('galleryItems'))
+
+/**
+ * The Android version notes of one locale, as the migration planner reads
+ * them: the raw markdown body plus the headings the site rendered from it, so
+ * every anchor the planner links to is one the note page really has.
+ */
+export const getPlannerSources = async (
+  locale: Locale,
+): Promise<PlannerSource[]> =>
+  (await getArchiveEntries('notes', locale))
+    .filter(
+      (entry): entry is CollectionEntry<'notes'> =>
+        entry.collection === 'notes' && isPlannerVersionNote(entry.data),
+    )
+    .map((entry) => ({
+      slug: entry.data.slug,
+      locale,
+      title: entry.data.title,
+      href: getEntryPath(entry),
+      tokens: marked.lexer(entry.body ?? ''),
+      // Astro types rendered metadata loosely; for markdown it is always
+      // the `MarkdownHeading[]` its heading-id plugin collected.
+      headings:
+        (entry.rendered?.metadata?.headings as PlannerHeading[] | undefined) ??
+        [],
+    }))

@@ -21,7 +21,7 @@ against any record without knowing which collection it came from.
 | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | `entryId`                           | Globally unique **including across locales** — the ES counterpart takes an `-es` suffix. Integrity fails the build on duplicates |
 | `translationKey`                    | Links the EN and ES records. Routing resolves counterparts through this, never through a translated slug                         |
-| `slug`                              | Per-locale and genuinely translated (`/es/lab/calculadora-subred/`)                                                              |
+| `slug`                              | Per-locale and genuinely translated (`/es/lab/planificador-migracion-android/`)                                                  |
 | `summary`                           | Capped at 180 chars because it is the card dek, the meta description, and the feed excerpt at once                               |
 | `visibility` · `maturity`           | Two separate axes — see below                                                                                                    |
 | `topics`                            | Controlled vocabulary from `src/data/taxonomy.ts`; free-text tags would fragment the index                                       |
