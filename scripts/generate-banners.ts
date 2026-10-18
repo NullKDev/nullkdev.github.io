@@ -112,6 +112,32 @@ const renderLogo = (
   return `<image x="${x}" y="${y}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet" href="data:image/svg+xml;base64,${data}"/>`
 }
 
+/* The two display lines. A logo banner names a thing: the headline is the name
+   a reader searches for ("Android 6.0"), the subtext what it was called. A
+   motif banner sets both lines at one size. */
+interface DisplayLine {
+  readonly y: number
+  readonly size: number
+  readonly weight: number
+  readonly spacing: number
+}
+const TITLE_LAYOUT: Record<
+  'logo' | 'motif',
+  readonly [DisplayLine, DisplayLine]
+> = {
+  logo: [
+    { y: 318, size: 96, weight: 600, spacing: -3 },
+    { y: 392, size: 52, weight: 500, spacing: -1 },
+  ],
+  motif: [
+    { y: 300, size: 72, weight: 500, spacing: -2 },
+    { y: 384, size: 72, weight: 500, spacing: -2 },
+  ],
+}
+
+const displayLine = (line: DisplayLine, fill: string, text: string): string =>
+  `<text x="96" y="${line.y}" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="${line.size}" font-weight="${line.weight}" letter-spacing="${line.spacing}" fill="${fill}">${escape(text)}</text>`
+
 export const renderBanner = (
   spec: BannerSpec,
   locale: BannerLocale = 'en',
@@ -122,6 +148,7 @@ export const renderBanner = (
   const id = bannerFile(spec.slug, locale, surface).replace(/[^a-z0-9-]/g, '')
   const accent = spec.accent
   const deep = surface === 'dark' ? spec.deep : spec.pale
+  const layout = spec.logo ? TITLE_LAYOUT.logo : TITLE_LAYOUT.motif
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" fill="none" role="img" aria-label="${escape(c.alt)}">
   <defs>
@@ -142,15 +169,8 @@ export const renderBanner = (
 <g filter="url(#lift-${id})">${spec.logo ? renderLogo(spec.logo, accent) : renderArt(spec.art, accent, s.structure)}</g>
   <rect x="96" y="150" width="76" height="4" rx="2" fill="${accent}"/>
   <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="${accent}">${escape(c.kicker.toUpperCase())}</text>
-  ${
-    spec.logo
-      ? /* A logo banner names a thing: the headline is the name a reader
-           searches for ("Android 6.0"), the subtext what it was called. */
-        `<text x="96" y="318" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="96" font-weight="600" letter-spacing="-3" fill="${s.title}">${escape(c.title[0])}</text>
-  <text x="96" y="392" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="52" font-weight="500" letter-spacing="-1" fill="${s.subtitle}">${escape(c.title[1])}</text>`
-      : `<text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="${s.title}">${escape(c.title[0])}</text>
-  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="${s.subtitle}">${escape(c.title[1])}</text>`
-  }
+  ${displayLine(layout[0], s.title, c.title[0])}
+  ${displayLine(layout[1], s.subtitle, c.title[1])}
   <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="${s.meta}">${escape(c.meta)}</text>
 </svg>
 `
