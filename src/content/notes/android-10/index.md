@@ -28,6 +28,9 @@ series:
   id: android-versions
   order: 11
 citations:
+  - title: 'Android Q emblem — Wikimedia Commons (PD-shape, trademark of Google LLC)'
+    url: https://commons.wikimedia.org/wiki/File:Android_Q_Logo.svg
+    accessedAt: 2026-10-17
   - title: Android 10 features and APIs
     url: https://developer.android.com/about/versions/10/features
     accessedAt: 2026-10-17
@@ -141,9 +144,6 @@ citations:
     accessedAt: 2026-10-17
   - title: Android 11’s internal dessert name is ‘Red Velvet Cake’ (9to5Google)
     url: https://9to5google.com/2020/07/23/android-red-velvet-cake/
-    accessedAt: 2026-10-17
-  - title: 'File:Android 10 logo.svg (Wikimedia Commons)'
-    url: https://commons.wikimedia.org/wiki/File:Android_10_logo.svg
     accessedAt: 2026-10-17
   - title: 'File:Android logo (2019-2023).svg (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Android_logo_(2019-2023).svg

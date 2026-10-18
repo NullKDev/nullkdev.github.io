@@ -28,6 +28,9 @@ series:
   id: android-versions
   order: 16
 citations:
+  - title: 'Android 14 emblem — Wikimedia Commons (AOSP licence, trademark of Google LLC)'
+    url: https://commons.wikimedia.org/wiki/File:Android_14_official_logo.svg
+    accessedAt: 2026-10-17
   - title: Android 14 features and APIs
     url: https://developer.android.com/about/versions/14/features
     accessedAt: 2026-10-17
@@ -114,9 +117,6 @@ citations:
     accessedAt: 2026-10-17
   - title: Android 14 Easter egg is a space minigame (9to5Google)
     url: https://9to5google.com/2023/07/11/android-14-easter-egg-minigame/
-    accessedAt: 2026-10-17
-  - title: 'File:Android 14 Logo.svg (Wikimedia Commons)'
-    url: https://commons.wikimedia.org/wiki/File:Android_14_Logo.svg
     accessedAt: 2026-10-17
   - title: Android Developers content license
     url: https://developer.android.com/license

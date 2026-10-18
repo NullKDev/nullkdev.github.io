@@ -28,6 +28,9 @@ series:
   id: android-versions
   order: 12
 citations:
+  - title: 'Android 11 emblem — Wikimedia Commons (PD-logo, trademark of Google LLC)'
+    url: https://commons.wikimedia.org/wiki/File:Android_11_Developer_Preview_logo.svg
+    accessedAt: 2026-10-17
   - title: Android 11 features and APIs
     url: https://developer.android.com/about/versions/11/features
     accessedAt: 2026-10-17
@@ -132,9 +135,6 @@ citations:
     accessedAt: 2026-10-17
   - title: '"Red Velvet Cake" is Android 11''s internal dessert name (XDA Developers)'
     url: https://www.xda-developers.com/android-11-red-velvet-cake/
-    accessedAt: 2026-10-17
-  - title: 'File:Android 11 logo.svg (Wikimedia Commons)'
-    url: https://commons.wikimedia.org/wiki/File:Android_11_logo.svg
     accessedAt: 2026-10-17
   - title: 'File:Android 11 Easter Egg Light Theme.png (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Android_11_Easter_Egg_Light_Theme.png

@@ -395,7 +395,7 @@ export const banners: readonly BannerSpec[] = [
       },
     },
     art: 'api-locked',
-    logo: 'src/content/notes/android-10/assets/android-10-logo.svg',
+    logo: 'src/content/notes/android-10/assets/android-q-emblem.svg',
     ...PALETTE.android,
   },
   {
@@ -415,7 +415,7 @@ export const banners: readonly BannerSpec[] = [
       },
     },
     art: 'api-locked',
-    logo: 'src/content/notes/android-11/assets/android-11-logo.svg',
+    logo: 'src/content/notes/android-11/assets/android-11-emblem.svg',
     ...PALETTE.android,
   },
   {
@@ -435,7 +435,7 @@ export const banners: readonly BannerSpec[] = [
       },
     },
     art: 'api-locked',
-    logo: 'src/content/notes/android-12/assets/android-12-logo.svg',
+    logo: 'src/content/notes/android-12/assets/android-12-emblem.svg',
     ...PALETTE.android,
   },
   {
@@ -475,7 +475,7 @@ export const banners: readonly BannerSpec[] = [
       },
     },
     art: 'api-locked',
-    logo: 'src/content/notes/android-13/assets/android-13-logo.svg',
+    logo: 'src/content/notes/android-13/assets/android-13-emblem.svg',
     ...PALETTE.android,
   },
   {
@@ -495,7 +495,7 @@ export const banners: readonly BannerSpec[] = [
       },
     },
     art: 'api-locked',
-    logo: 'src/content/notes/android-14/assets/android-14-logo.svg',
+    logo: 'src/content/notes/android-14/assets/android-14-emblem.svg',
     ...PALETTE.android,
   },
   {
@@ -515,7 +515,7 @@ export const banners: readonly BannerSpec[] = [
       },
     },
     art: 'api-locked',
-    logo: 'src/content/notes/android-15/assets/android-15-logo.svg',
+    logo: 'src/content/notes/android-15/assets/android-15-emblem.svg',
     ...PALETTE.android,
   },
   {
@@ -545,17 +545,17 @@ export const banners: readonly BannerSpec[] = [
         kicker: 'API 37 · Jun 2026',
         title: ['Android 17', 'Cinnamon Bun'],
         meta: 'CINNAMON_BUN · memory limits',
-        alt: 'Android 17 Cinnamon Bun banner, with the Android robot.',
+        alt: 'Android 17 Cinnamon Bun banner, with the version logo.',
       },
       es: {
         kicker: 'API 37 · jun 2026',
         title: ['Android 17', 'Cinnamon Bun'],
         meta: 'CINNAMON_BUN · límites de memoria',
-        alt: 'Banner de Android 17 Cinnamon Bun, con el robot de Android.',
+        alt: 'Banner de Android 17 Cinnamon Bun, con el logo de la versión.',
       },
     },
     art: 'memory-ceiling',
-    logo: { icon: 'android' },
+    logo: 'src/content/notes/android-17/assets/android-17-logo.svg',
     ...PALETTE.android,
   },
   {

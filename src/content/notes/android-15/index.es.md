@@ -28,6 +28,9 @@ series:
   id: android-versions
   order: 17
 citations:
+  - title: 'Android 15 emblem — Wikimedia Commons (AOSP licence, trademark of Google LLC)'
+    url: https://commons.wikimedia.org/wiki/File:Android_15_Developer_Preview_logo.svg
+    accessedAt: 2026-10-17
   - title: Android 15 features and APIs
     url: https://developer.android.com/about/versions/15/features
     accessedAt: 2026-10-17
@@ -111,9 +114,6 @@ citations:
     accessedAt: 2026-10-17
   - title: Android 15's internal code name is Vanilla Ice Cream (Android Authority)
     url: https://www.androidauthority.com/android-15-vanilla-ice-cream-3292769/
-    accessedAt: 2026-10-17
-  - title: 'File:Android 15 Logo.svg (Wikimedia Commons)'
-    url: https://commons.wikimedia.org/wiki/File:Android_15_Logo.svg
     accessedAt: 2026-10-17
   - title: Android Developers content license
     url: https://developer.android.com/license

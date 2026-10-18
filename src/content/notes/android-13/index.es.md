@@ -28,6 +28,9 @@ series:
   id: android-versions
   order: 15
 citations:
+  - title: 'Android 13 emblem — Wikimedia Commons (PD-textlogo, trademark of Google LLC)'
+    url: https://commons.wikimedia.org/wiki/File:Android_13_Developer_Preview_logo.svg
+    accessedAt: 2026-10-17
   - title: Android 13 features and APIs
     url: https://developer.android.com/about/versions/13/features
     accessedAt: 2026-10-17
@@ -150,9 +153,6 @@ citations:
     accessedAt: 2026-10-17
   - title: Android 15 sideloaded apps restrictions (9to5Google)
     url: https://9to5google.com/2024/09/12/android-15-sideloaded-apps-restrictions/
-    accessedAt: 2026-10-17
-  - title: 'File:Android 13 logo.svg (Wikimedia Commons)'
-    url: https://commons.wikimedia.org/wiki/File:Android_13_logo.svg
     accessedAt: 2026-10-17
   - title: Android Developers content license
     url: https://developer.android.com/license

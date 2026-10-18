@@ -28,6 +28,9 @@ series:
   id: android-versions
   order: 13
 citations:
+  - title: 'Android 12 emblem — Wikimedia Commons (PD-textlogo, trademark of Google LLC)'
+    url: https://commons.wikimedia.org/wiki/File:Android_12_Developer_Preview_logo.svg
+    accessedAt: 2026-10-17
   - title: Android 12 features and APIs
     url: https://developer.android.com/about/versions/12/features
     accessedAt: 2026-10-17
@@ -123,9 +126,6 @@ citations:
     accessedAt: 2026-10-17
   - title: "Android 12 officially brings back the dessert names with 'Snow Cone' (Android Central)"
     url: https://www.androidcentral.com/android-12-snow-cone-dessert-name
-    accessedAt: 2026-10-17
-  - title: 'File:Android 12 Logo.svg (Wikimedia Commons)'
-    url: https://commons.wikimedia.org/wiki/File:Android_12_Logo.svg
     accessedAt: 2026-10-17
   - title: Android Developers content license
     url: https://developer.android.com/license

@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis, security]
 image: /banners/android-17.svg
-imageAlt: 'Banner de Android 17 Cinnamon Bun, con el robot de Android.'
+imageAlt: 'Banner de Android 17 Cinnamon Bun, con el logo de la versión.'
 links:
   - label: Llegó Android 17 (Android 17 is here)
     href: https://android-developers.googleblog.com/2026/06/Android-17.html
@@ -28,6 +28,9 @@ series:
   id: android-versions
   order: 19
 citations:
+  - title: 'Android 17 wordmark — Wikimedia Commons (PD-textlogo, trademark of Google LLC)'
+    url: https://commons.wikimedia.org/wiki/File:Android-17-wordmark-black.svg
+    accessedAt: 2026-10-17
   - title: Android 17 is here (Android Developers Blog)
     url: https://android-developers.googleblog.com/2026/06/Android-17.html
     accessedAt: 2026-10-17
