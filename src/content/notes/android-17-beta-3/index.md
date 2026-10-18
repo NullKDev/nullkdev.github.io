@@ -12,7 +12,7 @@ updatedAt: 2026-10-17
 topics: [android, kotlin, platform-apis]
 featuredRank: 9
 image: /banners/android-17-beta-3.svg
-imageAlt: Android 17 Beta 3 banner — platform stability reached.
+imageAlt: 'Android 17 Beta 3 banner, with the Android 17 logo.'
 links:
   - label: Official release notes
     href: https://developer.android.com/about/versions/17/release-notes
@@ -28,6 +28,9 @@ series:
   id: android-17
   order: 1
 citations:
+  - title: 'Android 17 emblem — Wikimedia Commons (AOSP / Android Developers licence, trademark of Google LLC)'
+    url: https://commons.wikimedia.org/wiki/File:Android_17_Developer_Preview_Logo.svg
+    accessedAt: 2026-10-17
   - title: Android 17 Beta 3
     url: https://android-developers.googleblog.com/2026/03/the-third-beta-of-android-17.html
     accessedAt: 2026-03-27

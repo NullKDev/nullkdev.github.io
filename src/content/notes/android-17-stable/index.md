@@ -12,7 +12,7 @@ updatedAt: 2026-10-17
 topics: [android, kotlin, platform-apis, security]
 featuredRank: 4
 image: /banners/android-17-stable.svg
-imageAlt: Android 17 stable banner — stable, six weeks in.
+imageAlt: 'Android 17 stable banner, with the Android 17 logo.'
 links:
   - label: Android 17 is here
     href: https://android-developers.googleblog.com/2026/06/Android-17.html
@@ -30,6 +30,9 @@ series:
   id: android-17
   order: 2
 citations:
+  - title: 'Android 17 emblem — Wikimedia Commons (AOSP / Android Developers licence, trademark of Google LLC)'
+    url: https://commons.wikimedia.org/wiki/File:Android_17_Developer_Preview_Logo.svg
+    accessedAt: 2026-10-17
   - title: Android 17 is here
     url: https://android-developers.googleblog.com/2026/06/Android-17.html
     accessedAt: 2026-07-29

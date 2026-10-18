@@ -10,7 +10,7 @@ maturity: stable
 publishedAt: 2026-10-17
 topics: [android, platform-apis]
 image: /banners/android-12l.svg
-imageAlt: 'Banner de Android 12L, con el robot de Android.'
+imageAlt: 'Banner de Android 12L, con el logo de Android 12.'
 links:
   - label: Funciones y cambios de 12L
     href: https://developer.android.com/about/versions/12/12L/summary
@@ -28,6 +28,9 @@ series:
   id: android-versions
   order: 14
 citations:
+  - title: 'Android 12 emblem — Wikimedia Commons (PD-textlogo, trademark of Google LLC)'
+    url: https://commons.wikimedia.org/wiki/File:Android_12_Developer_Preview_logo.svg
+    accessedAt: 2026-10-17
   - title: 12L features and changes summary
     url: https://developer.android.com/about/versions/12/12L/summary
     accessedAt: 2026-10-17

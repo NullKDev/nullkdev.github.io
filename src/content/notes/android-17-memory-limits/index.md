@@ -12,7 +12,7 @@ updatedAt: 2026-10-17
 topics: [android, kotlin, performance, platform-apis]
 featuredRank: 5
 image: /banners/android-17-memory-limits.svg
-imageAlt: Android 17 memory limits banner — killed with no stack trace.
+imageAlt: 'Android 17 memory limits banner, with the Android 17 logo.'
 links:
   - label: 'Prioritizing memory efficiency: essential steps for Android 17'
     href: https://android-developers.googleblog.com/2026/06/prioritizing-memory-efficiency-steps-for-android-17.html
@@ -30,6 +30,9 @@ series:
   id: android-17
   order: 3
 citations:
+  - title: 'Android 17 emblem — Wikimedia Commons (AOSP / Android Developers licence, trademark of Google LLC)'
+    url: https://commons.wikimedia.org/wiki/File:Android_17_Developer_Preview_Logo.svg
+    accessedAt: 2026-10-17
   - title: 'Prioritizing memory efficiency: essential steps for Android 17'
     url: https://android-developers.googleblog.com/2026/06/prioritizing-memory-efficiency-steps-for-android-17.html
     accessedAt: 2026-07-29
