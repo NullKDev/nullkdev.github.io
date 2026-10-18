@@ -132,10 +132,23 @@ export function auditLayout(promised: string[]): Violation[] {
     return false
   }
 
+  /* Everything inside a screen-reader-only box is clipped with it: a stacked
+     table hides its whole `thead`, and its `th` cells keep their table widths. */
+  const srOnlyBoxes = new Set<Element>()
+  const insideSrOnly = (el: Element) => {
+    for (let p = el.parentElement; p; p = p.parentElement)
+      if (srOnlyBoxes.has(p)) return true
+    return false
+  }
+
   for (const el of all) {
     if (inSvg(el) || !visible(el)) continue
     const cs = getComputedStyle(el)
-    if (cs.display === 'contents' || srOnly(el, cs)) continue
+    if (srOnly(el, cs)) {
+      srOnlyBoxes.add(el)
+      continue
+    }
+    if (cs.display === 'contents' || insideSrOnly(el)) continue
     const box = el.getBoundingClientRect()
     if (box.width === 0 && box.height === 0) continue
 
