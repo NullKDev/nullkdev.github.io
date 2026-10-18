@@ -1,63 +1,21 @@
 ---
-entryId: notes-android-17-beta-3
+parentDomain: notes
+parentId: notes-android-17
+documentId: beta-3
 locale: en
 translationKey: android-17-beta-3
-slug: android-17-beta-3
+slug: beta-3
 title: 'Android 17 Beta 3: platform stability reached'
 summary: A full breakdown of API 37 at platform stability — every notable new API, breaking change, and what to do right now.
+order: 3
 visibility: public
-maturity: archived
+maturity: stable
 publishedAt: 2026-03-27
-updatedAt: 2026-10-17
+updatedAt: 2026-10-18
 topics: [android, kotlin, platform-apis]
-featuredRank: 9
-image: /banners/android-17-beta-3.svg
-imageAlt: 'Android 17 Beta 3 banner, with the Android 17 logo.'
-links:
-  - label: Official release notes
-    href: https://developer.android.com/about/versions/17/release-notes
-    kind: publication
 references: []
 evidence: []
-documents: []
 protection: { mode: public }
-kind: article
-lifecycle: archived
-supersededBy: android-17-stable
-series:
-  id: android-17
-  order: 1
-citations:
-  - title: 'Android 17 emblem — Wikimedia Commons (AOSP / Android Developers licence, trademark of Google LLC)'
-    url: https://commons.wikimedia.org/wiki/File:Android_17_Developer_Preview_Logo.svg
-    accessedAt: 2026-10-17
-  - title: Android 17 Beta 3
-    url: https://android-developers.googleblog.com/2026/03/the-third-beta-of-android-17.html
-    accessedAt: 2026-03-27
-  - title: Android 17 release notes
-    url: https://developer.android.com/about/versions/17/release-notes
-    accessedAt: 2026-07-23
-  - title: API level 37 differences
-    url: https://developer.android.com/sdk/api_diff/37/changes
-    accessedAt: 2026-03-27
-  - title: CommonsWare Beta 3 notes
-    url: https://commonsware.com/blog/2026/03/27/random-musings-android-17-beta-3.html
-    accessedAt: 2026-03-27
-  - title: Android 17 is here
-    url: https://android-developers.googleblog.com/2026/06/Android-17.html
-    accessedAt: 2026-10-17
-  - title: 'Behavior changes: apps targeting Android 17'
-    url: https://developer.android.com/about/versions/17/behavior-changes-17
-    accessedAt: 2026-10-17
-  - title: Public Java API (libcore current.txt) at android-17.0.0_r1 (AOSP)
-    url: https://android.googlesource.com/platform/libcore/+/refs/tags/android-17.0.0_r1/api/current.txt
-    accessedAt: 2026-10-17
-  - title: Connectivity module API (current.txt) at android-17.0.0_r1 (AOSP)
-    url: https://android.googlesource.com/platform/packages/modules/Connectivity/+/refs/tags/android-17.0.0_r1/framework/api/current.txt
-    accessedAt: 2026-10-17
-  - title: NFC module API (current.txt) at android-17.0.0_r1 (AOSP)
-    url: https://android.googlesource.com/platform/packages/modules/Nfc/+/refs/tags/android-17.0.0_r1/framework/api/current.txt
-    accessedAt: 2026-10-17
 ---
 
 Android 17 Beta 3 dropped on March 26, 2026, and it carries a very specific signal for developers: **platform stability has been reached**. That means the API surface is now locked. No more additions, no more removals, no more surprises. If you're a library author, SDK vendor, or app developer, the clock is ticking.
@@ -75,7 +33,7 @@ Google uses Beta 3 as the point at which the final API set is frozen. From here 
 
 The stable release is expected later in 2026. We don't have an exact date yet, but the timeline mirrors previous years: Beta 3 in March → stable around Q3.
 
-> **Update, 17 October 2026:** that guess was wrong. Android 17 went stable on 16 June 2026, after one more beta (Beta 4, 16 April). See [Android 17: what breaks on targetSdk 37](/notes/android-17-stable/).
+> **Update, 17 October 2026:** that guess was wrong. Android 17 went stable on 16 June 2026, after one more beta (Beta 4, 16 April). See [Android 17: what breaks on targetSdk 37](/notes/android-17/stable/).
 
 ---
 
@@ -243,7 +201,7 @@ New floating toolbar for recording controls. The toolbar itself is excluded from
 
 ### For all apps (regardless of target API)
 
-None of the changes Google highlighted at Beta 3 applies to every app. An earlier version of this note listed native DCL, Certificate Transparency and local network access here; Google's Beta 3 post scopes all three to apps targeting API 37, so they are in the next table. The final list of changes for all apps is in the [stable note](/notes/android-17-stable/).
+None of the changes Google highlighted at Beta 3 applies to every app. An earlier version of this part listed native DCL, Certificate Transparency and local network access here; Google's Beta 3 post scopes all three to apps targeting API 37, so they are in the next table. The final list of changes for all apps is in the [stable release part](/notes/android-17/stable/).
 
 ### For apps targeting API 37
 

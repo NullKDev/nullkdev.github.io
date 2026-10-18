@@ -672,18 +672,20 @@ test('public records, series, and nested document adjacency resolve', async ({
   // A series of one has nowhere to go: no series navigation.
   await page.goto('/notes/gof-patterns-android/')
   await expect(page.getByRole('navigation', { name: 'Series' })).toHaveCount(0)
-  await page.goto('/notes/android-17-beta-3/')
+  await page.goto('/notes/android-16/')
   // The series is named by its title, never its slug.
   await expect(page.getByRole('navigation', { name: 'Series' })).toContainText(
-    'Series: Android 17',
+    'Series: Android, version by version',
   )
   // Under it, the date pager says which way in time it goes rather than
   // offering a second, different "Previous".
   const pager = page.getByRole('navigation', { name: 'More entries' })
   await expect(pager).not.toContainText('Previous')
   await expect(pager).not.toContainText('Next')
+  // Neighbours published the same day are neither older nor newer, so the
+  // pager names their place in the Notes list instead of guessing.
   await expect(pager.locator('.pager-link__label').first()).toHaveText(
-    /(Older|Newer) note/,
+    /(Older|Newer) note|(Up|Down) the Notes list/,
   )
   await page.goto('/notes/gof-patterns-android/proxy-facade/')
   const navigation = page.getByRole('navigation', { name: 'Parts' })
@@ -1399,7 +1401,7 @@ test('@mobile phone contents sit before the first paragraph, collapsed', async (
 test('every section heading carries a named, keyboard-reachable self-link', async ({
   page,
 }) => {
-  await page.goto('/notes/android-17-beta-3/')
+  await page.goto('/notes/android-17/')
   const heading = page.locator('.prose h2[id]').first()
   const id = await heading.getAttribute('id')
   const name = (await heading.innerText()).trim()
@@ -1415,7 +1417,7 @@ test('every section heading carries a named, keyboard-reachable self-link', asyn
   await page.keyboard.press('Enter')
   await expect(page).toHaveURL(new RegExp(`#${id}$`))
 
-  await page.goto('/es/notes/android-17-beta-3/')
+  await page.goto('/es/notes/android-17/')
   await expect(
     page.getByRole('link', { name: /^Enlace a la sección: / }).first(),
   ).toBeAttached()
@@ -1426,7 +1428,7 @@ test('switching language lands on the same section', async ({
 }, testInfo) => {
   test.skip(testInfo.project.name === 'mobile-chromium', 'wide layout only')
   await page.setViewportSize({ width: 1280, height: 900 })
-  await page.goto('/notes/android-17-beta-3/')
+  await page.goto('/notes/android-16/')
   const links = page.locator('.entry-index [data-toc] a')
   const index = 7
   const href = (await links.nth(index).getAttribute('href'))!
@@ -1440,7 +1442,7 @@ test('switching language lands on the same section', async ({
   await expect(links.nth(index)).toHaveAttribute('aria-current', 'true')
 
   await page.locator('[data-locale-control]').click()
-  await expect(page).toHaveURL(/\/es\/notes\/android-17-beta-3\/#.+/)
+  await expect(page).toHaveURL(/\/es\/notes\/android-16\/#.+/)
   const counterpart = await page
     .locator('.entry-index [data-toc] a')
     .nth(index)
@@ -1459,7 +1461,7 @@ test('running text keeps a 60–75 character measure', async ({
   test.skip(testInfo.project.name === 'mobile-chromium', 'wide layouts only')
   for (const width of [1280, 820]) {
     await page.setViewportSize({ width, height: 900 })
-    await page.goto('/notes/android-17-beta-3/')
+    await page.goto('/notes/android-17/')
     const measure = await charactersPerLine(page)
     expect(measure, `${width}px`).toBeGreaterThanOrEqual(60)
     expect(measure, `${width}px`).toBeLessThanOrEqual(75)
@@ -1467,7 +1469,7 @@ test('running text keeps a 60–75 character measure', async ({
 })
 
 test('a note prints as text, without the screen chrome', async ({ page }) => {
-  await page.goto('/notes/android-17-beta-3/')
+  await page.goto('/notes/android-17/')
   await page.evaluate(() =>
     document.documentElement.setAttribute('data-theme', 'dark'),
   )
@@ -1521,7 +1523,7 @@ test('notes search finds a heading and links straight to its section', async ({
   await expect(hit.first()).toBeVisible()
   await expect(hit.first()).toHaveAttribute(
     'href',
-    /\/notes\/android-17-beta-3\/#alarmmanager-/,
+    /\/notes\/android-17\/#alarmmanager-/,
   )
   await expect(hit.first().locator('.notes-results__section')).toHaveText(
     /^in section AlarmManager/,
@@ -1624,17 +1626,17 @@ test('the 404 suggests the closest notes, in both languages', async ({
     )
   }
 
-  // A truncated slug: no such page, but three notes share its words.
-  await page.goto('/notes/android-17-beta/')
+  // A made-up slug: no such page, but notes share its words.
+  await page.goto('/notes/android-memory/')
   expectOnlyDocument404()
   const english = page.locator('[data-not-found-suggestions]')
   await expect(english).toBeVisible()
   await expect(english.locator('a').first()).toHaveAttribute(
     'href',
-    '/notes/android-17-beta-3/',
+    '/notes/android-17/',
   )
 
-  await page.goto('/es/notes/android-17-beta/')
+  await page.goto('/es/notes/android-memoria/')
   await expect(page).toHaveURL(/\/es\/404\/\?from=/)
   expectOnlyDocument404()
   const spanish = page.locator('[data-not-found-suggestions]')
@@ -1644,7 +1646,7 @@ test('the 404 suggests the closest notes, in both languages', async ({
   )
   await expect(spanish.locator('a').first()).toHaveAttribute(
     'href',
-    '/es/notes/android-17-beta-3/',
+    '/es/notes/android-17/',
   )
 
   // Nothing close: the section stays hidden and the plain links remain.

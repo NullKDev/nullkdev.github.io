@@ -53,8 +53,8 @@ describe('matchesQuery', () => {
 describe('searchNotes', () => {
   const rows = [
     row({
-      title: 'Android 17 beta 3',
-      path: '/notes/android-17-beta-3/',
+      title: 'Android 17: beta 1 to beta 4',
+      path: '/notes/android-17/',
       sections: [
         { slug: 'whats-new', text: "What's new" },
         { slug: 'alarmmanager', text: 'AlarmManager' },
@@ -76,14 +76,14 @@ describe('searchNotes', () => {
       slug: 'alarmmanager',
       text: 'AlarmManager',
     })
-    expect(beta?.href).toBe('/notes/android-17-beta-3/#alarmmanager')
+    expect(beta?.href).toBe('/notes/android-17/#alarmmanager')
   })
 
   it('ranks metadata matches before heading-only matches, one hit per note', () => {
     const hits = searchNotes(rows, 'AlarmManager')
     expect(hits.map((hit) => hit.row.path)).toEqual([
       '/notes/compose-remote/',
-      '/notes/android-17-beta-3/',
+      '/notes/android-17/',
     ])
     // A metadata match links to the note itself, not a section.
     expect(hits[0].section).toBeUndefined()
@@ -106,7 +106,7 @@ describe('searchNotes', () => {
 
 describe('suggestNotesForPath', () => {
   const rows = [
-    row({ title: 'Android 17 beta 3', path: '/notes/android-17-beta-3/' }),
+    row({ title: 'Android 17: beta 1 to beta 4', path: '/notes/android-17/' }),
     row({ title: 'Compose Remote', path: '/notes/compose-remote/' }),
     row({
       title: 'GoF patterns on Android',
@@ -126,7 +126,7 @@ describe('suggestNotesForPath', () => {
     const paths = suggestNotesForPath('/notes/android-beta/', rows).map(
       (hit) => hit.path,
     )
-    expect(paths[0]).toBe('/notes/android-17-beta-3/')
+    expect(paths[0]).toBe('/notes/android-17/')
     expect(paths).toContain('/notes/gof-patterns-android/')
   })
 

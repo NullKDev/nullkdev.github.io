@@ -310,7 +310,7 @@ What QPR2 added:
 
 ## What lasted
 
-- **Large screens.** [Android 17](/notes/android-17-stable/) removed the
+- **Large screens.** [Android 17](/notes/android-17/stable/) removed the
   temporary opt-out: apps targeting 37 on `sw600dp` displays cannot keep their
   orientation or aspect ratio locks.
 - **Local network.** The QPR2 API already lists an `ACCESS_LOCAL_NETWORK`
@@ -319,11 +319,12 @@ What QPR2 added:
 - **SMS OTP.** Android 17 extends the three-hour hold to OTP messages for most
   apps targeting 37.
 - **ART.** Google listed a generational Concurrent Mark-Compact collector among
-  the QPR2 changes; the [Android 17 note](/notes/android-17-stable/) covers it,
+  the QPR2 changes; the [Android 17 note](/notes/android-17/stable/) covers it,
   since ART updates through Google Play system updates.
 - **Process.** For Android 17, Google skipped developer previews and went from
-  Canary straight to beta; see the [Beta 3 notes](/notes/android-17-beta-3/)
-  and the [memory limits note](/notes/android-17-memory-limits/).
+  Canary straight to beta; see the
+  [Android 17 betas](/notes/android-17/beta-1/), from Beta 1 to Beta 4, and the
+  [memory limits](/notes/android-17/memory-limits/).
 
 ## Worth knowing
 

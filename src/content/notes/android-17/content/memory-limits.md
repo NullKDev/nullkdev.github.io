@@ -1,53 +1,21 @@
 ---
-entryId: notes-android-17-memory-limits
+parentDomain: notes
+parentId: notes-android-17
+documentId: memory-limits
 locale: en
 translationKey: android-17-memory-limits
-slug: android-17-memory-limits
+slug: memory-limits
 title: 'Android 17 kills your process with no stack trace'
 summary: Per-app memory limits are cgroup limits tied to device RAM, you cannot query them at runtime, and the kill leaves no crash log.
+order: 6
 visibility: public
 maturity: stable
 publishedAt: 2026-07-29
-updatedAt: 2026-10-17
+updatedAt: 2026-10-18
 topics: [android, kotlin, performance, platform-apis]
-featuredRank: 5
-image: /banners/android-17-memory-limits.svg
-imageAlt: 'Android 17 memory limits banner, with the Android 17 logo.'
-links:
-  - label: 'Prioritizing memory efficiency: essential steps for Android 17'
-    href: https://android-developers.googleblog.com/2026/06/prioritizing-memory-efficiency-steps-for-android-17.html
-    kind: publication
-  - label: Memory Limiter (AOSP)
-    href: https://source.android.com/docs/core/perf/memory-limiter
-    kind: publication
 references: []
 evidence: []
-documents: []
 protection: { mode: public }
-kind: article
-lifecycle: current
-series:
-  id: android-17
-  order: 3
-citations:
-  - title: 'Android 17 emblem — Wikimedia Commons (AOSP / Android Developers licence, trademark of Google LLC)'
-    url: https://commons.wikimedia.org/wiki/File:Android_17_Developer_Preview_Logo.svg
-    accessedAt: 2026-10-17
-  - title: 'Prioritizing memory efficiency: essential steps for Android 17'
-    url: https://android-developers.googleblog.com/2026/06/prioritizing-memory-efficiency-steps-for-android-17.html
-    accessedAt: 2026-07-29
-  - title: Memory Limiter
-    url: https://source.android.com/docs/core/perf/memory-limiter
-    accessedAt: 2026-10-17
-  - title: 'Behavior changes: all apps'
-    url: https://developer.android.com/about/versions/17/behavior-changes-all
-    accessedAt: 2026-10-17
-  - title: MemoryLimiter.java at android-17.0.0_r1 (AOSP)
-    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-17.0.0_r1/services/core/java/com/android/server/am/MemoryLimiter.java
-    accessedAt: 2026-10-17
-  - title: Memory Limiter, as published in July 2026 (Internet Archive)
-    url: https://web.archive.org/web/20260723233811/https://source.android.com/docs/core/perf/memory-limiter
-    accessedAt: 2026-10-17
 ---
 
 Android 17 enforces per-app memory limits. When your process crosses one, the
@@ -207,7 +175,7 @@ nothing meaningful in it.
 directly in Panda 3. A leak under a memory limit is no longer a slow degradation;
 it is a hard kill on a timer.
 
-## What I would do this week
+## What I would do this week about memory
 
 1. **Ship the `ApplicationExitInfo` check first.** It is a dozen lines and without
    it you are blind. You cannot fix a rate you cannot see.

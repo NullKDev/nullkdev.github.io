@@ -9,49 +9,24 @@ test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'light', reducedMotion: 'reduce' })
 })
 
-const replacements = [
-  {
-    url: '/notes/android-17-beta-3/',
-    lead: 'This note was replaced by',
-    href: '/notes/android-17-stable/',
-  },
-  {
-    url: '/es/notes/android-17-beta-3/',
-    lead: 'Esta nota fue reemplazada por',
-    href: '/es/notes/android-17-estable/',
-  },
-]
-
-for (const { url, lead, href } of replacements) {
-  test(`a replaced note links to its replacement above the fold (${url})`, async ({
-    page,
-  }) => {
-    await page.goto(url)
-    const notice = page.locator('.entry-superseded')
-    await expect(notice).toContainText(lead)
-    const link = notice.getByRole('link')
-    await expect(link).toHaveAttribute('href', href)
-    // Above the fold: the notice starts inside the first viewport.
-    const box = await notice.boundingBox()
-    const viewport = page.viewportSize()
-    expect(box && viewport && box.y < viewport.height).toBeTruthy()
-  })
-}
+/* No published note is superseded any more: the Android 17 notes that used
+   `supersededBy` were merged into one note with parts. The resolution rule is
+   covered in tests/unit/notes-derivation.test.ts. */
 
 test('a series member says which part of which series it is', async ({
   page,
 }) => {
-  await page.goto('/notes/android-17-stable/')
+  await page.goto('/notes/android-16/')
   await expect(page.locator('[data-series-position]')).toHaveText(
-    'Part 2 of 3 · Android 17',
+    'Part 18 of 19 · Android, version by version',
   )
   await expect(page.locator('.series-navigation strong')).toHaveText(
-    'Series: Android 17',
+    'Series: Android, version by version',
   )
 
-  await page.goto('/es/notes/android-17-estable/')
+  await page.goto('/es/notes/android-16/')
   await expect(page.locator('[data-series-position]')).toHaveText(
-    'Parte 2 de 3 · Android 17',
+    'Parte 18 de 19 · Android, versión por versión',
   )
 })
 
@@ -68,7 +43,7 @@ test('a subpost is "Part n of m", and a single part is not counted', async ({
 test('header facts read "N min" and skip an update on the publication day', async ({
   page,
 }) => {
-  await page.goto('/notes/android-17-stable/')
+  await page.goto('/notes/android-17/')
   const facts = page.locator('.entry-facts')
   await expect(facts.locator('dd').nth(2)).toHaveText(/^\d+ min$/)
   await expect(facts).toContainText('Write-up')
@@ -90,16 +65,16 @@ test('header facts read "N min" and skip an update on the publication day', asyn
 test('dates show the day the record declares, not the day before', async ({
   page,
 }) => {
-  await page.goto('/notes/android-17-beta-3/')
+  await page.goto('/notes/android-17/')
   await expect(page.locator('.entry-facts time').first()).toHaveText(
-    'Mar 27, 2026',
+    'Oct 17, 2026',
   )
 })
 
 test('the lifecycle chip explains itself and links to the colophon', async ({
   page,
 }) => {
-  await page.goto('/notes/android-17-stable/')
+  await page.goto('/notes/android-17/')
   const chip = page.locator('.entry-status-link')
   await expect(chip).toHaveAttribute('title', /colophon/)
   await chip.click()
@@ -110,7 +85,7 @@ test('the lifecycle chip explains itself and links to the colophon', async ({
 })
 
 test('an entry topic opens the filtered Notes list', async ({ page }) => {
-  await page.goto('/notes/android-17-stable/')
+  await page.goto('/notes/android-17/')
   await expect(
     page.locator('.entry-topics a', { hasText: 'Android' }),
   ).toHaveAttribute('href', '/notes/topic/android/')
@@ -161,9 +136,9 @@ const renderedHeadingNumbers = async (
 }
 
 for (const url of [
-  '/notes/android-17-stable/',
-  '/es/notes/android-17-estable/',
-  '/notes/android-17-beta-3/',
+  '/notes/android-17/',
+  '/es/notes/android-17/',
+  '/notes/android-16/',
 ]) {
   test(`every numbered heading shows the number its index entry shows (${url})`, async ({
     page,

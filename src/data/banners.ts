@@ -122,66 +122,6 @@ export const banners: readonly BannerSpec[] = [
     ...PALETTE.ai,
   },
   {
-    slug: 'android-17-stable',
-    copy: {
-      en: {
-        kicker: 'API 37 · 16 Jun 2026',
-        title: ['Android 17', 'Stable release'],
-        meta: 'Six weeks in · what breaks on targetSdk 37',
-        alt: 'Android 17 stable banner, with the Android 17 logo.',
-      },
-      es: {
-        kicker: 'API 37 · 16 jun 2026',
-        title: ['Android 17', 'Versión estable'],
-        meta: 'Seis semanas después · qué rompe en targetSdk 37',
-        alt: 'Banner de Android 17 estable, con el logo de Android 17.',
-      },
-    },
-    art: 'release-train',
-    logo: 'src/content/notes/android-17/assets/android-17-emblem.svg',
-    ...PALETTE.android,
-  },
-  {
-    slug: 'android-17-memory-limits',
-    copy: {
-      en: {
-        kicker: 'API 37 · Memory',
-        title: ['Android 17', 'Memory limits'],
-        meta: 'cgroup memory.high · MemoryLimiter:AnonSwap',
-        alt: 'Android 17 memory limits banner, with the Android 17 logo.',
-      },
-      es: {
-        kicker: 'API 37 · Memoria',
-        title: ['Android 17', 'Límites de memoria'],
-        meta: 'cgroup memory.high · MemoryLimiter:AnonSwap',
-        alt: 'Banner de Android 17 límites de memoria, con el logo de Android 17.',
-      },
-    },
-    art: 'memory-ceiling',
-    logo: 'src/content/notes/android-17/assets/android-17-emblem.svg',
-    ...PALETTE.warning,
-  },
-  {
-    slug: 'android-17-beta-3',
-    copy: {
-      en: {
-        kicker: 'API 37 · 26 Mar 2026',
-        title: ['Android 17', 'Beta 3'],
-        meta: 'Platform stability · API locked',
-        alt: 'Android 17 Beta 3 banner, with the Android 17 logo.',
-      },
-      es: {
-        kicker: 'API 37 · 26 mar 2026',
-        title: ['Android 17', 'Beta 3'],
-        meta: 'Estabilidad de plataforma · API bloqueada',
-        alt: 'Banner de Android 17 Beta 3, con el logo de Android 17.',
-      },
-    },
-    art: 'api-locked',
-    logo: 'src/content/notes/android-17/assets/android-17-emblem.svg',
-    ...PALETTE.android,
-  },
-  {
     slug: 'android-versions',
     copy: {
       en: {

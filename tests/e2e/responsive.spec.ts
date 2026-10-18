@@ -83,7 +83,7 @@ const PAGES = [
   '/notes/',
   '/notes/type/article/',
   '/notes/2/',
-  '/notes/android-17-stable/',
+  '/notes/android-17/',
   '/notes/codex-security-precision-gap/',
   '/notes/codex-security-precision-gap/ci-integration/',
   '/gallery/',

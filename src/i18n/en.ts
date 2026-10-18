@@ -207,6 +207,8 @@ export const en = {
     minutes: 'min',
     olderNote: 'Older note',
     newerNote: 'Newer note',
+    aboveInList: 'Up the Notes list',
+    belowInList: 'Down the Notes list',
     references: 'Related records',
     backlinks: 'Referenced by',
     index: 'Index',

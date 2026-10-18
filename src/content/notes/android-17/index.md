@@ -8,7 +8,9 @@ summary: API 37, June 2026. Large screens lost the orientation opt-out, the syst
 visibility: public
 maturity: stable
 publishedAt: 2026-10-17
+updatedAt: 2026-10-18
 topics: [android, platform-apis, security]
+featuredRank: 4
 image: /banners/android-17.svg
 imageAlt: 'Android 17 Cinnamon Bun banner, with the version logo.'
 links:
@@ -20,7 +22,25 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: beta-1
+    slug: beta-1
+    order: 1
+  - documentId: beta-2
+    slug: beta-2
+    order: 2
+  - documentId: beta-3
+    slug: beta-3
+    order: 3
+  - documentId: beta-4
+    slug: beta-4
+    order: 4
+  - documentId: stable
+    slug: stable
+    order: 5
+  - documentId: memory-limits
+    slug: memory-limits
+    order: 6
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -100,6 +120,60 @@ citations:
   - title: Android 17 codename is Cinnamon Bun (Droid Life)
     url: https://www.droid-life.com/2025/08/11/android-17-codename-is-cinnamon-bun/
     accessedAt: 2026-10-17
+  - title: Android 17 release notes
+    url: https://developer.android.com/about/versions/17/release-notes
+    accessedAt: 2026-07-23
+  - title: API level 37 differences
+    url: https://developer.android.com/sdk/api_diff/37/changes
+    accessedAt: 2026-03-27
+  - title: CommonsWare Beta 3 notes
+    url: https://commonsware.com/blog/2026/03/27/random-musings-android-17-beta-3.html
+    accessedAt: 2026-03-27
+  - title: Public Java API (libcore current.txt) at android-17.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/libcore/+/refs/tags/android-17.0.0_r1/api/current.txt
+    accessedAt: 2026-10-17
+  - title: Connectivity module API (current.txt) at android-17.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/packages/modules/Connectivity/+/refs/tags/android-17.0.0_r1/framework/api/current.txt
+    accessedAt: 2026-10-17
+  - title: NFC module API (current.txt) at android-17.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/packages/modules/Nfc/+/refs/tags/android-17.0.0_r1/framework/api/current.txt
+    accessedAt: 2026-10-17
+  - title: MessageQueue behavior change guidance
+    url: https://developer.android.com/about/versions/17/changes/messagequeue
+    accessedAt: 2026-08-06
+  - title: Android Contact Picker
+    url: https://developer.android.com/about/versions/17/features/contact-picker
+    accessedAt: 2026-08-06
+  - title: Prepare your app for the resizability and orientation changes
+    url: https://android-developers.googleblog.com/2026/02/prepare-your-app-for-resizability-and.html
+    accessedAt: 2026-08-06
+  - title: cp1a release config at android-17.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/build/release/+/refs/tags/android-17.0.0_r1/release_configs/cp1a.textproto
+    accessedAt: 2026-10-17
+  - title: 'Prioritizing memory efficiency: essential steps for Android 17'
+    url: https://android-developers.googleblog.com/2026/06/prioritizing-memory-efficiency-steps-for-android-17.html
+    accessedAt: 2026-07-29
+  - title: MemoryLimiter.java at android-17.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-17.0.0_r1/services/core/java/com/android/server/am/MemoryLimiter.java
+    accessedAt: 2026-10-17
+  - title: Memory Limiter, as published in July 2026 (Internet Archive)
+    url: https://web.archive.org/web/20260723233811/https://source.android.com/docs/core/perf/memory-limiter
+    accessedAt: 2026-10-17
+  - title: The first beta of Android 17 (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2026/02/the-first-beta-of-android-17.html
+    accessedAt: 2026-10-18
+  - title: The second beta of Android 17 (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2026/02/the-second-beta-of-android-17.html
+    accessedAt: 2026-10-18
+  - title: Google is now rolling out Android 17 Beta 1 for Pixel (9to5Google)
+    url: https://9to5google.com/2026/02/13/android-17-beta-1-pixel/
+    accessedAt: 2026-10-18
+  - title: Google is now rolling out Android 17 Beta 2 for Pixel (9to5Google)
+    url: https://9to5google.com/2026/02/26/android-17-beta-2-pixel/
+    accessedAt: 2026-10-18
+  - title: Android 17 Beta 4 rolling out for Pixel as last scheduled release (9to5Google)
+    url: https://9to5google.com/2026/04/16/android-17-beta-4-pixel/
+    accessedAt: 2026-10-18
 ---
 
 Android 17 is the release that made adaptive layouts mandatory and gave every
@@ -108,10 +182,11 @@ orientation or aspect ratio locks on tablets and foldables, and the system now
 kills a process that outgrows a limit set by the device's RAM. For developers,
 most of what breaks waits until `targetSdk` reaches 37.
 
-This is the overview. Three notes go deeper: the
-[Beta 3 breakdown](/notes/android-17-beta-3/) of every new API at platform
-stability, [what breaks on targetSdk 37](/notes/android-17-stable/), and
-[the memory limits](/notes/android-17-memory-limits/).
+This is the overview. Six parts follow it, in order: the four betas, from
+[Beta 1](/notes/android-17/beta-1/) to [Beta 4](/notes/android-17/beta-4/),
+with [Beta 3](/notes/android-17/beta-3/) covering every new API at platform
+stability; [what breaks on targetSdk 37](/notes/android-17/stable/); and
+[the memory limits](/notes/android-17/memory-limits/).
 
 ## At a glance
 
@@ -130,8 +205,10 @@ release build is `CP2A.260605.016`, tag `android-17.0.0_r1`, with the June 2026
 security patch.
 
 Google skipped developer previews this time: the Canary channel did that job,
-and Android 17 went straight to beta. The API surface locked at Beta 3, on
-26 March 2026. Beta 4, on 16 April, was the last scheduled beta.
+and Android 17 went straight to beta. Beta 1 came out on 13 February 2026 and
+Beta 2 on 26 February. The API surface locked at Beta 3, on 26 March. Beta 4,
+on 16 April, was the last scheduled beta; a bug-fix Beta 4.1 followed on
+1 June.
 
 Samsung announced the Galaxy Z Fold8 Ultra, Z Fold8 and Z Flip8 on 22 July
 2026; their spec sheets list Android 17 with One UI 9.
@@ -174,7 +251,7 @@ developers see it in code.
   location button, and a screen-wide eyedropper (`ACTION_OPEN_EYE_DROPPER`).
 
 The full API list at platform stability is in the
-[Beta 3 note](/notes/android-17-beta-3/).
+[Beta 3 part](/notes/android-17/beta-3/).
 
 ## Security and privacy
 
@@ -231,7 +308,7 @@ The full API list at platform stability is in the
 
 | Change                                                                                                         | What to do                                                                                                         |
 | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| A process over its RAM-based memory limit is killed with no stack trace                                        | Read `ApplicationExitInfo` for `"MemoryLimiter:AnonSwap"`; see the [memory note](/notes/android-17-memory-limits/) |
+| A process over its RAM-based memory limit is killed with no stack trace                                        | Read `ApplicationExitInfo` for `"MemoryLimiter:AnonSwap"`; see the [memory part](/notes/android-17/memory-limits/) |
 | Audio playback, focus and volume changes need a visible activity or a foreground service (not `SHORT_SERVICE`) | Start a `mediaPlayback` service while visible; Media3's `MediaSessionService` does it                              |
 | WebOTP SMS are held for three hours from apps that are not the recipient                                       | Use SMS Retriever or SMS User Consent                                                                              |
 | Cross-profile loopback traffic is blocked                                                                      | Do not rely on localhost between work and personal profiles                                                        |
@@ -250,7 +327,7 @@ The full API list at platform stability is in the
 | Widget `RemoteViews` over the bitmap memory limit throw `IllegalArgumentException`                        | Downscale bitmaps and icons in widgets                                             |
 
 The reasoning behind each change, and the order to tackle them in, is in
-[Android 17: what breaks on targetSdk 37](/notes/android-17-stable/).
+[Android 17: what breaks on targetSdk 37](/notes/android-17/stable/).
 
 ## Android 17 QPR1, QPR2 and minor SDKs
 

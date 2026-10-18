@@ -140,11 +140,14 @@ const counterpartAnchors = getCounterpartAnchors(
 
 // Inside a series the date pager sits under the series navigation. Two
 // "Previous" links pointing at different notes read as a contradiction, so
-// there the pager names the direction in time instead.
+// there the pager names the direction in time instead. Neighbours published
+// the same day are neither older nor newer, so it names their place in the
+// Notes list rather than falling back to a second "Previous".
 const inSeries = Boolean(series && series.total > 1)
 const pagerLabel = (
   neighbour: ArchiveEntry | undefined,
   fallback: string,
+  listed: 'above' | 'below',
 ): string => {
   if (!inSeries || !neighbour) return fallback
   const age = getNeighbourAge(
@@ -153,7 +156,9 @@ const pagerLabel = (
   )
   if (age === 'newer') return dictionary.archive.newerNote
   if (age === 'older') return dictionary.archive.olderNote
-  return fallback
+  return listed === 'above'
+    ? dictionary.archive.aboveInList
+    : dictionary.archive.belowInList
 }
 
 /* One derivation for every surface that renders a banner — see
@@ -675,7 +680,11 @@ const jsonLd = buildEntryArticleLd({
             >
               <span class="pager-link__label">
                 <Icon name="arrowLeft" size={14} />{' '}
-                {pagerLabel(adjacent.previous, dictionary.archive.previous)}
+                {pagerLabel(
+                  adjacent.previous,
+                  dictionary.archive.previous,
+                  'above',
+                )}
               </span>
               <span class="pager-link__title">
                 {adjacent.previous.data.title}
@@ -691,7 +700,7 @@ const jsonLd = buildEntryArticleLd({
               href={getEntryPath(adjacent.next)}
             >
               <span class="pager-link__label">
-                {pagerLabel(adjacent.next, dictionary.archive.next)}{' '}
+                {pagerLabel(adjacent.next, dictionary.archive.next, 'below')}{' '}
                 <Icon name="arrowRight" size={14} />
               </span>
               <span class="pager-link__title">{adjacent.next.data.title}</span>

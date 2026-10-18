@@ -210,6 +210,8 @@ export const es = {
     minutes: 'min',
     olderNote: 'Nota más antigua',
     newerNote: 'Nota más reciente',
+    aboveInList: 'Arriba en Notas',
+    belowInList: 'Abajo en Notas',
     references: 'Registros relacionados',
     backlinks: 'Referenciado por',
     index: 'Índice',

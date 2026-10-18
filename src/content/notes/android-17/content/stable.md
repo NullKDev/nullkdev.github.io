@@ -1,86 +1,21 @@
 ---
-entryId: notes-android-17-stable
+parentDomain: notes
+parentId: notes-android-17
+documentId: stable
 locale: en
 translationKey: android-17-stable
-slug: android-17-stable
+slug: stable
 title: 'Android 17: what breaks on targetSdk 37'
 summary: From Beta 3 to the June 16 release — the behaviour changes that stay dormant until you bump targetSdk to 37, and the two runtime rewrites underneath them.
+order: 5
 visibility: public
 maturity: stable
 publishedAt: 2026-07-29
-updatedAt: 2026-10-17
+updatedAt: 2026-10-18
 topics: [android, kotlin, platform-apis, security]
-featuredRank: 4
-image: /banners/android-17-stable.svg
-imageAlt: 'Android 17 stable banner, with the Android 17 logo.'
-links:
-  - label: Android 17 is here
-    href: https://android-developers.googleblog.com/2026/06/Android-17.html
-    kind: publication
-  - label: 'Behavior changes: apps targeting Android 17'
-    href: https://developer.android.com/about/versions/17/behavior-changes-17
-    kind: publication
 references: []
 evidence: []
-documents: []
 protection: { mode: public }
-kind: article
-lifecycle: current
-series:
-  id: android-17
-  order: 2
-citations:
-  - title: 'Android 17 emblem — Wikimedia Commons (AOSP / Android Developers licence, trademark of Google LLC)'
-    url: https://commons.wikimedia.org/wiki/File:Android_17_Developer_Preview_Logo.svg
-    accessedAt: 2026-10-17
-  - title: Android 17 is here
-    url: https://android-developers.googleblog.com/2026/06/Android-17.html
-    accessedAt: 2026-07-29
-  - title: The fourth beta of Android 17
-    url: https://android-developers.googleblog.com/2026/04/the-fourth-beta-of-android-17.html
-    accessedAt: 2026-07-29
-  - title: 'Behavior changes: all apps'
-    url: https://developer.android.com/about/versions/17/behavior-changes-all
-    accessedAt: 2026-07-29
-  - title: 'Behavior changes: apps targeting Android 17'
-    url: https://developer.android.com/about/versions/17/behavior-changes-17
-    accessedAt: 2026-08-06
-  - title: MessageQueue behavior change guidance
-    url: https://developer.android.com/about/versions/17/changes/messagequeue
-    accessedAt: 2026-08-06
-  - title: Background audio hardening
-    url: https://developer.android.com/about/versions/17/changes/bg-audio
-    accessedAt: 2026-08-06
-  - title: Android Contact Picker
-    url: https://developer.android.com/about/versions/17/features/contact-picker
-    accessedAt: 2026-08-06
-  - title: Prepare your app for the resizability and orientation changes
-    url: https://android-developers.googleblog.com/2026/02/prepare-your-app-for-resizability-and.html
-    accessedAt: 2026-08-06
-  - title: The third beta of Android 17
-    url: https://android-developers.googleblog.com/2026/03/the-third-beta-of-android-17.html
-    accessedAt: 2026-10-17
-  - title: Meet Google Play's target API level requirement
-    url: https://developer.android.com/google/play/requirements/target-sdk
-    accessedAt: 2026-10-17
-  - title: Android 16 QPR2 is Released (Android Developers Blog)
-    url: https://developer.android.com/blog/posts/android-16-qpr-2-is-released
-    accessedAt: 2026-10-17
-  - title: use_generational_cmc flag value in the bp4a release config (AOSP)
-    url: https://android.googlesource.com/platform/build/release/+/refs/tags/android-17.0.0_r1/aconfig/bp4a/com.android.art.flags/use_generational_cmc_flag_values.textproto
-    accessedAt: 2026-10-17
-  - title: cp1a release config at android-17.0.0_r1 (AOSP)
-    url: https://android.googlesource.com/platform/build/release/+/refs/tags/android-17.0.0_r1/release_configs/cp1a.textproto
-    accessedAt: 2026-10-17
-  - title: Codenames, tags, and build numbers (AOSP)
-    url: https://source.android.com/docs/setup/reference/build-numbers
-    accessedAt: 2026-10-17
-  - title: "What's new in Android security and privacy in 2026 (The Keyword)"
-    url: https://blog.google/security/whats-new-in-android-security-privacy-2026/
-    accessedAt: 2026-10-17
-  - title: Android 17 stable update is rolling out to Pixel phones (GSMArena)
-    url: https://www.gsmarena.com/android_17_stable_update_is_rolling_out_to_pixel_phones-news-73308.php
-    accessedAt: 2026-10-17
 ---
 
 Android 17 — API 37, internal codename _Cinnamon Bun_ — went stable on
@@ -88,7 +23,7 @@ Android 17 — API 37, internal codename _Cinnamon Bun_ — went stable on
 have been joining the rollout since. The API surface locked at Beta 3, on
 **26 March**, when Google declared platform stability; Beta 4, the last scheduled
 beta, shipped on **16 April**. My
-[Beta 3 write-up](/notes/android-17-beta-3/) covers API 37 at platform stability;
+[Beta 3 write-up](/notes/android-17/beta-3/) covers API 37 at platform stability;
 this covers what happened after it, and what actually costs you time.
 
 Six weeks in, the useful framing is not the feature list. It is this: **most of
@@ -292,8 +227,8 @@ Android 17 enforces **per-app memory limits derived from device RAM**, and a
 process that exceeds them is killed **with no stack trace**. `ApplicationExitInfo`
 is where you find out it happened.
 
-This one deserves more than a paragraph, and it has its own note:
-[Android 17 kills your process with no stack trace](/notes/android-17-memory-limits/).
+This one deserves more than a paragraph, and it has its own part:
+[Android 17 kills your process with no stack trace](/notes/android-17/memory-limits/).
 
 ## What users actually got
 

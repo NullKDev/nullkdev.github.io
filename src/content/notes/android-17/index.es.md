@@ -8,7 +8,9 @@ summary: API 37, junio de 2026. Las pantallas grandes perdieron la exclusión de
 visibility: public
 maturity: stable
 publishedAt: 2026-10-17
+updatedAt: 2026-10-18
 topics: [android, platform-apis, security]
+featuredRank: 4
 image: /banners/android-17.svg
 imageAlt: 'Banner de Android 17 Cinnamon Bun, con el logo de la versión.'
 links:
@@ -20,7 +22,25 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: beta-1
+    slug: beta-1
+    order: 1
+  - documentId: beta-2
+    slug: beta-2
+    order: 2
+  - documentId: beta-3
+    slug: beta-3
+    order: 3
+  - documentId: beta-4
+    slug: beta-4
+    order: 4
+  - documentId: stable
+    slug: estable
+    order: 5
+  - documentId: memory-limits
+    slug: limites-memoria
+    order: 6
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -100,6 +120,60 @@ citations:
   - title: Android 17 codename is Cinnamon Bun (Droid Life)
     url: https://www.droid-life.com/2025/08/11/android-17-codename-is-cinnamon-bun/
     accessedAt: 2026-10-17
+  - title: Notas de Android 17
+    url: https://developer.android.com/about/versions/17/release-notes
+    accessedAt: 2026-07-23
+  - title: Diferencias de API 37
+    url: https://developer.android.com/sdk/api_diff/37/changes
+    accessedAt: 2026-03-27
+  - title: Notas de CommonsWare
+    url: https://commonsware.com/blog/2026/03/27/random-musings-android-17-beta-3.html
+    accessedAt: 2026-03-27
+  - title: Public Java API (libcore current.txt) at android-17.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/libcore/+/refs/tags/android-17.0.0_r1/api/current.txt
+    accessedAt: 2026-10-17
+  - title: Connectivity module API (current.txt) at android-17.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/packages/modules/Connectivity/+/refs/tags/android-17.0.0_r1/framework/api/current.txt
+    accessedAt: 2026-10-17
+  - title: NFC module API (current.txt) at android-17.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/packages/modules/Nfc/+/refs/tags/android-17.0.0_r1/framework/api/current.txt
+    accessedAt: 2026-10-17
+  - title: MessageQueue behavior change guidance
+    url: https://developer.android.com/about/versions/17/changes/messagequeue
+    accessedAt: 2026-08-06
+  - title: Android Contact Picker
+    url: https://developer.android.com/about/versions/17/features/contact-picker
+    accessedAt: 2026-08-06
+  - title: Prepare your app for the resizability and orientation changes
+    url: https://android-developers.googleblog.com/2026/02/prepare-your-app-for-resizability-and.html
+    accessedAt: 2026-08-06
+  - title: cp1a release config at android-17.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/build/release/+/refs/tags/android-17.0.0_r1/release_configs/cp1a.textproto
+    accessedAt: 2026-10-17
+  - title: 'Prioritizing memory efficiency: essential steps for Android 17'
+    url: https://android-developers.googleblog.com/2026/06/prioritizing-memory-efficiency-steps-for-android-17.html
+    accessedAt: 2026-07-29
+  - title: MemoryLimiter.java at android-17.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-17.0.0_r1/services/core/java/com/android/server/am/MemoryLimiter.java
+    accessedAt: 2026-10-17
+  - title: Memory Limiter, as published in July 2026 (Internet Archive)
+    url: https://web.archive.org/web/20260723233811/https://source.android.com/docs/core/perf/memory-limiter
+    accessedAt: 2026-10-17
+  - title: The first beta of Android 17 (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2026/02/the-first-beta-of-android-17.html
+    accessedAt: 2026-10-18
+  - title: The second beta of Android 17 (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2026/02/the-second-beta-of-android-17.html
+    accessedAt: 2026-10-18
+  - title: Google is now rolling out Android 17 Beta 1 for Pixel (9to5Google)
+    url: https://9to5google.com/2026/02/13/android-17-beta-1-pixel/
+    accessedAt: 2026-10-18
+  - title: Google is now rolling out Android 17 Beta 2 for Pixel (9to5Google)
+    url: https://9to5google.com/2026/02/26/android-17-beta-2-pixel/
+    accessedAt: 2026-10-18
+  - title: Android 17 Beta 4 rolling out for Pixel as last scheduled release (9to5Google)
+    url: https://9to5google.com/2026/04/16/android-17-beta-4-pixel/
+    accessedAt: 2026-10-18
 ---
 
 Android 17 es la versión que volvió obligatorios los diseños adaptables y le
@@ -109,10 +183,12 @@ plegables, y el sistema ahora mata un proceso que supera un límite fijado segú
 el RAM del dispositivo. Para los desarrolladores, casi todo lo que se rompe
 espera a que `targetSdk` llegue a 37.
 
-Esta es la vista general. Tres notas van más a fondo: el
-[repaso de la Beta 3](/es/notes/android-17-beta-3/) con cada API nueva en
-platform stability, [qué rompe en targetSdk 37](/es/notes/android-17-estable/) y
-[los límites de memoria](/es/notes/android-17-limites-memoria/).
+Esta es la vista general. La siguen seis partes, en orden: las cuatro betas,
+de la [Beta 1](/es/notes/android-17/beta-1/) a la
+[Beta 4](/es/notes/android-17/beta-4/), con la
+[Beta 3](/es/notes/android-17/beta-3/) repasando cada API nueva en platform
+stability; [qué rompe en targetSdk 37](/es/notes/android-17/estable/); y
+[los límites de memoria](/es/notes/android-17/limites-memoria/).
 
 ## De un vistazo
 
@@ -132,9 +208,10 @@ y publicó el código en AOSP el mismo día. El primer build de lanzamiento es
 de 2026.
 
 Esta vez Google no publicó developer previews: el canal Canary cumplió esa
-función, y Android 17 pasó directo a beta. La superficie de API se bloqueó en la
-Beta 3, el 26 de marzo de 2026. La Beta 4, del 16 de abril, fue la última
-programada.
+función, y Android 17 pasó directo a beta. La Beta 1 salió el 13 de febrero de
+2026 y la Beta 2 el 26 de febrero. La superficie de API se bloqueó en la Beta 3,
+el 26 de marzo. La Beta 4, del 16 de abril, fue la última programada; el 1 de
+junio llegó una Beta 4.1 de correcciones.
 
 Samsung anunció los Galaxy Z Fold8 Ultra, Z Fold8 y Z Flip8 el 22 de julio de
 2026; sus fichas técnicas indican Android 17 con One UI 9.
@@ -183,7 +260,7 @@ es interno, pero los desarrolladores lo ven en el código.
   pantalla (`ACTION_OPEN_EYE_DROPPER`).
 
 La lista completa de APIs en platform stability está en la
-[nota de la Beta 3](/es/notes/android-17-beta-3/).
+[parte de la Beta 3](/es/notes/android-17/beta-3/).
 
 ## Seguridad y privacidad
 
@@ -241,12 +318,12 @@ La lista completa de APIs en platform stability está en la
 
 ### Todas las apps en Android 17
 
-| Cambio                                                                                                                            | Qué hacer                                                                                                                  |
-| --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| Un proceso que supera su límite de memoria según el RAM muere sin stack trace                                                     | Busca `"MemoryLimiter:AnonSwap"` en `ApplicationExitInfo`; ver la [nota de memoria](/es/notes/android-17-limites-memoria/) |
-| Reproducir audio, pedir foco o cambiar el volumen exige una activity visible o un foreground service (que no sea `SHORT_SERVICE`) | Arranca un servicio `mediaPlayback` mientras la app es visible; `MediaSessionService` de Media3 lo hace                    |
-| Los SMS WebOTP se retienen tres horas para las apps que no son el destinatario                                                    | Usa SMS Retriever o SMS User Consent                                                                                       |
-| El tráfico loopback entre perfiles está bloqueado                                                                                 | No dependas de localhost entre el perfil de trabajo y el personal                                                          |
+| Cambio                                                                                                                            | Qué hacer                                                                                                                   |
+| --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Un proceso que supera su límite de memoria según el RAM muere sin stack trace                                                     | Busca `"MemoryLimiter:AnonSwap"` en `ApplicationExitInfo`; ver la [parte de memoria](/es/notes/android-17/limites-memoria/) |
+| Reproducir audio, pedir foco o cambiar el volumen exige una activity visible o un foreground service (que no sea `SHORT_SERVICE`) | Arranca un servicio `mediaPlayback` mientras la app es visible; `MediaSessionService` de Media3 lo hace                     |
+| Los SMS WebOTP se retienen tres horas para las apps que no son el destinatario                                                    | Usa SMS Retriever o SMS User Consent                                                                                        |
+| El tráfico loopback entre perfiles está bloqueado                                                                                 | No dependas de localhost entre el perfil de trabajo y el personal                                                           |
 
 ### Apps que apuntan a API 37
 
@@ -262,7 +339,7 @@ La lista completa de APIs en platform stability está en la
 | Los `RemoteViews` de widgets que superan el límite de memoria de bitmaps lanzan `IllegalArgumentException`                   | Reduce bitmaps e íconos en los widgets                                                                       |
 
 El porqué de cada cambio, y en qué orden atacarlos, está en
-[Android 17: qué rompe en targetSdk 37](/es/notes/android-17-estable/).
+[Android 17: qué rompe en targetSdk 37](/es/notes/android-17/estable/).
 
 ## Android 17 QPR1, QPR2 y los SDK menores
 

@@ -28,24 +28,26 @@ describe('series registry', () => {
   })
 
   it('never falls back to printing the raw id', () => {
-    expect(getSeriesTitle('android-17', 'en')).toBe('Android 17')
+    expect(getSeriesTitle('gof-android', 'en')).toBe('GoF patterns on Android')
+    // A series whose members were merged into one note is gone, not blank.
+    expect(getSeriesTitle('android-17', 'en')).toBeUndefined()
     expect(getSeriesTitle('not-a-series', 'en')).toBeUndefined()
   })
 })
 
 describe('getSeriesPosition', () => {
   const pool = [
-    note('beta', { id: 'android-17', order: 1 }),
-    note('stable', { id: 'android-17', order: 2 }),
-    note('memory', { id: 'android-17', order: 3 }),
+    note('beta', { id: 'android-versions', order: 1 }),
+    note('stable', { id: 'android-versions', order: 2 }),
+    note('memory', { id: 'android-versions', order: 3 }),
     note('gof', { id: 'gof-android', order: 1 }),
     note('loose'),
   ]
 
   it('places a member of a real series and names it', () => {
     expect(getSeriesPosition(pool[1], pool, 'es')).toEqual({
-      id: 'android-17',
-      title: 'Android 17',
+      id: 'android-versions',
+      title: 'Android, versión por versión',
       order: 2,
       total: 3,
     })
@@ -54,9 +56,9 @@ describe('getSeriesPosition', () => {
   it('counts the position among published siblings, not the raw order', () => {
     // Orders 2, 5 and 7 with 1, 3, 4 and 6 not written yet read "Part 7 of 3".
     const gapped = [
-      note('kitkat', { id: 'android-17', order: 2 }),
-      note('marshmallow', { id: 'android-17', order: 5 }),
-      note('nougat', { id: 'android-17', order: 7 }),
+      note('kitkat', { id: 'android-versions', order: 2 }),
+      note('marshmallow', { id: 'android-versions', order: 5 }),
+      note('nougat', { id: 'android-versions', order: 7 }),
     ]
     expect(getSeriesPosition(gapped[2], gapped, 'en')).toMatchObject({
       order: 3,
@@ -70,10 +72,10 @@ describe('getSeriesPosition', () => {
 
   it('counts each locale on its own', () => {
     const mixed = [
-      note('a', { id: 'android-17', order: 1 }),
-      note('b', { id: 'android-17', order: 2 }),
-      note('b-es', { id: 'android-17', order: 2 }, 'es'),
-      note('c-es', { id: 'android-17', order: 3 }, 'es'),
+      note('a', { id: 'android-versions', order: 1 }),
+      note('b', { id: 'android-versions', order: 2 }),
+      note('b-es', { id: 'android-versions', order: 2 }, 'es'),
+      note('c-es', { id: 'android-versions', order: 3 }, 'es'),
     ]
     expect(getSeriesPosition(mixed[3], mixed, 'es')).toMatchObject({
       order: 2,

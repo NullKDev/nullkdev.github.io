@@ -1,12 +1,11 @@
 /**
  * Display titles for note series, one place for every series id.
  *
- * A series id is a slug (`android-17`); printing it raw put "Series:
+ * A series id is a slug (`gof-android`); printing it raw put "Series:
  * gof-android" on a page. The schema only accepts ids declared here, so a
  * series can never render without a title in both languages.
  */
 export const series = {
-  'android-17': { en: 'Android 17', es: 'Android 17' },
   'android-versions': {
     en: 'Android, version by version',
     es: 'Android, versión por versión',

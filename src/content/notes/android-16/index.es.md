@@ -325,7 +325,7 @@ Qué trajo QPR2:
 
 ## Qué perduró
 
-- **Pantallas grandes.** [Android 17](/es/notes/android-17-estable/) quitó la
+- **Pantallas grandes.** [Android 17](/es/notes/android-17/estable/) quitó la
   salida temporal: las apps con target 37 en pantallas `sw600dp` no pueden
   mantener sus bloqueos de orientación o de relación de aspecto.
 - **Red local.** La API de QPR2 ya incluye un permiso `ACCESS_LOCAL_NETWORK`.
@@ -333,12 +333,13 @@ Qué trajo QPR2:
 - **OTP por SMS.** Android 17 extiende la retención de tres horas a los
   mensajes OTP para la mayoría de las apps con target 37.
 - **ART.** Google incluyó un recolector Concurrent Mark-Compact generacional
-  entre los cambios de QPR2; la [nota de Android 17](/es/notes/android-17-estable/)
+  entre los cambios de QPR2; la [nota de Android 17](/es/notes/android-17/estable/)
   lo cubre, porque ART se actualiza mediante las actualizaciones del sistema de
   Google Play.
 - **Proceso.** Para Android 17, Google se saltó las developer previews y pasó
-  de Canary directo a beta; ver las [notas de la Beta 3](/es/notes/android-17-beta-3/)
-  y la [nota sobre límites de memoria](/es/notes/android-17-limites-memoria/).
+  de Canary directo a beta; ver las
+  [betas de Android 17](/es/notes/android-17/beta-1/), de la Beta 1 a la Beta 4,
+  y los [límites de memoria](/es/notes/android-17/limites-memoria/).
 
 ## Para saber
 
