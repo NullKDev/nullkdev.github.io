@@ -72,27 +72,51 @@ text holds up: they want the fact, its source, and what it means for their app.
 ## Shape of a version note
 
 Every note in the `android-versions` series uses the same sections, so two
-versions compare side by side. Leave a section out only when the version has
-nothing for it, and say so in one line.
+versions compare side by side. The note covers the **stable release**; its
+developer previews and betas are its parts (`documents`), never the body.
+Leave a section out only when the version has nothing for it, and say so in
+one line.
 
 1. **Lede** (no heading): two or three sentences on what this version is
    remembered for, for users and for developers.
 2. **At a glance**: a table with version, API level, name (say whether it was
    public or internal only; from Android 10 on it is internal), the
-   `Build.VERSION_CODES` constant, release date, launch device, and the target-API deadline Google Play set for it.
+   `Build.VERSION_CODES` constant, release date, launch device, the Google Play
+   target-API deadline, and the toolchain the API needs (`compileSdk`, the
+   minimum Android Gradle Plugin and Android Studio) when a primary source
+   states it.
 3. **What it brought**: the features users saw and the APIs developers got.
 4. **Security and privacy**: platform hardening, encryption, updates, sandbox.
-5. **Permissions**: new, removed or changed permissions and how they are granted.
-6. **What changed for your app**: behaviour changes, split into "all apps" and
-   "apps targeting this API", with what to do.
-7. **What lasted**: what later versions kept, extended or reverted.
-8. **Worth knowing** (optional): interesting values and facts a reader would
+5. **Permissions**: one table, one row per permission this version added,
+   changed, split, deprecated or removed. Columns: *Permission* · *What changed
+   in API N* · *What to declare* · *What to remove or limit*. Then a manifest
+   snippet for an app that supports versions before and after N (for example
+   `maxSdkVersion="32"` on the old permission next to the new one). If nothing
+   changed, say so in one line.
+6. **What changed for your app**: two tables, "All apps on Android X" and
+   "Apps targeting API N". Columns: *Change* · *What to do* · *How to check*
+   (the Android Lint check ID, and from API 30 the compat change ID, when a
+   primary source names them; otherwise empty). Every targeting-gated change
+   lives in these tables, never only in a bullet elsewhere.
+7. **Migrating to API N**: an ordered checklist for an app moving its
+   `targetSdk` from the previous level: the steps in the order to do them,
+   what breaks if skipped, and how to verify each one. End with one line for
+   apps jumping several levels at once.
+8. **What lasted**: what later versions kept, extended or reverted.
+9. **Worth knowing** (optional): interesting values and facts a reader would
    repeat to a colleague: the Easter egg, a comment left in AOSP source, a
    limit or default that surprised developers, the story behind the name. Each
    one sourced like any other claim, one or two sentences each, at most five.
    No trivia without a source, and no section if there is nothing real.
 
-Then `citations` in frontmatter, never a hand-written sources list.
+Then `citations` in frontmatter, never a hand-written sources list; the page
+shows them as its visible "Citations" block. The stable release is backed by
+**at least five distinct websites** (distinct domains), including Google's own
+pages and at least one independent source.
+
+The "How to check" column and the migration checklist name tools the reader
+runs on their own machine (Android Studio lint, `adb`). The site never runs
+them; it only names them.
 
 Each fact lives in one section. When it touches two (a privacy change that is
 also a behaviour change), state it where it matters most and link to it from
