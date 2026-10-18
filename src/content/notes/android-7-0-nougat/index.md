@@ -190,6 +190,66 @@ citations:
   - title: 'Final Android 7.0 Nougat Developer Preview 5 now available (9to5Google)'
     url: https://9to5google.com/2016/07/18/android-n-developer-preview-5-download/
     accessedAt: 2026-10-18
+  - title: 'Set Up the Preview — Android N (archived 16 July 2016)'
+    url: https://web.archive.org/web/20160716194110/https://developer.android.com/preview/setup-sdk.html
+    accessedAt: 2026-10-18
+  - title: Background optimizations
+    url: https://developer.android.com/topic/performance/background-optimization
+    accessedAt: 2026-10-18
+  - title: Setting up file sharing (FileProvider)
+    url: https://developer.android.com/training/secure-file-sharing/setup-sharing
+    accessedAt: 2026-10-18
+  - title: StrictMode.VmPolicy.Builder reference
+    url: https://developer.android.com/reference/android/os/StrictMode.VmPolicy.Builder
+    accessedAt: 2026-10-18
+  - title: Optimize for Doze and App Standby
+    url: https://developer.android.com/training/monitoring-device-state/doze-standby
+    accessedAt: 2026-10-18
+  - title: Manifest.permission reference
+    url: https://developer.android.com/reference/android/Manifest.permission
+    accessedAt: 2026-10-18
+  - title: TileService reference
+    url: https://developer.android.com/reference/android/service/quicksettings/TileService
+    accessedAt: 2026-10-18
+  - title: CallScreeningService reference
+    url: https://developer.android.com/reference/android/telecom/CallScreeningService
+    accessedAt: 2026-10-18
+  - title: VrListenerService reference
+    url: https://developer.android.com/reference/android/service/vr/VrListenerService
+    accessedAt: 2026-10-18
+  - title: ConditionProviderService reference
+    url: https://developer.android.com/reference/android/service/notification/ConditionProviderService
+    accessedAt: 2026-10-18
+  - title: 'Android Lint check: AcceptsUserCertificates'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/AcceptsUserCertificates.md.html
+    accessedAt: 2026-10-18
+  - title: 'Android Lint check: NetworkSecurityConfig'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/NetworkSecurityConfig.md.html
+    accessedAt: 2026-10-18
+  - title: 'Android Lint check: WorldReadableFiles'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/WorldReadableFiles.md.html
+    accessedAt: 2026-10-18
+  - title: 'Android Lint check: WorldWriteableFiles'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/WorldWriteableFiles.md.html
+    accessedAt: 2026-10-18
+  - title: 'Android Lint check: NonResizeableActivity'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/NonResizeableActivity.md.html
+    accessedAt: 2026-10-18
+  - title: 'Android Lint check: DeletedProvider'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/DeletedProvider.md.html
+    accessedAt: 2026-10-18
+  - title: 'PSA: file: Scheme Ban in N Developer Preview (CommonsWare)'
+    url: https://commonsware.com/blog/2016/03/14/psa-file-scheme-ban-n-developer-preview.html
+    accessedAt: 2026-10-18
+  - title: Android 7.0 Nougat is rolling out to Nexus devices starting today (Android Police)
+    url: https://www.androidpolice.com/2016/08/22/android-7-0-nougat-rolling-nexus-devices-starting-today/
+    accessedAt: 2026-10-18
+  - title: Android 7.0 Nougat rolling out today to Nexus devices and Pixel C (9to5Google)
+    url: https://9to5google.com/2016/08/22/android-7-0-nougat-nexus-factory-images-ota/
+    accessedAt: 2026-10-18
+  - title: Android 7.0 Nougat arrives today (Engadget)
+    url: https://www.engadget.com/2016-08-22-android-7-nougat-launch.html
+    accessedAt: 2026-10-18
 ---
 
 Android 7.0 Nougat is the release that put two apps on one phone screen.
@@ -202,23 +262,31 @@ security config, and a crash for apps that still share `file://` URIs.
 
 ## At a glance
 
-|                                 |                                                         |
-| ------------------------------- | ------------------------------------------------------- |
-| Version                         | Android 7.0                                             |
-| API level                       | 24                                                      |
-| Name                            | Nougat, public                                          |
-| `Build.VERSION_CODES`           | `N`                                                     |
-| Final APIs and SDK              | 15 June 2016                                            |
-| Release                         | Nexus rollout began 22 August 2016                      |
-| Launch device                   | LG V20, the first new phone to ship with Nougat         |
-| Google Play target-API deadline | None. Play's target-API rule started in 2018, at API 26 |
+|                                 |                                                                                              |
+| ------------------------------- | -------------------------------------------------------------------------------------------- |
+| Version                         | Android 7.0                                                                                  |
+| API level                       | 24                                                                                           |
+| Name                            | Nougat, public                                                                               |
+| `Build.VERSION_CODES`           | `N`                                                                                          |
+| Final APIs and SDK              | 15 June 2016                                                                                 |
+| Release                         | Nexus rollout began 22 August 2016                                                           |
+| Launch device                   | LG V20, the first new phone to ship with Nougat                                              |
+| Google Play target-API deadline | None. Play's target-API rule started in 2018, at API 26                                      |
+| Toolchain                       | `compileSdkVersion 24`, Build Tools 24.0.0 and JDK 8; Android Studio 2.1 for Java 8 features |
 
 Google declared the N APIs final on 15 June 2016 and told developers they
 could publish updates that compile against, and optionally target, API 24. On
 22 August Dave Burke announced the rollout "starting with Nexus devices": over
 several weeks to the Nexus 6, 5X, 6P, 9, Nexus Player, Pixel C and General
 Mobile 4G (Android One). The source went to AOSP the same day, and Ars Technica
-published its review.
+published its review. Android Police, 9to5Google and Engadget listed the same
+devices that day; the 2013 Nexus 5 was not updated.
+
+Google's setup page for the final API 24 SDK asks for `compileSdkVersion 24`,
+Build Tools 24.0.0 and JDK 8. Java 8 language features needed the Jack
+compiler, supported then only in Android Studio 2.1. Google's current
+compatibility table starts at API 33, so no minimum Android Gradle Plugin is
+stated for API 24.
 
 The first developer preview came out on 9 March 2016. Burke called it "early…
 really early", and the new Android Beta Program delivered it over the air to
@@ -311,23 +379,68 @@ flowchart TD
 
 ## Permissions
 
-No new dangerous permissions arrived. The changes are about files and scoped
-access.
+No new dangerous permissions arrived. Android 7.0 added four permissions that
+guard services the system binds to, removed one constant, and needs storage
+access in fewer places:
 
-- **Added.** `BIND_QUICK_SETTINGS_TILE`, `BIND_SCREENING_SERVICE`,
-  `BIND_VR_LISTENER_SERVICE` and `BIND_CONDITION_PROVIDER_SERVICE`. They guard
-  services that the system binds to.
-- **Removed.** `FLASHLIGHT` left the SDK.
-- **Scoped directory access.** `StorageVolume.createAccessIntent()` asks for
-  one folder, such as `Pictures`, instead of all of `READ_EXTERNAL_STORAGE`.
-  The user allows or denies it in a dialog.
+| Permission                                                    | What changed in API 24                                                                | What to declare                                                           | What to remove or limit                                                                 |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `BIND_QUICK_SETTINGS_TILE`                                    | New; only the system can bind a `TileService` that requires it                        | `android:permission` on the tile's `<service>`, not a `<uses-permission>` | Nothing                                                                                 |
+| `BIND_SCREENING_SERVICE`                                      | New; guards a `CallScreeningService`                                                  | `android:permission` on the `<service>`                                   | Nothing                                                                                 |
+| `BIND_VR_LISTENER_SERVICE`, `BIND_CONDITION_PROVIDER_SERVICE` | New; guard `VrListenerService` and `ConditionProviderService`                         | `android:permission` on the `<service>`                                   | Nothing; `ConditionProviderService` is deprecated since API 29                          |
+| `FLASHLIGHT`                                                  | Removed from the SDK                                                                  | Nothing                                                                   | Drop code that reads `Manifest.permission.FLASHLIGHT`; the constant is gone from API 24 |
+| `WRITE_EXTERNAL_STORAGE`                                      | `Debug.startMethodTracing()` writes to the app's own directory and no longer needs it | Nothing new                                                               | Remove it if method tracing was its only use                                            |
+| `READ_EXTERNAL_STORAGE`                                       | `StorageVolume.createAccessIntent()` can ask for one folder instead                   | Nothing for scoped directory access                                       | Nothing; scoped directory access was deprecated in API 29                               |
+| `DELETE_PACKAGES`                                             | Deleting a package another app installed needs the user's confirmation                | Not for third-party apps                                                  | Nothing; expect `STATUS_PENDING_USER_ACTION` from `PackageInstaller.uninstall()`        |
+
+One manifest for an app that runs on Android 6.0 and earlier and on 7.0 and
+later. Keep only the blocks your app needs:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Trust rules per domain; read from Android 7.0 on -->
+    <application android:networkSecurityConfig="@xml/network_security_config">
+
+        <!-- Share private files as content:// URIs on every version -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+
+        <!-- Quick Settings tile: the permission goes on the service -->
+        <service
+            android:name=".MyTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_tile"
+            android:label="@string/tile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>
+```
+
+The tile and the network security config take effect from Android 7.0. For a
+debugging proxy, put its CA under `<debug-overrides>` in
+`network_security_config.xml`; it is trusted only while
+`android:debuggable` is `true`.
+
+- **Scoped directory access.** `createAccessIntent()` asks for one folder,
+  such as `Pictures`, and the user allows or denies it in a dialog.
 - **Private files.** For apps targeting API 24, the private data directory is
-  `0700`. `MODE_WORLD_READABLE` and `MODE_WORLD_WRITEABLE` throw a
-  `SecurityException`. See the next section for what to do.
+  `0700` and `MODE_WORLD_READABLE` or `MODE_WORLD_WRITEABLE` throws a
+  `SecurityException`. What to do is in
+  [the targeting table](#apps-targeting-api-24).
 - **Blocked numbers.** Only the default phone app, the default SMS app and
   carrier apps can read or write the blocked list.
-- **Method tracing.** `Debug.startMethodTracing()` writes to the app's own
-  directory on shared storage, so it no longer needs `WRITE_EXTERNAL_STORAGE`.
 - **Backup.** Android Backup now covers runtime permission grants, according
   to Google's Nougat feature list.
 
@@ -335,32 +448,34 @@ access.
 
 ### All apps on Android 7.0
 
-| Change                                                      | What to do                                                                                  |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| Doze's first level applies while the phone moves            | Follow the 6.0 Doze guidance; use Firebase Cloud Messaging for messages                     |
-| `Camera.ACTION_NEW_PICTURE` and `ACTION_NEW_VIDEO` are gone | Watch media with a `JobScheduler` job and `JobInfo.Builder.addTriggerContentUri()`          |
-| Private NDK libraries outside a short list fail to load     | Use public NDK APIs or bundle your own copy                                                 |
-| `libcutils`, `libcrypto`, `libssl`, `libandroid_runtime`    | Allowed with a warning only if you target 23 or lower; bundle them now                      |
-| Display size kills background apps targeting 23 or lower    | Restore state cleanly when relaunched from Recents                                          |
-| RC4 cipher suites are disabled                              | Enable TLS 1.2, AES-GCM and ECDHE on the server                                             |
-| Writing to a TCP socket on the main thread throws           | Move network work off the main thread                                                       |
-| Annotation visibility is enforced                           | Add `@Retention(RetentionPolicy.RUNTIME)` to annotations read at runtime                    |
-| Apps targeting 23 or lower in split-screen                  | Resizable apps are forced to resize with a warning; fixed-orientation apps stay full screen |
+| Change                                                      | What to do                                                                                  | How to check                                                                      |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Doze's first level applies while the phone moves            | Follow the 6.0 Doze guidance; use Firebase Cloud Messaging for messages                     | `adb shell dumpsys deviceidle force-idle`, then `unforce`                         |
+| `Camera.ACTION_NEW_PICTURE` and `ACTION_NEW_VIDEO` are gone | Watch media with a `JobScheduler` job and `JobInfo.Builder.addTriggerContentUri()`          |                                                                                   |
+| Private NDK libraries outside a short list fail to load     | Use public NDK APIs or bundle your own copy                                                 | `UnsatisfiedLinkError` in logcat; `readelf -dW` lists a `.so` file's dependencies |
+| `libcutils`, `libcrypto`, `libssl`, `libandroid_runtime`    | Allowed with a warning only if you target 23 or lower; bundle them now                      | A linker warning in logcat and a toast on the device                              |
+| Display size kills background apps targeting 23 or lower    | Restore state cleanly when relaunched from Recents                                          | Change "Display size", then reopen the app from Recents                           |
+| RC4 cipher suites are disabled                              | Enable TLS 1.2, AES-GCM and ECDHE on the server                                             |                                                                                   |
+| Writing to a TCP socket on the main thread throws           | Move network work off the main thread                                                       | `NetworkOnMainThreadException` in logcat                                          |
+| Annotation visibility is enforced                           | Add `@Retention(RetentionPolicy.RUNTIME)` to annotations read at runtime                    |                                                                                   |
+| Apps targeting 23 or lower in split-screen                  | Resizable apps are forced to resize with a warning; fixed-orientation apps stay full screen |                                                                                   |
 
 ### Apps targeting API 24
 
-| Change                                                             | What to do                                                                               |
-| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| `file://` URIs leaving the app throw `FileUriExposedException`     | Share a `content://` URI from `FileProvider` with a temporary grant                      |
-| `CONNECTIVITY_ACTION` no longer reaches manifest receivers         | Register at runtime with `registerReceiver()`, or schedule the work with `JobScheduler`  |
-| User-added CAs are not trusted                                     | Opt in through a network security config, or use `debug-overrides` for a debugging proxy |
-| Private directory is `0700`; `MODE_WORLD_*` throws                 | Share files through `FileProvider`                                                       |
-| `DownloadManager.COLUMN_LOCAL_FILENAME` throws `SecurityException` | Open the download with `ContentResolver.openFileDescriptor()`                            |
-| Private libraries on the temporary list fail too                   | Bundle them or move to NDK APIs                                                          |
-| Activities are resizable by default                                | Test in split-screen, or set `android:resizeableActivity="false"`                        |
-| The `Crypto` provider and `SHA1PRNG` are gone                      | Derive keys with a real key derivation function                                          |
-| `TransactionTooLargeException` is rethrown as `RuntimeException`   | Keep `onSaveInstanceState()` small                                                       |
-| Default `serialVersionUID` changed for some classes                | Declare `serialVersionUID` explicitly                                                    |
+| Change                                                                                      | What to do                                                                               | How to check                                            |
+| ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `file://` URIs leaving the app throw `FileUriExposedException`                              | Share a `content://` URI from `FileProvider` with a temporary grant                      | `StrictMode` `detectFileUriExposure()` in debug builds  |
+| `CONNECTIVITY_ACTION` no longer reaches manifest receivers                                  | Register at runtime with `registerReceiver()`, or schedule the work with `JobScheduler`  |                                                         |
+| User-added CAs are not trusted                                                              | Opt in through a network security config, or use `debug-overrides` for a debugging proxy | Lint `AcceptsUserCertificates`, `NetworkSecurityConfig` |
+| Private directory is `0700`; `MODE_WORLD_*` throws                                          | Share files through `FileProvider`                                                       | Lint `WorldReadableFiles`, `WorldWriteableFiles`        |
+| `DownloadManager.COLUMN_LOCAL_FILENAME` throws `SecurityException`                          | Open the download with `ContentResolver.openFileDescriptor()`                            |                                                         |
+| Private libraries on the temporary list fail too                                            | Bundle them or move to NDK APIs                                                          | `UnsatisfiedLinkError` in logcat                        |
+| Activities are resizable by default                                                         | Test in split-screen, or set `android:resizeableActivity="false"`                        | Lint `NonResizeableActivity` flags the opt-out          |
+| Display size changes reach every process as a configuration change                          | Refresh density-dependent caches such as bitmaps                                         | Change "Display size" while the app runs                |
+| The `Crypto` provider and `SHA1PRNG` are gone                                               | Derive keys with a real key derivation function                                          | Lint `DeletedProvider`                                  |
+| `TransactionTooLargeException` is rethrown as `RuntimeException`                            | Keep `onSaveInstanceState()` small                                                       |                                                         |
+| Default `serialVersionUID` changed for some classes                                         | Declare `serialVersionUID` explicitly                                                    |                                                         |
+| A device policy controller's `setCertInstallerPackage()` throws if the installer is missing | Install the delegated certificate installer first                                        |                                                         |
 
 ```mermaid title="Sharing a private file from an app targeting API 24"
 flowchart TD
@@ -369,6 +484,54 @@ flowchart TD
   kind -- content:// from FileProvider --> grant[Intent with FLAG_GRANT_READ_URI_PERMISSION]
   grant --> read[The other app reads it]
 ```
+
+Mark Murphy of CommonsWare found the `file://` ban in the first developer
+preview: a `file://` URI as an intent's data, in an extra such as
+`EXTRA_OUTPUT` for the camera, or on the clipboard all crash. Google's
+behaviour page says the framework enforces a `StrictMode` policy against
+them for these apps.
+
+## Migrating to API 24
+
+From `targetSdkVersion 23` to 24, in this order:
+
+1. **Update the toolchain.** Set `compileSdkVersion 24` and Build Tools
+   24.0.0, on JDK 8. Skipped, the API 24 classes and constants do not compile.
+   Verify: the project builds and lint runs clean of new errors.
+2. **Replace `file://` URIs.** Declare a `FileProvider` and share
+   `content://` URIs with `FLAG_GRANT_READ_URI_PERMISSION`, including camera
+   `EXTRA_OUTPUT` and "Open with" intents. Skipped, every such call crashes
+   with `FileUriExposedException`. Verify: enable `detectFileUriExposure()`
+   in a debug build and run each share, capture and open flow on Android 7.0.
+3. **Move connectivity listeners.** Replace manifest receivers for
+   `CONNECTIVITY_ACTION` with `registerReceiver()` while the app runs, or a
+   `JobScheduler` job with a network condition. Skipped, the receiver never
+   fires. Verify: switch between Wi-Fi and mobile data on an Android 7.0
+   device.
+4. **Decide on user CAs.** Add a network security config; trust user CAs only
+   where you must, and a debugging proxy only under `debug-overrides`.
+   Skipped, TLS to servers behind a user-installed CA fails, and so does your
+   debugging proxy. Verify: lint `AcceptsUserCertificates` and
+   `NetworkSecurityConfig`, then a release build against the proxy.
+5. **Bundle native libraries.** Remove links to private platform libraries,
+   including ones pulled in by third-party code. Skipped, `System.loadLibrary`
+   fails and the app crashes at start. Verify: while still on 23, read logcat
+   for linker warnings; `readelf -dW` on each `.so` file.
+6. **Check private files and downloads.** Drop `MODE_WORLD_*` and stop reading
+   `COLUMN_LOCAL_FILENAME`. Skipped, both throw `SecurityException`. Verify:
+   lint `WorldReadableFiles` and `WorldWriteableFiles`.
+7. **Go through the smaller rows** of the targeting table that apply to you:
+   multi-window resizing, display size, the `Crypto` provider,
+   `TransactionTooLargeException`, `serialVersionUID` and device policy
+   controllers.
+8. **Test the result** on an Android 7.0 device or emulator with
+   `targetSdkVersion 24`: split-screen, a "Display size" change, and Doze with
+   `adb shell dumpsys deviceidle force-idle`.
+
+Skipping several levels at once: do each version's steps in order, starting
+with runtime permissions in
+[Android 6.0 Marshmallow](/notes/android-6-marshmallow/) if you target 22 or
+lower.
 
 ## What lasted
 

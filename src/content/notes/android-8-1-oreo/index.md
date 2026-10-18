@@ -145,6 +145,30 @@ citations:
   - title: Android 8.1 Developer Preview release notes (archived 1 December 2017)
     url: http://web.archive.org/web/20171201164609/https://developer.android.com/preview/release-notes.html
     accessedAt: 2026-10-18
+  - title: ActivityRecord.java at android-8.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-8.0.0_r1/services/core/java/com/android/server/am/ActivityRecord.java
+    accessedAt: 2026-10-18
+  - title: ActivityRecord.java at android-8.1.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-8.1.0_r1/services/core/java/com/android/server/am/ActivityRecord.java
+    accessedAt: 2026-10-18
+  - title: Core AndroidManifest.xml at android-8.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-8.0.0_r1/core/res/AndroidManifest.xml
+    accessedAt: 2026-10-18
+  - title: Core AndroidManifest.xml at android-8.1.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-8.1.0_r1/core/res/AndroidManifest.xml
+    accessedAt: 2026-10-18
+  - title: Manifest.permission reference
+    url: https://developer.android.com/reference/android/Manifest.permission
+    accessedAt: 2026-10-18
+  - title: 'Lint check TranslucentOrientation: mixing screenOrientation and translucency'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/TranslucentOrientation.md.html
+    accessedAt: 2026-10-18
+  - title: Android 8.1 Oreo exits beta, now available for Pixel and Nexus devices (Android Central)
+    url: https://www.androidcentral.com/android-81-oreo-now-rolling-out-pixel-and-nexus-devices
+    accessedAt: 2026-10-18
+  - title: Google says that Android 8.1 is "rolling out now" (Droid Life)
+    url: https://www.droid-life.com/2017/12/05/google-says-android-8-1-rolling-now/
+    accessedAt: 2026-10-18
   - title: Google launches Android 8.1 Developer Preview for Pixel and Nexus devices (9to5Google)
     url: https://9to5google.com/2017/10/25/google-android-8-1-dev-preview-pixel-nexus/
     accessedAt: 2026-10-18
@@ -174,9 +198,12 @@ developers it was a small API level on top of
 | Release                         | Rollout to Pixel and Nexus began 5 December 2017                                                                                                       |
 | Launch devices                  | No new Pixel. Pixel 2, Pixel 2 XL, Pixel, Pixel XL, Pixel C, Nexus 5X and Nexus 6P got it. The first Go edition phones were announced in February 2018 |
 | Google Play target-API deadline | None of its own. Play required API 26 in 2018 and jumped to API 28 in 2019                                                                             |
+| Toolchain                       | `compileSdkVersion 27`; Android Studio 3.0 and Support Library 27.0.0 recommended                                                                      |
 
 The first developer preview, on 25 October 2017, already carried the final
-API level 27, and Play opened to apps targeting it that day. Google announced
+API level 27, and Play opened to apps targeting it that day. Google's preview
+posts said to set `compileSdkVersion` to 27 and recommended Android Studio 3.0
+and Support Library 27.0.0; they name no minimum Android Gradle Plugin. Google announced
 the final release at Google for India on Monday 4 December and posted the
 details on 5 December, with the update "rolling out" to Pixel and Nexus "over
 the next week". MobileSyrup reported the rollout the same day. Partner devices,
@@ -226,7 +253,9 @@ including Go edition phones, were promised "in the months ahead". The two previe
   fades the back, home and recents buttons to 60% opacity, except when the
   wallpaper is visible behind the bar. In 8.0 the buttons dimmed only when an
   app asked for low-profile mode. Android Police spotted it in the first
-  preview and read it as a guard against burn-in; Google gave no reason.
+  preview and read it as a guard against burn-in. Android Central's release
+  coverage tied a related change, a white navigation bar in Settings, to the
+  same worry. Google gave no reason.
 
 ## Security and privacy
 
@@ -254,12 +283,16 @@ flowchart TD
   lockouts, until the user unlocks with PIN, pattern or password) and
   `FINGERPRINT_ERROR_VENDOR` became public. In 8.0 they were `@hide`.
 - **Patch level.** The first 8.1 build, `OPM1.171019.011`, shipped with the
-  2017-12-05 security patch level.
+  2017-12-05 security patch level. Droid Life spotted that build number in
+  Verizon's update notes on release day.
 
 ## Permissions
 
-Android 8.1 added no new `Manifest.permission` constants and changed no
-grants. The permission model is the one from
+Android 8.1 added, changed or removed no permission an app declares, so there
+is nothing to add to or remove from your manifest. No `Manifest.permission`
+constant is marked "Added in API level 27". AOSP's core manifest grew by 21
+permissions between 8.0 and 8.1, all for system components and none in the
+public SDK. The permission model is the one from
 [Android 8.0](/notes/android-8-0-oreo/).
 
 One limit is tied to Go devices: on a phone where
@@ -271,29 +304,65 @@ access for the user to grant.
 
 ### All apps on Android 8.1
 
-| Change                                                                     | What to do                                                               |
-| -------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| An app can play a notification sound at most once per second               | Do not rely on rapid alert sounds; extra ones are dropped, not queued    |
-| Notification listeners do not run on low-RAM devices                       | Check `isLowRamDevice()` and offer another path                          |
-| GCM: `getParameterSpec(IvParameterSpec.class)` no longer works             | Use `getParameterSpec(GCMParameterSpec.class)`                           |
-| RSA `KeyFactory` rejects a `KeySpec` that does not fill its buffer         | Pass exactly the encoded key; expect `InvalidKeySpecException` otherwise |
-| `SSLSession` methods throw `NullPointerException` on `null`                | Catch it where you caught `IllegalArgumentException`                     |
-| A socket read interrupted by close throws `SocketException`                | Stop treating `-1` as the only end of a closed socket                    |
-| TLS sockets are `ConscryptFileDescriptorSocket` or `ConscryptEngineSocket` | Do not depend on internal Conscrypt class names through reflection       |
-| WoSign and StartCom roots are gone                                         | Replace any server certificate that chains to them                       |
+| Change                                                                     | What to do                                                               | How to check |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------ |
+| An app can play a notification sound at most once per second               | Do not rely on rapid alert sounds; extra ones are dropped, not queued    |              |
+| Notification listeners do not run on low-RAM devices                       | Check `isLowRamDevice()` and offer another path                          |              |
+| GCM: `getParameterSpec(IvParameterSpec.class)` no longer works             | Use `getParameterSpec(GCMParameterSpec.class)`                           |              |
+| RSA `KeyFactory` rejects a `KeySpec` that does not fill its buffer         | Pass exactly the encoded key; expect `InvalidKeySpecException` otherwise |              |
+| `SSLSession` methods throw `NullPointerException` on `null`                | Catch it where you caught `IllegalArgumentException`                     |              |
+| A socket read interrupted by close throws `SocketException`                | Stop treating `-1` as the only end of a closed socket                    |              |
+| TLS sockets are `ConscryptFileDescriptorSocket` or `ConscryptEngineSocket` | Do not depend on internal Conscrypt class names through reflection       |              |
+| WoSign and StartCom roots are gone                                         | Replace any server certificate that chains to them                       |              |
 
 ### Apps targeting API 27
 
-| Change                                                                                                     | What to do                                                                   |
-| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| An activity that is not fullscreen and opaque cannot fix its orientation with `screenOrientation`          | Remove the fixed orientation from translucent and dialog activities          |
-| Apps exporting or linking to APK shared libraries must list all signing certificates in a consistent order | Declare every certificate of the library, in the same order everywhere       |
-| `EditText.getText()` returns `Editable` instead of `CharSequence`                                          | Nothing for most code; `Editable` is a `CharSequence`                        |
-| `FLAG_SHOW_WHEN_LOCKED` and `FLAG_TURN_SCREEN_ON` are deprecated                                           | Use `setShowWhenLocked()` and `setTurnScreenOn()` or the manifest attributes |
+| Change                                                       | What to do                                                                   | How to check                  |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------------- | ----------------------------- |
+| Fixed orientation on a translucent or floating activity      | Remove `screenOrientation`, or make the activity fullscreen and opaque       | Lint `TranslucentOrientation` |
+| Signing certificates of APK shared libraries                 | List every certificate, in the same order, when you export or link to one    |                               |
+| `EditText.getText()` returns `Editable`                      | Nothing for most code; `Editable` is a `CharSequence`                        |                               |
+| `FLAG_SHOW_WHEN_LOCKED` and `FLAG_TURN_SCREEN_ON` deprecated | Use `setShowWhenLocked()` and `setTurnScreenOn()` or the manifest attributes |                               |
 
-The two targeting rules in the first rows come from the AOSP documentation of
-`O_MR1` in `Build.java`. developer.android.com has no separate
-behaviour-changes page for 8.1.
+The first two rules come from the AOSP documentation of `O_MR1` in
+`Build.java`. developer.android.com has no separate behaviour-changes page for
+8.1; `getText()` returns `Editable` from API level 27, per its features page.
+
+The orientation rule fails hardest on Android 8.0 devices. There,
+`Activity.onCreate()` throws `IllegalStateException` with "Only fullscreen
+opaque activities can request orientation" for an app targeting above 26
+whose translucent or floating activity fixes its orientation, and
+`setRequestedOrientation()` throws "Only fullscreen activities can request
+orientation". The 8.1 `Activity.java` and `ActivityRecord.java` no longer have
+either throw. The lint check's text still says devices running O "or greater"
+throw, so test on both.
+
+## Migrating to API 27
+
+From `targetSdkVersion 26` to 27, in this order:
+
+1. **Update the toolchain.** Set `compileSdkVersion 27`; Google recommended
+   Android Studio 3.0 and Support Library 27.0.0. Skipped, `O_MR1` and the
+   8.1 APIs do not compile. Verify: the project builds and lint runs.
+2. **Fix translucent activities with a fixed orientation.** Drop
+   `screenOrientation` from translucent, floating and dialog-themed
+   activities, or make them opaque. Skipped, they crash at launch on Android
+   8.0 devices. Verify: lint `TranslucentOrientation`, then open each of them
+   on an Android 8.0 and an 8.1 emulator.
+3. **Check APK shared libraries**, only if your app exports or links to one:
+   list every signing certificate, in the same order everywhere. Verify:
+   install the library and the app on an Android 8.1 device and exercise the
+   link.
+4. **Replace the lock screen flags.** Move from `FLAG_SHOW_WHEN_LOCKED` and
+   `FLAG_TURN_SCREEN_ON` to `setShowWhenLocked()` and `setTurnScreenOn()`.
+   Nothing breaks if you skip it; the flags are deprecated, not removed.
+5. **Test the result** on an Android 8.1 device or emulator with
+   `targetSdkVersion 27`, and on a low-RAM configuration if you use
+   notification listeners.
+
+Skipping several levels at once: from 25 or lower, Google's 8.1 release notes
+say to first support [Android 8.0](/notes/android-8-0-oreo/)'s changes, such as
+background execution and location limits.
 
 ## What lasted
 
@@ -312,11 +381,6 @@ behaviour-changes page for 8.1.
 
 - The `O_MR1` constant shipped with a two-word comment: `O MR1.` Today's AOSP
   adds "Released publicly as Android 8.1 in December 2017."
-- On Android 8.0 itself, `Activity.onCreate()` threw an
-  `IllegalStateException` for apps targeting above 26 (that is, 27) when a
-  translucent or floating activity fixed its orientation. Its message: "Only fullscreen
-  opaque activities can request orientation". The 8.1 `Activity.java` no
-  longer has that throw.
 - 8.1 redrew the Easter egg logo: a dark cookie with a white cream layer
   replaced 8.0's amber circles. The octopus behind it is unchanged, and Android
   Police noted it still has eight legs for 8.1.

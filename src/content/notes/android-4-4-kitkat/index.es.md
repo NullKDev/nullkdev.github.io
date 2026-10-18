@@ -172,6 +172,24 @@ citations:
   - title: 'File:Nexus 5 (Android 4.4.2) Screenshot.jpg (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Nexus_5_(Android_4.4.2)_Screenshot.jpg
     accessedAt: 2026-10-17
+  - title: <uses-permission> element
+    url: https://developer.android.com/guide/topics/manifest/uses-permission-element
+    accessedAt: 2026-10-18
+  - title: DocumentsProvider reference
+    url: https://developer.android.com/reference/android/provider/DocumentsProvider
+    accessedAt: 2026-10-18
+  - title: Host-based card emulation overview
+    url: https://developer.android.com/develop/connectivity/nfc/hce
+    accessedAt: 2026-10-18
+  - title: Migrating to WebView in Android 4.4 (developer.android.com, archived December 2014)
+    url: https://web.archive.org/web/20141216224805/http://developer.android.com/guide/webapps/migrating.html
+    accessedAt: 2026-10-18
+  - title: NewApi lint check
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/NewApi.md.html
+    accessedAt: 2026-10-18
+  - title: KitKat and SD cards — what's fixed, what's broken and what's misunderstood (Android Central)
+    url: https://www.androidcentral.com/kitkat-sdcard-changes
+    accessedAt: 2026-10-18
 ---
 
 Android 4.4 KitKat es la versión que Google aligeró para que funcionara en
@@ -182,16 +200,21 @@ cerró el almacenamiento compartido detrás de `READ_EXTERNAL_STORAGE`.
 
 ## De un vistazo
 
-|                                    |                                                                                  |
-| ---------------------------------- | -------------------------------------------------------------------------------- |
-| Versión                            | Android 4.4 (4.4W para relojes)                                                  |
-| Nivel de API                       | 19 (20 para 4.4W)                                                                |
-| Nombre                             | KitKat, público                                                                  |
-| `Build.VERSION_CODES`              | `KITKAT` (`KITKAT_WATCH`)                                                        |
-| SDK                                | Revisión 1 de la plataforma, octubre de 2013; anunciado el 31 de octubre de 2013 |
-| Lanzamiento                        | 31 de octubre de 2013, con el Nexus 5                                            |
-| Dispositivo de lanzamiento         | Nexus 5 (LG)                                                                     |
-| Plazo de target API en Google Play | Ninguno. La regla de target API de Play empezó en 2018, con API 26               |
+|                                    |                                                                                         |
+| ---------------------------------- | --------------------------------------------------------------------------------------- |
+| Versión                            | Android 4.4 (4.4W para relojes)                                                         |
+| Nivel de API                       | 19 (20 para 4.4W)                                                                       |
+| Nombre                             | KitKat, público                                                                         |
+| `Build.VERSION_CODES`              | `KITKAT` (`KITKAT_WATCH`)                                                               |
+| SDK                                | Revisión 1 de la plataforma, octubre de 2013; anunciado el 31 de octubre de 2013        |
+| Lanzamiento                        | 31 de octubre de 2013, con el Nexus 5                                                   |
+| Dispositivo de lanzamiento         | Nexus 5 (LG)                                                                            |
+| Plazo de target API en Google Play | Ninguno. La regla de target API de Play empezó en 2018, con API 26                      |
+| Herramientas                       | `compileSdkVersion 19`; SDK Platform-tools r19 o superior, se recomienda SDK Tools 22.3 |
+
+Las notas de versión del SDK solo dan esas dos dependencias para la API 19. La
+publicación de lanzamiento de Google dice que se puede desarrollar para ella
+"in Android Studio or in ADT/Ant", sin indicar una versión mínima de ninguno.
 
 Google anunció Android 4.4 y el Nexus 5 el 31 de octubre de 2013 y dijo que el
 teléfono estaba "available today on Google Play". Phone Scoop informó ese mismo
@@ -282,7 +305,77 @@ predeterminado si el tema no define uno.
 Todos los permisos se seguían otorgando al instalar. Las solicitudes en
 ejecución llegaron dos años después, con
 [Android 6.0](/es/notes/android-6-marshmallow/). Lo que cambió en 4.4 fue el
-almacenamiento externo.
+almacenamiento externo, más unos pocos permisos que protegen servicios nuevos
+del sistema.
+
+| Permiso                                                           | Qué cambió en API 19                                                                                             | Qué declarar                                                                                           | Qué quitar o limitar                                                                                             |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| `READ_EXTERNAL_STORAGE`                                           | Se aplica: sin él no se leen archivos compartidos. Tus carpetas externas propias ya no lo necesitan              | Decláralo si lees archivos compartidos, como los de `getExternalStoragePublicDirectory()`              | `android:maxSdkVersion="18"` si solo lees tus carpetas                                                           |
+| `WRITE_EXTERNAL_STORAGE`                                          | No hace falta para escribir en tus carpetas externas. También concede lectura. No abre los volúmenes secundarios | Decláralo si escribes archivos compartidos en el almacenamiento principal                              | `android:maxSdkVersion="18"` si solo escribes en tus carpetas                                                    |
+| `WRITE_MEDIA_STORAGE`                                             | Controla la escritura en volúmenes secundarios, como una tarjeta SD; `signature\|system`                         | Nada: las apps de terceros no pueden obtenerlo                                                         | No lo declares                                                                                                   |
+| `TRANSMIT_IR`                                                     | Nuevo, normal: uso del emisor infrarrojo con `ConsumerIrManager`                                                 | `<uses-permission>` más `<uses-feature android:name="android.hardware.consumerir">`                    | `android:required="false"` en la feature si el infrarrojo es opcional                                            |
+| `INSTALL_SHORTCUT`, `UNINSTALL_SHORTCUT`                          | Permisos del launcher publicados como constantes del SDK, normales                                               | `com.android.launcher.permission.INSTALL_SHORTCUT` si agregas accesos directos a la pantalla de inicio | Sin efecto desde la API 26: usa ahí `ShortcutManager.requestPinShortcut()`. `UNINSTALL_SHORTCUT` ya no se admite |
+| `BIND_NFC_SERVICE`                                                | Nuevo, signature: solo el sistema puede enlazarse a un `HostApduService`                                         | `android:permission` en el `<service>`, no `<uses-permission>`                                         | Nada                                                                                                             |
+| `BIND_PRINT_SERVICE`                                              | Nuevo, signature: solo el sistema puede enlazarse a un `PrintService`                                            | `android:permission` en el `<service>`                                                                 | Nada                                                                                                             |
+| `MANAGE_DOCUMENTS`                                                | Nuevo; solo lo tiene el sistema                                                                                  | `android:permission` en tu `DocumentsProvider`                                                         | Nada                                                                                                             |
+| `BROADCAST_SMS`, `BROADCAST_WAP_PUSH`, `SEND_RESPOND_VIA_MESSAGE` | Protegen los componentes que hacen elegible a una app como app de SMS predeterminada                             | `android:permission` en los receivers de SMS y MMS y en el service de respuesta por mensaje            | Nada                                                                                                             |
+
+Los demás permisos agregados en la API 19 (`BLUETOOTH_PRIVILEGED`,
+`CAPTURE_AUDIO_OUTPUT`, `MEDIA_CONTENT_CONTROL`) no son para apps de terceros.
+
+Un manifest para una app que funciona en Android 4.3 o anterior y en 4.4 o
+posterior. Conserva solo los bloques que tu app necesita:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Almacenamiento: solo hace falta hasta la API 18 si solo usas tus
+         carpetas de getExternalFilesDir() y getExternalCacheDir() -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
+
+    <!-- Emisor infrarrojo, hardware opcional -->
+    <uses-permission android:name="android.permission.TRANSMIT_IR" />
+    <uses-feature
+        android:name="android.hardware.consumerir"
+        android:required="false" />
+
+    <application>
+        <!-- Host card emulation: solo el sistema puede enlazarse -->
+        <service
+            android:name=".MyHostApduService"
+            android:exported="true"
+            android:permission="android.permission.BIND_NFC_SERVICE">
+            <intent-filter>
+                <action android:name="android.nfc.cardemulation.action.HOST_APDU_SERVICE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.nfc.cardemulation.host_apdu_service"
+                android:resource="@xml/apduservice" />
+        </service>
+
+        <!-- App de SMS predeterminada: uno de los cuatro componentes necesarios -->
+        <receiver
+            android:name=".SmsReceiver"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_DELIVER" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>
+```
+
+`maxSdkVersion` en `<uses-permission>` es nuevo en la API 19, y el ejemplo que
+da Google es justamente este límite de almacenamiento. Una app de SMS
+predeterminada necesita tres componentes más: un receiver de MMS para
+`WAP_PUSH_DELIVER` protegido con `BROADCAST_WAP_PUSH`, una activity para
+`ACTION_SENDTO` con los esquemas `sms:`, `smsto:`, `mms:` y `mmsto:`, y un
+service para `RESPOND_VIA_MESSAGE` protegido con `SEND_RESPOND_VIA_MESSAGE`.
 
 ```mermaid title="Quién puede tocar qué archivo del almacenamiento externo en Android 4.4"
 flowchart TD
@@ -295,20 +388,17 @@ flowchart TD
 ```
 
 - **La lectura se aplica.** `READ_EXTERNAL_STORAGE` existía desde la API 16,
-  pero no se aplicaba. Desde la API 19, una app sin él no puede leer archivos
-  compartidos. En el `platform.xml` de AOSP, `WRITE_EXTERNAL_STORAGE` incluye
-  ahora también el grupo de lectura.
-- **Las carpetas de la app no requieren permiso.** Una app puede leer y
-  escribir `Android/data/<package>/` en el almacenamiento externo sin permiso.
-  Un daemon FUSE sintetiza el propietario y el modo de los archivos para que
-  funcione.
+  pero no se aplicaba. En el `platform.xml` de AOSP, `WRITE_EXTERNAL_STORAGE`
+  incluye ahora también el grupo de lectura.
+- **Las carpetas de la app no requieren permiso.** Un daemon FUSE sintetiza el
+  propietario y el modo de los archivos para que una app lea y escriba
+  `Android/data/<package>/` sin permiso.
 - **Se cierra la escritura en la SD.** El CDD prohíbe que las apps escriban en
   el almacenamiento externo secundario fuera de sus carpetas, para que el
-  sistema pueda limpiar los archivos al desinstalar una app. En AOSP, escribir
-  en esos volúmenes pasa por `WRITE_MEDIA_STORAGE`, un permiso
-  `signature|system` que las apps de terceros no pueden obtener.
-- **Nuevos.** `TRANSMIT_IR` (normal), más los permisos de launcher
-  `INSTALL_SHORTCUT` y `UNINSTALL_SHORTCUT` como constantes del SDK.
+  sistema pueda limpiar los archivos al desinstalar una app. Android Central
+  explicó el lado del usuario en marzo de 2014: antes de 4.4 una app con el
+  permiso de almacenamiento podía escribir en cualquier parte de la tarjeta;
+  desde 4.4 solo puede escribir en archivos y carpetas que creó.
 - **Roles elegidos en Settings.** Ser la app de SMS predeterminada, recibir
   notificaciones como listener y atender "Tap & pay" los concede el usuario en
   Settings, no un diálogo de permisos.
@@ -317,14 +407,16 @@ flowchart TD
 
 ### Todas las apps en Android 4.4
 
-| Cambio                                                                | Qué hacer                                                                                                                                |
-| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| El almacenamiento externo compartido requiere `READ_EXTERNAL_STORAGE` | Decláralo si lees archivos fuera de tu propia carpeta                                                                                    |
-| Las apps no pueden escribir en el almacenamiento secundario           | Escribe en tus carpetas de `getExternalFilesDirs()`, o deja que el usuario elija el destino con `ACTION_CREATE_DOCUMENT`                 |
-| Solo la app de SMS predeterminada escribe en el proveedor de SMS      | Declara los receivers, la activity y el service que te hacen elegible como predeterminada; las demás apps leen con `SMS_RECEIVED_ACTION` |
-| WebView se basa en Chromium                                           | Prueba tu contenido web; las apps con target API 18 o menor corren en un "quirks mode"                                                   |
-| Existen dispositivos con poca RAM                                     | Consulta `ActivityManager.isLowRamDevice()` y apaga las funciones que consumen mucha memoria                                             |
-| La action bar siempre muestra su botón de overflow                    | Cuenta con que el usuario llegue a las acciones de overflow en pantalla, aunque el dispositivo tenga tecla Menu                          |
+| Cambio                                                                                                | Qué hacer                                                                                                                                | Cómo comprobarlo                                                                |
+| ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| El almacenamiento externo compartido requiere `READ_EXTERNAL_STORAGE`                                 | Decláralo si lees archivos fuera de tu propia carpeta                                                                                    | En Android 4.1 a 4.3, Developer options > "Protect USB storage" lo aplica antes |
+| Tus carpetas externas propias no requieren permiso                                                    | Limita los permisos de almacenamiento con `maxSdkVersion="18"` si es todo lo que usas                                                    |                                                                                 |
+| Las apps no pueden escribir en el almacenamiento secundario                                           | Escribe en tus carpetas de `getExternalFilesDirs()`, o deja que el usuario elija el destino con `ACTION_CREATE_DOCUMENT`                 |                                                                                 |
+| Solo la app de SMS predeterminada escribe en el proveedor de SMS                                      | Declara los receivers, la activity y el service que te hacen elegible como predeterminada; las demás apps leen con `SMS_RECEIVED_ACTION` |                                                                                 |
+| WebView se basa en Chromium                                                                           | Prueba tu contenido web; las apps con target API 18 o menor corren en un "quirks mode"                                                   | Depuración remota tras `WebView.setWebContentsDebuggingEnabled(true)`           |
+| `setDefaultZoom()`, `NARROW_COLUMNS` y `SINGLE_COLUMN` no hacen nada en WebView, con cualquier target | Define el viewport en la página, o prueba `TEXT_AUTOSIZING`                                                                              |                                                                                 |
+| Existen dispositivos con poca RAM                                                                     | Consulta `ActivityManager.isLowRamDevice()` y apaga las funciones que consumen mucha memoria                                             | `adb shell dumpsys procstats`                                                   |
+| La action bar siempre muestra su botón de overflow                                                    | Cuenta con que el usuario llegue a las acciones de overflow en pantalla, aunque el dispositivo tenga tecla Menu                          |                                                                                 |
 
 Una app de mensajes que no es la predeterminada no se cae al escribir en el
 proveedor de SMS. Google advirtió que la escritura "will silently fail".
@@ -335,14 +427,15 @@ tecla Menu física o era un televisor. En 4.4 siempre devuelve `true`.
 
 ### Apps con target API 19
 
-| Cambio                                                                          | Qué hacer                                                                |
-| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `AlarmManager.set()` y `setRepeating()` son inexactas y se agrupan              | Usa `setExact()` para una hora precisa y `setWindow()` para un rango     |
-| `addPeriodicSync()` usa un margen de cerca del 4% del período                   | Usa `requestSync()` con `SyncRequest.Builder` para fijar el tuyo         |
-| `PreferenceActivity.isValidFragment()` lanza una excepción si no se sobrescribe | Sobrescríbelo y acepta solo tus propias clases de fragment               |
-| Una URL `javascript:` en WebView reemplaza la página con su resultado           | Ejecuta scripts con `evaluateJavascript()`                               |
-| `getSharedPreferences()` rechaza un nombre `null`                               | Pasa un nombre                                                           |
-| Las carpetas de la app en el almacenamiento externo no requieren permiso        | Deja de pedir permisos de almacenamiento que solo usabas para tu carpeta |
+| Cambio                                                                          | Qué hacer                                                                                    | Cómo comprobarlo             |
+| ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------- |
+| `AlarmManager.set()` y `setRepeating()` son inexactas y se agrupan              | Usa `setExact()` para una hora precisa y `setWindow()` para un rango                         |                              |
+| `addPeriodicSync()` usa un margen de cerca del 4% del período                   | Usa `requestSync()` con `SyncRequest.Builder` para fijar el tuyo                             |                              |
+| `PreferenceActivity.isValidFragment()` lanza una excepción si no se sobrescribe | Sobrescríbelo y acepta solo tus propias clases de fragment                                   |                              |
+| Una URL `javascript:` en WebView reemplaza la página con su resultado           | Ejecuta scripts con `evaluateJavascript()`                                                   |                              |
+| WebView llama a `shouldOverrideUrlLoading()` solo con URL válidas               | Usa URL según RFC 3986 o un esquema propio; da a `loadDataWithBaseURL()` una URL base válida | Depuración remota de WebView |
+| WebView ignora `target-densitydpi` y respeta los viewports pequeños             | Dimensiona la página con CSS y un viewport estándar; `setUseWideViewPort(true)` si no puedes | Depuración remota de WebView |
+| `getSharedPreferences()` rechaza un nombre `null`                               | Pasa un nombre                                                                               |                              |
 
 Para `isValidFragment()`, la implementación por defecto de AOSP lanza una
 `RuntimeException` en apps con target API 19: "Subclasses of PreferenceActivity
@@ -368,6 +461,51 @@ desarrollador "Process Stats".
 El CDD de 4.4 fija el mínimo en 340 MB de memoria para el kernel y el espacio
 de usuario. Un dispositivo con menos de 512 MB debe devolver `true` en
 `ActivityManager.isLowRamDevice()`.
+
+## Migrar a API 19
+
+De `targetSdkVersion 18` a 19, en este orden:
+
+1. **Actualiza el SDK.** Fija `compileSdkVersion 19` con SDK Platform-tools
+   r19 o posterior. Si lo omites, `KITKAT`, `setExact()` y las demás APIs
+   nuevas no compilan. Comprueba: el proyecto compila y lint `NewApi` no marca
+   llamadas de la API 19 alcanzables en versiones anteriores.
+2. **Corrige las alarmas exactas.** Llama a `setExact()` donde la hora importa
+   y a `setWindow()` donde basta un rango, en dispositivos con `KITKAT` o
+   posterior. Si lo omites, recordatorios y temporizadores suenan tarde porque
+   el sistema los agrupa. Comprueba: registra cuándo suena cada alarma en un
+   dispositivo con Android 4.4.
+3. **Fija el margen de sincronización.** Pasa a `requestSync()` con un
+   `SyncRequest` las sincronizaciones periódicas que deben correr cerca de una
+   hora fija. Si lo omites, una sincronización de 24 horas se desplaza dentro
+   de una ventana de cerca de una hora. Comprueba: observa las horas de
+   sincronización en un dispositivo 4.4.
+4. **Sobrescribe `isValidFragment()`** en cada `PreferenceActivity` con
+   headers. Si lo omites, abrir un header de ajustes lanza `RuntimeException`.
+   Comprueba: abre cada header en Android 4.4.
+5. **Prueba el contenido de WebView.** Reemplaza las URL `javascript:` por
+   `evaluateJavascript()`, convierte los enlaces propios en URL válidas y
+   corrige el viewport. Si lo omites, las páginas pierden su contenido, los
+   enlaces dejan de llegar a tu código y los diseños se amplían. Comprueba:
+   depuración remota con Chrome DevTools tras
+   `setWebContentsDebuggingEnabled(true)`.
+6. **Recorta los permisos de almacenamiento.** Si solo usas
+   `getExternalFilesDir()` y `getExternalCacheDir()`, limita ambos permisos
+   con `maxSdkVersion="18"`; escribe en una tarjeta SD solo mediante
+   `getExternalFilesDirs()` o el storage access framework. Si lo omites,
+   conservas permisos que no necesitas, y las escrituras en la SD fuera de tus
+   carpetas fallan. Comprueba: una instalación nueva en un dispositivo con
+   Android 4.4 y tarjeta.
+7. **Revisa el resto** de la tabla de target: los nombres de
+   `getSharedPreferences()` y, en apps de mensajería, los cuatro componentes de
+   app de SMS predeterminada.
+8. **Prueba el resultado** en un dispositivo o emulador con Android 4.4 y
+   `targetSdkVersion 19`. Los cambios de almacenamiento, SMS, overflow y zoom
+   de WebView de "Todas las apps" te afectan ahí con cualquier target.
+
+Si saltas varios niveles a la vez: esta serie empieza en 4.4, así que para un
+target menor que 18 lee primero el resumen de APIs de Google de cada versión
+Android 4.x.
 
 ## Qué perduró
 

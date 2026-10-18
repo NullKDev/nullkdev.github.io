@@ -211,6 +211,57 @@ citations:
   - title: 'Android M Developer Preview 3 images now available for the Nexus 5, 6, 9, and Player (Android Police)'
     url: https://www.androidpolice.com/2015/08/18/android-m-developer-preview-3-images-now-available-for-download-for-the-nexus-5-nexus-6-nexus-9-and-nexus-player/
     accessedAt: 2026-10-18
+  - title: '<uses-permission-sdk-23> manifest element'
+    url: https://developer.android.com/guide/topics/manifest/uses-permission-sdk-23-element
+    accessedAt: 2026-10-18
+  - title: Manifest.permission reference
+    url: https://developer.android.com/reference/android/Manifest.permission
+    accessedAt: 2026-10-18
+  - title: ConnectivityManager reference
+    url: https://developer.android.com/reference/android/net/ConnectivityManager
+    accessedAt: 2026-10-18
+  - title: NotificationManager reference
+    url: https://developer.android.com/reference/android/app/NotificationManager
+    accessedAt: 2026-10-18
+  - title: Test backup and restore
+    url: https://developer.android.com/identity/data/testingbackup
+    accessedAt: 2026-10-18
+  - title: Platform AndroidManifest.xml at android-5.1.1_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-5.1.1_r1/core/res/AndroidManifest.xml
+    accessedAt: 2026-10-18
+  - title: Platform AndroidManifest.xml at android-6.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.0_r1/core/res/AndroidManifest.xml
+    accessedAt: 2026-10-18
+  - title: Platform AndroidManifest.xml at android-6.0.1_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r1/core/res/AndroidManifest.xml
+    accessedAt: 2026-10-18
+  - title: Settings.java at android-6.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.0_r1/core/java/android/provider/Settings.java
+    accessedAt: 2026-10-18
+  - title: Settings.java at android-6.0.1_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r1/core/java/android/provider/Settings.java
+    accessedAt: 2026-10-18
+  - title: 'Lint check MissingPermission: Missing Permissions'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/MissingPermission.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check HardwareIds: Hardware Id Usage'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/HardwareIds.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check BatteryLife: Battery Life Issues'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/BatteryLife.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check FullBackupContent: Valid Full Backup Content File'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/FullBackupContent.md.html
+    accessedAt: 2026-10-18
+  - title: 'Gracefully continue if ConnectivityManager.requestNetwork fails (WebRTC code review)'
+    url: https://codereview.webrtc.org/1863413003
+    accessedAt: 2026-10-18
+  - title: 'SYSTEM_ALERT_WINDOW, Android O, and Disappointment (CommonsWare)'
+    url: https://commonsware.com/blog/2017/05/11/system_alert_window-updates.html
+    accessedAt: 2026-10-18
+  - title: Settings strings.xml at android-6.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/packages/apps/Settings/+/refs/tags/android-6.0.0_r1/res/values/strings.xml
+    accessedAt: 2026-10-18
 ---
 
 Android 6.0 Marshmallow is the release where apps stopped getting every
@@ -234,6 +285,10 @@ report as a date.
 | Launch devices                  | Nexus 5X (LG) and Nexus 6P (Huawei), announced 29 September 2015 |
 | Google Play target-API deadline | None. Play's target-API rule started in 2018, at API 26          |
 
+Google's table of minimum Android Studio and Android Gradle Plugin versions
+starts at API 33, so there is no toolchain row here. The final SDK post asked
+developers to set `compileSdkVersion 23` and use Support Library 23.
+
 Google released the first developer preview, then called Android M, at Google
 I/O on 28 May 2015. On 17 August it published the final SDK, named the release
 Marshmallow and opened Play to apps targeting API 23. On 29 September it
@@ -252,7 +307,7 @@ its first builds in AOSP are Android 6.0.1. Android 6.0.1 arrived on 7 December
 
 ## What it brought
 
-- **Runtime permissions.** Covered in its own section below.
+- **Runtime permissions.** Covered in [Permissions](#permissions) below.
 - **Doze.** An unplugged phone that sits still with the screen off enters
   Doze. Network access stops, wake locks are ignored, and alarms, jobs and
   syncs wait for short maintenance windows.
@@ -274,6 +329,8 @@ its first builds in AOSP are Android 6.0.1. Android 6.0.1 arrived on 7 December
 - **Assist API.** Apps can hand context to the assistant through
   `Activity#onProvideAssistContent()`. Ars Technica describes Google Now on Tap
   as the feature built on it: a long press on home sends the screen to Google.
+- **Floating text toolbar.** Cut, Copy and Paste can float next to the
+  selection, through `startActionMode(callback, ActionMode.TYPE_FLOATING)`.
 - **Smaller additions.** Direct Share (`ChooserTargetService`), voice
   interactions (`VoiceInteractor`), the camera torch
   (`CameraManager#setTorchMode()`), `android.media.midi`, Bluetooth stylus
@@ -303,7 +360,8 @@ its first builds in AOSP are Android 6.0.1. Android 6.0.1 arrived on 7 December
   matching inside the Trusted Execution Environment.
 - **Hardware identifiers.** `WifiInfo.getMacAddress()` and
   `BluetoothAdapter.getAddress()` return `02:00:00:00:00:00` for every app.
-  Background Wi-Fi and Bluetooth scans use a randomized MAC address.
+  Background Wi-Fi and Bluetooth scans use a randomized MAC address. What it
+  means for location permissions is in the [Permissions](#permissions) table.
 - **Smaller changes.** SELinux policy got tighter (IOCTL filtering, very
   limited `/proc`). USB defaults to charge-only, and file access needs the
   user's approval. A new `StrictMode` check flags cleartext traffic. Android
@@ -313,8 +371,63 @@ its first builds in AOSP are Android 6.0.1. Android 6.0.1 arrived on 7 December
 ## Permissions
 
 Permissions now come in two kinds. **Normal** permissions are still granted at
-install. **Dangerous** ones (location, contacts, camera, microphone, SMS and
-the like) have to be requested at runtime by apps that target API 23.
+install. **Dangerous** ones have to be requested at runtime by apps that target
+API 23. A few powerful ones became **special**: the user grants them on a
+Settings screen, not in a dialog.
+
+| Permission                                          | What changed in API 23                                                                                                                                                     | What to declare                                                                                                 | What to remove or limit                                                            |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Dangerous permissions                               | Requested at runtime by apps targeting 23; users can revoke them from any app. Nine groups: Calendar, Camera, Contacts, Location, Microphone, Phone, Sensors, SMS, Storage | `<uses-permission>` as before, then `checkSelfPermission()` and `requestPermissions()`                          | Every one you do not use: each is a dialog                                         |
+| `<uses-permission-sdk-23>`                          | New manifest element: the permission is requested only on API 23 and later                                                                                                 | Use it for a permission that only a new feature needs, so updates on older devices ask for nothing new          | Optional `android:maxSdkVersion`; the element has no `minSdkVersion` attribute     |
+| `ACCESS_FINE_LOCATION`, `ACCESS_COARSE_LOCATION`    | Needed to read nearby devices' hardware IDs from `getScanResults()`, `ACTION_FOUND` and `startScan()`                                                                      | One of them if you scan for Wi-Fi or Bluetooth devices, requested at runtime                                    | Do not add them to read the device's own MAC: it is `02:00:00:00:00:00` regardless |
+| `CHANGE_NETWORK_STATE`                              | On 6.0.0, no longer granted at install to apps targeting 23; normal again from 6.0.1                                                                                       | Keep declaring it; on 6.0.0, `requestNetwork()` also passes with "Modify system settings" granted               | Nothing                                                                            |
+| `WRITE_SETTINGS`                                    | No longer granted at install to apps targeting 23; the user allows it under "Modify system settings"                                                                       | Send `Settings.ACTION_MANAGE_WRITE_SETTINGS`; check `Settings.System.canWrite()`                                | Remove it unless you really write system settings                                  |
+| `SYSTEM_ALERT_WINDOW`                               | Was dangerous; apps targeting 23 need the user to allow it under "Draw over other apps"                                                                                    | Send `Settings.ACTION_MANAGE_OVERLAY_PERMISSION`; check `Settings.canDrawOverlays()`                            | Remove it unless you draw over other apps                                          |
+| `GET_ACCOUNTS`                                      | Was normal; now dangerous, in the Contacts group. Not needed for accounts of an authenticator signed with your key                                                         | Declare it only to read other apps' accounts                                                                    | Drop it if you only read your own accounts                                         |
+| `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`              | New, normal; required for `ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`                                                                                                    | Only if Doze breaks your app's core function                                                                    | Every other app: Play policy forbids the direct request                            |
+| `ACCESS_NOTIFICATION_POLICY`                        | New, normal; marks apps that change Do Not Disturb                                                                                                                         | Declare it, then send `ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS`; check `isNotificationPolicyAccessGranted()` | Nothing                                                                            |
+| `USE_FINGERPRINT`                                   | New, normal; guards `FingerprintManager`                                                                                                                                   | Declare it with the fingerprint API                                                                             | Deprecated in API 28 for `USE_BIOMETRIC`                                           |
+| `REQUEST_INSTALL_PACKAGES`                          | New; enforced only for apps targeting above 25                                                                                                                             | Nothing yet for API 23                                                                                          | Nothing                                                                            |
+| `READ_HISTORY_BOOKMARKS`, `WRITE_HISTORY_BOOKMARKS` | Removed with the global bookmark APIs                                                                                                                                      | Nothing; keep bookmarks in your own storage                                                                     | Delete both lines from the manifest                                                |
+
+One manifest for an app that runs on Android 5.1 and earlier and on 6.0 and
+later. Keep only the blocks your app needs:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Dangerous: declared as before; requested at runtime from API 23 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Needed only by a feature added in this update: devices before
+         API 23 never see it, so their users approve nothing new -->
+    <uses-permission-sdk-23
+        android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Normal again from 6.0.1; on 6.0.0 it needs "Modify system settings" -->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+
+    <!-- Special: granted on a Settings screen, checked with canWrite() -->
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
+    <!-- New in API 23 -->
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+
+    <!-- Removed in API 23: delete these if you still have them
+    <uses-permission android:name="com.android.browser.permission.READ_HISTORY_BOOKMARKS" />
+    <uses-permission android:name="com.android.browser.permission.WRITE_HISTORY_BOOKMARKS" />
+    -->
+</manifest>
+```
+
+`CHANGE_NETWORK_STATE` is the case that confused developers. In the
+`android-6.0.0_r1` platform manifest it carries the same protection level as
+`WRITE_SETTINGS`, so an app targeting 23 did not get it at install. Calls such
+as `requestNetwork()` then threw `SecurityException` unless the user had
+allowed "Modify system settings". In `android-6.0.1_r1` it is `normal` again,
+and the check accepts it first. A WebRTC change from April 2016 catches the
+failure for the same reason: on Android 6.0.0 the call "requires the
+WRITE_SETTINGS permission, which is somewhat impractical to obtain".
 
 ```mermaid title="Runtime permission flow for an app targeting API 23"
 flowchart TD
@@ -338,13 +451,6 @@ request first. On Android 6.0, a second request after a denial added a
   its manifest.
 - **Older apps.** Apps targeting API 22 or lower still get their permissions
   at install. Users can switch them off anyway, for old and new apps alike.
-- **Added.** `USE_FINGERPRINT`.
-- **Removed.** `READ_HISTORY_BOOKMARKS` and `WRITE_HISTORY_BOOKMARKS`, along
-  with `Browser.getAllBookmarks()` and `Browser.saveBookmark()`.
-- **Location for scans.** Reading nearby hardware IDs from
-  `WifiManager.getScanResults()`, `BluetoothDevice.ACTION_FOUND` or
-  `BluetoothLeScanner.startScan()` needs `ACCESS_FINE_LOCATION` or
-  `ACCESS_COARSE_LOCATION`.
 - **Device owners.** `DevicePolicyManager#setPermissionPolicy()` lets an
   enterprise admin set how runtime permissions are granted.
 
@@ -352,30 +458,82 @@ request first. On Android 6.0, a second request after a denial added a
 
 ### All apps on Android 6.0
 
-| Change                                                 | What to do                                                                                                                                                                                                                                                                               |
-| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Doze and App Standby                                   | Test with `adb shell dumpsys deviceidle force-idle` and `adb shell am set-inactive <package> true`. Use `setAndAllowWhileIdle()` or `setExactAndAllowWhileIdle()` for alarms that must fire. Send urgent pushes as high-priority FCM messages: they get brief network access during Doze |
-| Apps that want out of Doze                             | `ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS` sends the user to Settings. `ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` asks directly, but Play policy allows it only when Doze breaks the app's core function                                                                           |
-| Users can switch off permissions for any app           | Test with permissions off, even if you do not target API 23                                                                                                                                                                                                                              |
-| MAC address returns `02:00:00:00:00:00`                | Stop using it as a device ID                                                                                                                                                                                                                                                             |
-| Bookmark APIs removed                                  | Keep bookmarks in your own storage                                                                                                                                                                                                                                                       |
-| `setStreamSolo()` and `setStreamMute()` deprecated     | Use `requestAudioFocus()` and `adjustStreamVolume()`                                                                                                                                                                                                                                     |
-| Keystore drops DSA                                     | Use ECDSA                                                                                                                                                                                                                                                                                |
-| Camera access goes by process priority                 | Handle `onError()` (Camera) or `onDisconnected()` (Camera2)                                                                                                                                                                                                                              |
-| An APK missing a file named in its manifest is corrupt | Re-sign after removing any content                                                                                                                                                                                                                                                       |
+| Change                                                 | What to do                                                                                                                                | How to check                                                                          |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Doze and App Standby                                   | Use `setAndAllowWhileIdle()` or `setExactAndAllowWhileIdle()` for alarms that must fire; send urgent pushes as high-priority FCM messages | `adb shell dumpsys deviceidle force-idle`; `adb shell am set-inactive <package> true` |
+| Apps that want out of Doze                             | Send users to `ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS`; ask directly only if Doze breaks your core function                          | Lint `BatteryLife`                                                                    |
+| Users can switch off permissions for any app           | Test with permissions off, even if you do not target API 23                                                                               |                                                                                       |
+| MAC address returns `02:00:00:00:00:00`                | Stop using it as a device ID                                                                                                              | Lint `HardwareIds`                                                                    |
+| Apache HTTP client left the SDK                        | Move to `HttpURLConnection`, or add `useLibrary 'org.apache.http.legacy'` to `build.gradle`                                               | The build fails at `compileSdkVersion 23`                                             |
+| `Notification.setLatestEventInfo()` removed            | Build notifications with `Notification.Builder`                                                                                           | The build fails at `compileSdkVersion 23`                                             |
+| Bookmark APIs removed                                  | Keep bookmarks in your own storage                                                                                                        |                                                                                       |
+| Forcing a Wi-Fi network keeps cellular up              | From target 21, send traffic with `bindProcessToNetwork()` or `Network.openConnection()`                                                  |                                                                                       |
+| Only your own `WifiConfiguration` objects              | Do not modify or remove networks the user or other apps created                                                                           |                                                                                       |
+| `setStreamSolo()` and `setStreamMute()` deprecated     | Use `requestAudioFocus()` and `adjustStreamVolume()`                                                                                      |                                                                                       |
+| Keystore drops DSA                                     | Use ECDSA                                                                                                                                 |                                                                                       |
+| Camera access goes by process priority                 | Handle `onError()` (Camera) or `onDisconnected()` (Camera2)                                                                               |                                                                                       |
+| ART enforces access rules in `newInstance()`           | Make constructors of classes named in XML accessible; update appcompat and recyclerview                                                   |                                                                                       |
+| Dynamic linker follows sonames and `RTLD_LOCAL`        | Fix `DT_NEEDED` entries that hold absolute paths                                                                                          |                                                                                       |
+| An APK missing a file named in its manifest is corrupt | Re-sign after removing any content                                                                                                        |                                                                                       |
 
-The Apache HTTP client left the SDK, so `compileSdkVersion 23` no longer sees
-it. Switch to `HttpURLConnection`, or add `useLibrary 'org.apache.http.legacy'`
-to `build.gradle`. Devices kept the classes on the bootclasspath until Android 9.
+Devices kept the Apache HTTP classes on the bootclasspath until Android 9; only
+the SDK dropped them.
 
 ### Apps targeting API 23
 
-| Change                                                                      | What to do                                                                                      |
-| --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Dangerous permissions are requested at runtime                              | `checkSelfPermission()` before each access, `requestPermissions()` when denied                  |
-| Auto Backup is on by default                                                | Choose what is backed up with `android:fullBackupContent`, or set `android:allowBackup="false"` |
-| Native libraries with text relocations are rejected                         | Rebuild them without text relocations                                                           |
-| Stylus buttons report `BUTTON_STYLUS_PRIMARY` and `BUTTON_STYLUS_SECONDARY` | Read them through `MotionEvent#getButtonState()`                                                |
+| Change                                                                      | What to do                                                                                      | How to check                                                                     |
+| --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Dangerous permissions are requested at runtime                              | `checkSelfPermission()` before each access, `requestPermissions()` when denied                  | Lint `MissingPermission`; `adb shell dumpsys package <package>` lists the grants |
+| `WRITE_SETTINGS` and `SYSTEM_ALERT_WINDOW` need a Settings screen           | Send the user there and check `canWrite()` or `canDrawOverlays()` first                         |                                                                                  |
+| `CHANGE_NETWORK_STATE` is not granted on Android 6.0.0                      | Catch `SecurityException` from `requestNetwork()` and network binding calls                     | Test on a 6.0.0 build, not only 6.0.1                                            |
+| Auto Backup is on by default                                                | Choose what is backed up with `android:fullBackupContent`, or set `android:allowBackup="false"` | Lint `FullBackupContent`; `adb shell bmgr backupnow <package>`                   |
+| Native libraries with text relocations are rejected                         | Rebuild them without text relocations; log `dlerror()` when `dlopen()` fails                    |                                                                                  |
+| Stylus buttons report `BUTTON_STYLUS_PRIMARY` and `BUTTON_STYLUS_SECONDARY` | Read them through `MotionEvent#getButtonState()`                                                |                                                                                  |
+
+Compat change IDs exist from Android 11 (API 30), so these tables have none.
+
+## Migrating to API 23
+
+From `targetSdkVersion 22` to 23, in this order:
+
+1. **Update the toolchain.** Set `compileSdkVersion 23` and Support Library 23,
+   which has `ContextCompat.checkSelfPermission()` and
+   `ActivityCompat.requestPermissions()`. Replace the Apache HTTP client and
+   `setLatestEventInfo()`. Skipped, the build fails. Verify: the project builds
+   and lint shows no new errors.
+2. **Trim the manifest.** List your dangerous permissions by group and remove
+   the ones you do not use; delete the bookmark permissions. Move permissions
+   that only a new feature needs to `<uses-permission-sdk-23>`. Skipped, users
+   face dialogs for features they never touch. Verify: read the merged
+   manifest, since libraries add permissions too.
+3. **Request at runtime.** Check before every call that needs a dangerous
+   permission, request it when the user reaches the feature, explain with
+   `shouldShowRequestPermissionRationale()`, and keep working after "Deny" and
+   "Never ask again". Skipped, the call throws `SecurityException` or returns
+   nothing. Verify: lint `MissingPermission`, then deny each permission on a
+   device and use the feature.
+4. **Handle the special permissions.** For `WRITE_SETTINGS` and
+   `SYSTEM_ALERT_WINDOW`, check `canWrite()` or `canDrawOverlays()` and send
+   the user to the Settings screen. Catch `SecurityException` around
+   `requestNetwork()`. Skipped, those calls fail on every new install. Verify:
+   a fresh install on Android 6.0.0 and on 6.0.1.
+5. **Stop reading hardware IDs.** Drop the MAC address as an identifier;
+   request location only if you scan for nearby devices. Skipped, every
+   device reports the same ID. Verify: lint `HardwareIds`.
+6. **Decide what Auto Backup keeps.** Exclude tokens and device-specific data
+   with `android:fullBackupContent`, or turn backup off. Skipped, those files
+   restore to a new phone. Verify: lint `FullBackupContent` and a backup and
+   restore with `adb shell bmgr`.
+7. **Rebuild native libraries** that have text relocations. Skipped, they
+   fail to load. Verify: log the `dlerror()` text on a 6.0 device.
+8. **Test the result** on an Android 6.0 device or emulator with
+   `targetSdkVersion 23`: once with every permission denied, once in Doze
+   (`adb shell dumpsys deviceidle force-idle`). For automated tests,
+   `adb install -g` grants every runtime permission at install.
+
+Skipping several levels at once: do each version's steps in order, starting
+from [Android 5.0](/notes/android-5-0-lollipop/) or
+[Android 5.1](/notes/android-5-1-lollipop/), whichever your target is now.
 
 ## What lasted
 
@@ -412,3 +570,7 @@ android:required="false"/>`.
 - Android Police reported in May 2015 that the internal code name was
   Macadamia Nut Cookie, which is where the `mnc-dev` branch in AOSP got its
   name.
+- `SYSTEM_ALERT_WINDOW` was a dangerous permission in Android 5.1. In 6.0 its
+  protection level became `signature|preinstalled|appop|pre23`, the same as
+  `WRITE_SETTINGS`; CommonsWare describes it as "converted into an
+  `appop`-style permission".

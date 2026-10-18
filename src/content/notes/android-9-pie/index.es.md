@@ -202,6 +202,48 @@ citations:
   - title: Android P Developer Preview 5 rolling out to Pixel and Pixel 2, final beta before launch (9to5Google)
     url: https://9to5google.com/2018/07/25/android-p-developer-preview-5/
     accessedAt: 2026-10-18
+  - title: Network security configuration
+    url: https://developer.android.com/privacy-and-security/security-config
+    accessedAt: 2026-10-18
+  - title: '<application> manifest element: android:usesCleartextTraffic'
+    url: https://developer.android.com/guide/topics/manifest/application-element
+    accessedAt: 2026-10-18
+  - title: Android Studio 3.2 release notes
+    url: https://developer.android.com/studio/releases/past-releases/as-3-2-0-release-notes
+    accessedAt: 2026-10-18
+  - title: 'Lint check InsecureBaseConfiguration: Insecure Base Configuration'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/InsecureBaseConfiguration.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check HardwareIds: Hardware Id Usage'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/HardwareIds.md.html
+    accessedAt: 2026-10-18
+  - title: 'HardwareIdDetector.java: the HardwareIds check flags Build.SERIAL (AOSP)'
+    url: https://android.googlesource.com/platform/tools/base/+/refs/heads/mirror-goog-studio-main/lint/libs/lint-checks/src/main/java/com/android/tools/lint/checks/HardwareIdDetector.java
+    accessedAt: 2026-10-18
+  - title: 'Lint check PrivateApi: Using Private APIs'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/PrivateApi.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check DiscouragedPrivateApi: Using Discouraged Private API'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/DiscouragedPrivateApi.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check SoonBlockedPrivateApi: Using Soon-to-Be Blocked Private API'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/SoonBlockedPrivateApi.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check BlockedPrivateApi: Using Blocked Private API'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/BlockedPrivateApi.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check WorldReadableFiles: openFileOutput() with MODE_WORLD_READABLE'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/WorldReadableFiles.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check SetWorldReadable: File.setReadable() used to make file world-readable'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/SetWorldReadable.md.html
+    accessedAt: 2026-10-18
+  - title: 'Android 9 Pie feature tracker: Everything that made it in (Android Police)'
+    url: https://www.androidpolice.com/2018/08/13/every-new-android-p-feature-weve-found-far-continuously-updated/
+    accessedAt: 2026-10-18
+  - title: Random Musings on the P Developer Preview 2 (CommonsWare)
+    url: https://commonsware.com/blog/2018/05/10/random-musings-p-developer-preview-2.html
+    accessedAt: 2026-10-18
 ---
 
 Android 9 Pie es la versión que dejó a las apps inactivas sin cámara, sin
@@ -224,6 +266,12 @@ Google usó en público.
 | Lanzamiento                        | Despliegue en Pixel y código en AOSP, 6 de agosto de 2018                                     |
 | Dispositivos de lanzamiento        | Pixel, Pixel XL, Pixel 2 y Pixel 2 XL por actualización; Pixel 3 y Pixel 3 XL llegaron con él |
 | Plazo de target API en Google Play | Apps nuevas desde agosto de 2019, actualizaciones desde noviembre de 2019                     |
+| Herramientas                       | `compileSdk 28`, el SDK de API 28 en Android Studio 3.1 o posterior                           |
+
+El anuncio de lanzamiento de Google indica instalar el SDK de API 28 en
+Android Studio 3.1 o usar Android Studio 3.2, cuyos metadatos de lint se
+actualizaron para Android 9. Ninguna página de Google indica una versión mínima
+del Android Gradle Plugin para API 28.
 
 La primera vista previa para desarrolladores salió el 7 de marzo de 2018; los cinco hitos de la preview son las partes debajo de este resumen. La
 beta llegó el 8 de mayo, durante Google I/O, y gracias a Project Treble también
@@ -338,41 +386,89 @@ Android 10 y posteriores.
 
 ## Permisos
 
-- **Grupo `CALL_LOG`.** `READ_CALL_LOG`, `WRITE_CALL_LOG` y
-  `PROCESS_OUTGOING_CALLS` salieron del grupo `PHONE` hacia un nuevo grupo
-  `CALL_LOG`. Hay que pedirlos por separado o se obtiene una
-  `SecurityException`.
-- **Números de teléfono.** Sin `READ_CALL_LOG`, los números del broadcast de
-  estado del teléfono y de `PhoneStateListener` llegan vacíos.
-- **Escaneos Wi-Fi.** `WifiManager.startScan()` necesita
-  `ACCESS_FINE_LOCATION` o `ACCESS_COARSE_LOCATION`, `CHANGE_WIFI_STATE` y la
-  ubicación activada. Leer el SSID y el BSSID desde `getConnectionInfo()` pide
-  un permiso de ubicación y `ACCESS_WIFI_STATE`.
-- **Datos de celdas.** Con la ubicación del dispositivo apagada,
-  `getAllCellInfo()`, `getCellLocation()` y `getNeighboringCellInfo()` no
-  devuelven nada.
-- **Número de serie.** `Build.getSerial()` necesita `READ_PHONE_STATE`.
-- **Nuevos.** `FOREGROUND_SERVICE` (normal), `USE_BIOMETRIC` (normal),
-  `ACCEPT_HANDOVER` (peligroso) y `NFC_TRANSACTION_EVENT` (normal).
-- **Obsoleto.** `USE_FINGERPRINT`, reemplazado por `USE_BIOMETRIC`.
+Android 9 agregó cuatro permisos, movió tres a un grupo nuevo y dio una tarea
+nueva a dos permisos existentes. Las reglas del registro de llamadas y del
+Wi-Fi alcanzan a todas las apps; las del servicio en primer plano y del número
+de serie, a las apps con target API 28.
+
+| Permiso                                                     | Qué cambió en API 28                                                                                      | Qué declarar                                                                                                                             | Qué quitar o limitar                                           |
+| ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `READ_CALL_LOG`, `WRITE_CALL_LOG`, `PROCESS_OUTGOING_CALLS` | Pasaron del grupo `PHONE` a un nuevo grupo `CALL_LOG`; conceder `PHONE` ya no los cubre                   | Pídelos por separado en tiempo de ejecución, o las llamadas lanzan `SecurityException`                                                   | Nada                                                           |
+| `READ_CALL_LOG` para números de teléfono                    | Hace falta para leer números del broadcast de estado del teléfono y de `PhoneStateListener`               | Pídelo además de lo que ya tienes                                                                                                        | Nada                                                           |
+| `FOREGROUND_SERVICE`                                        | Permiso normal nuevo; las apps con target 28 lo necesitan para llamar a `startForeground()`               | Solo `<uses-permission>`; se concede al instalar                                                                                         | Nada                                                           |
+| `READ_PHONE_STATE`                                          | Ahora controla `Build.getSerial()`; `Build.SERIAL` devuelve "unknown" a las apps con target 28            | Pídelo solo si necesitas el número de serie del hardware                                                                                 | Nada en 28; Android 10 cierra `getSerial()` a las apps de Play |
+| `ACCESS_FINE_LOCATION`, `ACCESS_COARSE_LOCATION`            | Uno de ellos hace falta para `WifiManager.startScan()` y para el SSID y el BSSID de `getConnectionInfo()` | Pide uno en tiempo de ejecución, más `CHANGE_WIFI_STATE` para escanear o `ACCESS_WIFI_STATE` para leer; la ubicación debe estar activada | Nada                                                           |
+| `USE_BIOMETRIC`                                             | Permiso normal nuevo para `BiometricPrompt`                                                               | Decláralo cuando muestres `BiometricPrompt`                                                                                              | Nada                                                           |
+| `USE_FINGERPRINT`                                           | Obsoleto, reemplazado por `USE_BIOMETRIC`                                                                 | Mantenlo mientras llames a `FingerprintManager` en API 27 o inferior                                                                     | Quítalo cuando nada llame a `FingerprintManager`               |
+| `ACCEPT_HANDOVER`                                           | Permiso peligroso nuevo para continuar una llamada iniciada en otra app                                   | Pídelo en tiempo de ejecución en la app de llamadas que recibe la llamada                                                                | Nada                                                           |
+| `NFC_TRANSACTION_EVENT`                                     | Permiso normal nuevo para recibir eventos de transacciones NFC                                            | Decláralo si manejas esos eventos                                                                                                        | Nada                                                           |
+
+Un manifiesto para una app que funciona en Android 8.1 o anterior y en 9 o
+posterior. Deja solo los bloques que tu app necesita:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Servicios en primer plano: obligatorio con target API 28 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- Registro de llamadas y números: grupo propio desde API 28 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+
+    <!-- Biometría: el permiso nuevo y el antiguo para API 27 o inferior -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+
+    <application
+        android:networkSecurityConfig="@xml/network_security_config">
+
+        <!-- Cliente HTTP de Apache: required="false" mantiene las instalaciones en API 23 o inferior -->
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+    </application>
+</manifest>
+```
+
+Con el tráfico sin cifrar apagado por defecto,
+`res/xml/network_security_config.xml` nombra los únicos hosts que todavía
+pueden usar HTTP:
+
+```xml
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">insecure.example.com</domain>
+    </domain-config>
+</network-security-config>
+```
+
+`android:usesCleartextTraffic` en `<application>` también vale `"false"` por
+defecto para las apps con target 28. Desde Android 7.0 la plataforma lo ignora
+cuando existe una Network Security Configuration, así que define la regla en
+un solo lugar.
 
 ## Qué cambió para tu app
 
 ### Todas las apps en Android 9
 
-| Cambio                                                                                        | Qué hacer                                                                                                   |
-| --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| App Standby Buckets: active, working set, frequent, rare, never                               | Consulta `UsageStatsManager.getAppStandbyBucket()`; prueba con `adb shell am set-standby-bucket <pkg> rare` |
-| Las apps inactivas pierden cámara, micrófono y sensores                                       | Lleva el trabajo continuo con sensores a un servicio en primer plano                                        |
-| Restricciones a interfaces fuera del SDK                                                      | Reemplaza las llamadas ocultas por las del SDK; búscalas con `StrictMode.detectNonSdkApiUsage()`            |
-| Una app en primer plano escanea Wi-Fi 4 veces en 2 minutos; todas las de fondo, una vez en 30 | Guarda los resultados en lugar de escanear cada vez                                                         |
-| `NETWORK_STATE_CHANGED_ACTION` ya no trae SSID ni BSSID                                       | Llama a `getConnectionInfo()`                                                                               |
-| El ahorro de batería aplica los límites en segundo plano a todas las apps                     | Prueba con el ahorro de batería activo                                                                      |
-| Las versiones de Bouncy Castle de muchos algoritmos quedan obsoletas                          | Usa el proveedor Conscrypt                                                                                  |
-| `FLAG_ACTIVITY_NEW_TASK` vuelve a exigirse desde un contexto que no es una actividad          | Agrega la flag al abrir una actividad desde un servicio o el contexto de la aplicación                      |
-| El bloqueo de rotación puede fijar cualquier orientación que admita la actividad visible      | No supongas vertical                                                                                        |
-| `getCameraIdList()` puede listar varias cámaras frontales o traseras                          | Deja que el usuario elija entre ellas                                                                       |
-| Las apps con target API 16 o inferior muestran un aviso al abrirse                            | Sube `targetSdkVersion` a 17 o más                                                                          |
+| Cambio                                                                                        | Qué hacer                                                                                        | Cómo comprobarlo                                                                       |
+| --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| App Standby Buckets: active, working set, frequent, rare, never                               | Consulta tu bucket con `UsageStatsManager.getAppStandbyBucket()`                                 | `adb shell am set-standby-bucket <package> rare`                                       |
+| Las apps inactivas pierden cámara, micrófono y sensores                                       | Lleva el trabajo continuo con sensores a un servicio en primer plano                             |                                                                                        |
+| Las interfaces fuera del SDK de la blacklist fallan; las de la light greylist dejan log       | Reemplaza las llamadas ocultas por las del SDK; búscalas con `StrictMode.detectNonSdkApiUsage()` | Lint `PrivateApi`, `DiscouragedPrivateApi`                                             |
+| Una app en primer plano escanea Wi-Fi 4 veces en 2 minutos; todas las de fondo, una vez en 30 | Guarda los resultados en lugar de escanear cada vez                                              |                                                                                        |
+| `NETWORK_STATE_CHANGED_ACTION` ya no trae SSID ni BSSID                                       | Llama a `getConnectionInfo()`                                                                    |                                                                                        |
+| Con la ubicación del dispositivo apagada, los datos de celdas llegan vacíos                   | Maneja resultados vacíos de `getAllCellInfo()`, `getCellLocation()` y `getNeighboringCellInfo()` |                                                                                        |
+| El ahorro de batería aplica los límites en segundo plano a todas las apps                     | Prueba con el ahorro de batería activo                                                           | `adb shell dumpsys battery unplug` y luego `adb shell settings put global low_power 1` |
+| Las versiones de Bouncy Castle de muchos algoritmos quedan obsoletas                          | Usa el proveedor Conscrypt                                                                       |                                                                                        |
+| `FLAG_ACTIVITY_NEW_TASK` vuelve a exigirse desde un contexto que no es una actividad          | Agrega la flag al abrir una actividad desde un servicio o el contexto de la aplicación           |                                                                                        |
+| El bloqueo de rotación puede fijar cualquier orientación que admita la actividad visible      | No supongas vertical                                                                             |                                                                                        |
+| `getCameraIdList()` puede listar varias cámaras frontales o traseras                          | Deja que el usuario elija entre ellas                                                            |                                                                                        |
+| Las apps con target API 16 o inferior muestran un aviso al abrirse                            | Sube `targetSdkVersion` a 17 o más                                                               |                                                                                        |
+
+Los cambios de permisos del registro de llamadas y del Wi-Fi también alcanzan
+a todas las apps; están en la [tabla de permisos](#permisos).
 
 El bucket limita jobs, alarmas y mensajes FCM de alta prioridad, y en "rare"
 también el acceso a la red. Los límites solo se aplican con batería, y el
@@ -407,17 +503,64 @@ Para probar, `adb shell settings put global hidden_api_policy_p_apps 1` (y
 
 ### Apps con target API 28
 
-| Cambio                                                                        | Qué hacer                                                                                                           |
-| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| Tráfico sin cifrar bloqueado por defecto                                      | Usa HTTPS, o define `cleartextTrafficPermitted="true"` para dominios concretos en la Network Security Configuration |
-| `startForeground()` exige `FOREGROUND_SERVICE`                                | Decláralo; es un permiso normal                                                                                     |
-| `Build.SERIAL` devuelve `"unknown"`                                           | Pide `READ_PHONE_STATE` y llama a `Build.getSerial()`                                                               |
-| El cliente HTTP de Apache sale del bootclasspath                              | Declara `<uses-library android:name="org.apache.http.legacy" android:required="false"/>` o deja de usarlo           |
-| Un directorio de datos de WebView por proceso                                 | Mantén WebView en un solo proceso, o llama a `WebView.setDataDirectorySuffix()`                                     |
-| Dominios SELinux por app                                                      | Comparte archivos con un content provider, no con archivos legibles por todos                                       |
-| Los clientes DNS propios deben respetar el DNS privado                        | Usa DNS cifrado hacia el mismo host, o el resolvedor del sistema                                                    |
-| Las vistas de área cero no reciben foco; no hay foco inicial implícito        | Pide el foco inicial de forma explícita                                                                             |
-| WebView lee colores hex de 8 dígitos como RGBA y no deduce el MIME en `file:` | Corrige los colores ARGB en el CSS y da su extensión a los archivos locales                                         |
+| Cambio                                                                                 | Qué hacer                                                                                                                   | Cómo comprobarlo                                                          |
+| -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Tráfico sin cifrar bloqueado por defecto                                               | Usa HTTPS, o define `cleartextTrafficPermitted="true"` para dominios concretos en la Network Security Configuration         | Lint `InsecureBaseConfiguration`; `StrictMode` `detectCleartextNetwork()` |
+| `startForeground()` exige `FOREGROUND_SERVICE`                                         | Decláralo; es un permiso normal                                                                                             |                                                                           |
+| `Build.SERIAL` devuelve "unknown"                                                      | Pide `READ_PHONE_STATE` y llama a `Build.getSerial()`, o deja de depender del número de serie                               | Lint `HardwareIds`                                                        |
+| El cliente HTTP de Apache sale del bootclasspath                                       | Declara `<uses-library android:name="org.apache.http.legacy" android:required="false"/>`, o incluye una copia reempaquetada |                                                                           |
+| Las interfaces fuera del SDK de la dark greylist fallan                                | Reemplázalas por llamadas del SDK                                                                                           | Lint `BlockedPrivateApi`, `SoonBlockedPrivateApi`                         |
+| Un directorio de datos de WebView por proceso                                          | Mantén WebView en un solo proceso, o llama a `WebView.setDataDirectorySuffix()`                                             |                                                                           |
+| Dominios SELinux por app                                                               | Comparte archivos con un content provider, no con archivos legibles por todos                                               | Lint `WorldReadableFiles`, `SetWorldReadable`                             |
+| Los clientes DNS propios deben respetar el DNS privado                                 | Usa DNS cifrado hacia el mismo host, o el resolvedor del sistema                                                            |                                                                           |
+| `getMultipathPreference()` pasa a false tras cierta cantidad diaria de tráfico celular | Llámalo y respeta la indicación antes de usar datos móviles con Wi-Fi                                                       |                                                                           |
+| Las vistas de área cero no reciben foco; no hay foco inicial implícito                 | Pide el foco inicial de forma explícita                                                                                     |                                                                           |
+| WebView lee colores hex de 8 dígitos como RGBA y no deduce el MIME en `file:`          | Corrige los colores ARGB en el CSS y da su extensión a los archivos locales                                                 |                                                                           |
+| WebView desplaza el elemento raíz, no `body`                                           | Lee los valores de desplazamiento de `document.scrollingElement`                                                            |                                                                           |
+
+La librería `org.apache.http.legacy` no existe por debajo de API 24; allí las
+clases están en el bootclasspath. Por eso `android:required="false"` es
+obligatorio para las apps con `minSdkVersion` 23 o inferior.
+
+## Migrar a API 28
+
+De `targetSdk 27` a 28, en este orden:
+
+1. **Actualiza las herramientas.** Pon `compileSdk 28` e instala el SDK de
+   API 28 (Android Studio 3.1 o posterior; 3.2 trae el lint actualizado). Si lo
+   saltas, las constantes nuevas como `FOREGROUND_SERVICE` no compilan.
+   Comprueba: el proyecto compila y lint no muestra errores nuevos.
+2. **Pasa el tráfico a HTTPS.** Busca cada URL `http://` que llaman tu app y
+   sus SDK; cámbialas, o permite hosts concretos en una Network Security
+   Configuration. Si lo saltas, esas peticiones fallan en Android 9. Comprueba:
+   activa `StrictMode` `detectCleartextNetwork()` en una compilación de
+   depuración, ejecuta lint `InsecureBaseConfiguration` y recorre los flujos de
+   red en un dispositivo con Android 9.
+3. **Declara `FOREGROUND_SERVICE`.** Si lo saltas, `startForeground()` lanza
+   `SecurityException`. Comprueba: inicia cada servicio en primer plano en
+   Android 9.
+4. **Resuelve el cliente HTTP de Apache.** Si tu código o una librería todavía
+   usa `org.apache.http`, agrega la entrada `<uses-library>` con
+   `android:required="false"`, o incluye una copia reempaquetada. Si lo saltas,
+   las clases faltan en tiempo de ejecución. Comprueba: ejecuta en Android 9 los
+   caminos de código que lo usan.
+5. **Quita las llamadas a APIs ocultas.** Las interfaces de la dark greylist
+   dejan de funcionar al apuntar a 28. Comprueba: lint `BlockedPrivateApi` y
+   `PrivateApi`, luego `StrictMode` `detectNonSdkApiUsage()` y los avisos
+   "Accessing hidden" en logcat mientras pruebas.
+6. **Reemplaza `Build.SERIAL`.** Pide `READ_PHONE_STATE` y llama a
+   `Build.getSerial()`, o mejor, deja de depender de un identificador de
+   hardware. Si lo saltas, lees "unknown". Comprueba: lint `HardwareIds`.
+7. **Revisa las filas menores** de la tabla de target que te afecten: WebView
+   en varios procesos, archivos legibles por todos, tu propio cliente DNS, el
+   foco de las vistas, los colores de WebView y los tipos MIME de `file:`.
+8. **Prueba el resultado** en un dispositivo o emulador con Android 9 y
+   `targetSdk 28`, incluidos los flujos de permisos del registro de llamadas y
+   del Wi-Fi de la [tabla de permisos](#permisos).
+
+Si saltas varios niveles a la vez: sigue los pasos de cada versión en orden,
+empezando por [Android 8.1 Oreo](/es/notes/android-8-1-oreo/) si tu target es
+26 o inferior.
 
 ## Qué perduró
 

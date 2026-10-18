@@ -157,6 +157,39 @@ citations:
   - title: New Android 5.0 Lollipop developer preview and SDK now out (GSMArena)
     url: https://www.gsmarena.com/new_android_50_lollipop_developer_preview_and_sdk_now_out-news-9968.php
     accessedAt: 2026-10-18
+  - title: ContextImpl.java at android-5.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-5.0.0_r1/core/java/android/app/ContextImpl.java
+    accessedAt: 2026-10-18
+  - title: Spinner.java at android-5.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-5.0.0_r1/core/java/android/widget/Spinner.java
+    accessedAt: 2026-10-18
+  - title: JobSchedulerService.java at android-5.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-5.0.0_r1/services/core/java/com/android/server/job/JobSchedulerService.java
+    accessedAt: 2026-10-18
+  - title: Intents and intent filters
+    url: https://developer.android.com/guide/components/intents-filters
+    accessedAt: 2026-10-18
+  - title: UsageStatsManager reference
+    url: https://developer.android.com/reference/android/app/usage/UsageStatsManager
+    accessedAt: 2026-10-18
+  - title: Settings.ACTION_USAGE_ACCESS_SETTINGS reference
+    url: https://developer.android.com/reference/android/provider/Settings#ACTION_USAGE_ACCESS_SETTINGS
+    accessedAt: 2026-10-18
+  - title: JNI tips (CheckJNI)
+    url: https://developer.android.com/training/articles/perf-jni
+    accessedAt: 2026-10-18
+  - title: 'Lint check: JobSchedulerService'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/JobSchedulerService.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check: IconColors'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/IconColors.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check: PermissionNamingConvention'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/PermissionNamingConvention.md.html
+    accessedAt: 2026-10-18
+  - title: 'Dealing with L Deprecations: bindService() (CommonsWare)'
+    url: https://commonsware.com/blog/2014/06/29/dealing-deprecations-bindservice.html
+    accessedAt: 2026-10-18
 ---
 
 Android 5.0 Lollipop is the release that swapped the engine and the paint at
@@ -290,47 +323,132 @@ users or start a guest session.
 ## Permissions
 
 Lollipop still grants every permission at install. Runtime requests arrived a
-year later, in [Android 6.0](/notes/android-6-marshmallow/).
+year later, in [Android 6.0](/notes/android-6-marshmallow/). What changed is
+which names an app may define, which services need a bind permission, and two
+old permissions that lost or gained a job:
 
-- **Custom permissions are unique.** Only one app on a device can define a
-  given custom permission name, unless the other app is signed with the same
-  key. An app that would redefine it with another key fails to install.
-- **Bind permissions.** A `JobService` must be protected with
-  `android.permission.BIND_JOB_SERVICE`, or the system ignores it.
-  `BIND_DREAM_SERVICE`, `BIND_TV_INPUT` and `BIND_VOICE_INTERACTION` were added
-  for the same purpose.
-- **Usage access.** `android.permission.PACKAGE_USAGE_STATS` is granted by the
-  user in Settings ("Apps with usage access"), not in the install dialog.
-- **Screen capture.** `MediaProjection` has no manifest permission; the user
-  accepts a dialog each time.
-- **Deprecated.** `GET_TASKS` is no longer enforced.
-- **Bluetooth LE.** Advertising and scanning use `BLUETOOTH_ADMIN`.
+| Permission                                 | What changed in API 21                                                                                                           | What to declare                                                               | What to remove or limit                                                                           |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Custom `<permission>` names                | Only one app on a device can define a name, unless the other app has the same signing key; a duplicate blocks the install        | Name it after your package: `com.example.app.permission.NAME`                 | Every `<permission>` you do not need, including ones copied from sample code                      |
+| `BIND_JOB_SERVICE`                         | New; `JobScheduler.schedule()` throws `IllegalArgumentException` if the `JobService` does not require it                         | `android:permission="android.permission.BIND_JOB_SERVICE"` on the `<service>` | Nothing                                                                                           |
+| `BIND_DREAM_SERVICE`                       | New; a `DreamService` in an app targeting 21 must require it                                                                     | `android:permission` on the `<service>`                                       | Nothing                                                                                           |
+| `BIND_TV_INPUT` · `BIND_VOICE_INTERACTION` | New; a `TvInputService` or `VoiceInteractionService` must require it so only the system can bind                                 | `android:permission` on the `<service>`                                       | Nothing                                                                                           |
+| `PACKAGE_USAGE_STATS`                      | New use: the `android.app.usage` API needs it, and the user must also allow it in Settings > Security > "Apps with usage access" | `<uses-permission>`, then open `Settings.ACTION_USAGE_ACCESS_SETTINGS`        | Nothing                                                                                           |
+| `GET_TASKS`                                | Deprecated, no longer enforced; `getRecentTasks()` returns only your own tasks                                                   | Nothing on API 21                                                             | `android:maxSdkVersion="20"` if older versions still call `getRecentTasks()`; otherwise remove it |
+| `BLUETOOTH_ADMIN`                          | Now also covers Bluetooth LE advertising and scanning with `android.bluetooth.le`                                                | Declare it to advertise or scan                                               | Nothing                                                                                           |
+| `READ_VOICEMAIL` · `WRITE_VOICEMAIL`       | New, for reading and changing the system's voicemails                                                                            | Only in a dialer or voicemail app                                             | Nothing                                                                                           |
+
+One manifest for an app that runs on Android 4.4 and on 5.0 and later. Keep
+only the blocks your app needs:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.app">
+
+    <!-- A custom permission: unique on the device from API 21,
+         so prefix it with your package name -->
+    <permission
+        android:name="com.example.app.permission.READ_NOTES"
+        android:protectionLevel="signature" />
+
+    <!-- Recent tasks: enforced up to API 20, ignored from 21 -->
+    <uses-permission
+        android:name="android.permission.GET_TASKS"
+        android:maxSdkVersion="20" />
+
+    <!-- Bluetooth LE advertising and scanning, from API 21 -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
+    <!-- Usage stats: the user also turns it on in Settings -->
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
+
+    <application>
+        <!-- JobScheduler refuses a job whose service lacks this -->
+        <service
+            android:name=".SyncJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+    </application>
+</manifest>
+```
+
+Screen capture through `MediaProjection` has no manifest permission: the user
+accepts a system dialog each time.
 
 ## What changed for your app
 
 ### All apps on Android 5.0
 
-| Change                                                         | What to do                                                                                                                  |
-| -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| ART replaces Dalvik                                            | Test JNI code with CheckJNI, drop pointers to Java object data, and update obfuscators that ART's stricter verifier rejects |
-| Notification icons are drawn white; non-alpha channels ignored | Ship alpha-only icons and set an accent with `setColor()`                                                                   |
-| Notifications show on the lock screen by default               | Set `setVisibility()` and a `setPublicVersion()` for sensitive content                                                      |
-| Lock screens no longer show `RemoteControlClient` controls     | Move to `MediaSession` and `Notification.MediaStyle` with `VISIBILITY_PUBLIC`                                               |
-| `getRecentTasks()` returns only your own tasks                 | Use `getAppTasks()`                                                                                                         |
-| Duplicate custom permission names block installs               | Prefix permissions with your package name, or use a system permission                                                       |
-| New TLS defaults                                               | Fix servers that only offer the disabled cipher suites                                                                      |
-| Lock screen widgets removed                                    | Drop the dependency                                                                                                         |
-| Intents in a managed profile may find no handler               | Call `resolveActivity()` first, and share files with a `content://` URI                                                     |
+| Change                                                                    | What to do                                                                                                                  | How to check                                                |
+| ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| ART replaces Dalvik                                                       | Test JNI code with CheckJNI, drop pointers to Java object data, and update obfuscators that ART's stricter verifier rejects | `adb shell setprop debug.checkjni 1`, then relaunch the app |
+| Notification icons are drawn white; non-alpha channels ignored            | Ship alpha-only icons and set an accent with `setColor()`                                                                   | Lint `IconColors`                                           |
+| Sound from `Ringtone`, `MediaPlayer` or `Vibrator` bypasses priority mode | Set sound and vibration with `Notification.Builder`                                                                         |                                                             |
+| Notifications show on the lock screen by default                          | Set `setVisibility()` and a `setPublicVersion()` for sensitive content                                                      |                                                             |
+| Lock screens no longer show `RemoteControlClient` controls                | Move to `MediaSession` and `Notification.MediaStyle` with `VISIBILITY_PUBLIC`                                               |                                                             |
+| `getRecentTasks()` returns only your own tasks                            | Use `getAppTasks()`                                                                                                         |                                                             |
+| Duplicate custom permission names block installs                          | Prefix permissions with your package name, or use a system permission                                                       | Lint `PermissionNamingConvention` (off by default)          |
+| New TLS defaults                                                          | Fix servers that only offer the disabled cipher suites                                                                      |                                                             |
+| Lock screen widgets removed                                               | Drop the dependency                                                                                                         |                                                             |
+| Intents in a managed profile may find no handler                          | Call `resolveActivity()` first, and share files with a `content://` URI                                                     |                                                             |
 
 ### Apps targeting API 21
 
-| Change                                                      | What to do                                                                                     |
-| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `bindService()` throws on an implicit `Intent`              | Bind with an explicit `Intent`, and do not give the service intent filters                     |
-| WebView blocks mixed content and third-party cookies        | Opt in with `setMixedContentMode()` and `setAcceptThirdPartyCookies()` if needed               |
-| WebView draws only the parts of the page it needs           | Call `enableSlowWholeDocumentDraw()` if you draw or capture parts far outside the visible page |
-| A `DreamService` must require `BIND_DREAM_SERVICE`          | Add the permission to the service declaration                                                  |
-| `Spinner` throws with an adapter of more than one item type | Use a single view type                                                                         |
+| Change                                                      | What to do                                                                                     | How to check |
+| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------ |
+| `bindService()` throws on an implicit `Intent`              | Bind with an explicit `Intent`, and do not give the service intent filters                     |              |
+| WebView blocks mixed content and third-party cookies        | Opt in with `setMixedContentMode()` and `setAcceptThirdPartyCookies()` if needed               |              |
+| WebView draws only the parts of the page it needs           | Call `enableSlowWholeDocumentDraw()` if you draw or capture parts far outside the visible page |              |
+| A `DreamService` must require `BIND_DREAM_SERVICE`          | Add the permission to the service declaration                                                  |              |
+| `Spinner` throws with an adapter of more than one item type | Use a single view type                                                                         |              |
+
+Google's pages name `bindService()`. The AOSP code at the 5.0 tag runs the same
+check in `startService()` and `stopService()`: with a target of 21 or higher,
+an intent with neither a component nor a package throws
+`IllegalArgumentException` ("Service Intent must be explicit"); below 21 it
+only logs a warning. Setting the package with `setPackage()` is enough.
+CommonsWare noted during the preview that libraries binding with implicit
+intents, such as Google's in-app billing helper at the time, broke the same
+way.
+
+## Migrating to API 21
+
+From `targetSdk 19` (or 20, Android 4.4W for Wear) to 21, in this order:
+
+1. **Update the SDK.** Install the Android 5.0 SDK Platform and set
+   `compileSdkVersion 21`. Skipped, the new constants (`LOLLIPOP`,
+   `BIND_JOB_SERVICE`, `VISIBILITY_PUBLIC`) do not compile. Verify: the
+   project builds and lint runs.
+2. **Make every service intent explicit.** Give each `bindService()`,
+   `startService()` and `stopService()` call a component or a package, in
+   your code and in the libraries you ship. Skipped, those calls throw
+   `IllegalArgumentException` on Android 5.0. Verify: run each flow that
+   starts or binds a service and watch logcat; below 21 the same calls log
+   "Implicit intents with startService are not safe".
+3. **Check custom permissions.** Rename each `<permission>` after your
+   package, or drop it for a system permission. Skipped, your app fails to
+   install next to another app that defines the same name. Verify: lint
+   `PermissionNamingConvention` (enable it), then install next to the app you
+   share a name with.
+4. **Run on ART.** Test native code with CheckJNI and update an obfuscator
+   ART rejects. Skipped, JNI mistakes Dalvik tolerated crash on every
+   Android 5.0 device, whatever your target. Verify:
+   `adb shell setprop debug.checkjni 1` and an app launch.
+5. **Fix notifications.** Alpha-only icons with `setColor()`, a visibility
+   and public version for sensitive ones, and `MediaStyle` with
+   `VISIBILITY_PUBLIC` for media. Skipped, colour icons turn into white
+   silhouettes and private text reaches the lock screen. Verify: lint `IconColors` and a
+   notification on a locked device.
+6. **Go through WebView and widgets.** Opt in to mixed content or
+   third-party cookies only where you need them, and give each `Spinner`
+   adapter one view type. Skipped, HTTP resources on HTTPS pages and
+   third-party cookies stop loading, and the spinner throws. Verify: load each WebView page over HTTPS and open each
+   spinner.
+7. **Test the result** on an Android 5.0 device or emulator with
+   `targetSdk 21`. If you use `JobScheduler`, lint `JobSchedulerService`
+   checks the service and its `BIND_JOB_SERVICE`.
+
+Skipping several levels at once: do each version's steps in order, starting
+from [Android 4.4](/notes/android-4-4-kitkat/) if you target 18 or lower.
 
 ## What lasted
 

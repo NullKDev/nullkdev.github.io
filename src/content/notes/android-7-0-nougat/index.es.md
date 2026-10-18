@@ -190,6 +190,66 @@ citations:
   - title: 'Final Android 7.0 Nougat Developer Preview 5 now available (9to5Google)'
     url: https://9to5google.com/2016/07/18/android-n-developer-preview-5-download/
     accessedAt: 2026-10-18
+  - title: 'Set Up the Preview — Android N (archived 16 July 2016)'
+    url: https://web.archive.org/web/20160716194110/https://developer.android.com/preview/setup-sdk.html
+    accessedAt: 2026-10-18
+  - title: Background optimizations
+    url: https://developer.android.com/topic/performance/background-optimization
+    accessedAt: 2026-10-18
+  - title: Setting up file sharing (FileProvider)
+    url: https://developer.android.com/training/secure-file-sharing/setup-sharing
+    accessedAt: 2026-10-18
+  - title: StrictMode.VmPolicy.Builder reference
+    url: https://developer.android.com/reference/android/os/StrictMode.VmPolicy.Builder
+    accessedAt: 2026-10-18
+  - title: Optimize for Doze and App Standby
+    url: https://developer.android.com/training/monitoring-device-state/doze-standby
+    accessedAt: 2026-10-18
+  - title: Manifest.permission reference
+    url: https://developer.android.com/reference/android/Manifest.permission
+    accessedAt: 2026-10-18
+  - title: TileService reference
+    url: https://developer.android.com/reference/android/service/quicksettings/TileService
+    accessedAt: 2026-10-18
+  - title: CallScreeningService reference
+    url: https://developer.android.com/reference/android/telecom/CallScreeningService
+    accessedAt: 2026-10-18
+  - title: VrListenerService reference
+    url: https://developer.android.com/reference/android/service/vr/VrListenerService
+    accessedAt: 2026-10-18
+  - title: ConditionProviderService reference
+    url: https://developer.android.com/reference/android/service/notification/ConditionProviderService
+    accessedAt: 2026-10-18
+  - title: 'Android Lint check: AcceptsUserCertificates'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/AcceptsUserCertificates.md.html
+    accessedAt: 2026-10-18
+  - title: 'Android Lint check: NetworkSecurityConfig'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/NetworkSecurityConfig.md.html
+    accessedAt: 2026-10-18
+  - title: 'Android Lint check: WorldReadableFiles'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/WorldReadableFiles.md.html
+    accessedAt: 2026-10-18
+  - title: 'Android Lint check: WorldWriteableFiles'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/WorldWriteableFiles.md.html
+    accessedAt: 2026-10-18
+  - title: 'Android Lint check: NonResizeableActivity'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/NonResizeableActivity.md.html
+    accessedAt: 2026-10-18
+  - title: 'Android Lint check: DeletedProvider'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/DeletedProvider.md.html
+    accessedAt: 2026-10-18
+  - title: 'PSA: file: Scheme Ban in N Developer Preview (CommonsWare)'
+    url: https://commonsware.com/blog/2016/03/14/psa-file-scheme-ban-n-developer-preview.html
+    accessedAt: 2026-10-18
+  - title: Android 7.0 Nougat is rolling out to Nexus devices starting today (Android Police)
+    url: https://www.androidpolice.com/2016/08/22/android-7-0-nougat-rolling-nexus-devices-starting-today/
+    accessedAt: 2026-10-18
+  - title: Android 7.0 Nougat rolling out today to Nexus devices and Pixel C (9to5Google)
+    url: https://9to5google.com/2016/08/22/android-7-0-nougat-nexus-factory-images-ota/
+    accessedAt: 2026-10-18
+  - title: Android 7.0 Nougat arrives today (Engadget)
+    url: https://www.engadget.com/2016-08-22-android-7-nougat-launch.html
+    accessedAt: 2026-10-18
 ---
 
 Android 7.0 Nougat es la versión que puso dos apps en la pantalla de un
@@ -203,23 +263,32 @@ crash para las apps que todavía comparten URIs `file://`.
 
 ## De un vistazo
 
-|                                    |                                                                    |
-| ---------------------------------- | ------------------------------------------------------------------ |
-| Versión                            | Android 7.0                                                        |
-| Nivel de API                       | 24                                                                 |
-| Nombre                             | Nougat, público                                                    |
-| `Build.VERSION_CODES`              | `N`                                                                |
-| APIs y SDK finales                 | 15 de junio de 2016                                                |
-| Lanzamiento                        | Despliegue en Nexus desde el 22 de agosto de 2016                  |
-| Dispositivo de lanzamiento         | LG V20, el primer teléfono nuevo que salió con Nougat              |
-| Plazo de target API en Google Play | Ninguno. La regla de target API de Play empezó en 2018, con API 26 |
+|                                    |                                                                                                 |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Versión                            | Android 7.0                                                                                     |
+| Nivel de API                       | 24                                                                                              |
+| Nombre                             | Nougat, público                                                                                 |
+| `Build.VERSION_CODES`              | `N`                                                                                             |
+| APIs y SDK finales                 | 15 de junio de 2016                                                                             |
+| Lanzamiento                        | Despliegue en Nexus desde el 22 de agosto de 2016                                               |
+| Dispositivo de lanzamiento         | LG V20, el primer teléfono nuevo que salió con Nougat                                           |
+| Plazo de target API en Google Play | Ninguno. La regla de target API de Play empezó en 2018, con API 26                              |
+| Herramientas                       | `compileSdkVersion 24`, Build Tools 24.0.0 y JDK 8; Android Studio 2.1 para funciones de Java 8 |
 
 Google declaró finales las APIs de N el 15 de junio de 2016 y avisó que ya se
 podían publicar actualizaciones que compilaran contra API 24, y opcionalmente
 la tuvieran como target. El 22 de agosto Dave Burke anunció el despliegue
 "starting with Nexus devices": en varias semanas, a Nexus 6, 5X, 6P, 9, Nexus
 Player, Pixel C y General Mobile 4G (Android One). Ese mismo día el código
-llegó a AOSP y Ars Technica publicó su reseña.
+llegó a AOSP y Ars Technica publicó su reseña. Android Police, 9to5Google y
+Engadget listaron los mismos dispositivos ese día; el Nexus 5 de 2013 no se
+actualizó.
+
+La página de configuración de Google para el SDK final de API 24 pide
+`compileSdkVersion 24`, Build Tools 24.0.0 y JDK 8. Las funciones de lenguaje
+de Java 8 necesitaban el compilador Jack, que entonces solo soportaba Android
+Studio 2.1. La tabla de compatibilidad actual de Google empieza en API 33, así
+que no hay una versión mínima de Android Gradle Plugin indicada para API 24.
 
 La primera vista previa para desarrolladores salió el 9 de marzo de 2016.
 Burke la llamó "early… really early", y el nuevo Android Beta Program la
@@ -325,24 +394,68 @@ flowchart TD
 
 ## Permisos
 
-No llegaron permisos peligrosos nuevos. Los cambios tocan los archivos y el
-acceso acotado.
+No llegaron permisos peligrosos nuevos. Android 7.0 agregó cuatro permisos que
+protegen servicios a los que se conecta el sistema, eliminó una constante y
+necesita acceso al almacenamiento en menos casos:
 
-- **Nuevos.** `BIND_QUICK_SETTINGS_TILE`, `BIND_SCREENING_SERVICE`,
-  `BIND_VR_LISTENER_SERVICE` y `BIND_CONDITION_PROVIDER_SERVICE`. Protegen
-  servicios a los que se conecta el sistema.
-- **Eliminado.** `FLASHLIGHT` salió del SDK.
-- **Acceso acotado a carpetas.** `StorageVolume.createAccessIntent()` pide una
-  sola carpeta, como `Pictures`, en lugar de todo `READ_EXTERNAL_STORAGE`. El
-  usuario la permite o la niega en un diálogo.
+| Permiso                                                       | Qué cambió en API 24                                                                       | Qué declarar                                                                  | Qué quitar o limitar                                                                          |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `BIND_QUICK_SETTINGS_TILE`                                    | Nuevo; solo el sistema puede conectarse a un `TileService` que lo exige                    | `android:permission` en el `<service>` del mosaico, no un `<uses-permission>` | Nada                                                                                          |
+| `BIND_SCREENING_SERVICE`                                      | Nuevo; protege un `CallScreeningService`                                                   | `android:permission` en el `<service>`                                        | Nada                                                                                          |
+| `BIND_VR_LISTENER_SERVICE`, `BIND_CONDITION_PROVIDER_SERVICE` | Nuevos; protegen `VrListenerService` y `ConditionProviderService`                          | `android:permission` en el `<service>`                                        | Nada; `ConditionProviderService` está obsoleto desde API 29                                   |
+| `FLASHLIGHT`                                                  | Salió del SDK                                                                              | Nada                                                                          | Quita el código que lee `Manifest.permission.FLASHLIGHT`; la constante ya no existe en API 24 |
+| `WRITE_EXTERNAL_STORAGE`                                      | `Debug.startMethodTracing()` escribe en el directorio propio de la app y ya no lo necesita | Nada nuevo                                                                    | Quítalo si las trazas de métodos eran su único uso                                            |
+| `READ_EXTERNAL_STORAGE`                                       | `StorageVolume.createAccessIntent()` puede pedir una sola carpeta en su lugar              | Nada para el acceso acotado a carpetas                                        | Nada; el acceso acotado a carpetas quedó obsoleto en API 29                                   |
+| `DELETE_PACKAGES`                                             | Borrar un paquete que instaló otra app requiere la confirmación del usuario                | No es para apps de terceros                                                   | Nada; espera `STATUS_PENDING_USER_ACTION` de `PackageInstaller.uninstall()`                   |
+
+Un manifiesto para una app que corre en Android 6.0 o anterior y en 7.0 o
+posterior. Deja solo los bloques que tu app necesita:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Reglas de confianza por dominio; se leen desde Android 7.0 -->
+    <application android:networkSecurityConfig="@xml/network_security_config">
+
+        <!-- Comparte archivos privados como URIs content:// en toda versión -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+
+        <!-- Mosaico de Quick Settings: el permiso va en el servicio -->
+        <service
+            android:name=".MyTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_tile"
+            android:label="@string/tile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>
+```
+
+El mosaico y la configuración de seguridad de red funcionan desde Android 7.0.
+Para un proxy de depuración, pon su CA dentro de `<debug-overrides>` en
+`network_security_config.xml`; solo se confía en ella mientras
+`android:debuggable` es `true`.
+
+- **Acceso acotado a carpetas.** `createAccessIntent()` pide una sola carpeta,
+  como `Pictures`, y el usuario la permite o la niega en un diálogo.
 - **Archivos privados.** En las apps con target API 24, el directorio privado
-  tiene permisos `0700`. `MODE_WORLD_READABLE` y `MODE_WORLD_WRITEABLE` lanzan
-  `SecurityException`. Qué hacer está en la sección siguiente.
+  tiene permisos `0700` y `MODE_WORLD_READABLE` o `MODE_WORLD_WRITEABLE` lanzan
+  `SecurityException`. Qué hacer está en
+  [la tabla de target](#apps-con-target-api-24).
 - **Números bloqueados.** Solo la app de teléfono predeterminada, la de SMS
   predeterminada y las apps del operador pueden leer o escribir la lista.
-- **Trazas de métodos.** `Debug.startMethodTracing()` escribe en el directorio
-  propio de la app en el almacenamiento compartido, así que ya no necesita
-  `WRITE_EXTERNAL_STORAGE`.
 - **Copia de seguridad.** Android Backup ahora incluye los permisos otorgados
   en ejecución, según la lista de funciones de Nougat de Google.
 
@@ -350,32 +463,34 @@ acceso acotado.
 
 ### Todas las apps en Android 7.0
 
-| Cambio                                                                  | Qué hacer                                                                                                         |
-| ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| El primer nivel de Doze actúa con el teléfono en movimiento             | Sigue la guía de Doze de 6.0; usa Firebase Cloud Messaging para los mensajes                                      |
-| Desaparecen `Camera.ACTION_NEW_PICTURE` y `ACTION_NEW_VIDEO`            | Vigila los medios con un job de `JobScheduler` y `JobInfo.Builder.addTriggerContentUri()`                         |
-| Las bibliotecas privadas del NDK fuera de una lista corta no cargan     | Usa las APIs públicas del NDK o incluye tu propia copia                                                           |
-| `libcutils`, `libcrypto`, `libssl`, `libandroid_runtime`                | Cargan con una advertencia solo si tu target es 23 o menor; inclúyelas ya                                         |
-| Cambiar el tamaño de pantalla mata apps en segundo plano con target ≤23 | Restaura el estado bien al volver desde recientes                                                                 |
-| Se desactivan las suites de cifrado RC4                                 | Activa TLS 1.2, AES-GCM y ECDHE en el servidor                                                                    |
-| Escribir en un socket TCP desde el hilo principal lanza excepción       | Saca el trabajo de red del hilo principal                                                                         |
-| Se respeta la visibilidad de las anotaciones                            | Agrega `@Retention(RetentionPolicy.RUNTIME)` a las anotaciones que lees en ejecución                              |
-| Apps con target 23 o menor en pantalla dividida                         | Las redimensionables se fuerzan a cambiar de tamaño con un aviso; las de orientación fija ocupan toda la pantalla |
+| Cambio                                                                  | Qué hacer                                                                                                         | Cómo comprobarlo                                                                   |
+| ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| El primer nivel de Doze actúa con el teléfono en movimiento             | Sigue la guía de Doze de 6.0; usa Firebase Cloud Messaging para los mensajes                                      | `adb shell dumpsys deviceidle force-idle` y luego `unforce`                        |
+| Desaparecen `Camera.ACTION_NEW_PICTURE` y `ACTION_NEW_VIDEO`            | Vigila los medios con un job de `JobScheduler` y `JobInfo.Builder.addTriggerContentUri()`                         |                                                                                    |
+| Las bibliotecas privadas del NDK fuera de una lista corta no cargan     | Usa las APIs públicas del NDK o incluye tu propia copia                                                           | `UnsatisfiedLinkError` en logcat; `readelf -dW` lista las dependencias de un `.so` |
+| `libcutils`, `libcrypto`, `libssl`, `libandroid_runtime`                | Cargan con una advertencia solo si tu target es 23 o menor; inclúyelas ya                                         | Una advertencia del linker en logcat y un toast en el dispositivo                  |
+| Cambiar el tamaño de pantalla mata apps en segundo plano con target ≤23 | Restaura el estado bien al volver desde recientes                                                                 | Cambia "Display size" y vuelve a abrir la app desde recientes                      |
+| Se desactivan las suites de cifrado RC4                                 | Activa TLS 1.2, AES-GCM y ECDHE en el servidor                                                                    |                                                                                    |
+| Escribir en un socket TCP desde el hilo principal lanza excepción       | Saca el trabajo de red del hilo principal                                                                         | `NetworkOnMainThreadException` en logcat                                           |
+| Se respeta la visibilidad de las anotaciones                            | Agrega `@Retention(RetentionPolicy.RUNTIME)` a las anotaciones que lees en ejecución                              |                                                                                    |
+| Apps con target 23 o menor en pantalla dividida                         | Las redimensionables se fuerzan a cambiar de tamaño con un aviso; las de orientación fija ocupan toda la pantalla |                                                                                    |
 
 ### Apps con target API 24
 
-| Cambio                                                                  | Qué hacer                                                                                                 |
-| ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Las URIs `file://` que salen de la app lanzan `FileUriExposedException` | Comparte una URI `content://` de `FileProvider` con un permiso temporal                                   |
-| `CONNECTIVITY_ACTION` ya no llega a los receivers del manifiesto        | Regístralo en ejecución con `registerReceiver()` o programa el trabajo con `JobScheduler`                 |
-| No se confía en las CA agregadas por el usuario                         | Permítelas con una configuración de seguridad de red, o usa `debug-overrides` para un proxy de depuración |
-| El directorio privado es `0700`; `MODE_WORLD_*` lanza excepción         | Comparte archivos con `FileProvider`                                                                      |
-| `DownloadManager.COLUMN_LOCAL_FILENAME` lanza `SecurityException`       | Abre la descarga con `ContentResolver.openFileDescriptor()`                                               |
-| Las bibliotecas privadas de la lista temporal también fallan            | Inclúyelas en el APK o pasa a las APIs del NDK                                                            |
-| Las actividades son redimensionables por defecto                        | Prueba en pantalla dividida, o usa `android:resizeableActivity="false"`                                   |
-| Desaparecen el proveedor `Crypto` y `SHA1PRNG`                          | Deriva claves con una función de derivación de claves real                                                |
-| `TransactionTooLargeException` se relanza como `RuntimeException`       | Mantén pequeño `onSaveInstanceState()`                                                                    |
-| Cambió el `serialVersionUID` por defecto de algunas clases              | Declara `serialVersionUID` de forma explícita                                                             |
+| Cambio                                                                                            | Qué hacer                                                                                                 | Cómo comprobarlo                                               |
+| ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Las URIs `file://` que salen de la app lanzan `FileUriExposedException`                           | Comparte una URI `content://` de `FileProvider` con un permiso temporal                                   | `StrictMode` `detectFileUriExposure()` en builds de depuración |
+| `CONNECTIVITY_ACTION` ya no llega a los receivers del manifiesto                                  | Regístralo en ejecución con `registerReceiver()` o programa el trabajo con `JobScheduler`                 |                                                                |
+| No se confía en las CA agregadas por el usuario                                                   | Permítelas con una configuración de seguridad de red, o usa `debug-overrides` para un proxy de depuración | Lint `AcceptsUserCertificates`, `NetworkSecurityConfig`        |
+| El directorio privado es `0700`; `MODE_WORLD_*` lanza excepción                                   | Comparte archivos con `FileProvider`                                                                      | Lint `WorldReadableFiles`, `WorldWriteableFiles`               |
+| `DownloadManager.COLUMN_LOCAL_FILENAME` lanza `SecurityException`                                 | Abre la descarga con `ContentResolver.openFileDescriptor()`                                               |                                                                |
+| Las bibliotecas privadas de la lista temporal también fallan                                      | Inclúyelas en el APK o pasa a las APIs del NDK                                                            | `UnsatisfiedLinkError` en logcat                               |
+| Las actividades son redimensionables por defecto                                                  | Prueba en pantalla dividida, o usa `android:resizeableActivity="false"`                                   | Lint `NonResizeableActivity` marca esa exclusión               |
+| Un cambio de tamaño de pantalla llega a todos los procesos como cambio de configuración           | Actualiza las cachés que dependen de la densidad, como los bitmaps                                        | Cambia "Display size" con la app abierta                       |
+| Desaparecen el proveedor `Crypto` y `SHA1PRNG`                                                    | Deriva claves con una función de derivación de claves real                                                | Lint `DeletedProvider`                                         |
+| `TransactionTooLargeException` se relanza como `RuntimeException`                                 | Mantén pequeño `onSaveInstanceState()`                                                                    |                                                                |
+| Cambió el `serialVersionUID` por defecto de algunas clases                                        | Declara `serialVersionUID` de forma explícita                                                             |                                                                |
+| `setCertInstallerPackage()` de un controlador de políticas lanza excepción si falta el instalador | Instala primero el instalador de certificados delegado                                                    |                                                                |
 
 ```mermaid title="Compartir un archivo privado desde una app con target API 24"
 flowchart TD
@@ -384,6 +499,58 @@ flowchart TD
   kind -- content:// de FileProvider --> grant[Intent con FLAG_GRANT_READ_URI_PERMISSION]
   grant --> read[La otra app la lee]
 ```
+
+Mark Murphy, de CommonsWare, detectó la prohibición de `file://` en la
+primera vista previa: una URI `file://` como dato de un intent, en un extra
+como `EXTRA_OUTPUT` de la cámara o en el portapapeles provoca un crash. La
+página de cambios de Google dice que el framework aplica una política de
+`StrictMode` contra ellas en estas apps.
+
+## Migrar a API 24
+
+De `targetSdkVersion 23` a 24, en este orden:
+
+1. **Actualiza las herramientas.** Usa `compileSdkVersion 24` y Build Tools
+   24.0.0, con JDK 8. Si lo saltas, las clases y constantes de API 24 no
+   compilan. Comprueba: el proyecto compila y lint no muestra errores nuevos.
+2. **Reemplaza las URIs `file://`.** Declara un `FileProvider` y comparte URIs
+   `content://` con `FLAG_GRANT_READ_URI_PERMISSION`, también en el
+   `EXTRA_OUTPUT` de la cámara y en los intents de "Open with". Si lo saltas,
+   cada una de esas llamadas termina en `FileUriExposedException`. Comprueba:
+   activa `detectFileUriExposure()` en un build de depuración y recorre cada
+   flujo de compartir, capturar y abrir en Android 7.0.
+3. **Mueve los listeners de conectividad.** Cambia los receivers de
+   `CONNECTIVITY_ACTION` del manifiesto por `registerReceiver()` mientras la
+   app corre, o por un job de `JobScheduler` con condición de red. Si lo
+   saltas, el receiver nunca se dispara. Comprueba: alterna entre Wi-Fi y
+   datos móviles en un dispositivo con Android 7.0.
+4. **Decide sobre las CA del usuario.** Agrega una configuración de seguridad
+   de red; confía en CA del usuario solo donde haga falta, y en un proxy de
+   depuración solo dentro de `debug-overrides`. Si lo saltas, falla el TLS con
+   servidores detrás de una CA instalada por el usuario, y también tu proxy de
+   depuración. Comprueba: lint `AcceptsUserCertificates` y
+   `NetworkSecurityConfig`, y luego un build de release contra el proxy.
+5. **Incluye tus bibliotecas nativas.** Elimina los enlaces a bibliotecas
+   privadas de la plataforma, también los que traiga código de terceros. Si lo
+   saltas, `System.loadLibrary` falla y la app se cierra al arrancar.
+   Comprueba: todavía con target 23, busca advertencias del linker en logcat;
+   `readelf -dW` sobre cada `.so`.
+6. **Revisa archivos privados y descargas.** Abandona `MODE_WORLD_*` y deja de
+   leer `COLUMN_LOCAL_FILENAME`. Si lo saltas, ambos lanzan
+   `SecurityException`. Comprueba: lint `WorldReadableFiles` y
+   `WorldWriteableFiles`.
+7. **Recorre las filas menores** de la tabla de target que te afecten: tamaño
+   de las ventanas en multiventana, tamaño de pantalla, el proveedor `Crypto`,
+   `TransactionTooLargeException`, `serialVersionUID` y controladores de
+   políticas del dispositivo.
+8. **Prueba el resultado** en un dispositivo o emulador con Android 7.0 y
+   `targetSdkVersion 24`: pantalla dividida, un cambio de "Display size" y Doze
+   con `adb shell dumpsys deviceidle force-idle`.
+
+Si saltas varios niveles a la vez: sigue los pasos de cada versión en orden,
+empezando por los permisos en ejecución de
+[Android 6.0 Marshmallow](/es/notes/android-6-marshmallow/) si tu target es 22
+o menor.
 
 ## Qué perduró
 

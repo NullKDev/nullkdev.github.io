@@ -157,6 +157,39 @@ citations:
   - title: New Android 5.0 Lollipop developer preview and SDK now out (GSMArena)
     url: https://www.gsmarena.com/new_android_50_lollipop_developer_preview_and_sdk_now_out-news-9968.php
     accessedAt: 2026-10-18
+  - title: ContextImpl.java at android-5.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-5.0.0_r1/core/java/android/app/ContextImpl.java
+    accessedAt: 2026-10-18
+  - title: Spinner.java at android-5.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-5.0.0_r1/core/java/android/widget/Spinner.java
+    accessedAt: 2026-10-18
+  - title: JobSchedulerService.java at android-5.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-5.0.0_r1/services/core/java/com/android/server/job/JobSchedulerService.java
+    accessedAt: 2026-10-18
+  - title: Intents and intent filters
+    url: https://developer.android.com/guide/components/intents-filters
+    accessedAt: 2026-10-18
+  - title: UsageStatsManager reference
+    url: https://developer.android.com/reference/android/app/usage/UsageStatsManager
+    accessedAt: 2026-10-18
+  - title: Settings.ACTION_USAGE_ACCESS_SETTINGS reference
+    url: https://developer.android.com/reference/android/provider/Settings#ACTION_USAGE_ACCESS_SETTINGS
+    accessedAt: 2026-10-18
+  - title: JNI tips (CheckJNI)
+    url: https://developer.android.com/training/articles/perf-jni
+    accessedAt: 2026-10-18
+  - title: 'Lint check: JobSchedulerService'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/JobSchedulerService.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check: IconColors'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/IconColors.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check: PermissionNamingConvention'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/PermissionNamingConvention.md.html
+    accessedAt: 2026-10-18
+  - title: 'Dealing with L Deprecations: bindService() (CommonsWare)'
+    url: https://commonsware.com/blog/2014/06/29/dealing-deprecations-bindservice.html
+    accessedAt: 2026-10-18
 ---
 
 Android 5.0 Lollipop es la versión que cambió el motor y la pintura a la vez.
@@ -301,48 +334,134 @@ donde un teléfono puede cambiar de usuario o abrir una sesión de invitado.
 
 Lollipop todavía concede todos los permisos al instalar. Las solicitudes en
 ejecución llegaron un año después, con
-[Android 6.0](/es/notes/android-6-marshmallow/).
+[Android 6.0](/es/notes/android-6-marshmallow/). Lo que cambió es qué nombres
+puede definir una app, qué servicios necesitan un permiso de enlace y dos
+permisos antiguos que perdieron o ganaron una función:
 
-- **Los permisos propios son únicos.** Solo una app por dispositivo puede
-  definir un nombre de permiso propio, salvo que la otra esté firmada con la
-  misma clave. Una app que lo redefina con otra clave no se instala.
-- **Permisos de enlace.** Un `JobService` debe protegerse con
-  `android.permission.BIND_JOB_SERVICE`, o el sistema lo ignora.
-  `BIND_DREAM_SERVICE`, `BIND_TV_INPUT` y `BIND_VOICE_INTERACTION` se añadieron
-  con el mismo fin.
-- **Acceso de uso.** `android.permission.PACKAGE_USAGE_STATS` lo concede el
-  usuario en Settings ("Apps with usage access"), no en el diálogo de
-  instalación.
-- **Captura de pantalla.** `MediaProjection` no tiene permiso de manifiesto; el
-  usuario acepta un diálogo cada vez.
-- **Obsoleto.** `GET_TASKS` ya no se aplica.
-- **Bluetooth LE.** Anunciar y escanear usa `BLUETOOTH_ADMIN`.
+| Permiso                                    | Qué cambió en API 21                                                                                                                       | Qué declarar                                                                 | Qué quitar o limitar                                                                                 |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Nombres de `<permission>` propios          | Solo una app por dispositivo puede definir un nombre, salvo que la otra tenga la misma clave de firma; un duplicado bloquea la instalación | Nómbralo según tu paquete: `com.example.app.permission.NAME`                 | Todo `<permission>` que no necesites, incluidos los copiados de código de ejemplo                    |
+| `BIND_JOB_SERVICE`                         | Nuevo; `JobScheduler.schedule()` lanza `IllegalArgumentException` si el `JobService` no lo exige                                           | `android:permission="android.permission.BIND_JOB_SERVICE"` en el `<service>` | Nada                                                                                                 |
+| `BIND_DREAM_SERVICE`                       | Nuevo; un `DreamService` en una app con target 21 debe exigirlo                                                                            | `android:permission` en el `<service>`                                       | Nada                                                                                                 |
+| `BIND_TV_INPUT` · `BIND_VOICE_INTERACTION` | Nuevos; un `TvInputService` o un `VoiceInteractionService` debe exigirlo para que solo el sistema se enlace                                | `android:permission` en el `<service>`                                       | Nada                                                                                                 |
+| `PACKAGE_USAGE_STATS`                      | Nuevo uso: la API `android.app.usage` lo necesita, y además el usuario debe permitirlo en Settings > Security > "Apps with usage access"   | `<uses-permission>` y luego abre `Settings.ACTION_USAGE_ACCESS_SETTINGS`     | Nada                                                                                                 |
+| `GET_TASKS`                                | Obsoleto, ya no se aplica; `getRecentTasks()` solo devuelve tus propias tareas                                                             | Nada en API 21                                                               | `android:maxSdkVersion="20"` si versiones anteriores aún llaman a `getRecentTasks()`; si no, quítalo |
+| `BLUETOOTH_ADMIN`                          | Ahora también cubre anunciar y escanear con Bluetooth LE mediante `android.bluetooth.le`                                                   | Decláralo para anunciar o escanear                                           | Nada                                                                                                 |
+| `READ_VOICEMAIL` · `WRITE_VOICEMAIL`       | Nuevos, para leer y modificar los mensajes de voz del sistema                                                                              | Solo en una app de teléfono o de buzón de voz                                | Nada                                                                                                 |
+
+Un manifiesto para una app que funciona en Android 4.4 y en 5.0 o posterior.
+Conserva solo los bloques que tu app necesita:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.app">
+
+    <!-- Un permiso propio: único en el dispositivo desde API 21,
+         así que antepón el nombre de tu paquete -->
+    <permission
+        android:name="com.example.app.permission.READ_NOTES"
+        android:protectionLevel="signature" />
+
+    <!-- Tareas recientes: se aplica hasta API 20, se ignora desde 21 -->
+    <uses-permission
+        android:name="android.permission.GET_TASKS"
+        android:maxSdkVersion="20" />
+
+    <!-- Anunciar y escanear con Bluetooth LE, desde API 21 -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
+    <!-- Estadísticas de uso: el usuario también lo activa en Settings -->
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
+
+    <application>
+        <!-- JobScheduler rechaza un job cuyo servicio no lo exige -->
+        <service
+            android:name=".SyncJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+    </application>
+</manifest>
+```
+
+Capturar la pantalla con `MediaProjection` no tiene permiso de manifiesto: el
+usuario acepta un diálogo del sistema cada vez.
 
 ## Qué cambió para tu app
 
 ### Todas las apps en Android 5.0
 
-| Cambio                                                                              | Qué hacer                                                                                                                                    |
-| ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| ART reemplaza a Dalvik                                                              | Prueba el código JNI con CheckJNI, no guardes punteros a datos de objetos Java y actualiza los ofuscadores que el verificador de ART rechaza |
-| Los iconos de notificación se dibujan en blanco; se ignora todo salvo el canal alfa | Usa iconos solo con canal alfa y define un acento con `setColor()`                                                                           |
-| Las notificaciones aparecen en la pantalla de bloqueo por defecto                   | Define `setVisibility()` y un `setPublicVersion()` para el contenido sensible                                                                |
-| La pantalla de bloqueo ya no muestra controles de `RemoteControlClient`             | Pasa a `MediaSession` y `Notification.MediaStyle` con `VISIBILITY_PUBLIC`                                                                    |
-| `getRecentTasks()` solo devuelve tus propias tareas                                 | Usa `getAppTasks()`                                                                                                                          |
-| Un nombre de permiso propio duplicado bloquea la instalación                        | Antepón el nombre de tu paquete a tus permisos, o usa un permiso del sistema                                                                 |
-| Nuevos valores por defecto de TLS                                                   | Corrige los servidores que solo ofrecen las suites desactivadas                                                                              |
-| Se eliminaron los widgets de la pantalla de bloqueo                                 | Quita esa dependencia                                                                                                                        |
-| Un intent en un perfil administrado puede no tener quien lo maneje                  | Llama antes a `resolveActivity()` y comparte archivos con una URI `content://`                                                               |
+| Cambio                                                                              | Qué hacer                                                                                                                                    | Cómo comprobarlo                                             |
+| ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| ART reemplaza a Dalvik                                                              | Prueba el código JNI con CheckJNI, no guardes punteros a datos de objetos Java y actualiza los ofuscadores que el verificador de ART rechaza | `adb shell setprop debug.checkjni 1` y vuelve a abrir la app |
+| Los iconos de notificación se dibujan en blanco; se ignora todo salvo el canal alfa | Usa iconos solo con canal alfa y define un acento con `setColor()`                                                                           | Lint `IconColors`                                            |
+| El sonido de `Ringtone`, `MediaPlayer` o `Vibrator` se salta el modo prioridad      | Define sonido y vibración con `Notification.Builder`                                                                                         |                                                              |
+| Las notificaciones aparecen en la pantalla de bloqueo por defecto                   | Define `setVisibility()` y un `setPublicVersion()` para el contenido sensible                                                                |                                                              |
+| La pantalla de bloqueo ya no muestra controles de `RemoteControlClient`             | Pasa a `MediaSession` y `Notification.MediaStyle` con `VISIBILITY_PUBLIC`                                                                    |                                                              |
+| `getRecentTasks()` solo devuelve tus propias tareas                                 | Usa `getAppTasks()`                                                                                                                          |                                                              |
+| Un nombre de permiso propio duplicado bloquea la instalación                        | Antepón el nombre de tu paquete a tus permisos, o usa un permiso del sistema                                                                 | Lint `PermissionNamingConvention` (desactivado por defecto)  |
+| Nuevos valores por defecto de TLS                                                   | Corrige los servidores que solo ofrecen las suites desactivadas                                                                              |                                                              |
+| Se eliminaron los widgets de la pantalla de bloqueo                                 | Quita esa dependencia                                                                                                                        |                                                              |
+| Un intent en un perfil administrado puede no tener quien lo maneje                  | Llama antes a `resolveActivity()` y comparte archivos con una URI `content://`                                                               |                                                              |
 
 ### Apps con target API 21
 
-| Cambio                                                                  | Qué hacer                                                                                     |
-| ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `bindService()` lanza una excepción con un `Intent` implícito           | Enlaza con un `Intent` explícito y no le pongas intent filters al servicio                    |
-| WebView bloquea el contenido mixto y las cookies de terceros            | Actívalos con `setMixedContentMode()` y `setAcceptThirdPartyCookies()` si los necesitas       |
-| WebView dibuja solo las partes de la página que necesita                | Llama a `enableSlowWholeDocumentDraw()` si dibujas o capturas zonas lejos de la parte visible |
-| Un `DreamService` debe exigir `BIND_DREAM_SERVICE`                      | Añade el permiso a la declaración del servicio                                                |
-| `Spinner` lanza una excepción con un adapter de más de un tipo de vista | Usa un solo tipo de vista                                                                     |
+| Cambio                                                                  | Qué hacer                                                                                     | Cómo comprobarlo |
+| ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------- |
+| `bindService()` lanza una excepción con un `Intent` implícito           | Enlaza con un `Intent` explícito y no le pongas intent filters al servicio                    |                  |
+| WebView bloquea el contenido mixto y las cookies de terceros            | Actívalos con `setMixedContentMode()` y `setAcceptThirdPartyCookies()` si los necesitas       |                  |
+| WebView dibuja solo las partes de la página que necesita                | Llama a `enableSlowWholeDocumentDraw()` si dibujas o capturas zonas lejos de la parte visible |                  |
+| Un `DreamService` debe exigir `BIND_DREAM_SERVICE`                      | Añade el permiso a la declaración del servicio                                                |                  |
+| `Spinner` lanza una excepción con un adapter de más de un tipo de vista | Usa un solo tipo de vista                                                                     |                  |
+
+Las páginas de Google nombran `bindService()`. El código de AOSP en la etiqueta
+de 5.0 aplica la misma comprobación en `startService()` y `stopService()`: con
+un target de 21 o más, un intent sin componente ni paquete lanza
+`IllegalArgumentException` ("Service Intent must be explicit"); por debajo de
+21 solo registra una advertencia. Basta con fijar el paquete con
+`setPackage()`. CommonsWare señaló durante la preview que las librerías que se
+enlazaban con intents implícitos, como el helper de facturación integrada de
+Google de entonces, fallaban del mismo modo.
+
+## Migrar a API 21
+
+De `targetSdk 19` (o 20, Android 4.4W para Wear) a 21, en este orden:
+
+1. **Actualiza el SDK.** Instala la plataforma del SDK de Android 5.0 y pon
+   `compileSdkVersion 21`. Si lo saltas, las constantes nuevas (`LOLLIPOP`,
+   `BIND_JOB_SERVICE`, `VISIBILITY_PUBLIC`) no compilan. Comprueba: el
+   proyecto compila y lint se ejecuta.
+2. **Haz explícito cada intent de servicio.** Dale a cada llamada a
+   `bindService()`, `startService()` y `stopService()` un componente o un
+   paquete, en tu código y en las librerías que incluyes. Si lo saltas, esas
+   llamadas lanzan `IllegalArgumentException` en Android 5.0. Comprueba:
+   ejecuta cada flujo que inicia o enlaza un servicio y mira logcat; por debajo
+   de 21 las mismas llamadas registran "Implicit intents with startService are
+   not safe".
+3. **Revisa los permisos propios.** Renombra cada `<permission>` según tu
+   paquete, o cámbialo por un permiso del sistema. Si lo saltas, tu app no se
+   instala junto a otra que define el mismo nombre. Comprueba: lint
+   `PermissionNamingConvention` (actívalo) y una instalación junto a la app con
+   la que compartes el nombre.
+4. **Prueba en ART.** Prueba el código nativo con CheckJNI y actualiza el
+   ofuscador que ART rechace. Si lo saltas, los errores de JNI que Dalvik
+   toleraba se cierran en todo dispositivo con Android 5.0, sea cual sea tu
+   target. Comprueba: `adb shell setprop debug.checkjni 1` y abrir la app.
+5. **Corrige las notificaciones.** Iconos solo con canal alfa y
+   `setColor()`, visibilidad y versión pública para las sensibles, y
+   `MediaStyle` con `VISIBILITY_PUBLIC` para las de medios. Si lo saltas, los
+   iconos a color se vuelven siluetas blancas y el texto privado llega a la
+   pantalla de bloqueo. Comprueba: lint `IconColors` y una notificación con el
+   dispositivo bloqueado.
+6. **Revisa WebView y widgets.** Activa el contenido mixto o las cookies de
+   terceros solo donde los necesites, y dale a cada adapter de `Spinner` un
+   solo tipo de vista. Si lo saltas, los recursos HTTP en páginas HTTPS y las
+   cookies de terceros dejan de cargar, y el spinner lanza una excepción.
+   Comprueba: carga cada página de WebView por HTTPS y abre cada spinner.
+7. **Prueba el resultado** en un dispositivo o emulador con Android 5.0 y
+   `targetSdk 21`. Si usas `JobScheduler`, lint `JobSchedulerService` revisa
+   el servicio y su `BIND_JOB_SERVICE`.
+
+Si saltas varios niveles a la vez: haz los pasos de cada versión en orden,
+desde [Android 4.4](/es/notes/android-4-4-kitkat/) si tu target es 18 o menos.
 
 ## Qué perduró
 

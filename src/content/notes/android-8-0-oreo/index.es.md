@@ -175,6 +175,39 @@ citations:
   - title: "Android O Developer Preview 4 rolling out w/ 'near-final system images' for Pixel, Nexus (9to5Google)"
     url: https://9to5google.com/2017/07/24/android-o-developer-preview-4/
     accessedAt: 2026-10-18
+  - title: Migrating to Android 8.0
+    url: https://developer.android.com/about/versions/oreo/android-8.0-migration
+    accessedAt: 2026-10-18
+  - title: Implicit broadcast exceptions
+    url: https://developer.android.com/guide/components/broadcast-exceptions
+    accessedAt: 2026-10-18
+  - title: TelephonyManager reference (getLine1Number)
+    url: https://developer.android.com/reference/android/telephony/TelephonyManager
+    accessedAt: 2026-10-18
+  - title: Compatibility framework tools (test and debug)
+    url: https://developer.android.com/guide/app-compatibility/test-debug
+    accessedAt: 2026-10-18
+  - title: 'Android Gradle plugin: minimum versions of tools for each API level'
+    url: https://developer.android.com/build/releases/about-agp
+    accessedAt: 2026-10-18
+  - title: 'Lint check HardwareIds: Hardware Id Usage'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/HardwareIds.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check RequestInstallPackagesPolicy: Request Install Packages Insights'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/RequestInstallPackagesPolicy.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check ExpiredTargetSdkVersion: TargetSdkVersion No Longer Supported'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/ExpiredTargetSdkVersion.md.html
+    accessedAt: 2026-10-18
+  - title: HardwareIdDetector.java (Android lint source)
+    url: https://android.googlesource.com/platform/tools/base/+/refs/heads/mirror-goog-studio-main/lint/libs/lint-checks/src/main/java/com/android/tools/lint/checks/HardwareIdDetector.java
+    accessedAt: 2026-10-18
+  - title: "Android O Background Limitations: Not Just for targetSdkVersion 'O' (CommonsWare)"
+    url: https://commonsware.com/blog/2017/05/24/android-o-background-limitations-not-just-targetsdkversion-o.html
+    accessedAt: 2026-10-18
+  - title: ACTION_BOOT_COMPLETED, IntentService, and Android 8.0 (CommonsWare)
+    url: https://commonsware.com/blog/2017/06/12/action_boot_completed-intentservice-android-8p0.html
+    accessedAt: 2026-10-18
 ---
 
 Android 8.0 Oreo es la versión que le puso correa al trabajo en segundo plano.
@@ -199,6 +232,13 @@ del chip tuviera que rehacer su trabajo primero.
 | Lanzamiento                        | 21 de agosto de 2017. Las OTA para Pixel y Nexus llegaron por fases tras las pruebas de operador                                                                                                                                  |
 | Dispositivos de lanzamiento        | Sony Xperia XZ1 y XZ1 Compact, anunciados el 31 de agosto de 2017, los primeros teléfonos que salieron con ella. Pixel 2 y Pixel 2 XL, anunciados el 4 de octubre de 2017, los primeros teléfonos de Google que salieron con ella |
 | Plazo de target API en Google Play | Apps nuevas desde agosto de 2018, actualizaciones de apps existentes desde noviembre de 2018                                                                                                                                      |
+| Herramientas                       | `compileSdkVersion 26`, Build-Tools 26.0.0, Support Library 26 desde el repositorio Maven `google()`; se recomienda Android Studio 3.0 (ver abajo)                                                                                |
+
+La guía de migración de Google recomienda Android Studio 3.0 para API 26 y dice
+que la versión estable 2.3.3 también puede compilar contra ella, sin las
+herramientas para íconos adaptables y fuentes descargables. Google no indica
+una versión mínima del Android Gradle Plugin para API 26; su tabla de
+herramientas mínimas por nivel de API empieza en API 33.
 
 La primera developer preview salió el 21 de marzo de 2017, para Nexus 5X,
 Nexus 6P, Nexus Player, Pixel, Pixel XL y Pixel C; las cuatro developer previews son las partes que siguen a esta vista general. Google congeló la API el 8 de junio de 2017 y ese mismo día abrió Play a las
@@ -294,44 +334,87 @@ temáticas de Android que Nabisco hizo para el evento de lanzamiento.
 
 ## Permisos
 
-- **Nuevos.** `ANSWER_PHONE_CALLS` y `READ_PHONE_NUMBERS`, ambos peligrosos y
-  del grupo `PHONE`; `MANAGE_OWN_CALLS`, un permiso normal para apps de VoIP que
-  gestionan sus propias llamadas con un `ConnectionService` autogestionado.
-- **Instalar apps desconocidas.** `REQUEST_INSTALL_PACKAGES` ya existía, pero
-  una app con target API 26 ahora debe declararlo para enviar al usuario al
-  instalador de paquetes. Su nivel de protección es `signature|appop`: el
-  usuario lo concede por app en Ajustes, no en un diálogo en ejecución. Lleva
-  al usuario a esa pantalla con `ACTION_MANAGE_UNKNOWN_APP_SOURCES` y
-  compruébalo con `canRequestPackageInstalls()`.
-- **Otorgamiento por grupo corregido.** Antes de 8.0, conceder un permiso
-  también concedía todos los demás de su grupo que la app declaraba. En las
-  apps con target API 26 solo se concede el que se pidió. Una solicitud
-  posterior del mismo grupo se sigue aprobando sin diálogo.
-- **Cuentas.** `GET_ACCOUNTS` ya no basta para que una app con target API 26
-  vea las cuentas del usuario. Usa `AccountManager.newChooseAccountIntent()` o
-  el método propio del autenticador.
-- **Ventanas de alerta.** Las apps con `SYSTEM_ALERT_WINDOW` y target API 26
-  deben dibujar con `TYPE_APPLICATION_OVERLAY`. Esas ventanas quedan debajo de
-  la barra de estado y del teclado, y el usuario puede bloquearlas desde el
-  panel de notificaciones.
+Android 8.0 agregó nueve permisos que una app puede declarar, y cambió lo que
+permiten cinco permisos anteriores en las apps con target API 26:
+
+| Permiso                                                                           | Qué cambió en API 26                                                                                                             | Qué declarar                                                                      | Qué quitar o limitar                                                               |
+| --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `ANSWER_PHONE_CALLS`                                                              | Permiso peligroso nuevo del grupo `PHONE`, para `acceptRingingCall()`                                                            | Decláralo y pídelo en tiempo de ejecución                                         | Nada                                                                               |
+| `READ_PHONE_NUMBERS`                                                              | Permiso peligroso nuevo del grupo `PHONE`; basta para `getLine1Number()`                                                         | Decláralo si lees el número de teléfono del dispositivo                           | `READ_PHONE_STATE` con `android:maxSdkVersion="25"`, si el número era su único uso |
+| `MANAGE_OWN_CALLS`                                                                | Permiso normal nuevo para apps de VoIP con un `ConnectionService` autogestionado                                                 | Decláralo; se concede al instalar                                                 | Nada                                                                               |
+| `REQUEST_INSTALL_PACKAGES`                                                        | Obligatorio para abrir el instalador de paquetes con target 26; `signature\|appop`, se concede por app en "Install unknown apps" | Decláralo solo si instalar otras apps es una función central                      | Nunca en otras apps; Google Play lo restringe                                      |
+| `REQUEST_DELETE_PACKAGES`                                                         | Permiso normal nuevo; obligatorio para pedir desinstalaciones solo desde target API 28                                           | Decláralo si pides al usuario desinstalar apps                                    | Nada                                                                               |
+| `REQUEST_COMPANION_RUN_IN_BACKGROUND`, `REQUEST_COMPANION_USE_DATA_IN_BACKGROUND` | Permisos normales nuevos para apps de dispositivos complementarios                                                               | Decláralos solo en una app complementaria                                         | Nada                                                                               |
+| `BIND_AUTOFILL_SERVICE`                                                           | Nuevo; protege un `AutofillService` para que solo el sistema se vincule                                                          | `android:permission` en tu servicio de autocompletado                             | Nada                                                                               |
+| `BIND_VISUAL_VOICEMAIL_SERVICE`                                                   | Nuevo; protege un `VisualVoicemailService`                                                                                       | `android:permission` en ese servicio                                              | Nada                                                                               |
+| `INSTANT_APP_FOREGROUND_SERVICE`                                                  | Nuevo; permite a una instant app iniciar un servicio en primer plano                                                             | Decláralo solo en la instant app                                                  | Nada                                                                               |
+| `SYSTEM_ALERT_WINDOW`                                                             | Las apps con target 26 deben dibujar con `TYPE_APPLICATION_OVERLAY`, que queda debajo de las ventanas del sistema                | Mantenlo; el usuario lo sigue concediendo en Ajustes                              | Deja `TYPE_PHONE`, `TYPE_SYSTEM_ALERT` y los demás tipos de ventana antiguos       |
+| `GET_ACCOUNTS`                                                                    | Ya no basta para ver las cuentas con target 26                                                                                   | Usa `AccountManager.newChooseAccountIntent()` o el método propio del autenticador | No dependas solo de él                                                             |
+| `INSTALL_SHORTCUT`                                                                | Su broadcast es privado y no tiene efecto en Android 8.0                                                                         | Ancla con `ShortcutManager.requestPinShortcut()`                                  | `android:maxSdkVersion="25"`                                                       |
+| Permisos peligrosos de un mismo grupo                                             | Las apps con target 26 reciben solo el que piden, no el grupo entero                                                             | Pide cada permiso que usas                                                        | Nada                                                                               |
+
+Un manifest para una app que funciona en Android 7.1 y anteriores y en 8.0 y
+posteriores. Conserva solo los bloques que tu app necesita:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Número de teléfono: el permiso amplio hasta API 25, el acotado desde 26.
+         Quita maxSdkVersion si usas READ_PHONE_STATE para otra cosa,
+         como Build.getSerial(). -->
+    <uses-permission
+        android:name="android.permission.READ_PHONE_STATE"
+        android:maxSdkVersion="25" />
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
+
+    <!-- Instalar otros APK: obligatorio desde targetSdk 26 -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <!-- Accesos directos antiguos: el broadcast no hace nada desde API 26 -->
+    <uses-permission
+        android:name="com.android.launcher.permission.INSTALL_SHORTCUT"
+        android:maxSdkVersion="25" />
+
+    <!-- App de VoIP con un ConnectionService autogestionado -->
+    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
+</manifest>
+```
+
+`REQUEST_INSTALL_PACKAGES` no muestra un diálogo en tiempo de ejecución. Lleva
+al usuario a la pantalla "Install unknown apps" con
+`ACTION_MANAGE_UNKNOWN_APP_SOURCES` y comprueba el permiso con
+`canRequestPackageInstalls()`. Cuando el usuario aprueba un permiso de un
+grupo, las solicitudes posteriores de ese grupo se siguen concediendo sin
+diálogo. Para `getLine1Number()`, `READ_PHONE_STATE` sigue funcionando hasta
+que la app tiene target API 30.
 
 ## Qué cambió para tu app
 
 ### Todas las apps en Android 8.0
 
-| Cambio                                                                | Qué hacer                                                                                                |
-| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| Las apps en segundo plano reciben ubicación pocas veces por hora      | Usa el Fused Location Provider o geofencing; un servicio en primer plano recupera la frecuencia anterior |
-| El usuario puede aplicar los límites de segundo plano a cualquier app | Prueba con los límites activos aunque tu target sea API 25 o menor                                       |
-| Las apps en caché pierden sus wake locks                              | No dependas de un wake lock mientras tu app está en segundo plano                                        |
-| `ANDROID_ID` depende de la clave de firma                             | No lo uses para vincular apps de distintos desarrolladores; para anuncios usa el Advertising ID          |
-| El broadcast `INSTALL_SHORTCUT` no tiene efecto                       | Ancla accesos directos con `ShortcutManager.requestPinShortcut()`                                        |
-| Las APIs de datos de formulario de WebView no hacen nada              | `getSaveFormData()` devuelve `false`; ahora el framework de autocompletado llena los formularios         |
-| Un filtro seccomp limita las llamadas al sistema                      | Llama solo a lo que expone bionic                                                                        |
-| Las rutas del APK ya no terminan en `-1` o `-2`                       | Lee `ApplicationInfo.sourceDir` en lugar de armar la ruta                                                |
-| El doble toque de TalkBack se convierte en `ACTION_CLICK`             | Revisa el manejo táctil propio con TalkBack; sobrescribe `performAccessibilityAction()` si hace falta    |
-| `findViewById()` devuelve `<T extends View> T`                        | Corrige las sobrecargas ambiguas y agrega un cast donde Java 8 no infiere el tipo                        |
-| Las estadísticas de uso de contactos son aproximadas                  | No leas valores exactos de `TIMES_CONTACTED` ni de `LAST_TIME_CONTACTED`                                 |
+| Cambio                                                                            | Qué hacer                                                                                                | Cómo comprobarlo   |
+| --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------ |
+| Las apps en segundo plano reciben ubicación pocas veces por hora                  | Usa el Fused Location Provider o geofencing; un servicio en primer plano recupera la frecuencia anterior |                    |
+| El usuario puede aplicar los límites de segundo plano a cualquier app             | Prueba con los límites activos aunque tu target sea API 25 o menor                                       |                    |
+| Las apps en caché pierden sus wake locks                                          | No dependas de un wake lock mientras tu app está en segundo plano                                        |                    |
+| `ANDROID_ID` depende de la clave de firma                                         | No lo uses para vincular apps de distintos desarrolladores; para anuncios usa el Advertising ID          | Lint `HardwareIds` |
+| El broadcast `INSTALL_SHORTCUT` no tiene efecto                                   | Ancla accesos directos con `ShortcutManager.requestPinShortcut()`                                        |                    |
+| Desaparece el ajuste "Unknown sources"                                            | Lee `canRequestPackageInstalls()`; `INSTALL_NON_MARKET_APPS` vale siempre 1                              |                    |
+| Las APIs de datos de formulario de WebView no hacen nada                          | `getSaveFormData()` devuelve `false`; ahora el framework de autocompletado llena los formularios         |                    |
+| Un filtro seccomp limita las llamadas al sistema                                  | Llama solo a lo que expone bionic                                                                        |                    |
+| Las rutas del APK ya no terminan en `-1` o `-2`                                   | Lee `ApplicationInfo.sourceDir` en lugar de armar la ruta                                                |                    |
+| El doble toque de TalkBack se convierte en `ACTION_CLICK`                         | Revisa el manejo táctil propio con TalkBack; sobrescribe `performAccessibilityAction()` si hace falta    |                    |
+| `findViewById()` devuelve `<T extends View> T`                                    | Corrige las sobrecargas ambiguas y agrega un cast donde Java 8 no infiere el tipo                        |                    |
+| Las estadísticas de uso de contactos son aproximadas                              | No leas valores exactos de `TIMES_CONTACTED` ni de `LAST_TIME_CONTACTED`                                 |                    |
+| `net.hostname` devuelve null                                                      | No leas de ahí el nombre del dispositivo                                                                 |                    |
+| `AbstractCollection.removeAll(null)` y `retainAll(null)` siempre lanzan excepción | Nunca pases null, ni siquiera a una colección vacía                                                      |                    |
+| `DatagramSocket.send()` lanza excepción tras un `connect()` fallido               | Maneja `SocketException` al enviar, no solo al recibir                                                   |                    |
+
+CommonsWare encontró el interruptor del usuario para apps antiguas en la
+pantalla de batería, solo para las apps que figuran como grandes consumidoras.
+También publicó un comando no documentado que un ingeniero de Google dio para
+probarlo, `adb shell appops set <package> RUN_IN_BACKGROUND ignore`, con la
+advertencia de que no se comporta igual que tener target API 26.
 
 ### Apps con target API 26
 
@@ -344,24 +427,82 @@ flowchart TD
   work -. startService .-> crash[IllegalStateException]
 ```
 
-| Cambio                                                                             | Qué hacer                                                                                                          |
-| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Los servicios en segundo plano de una app inactiva se detienen a los pocos minutos | Lleva el trabajo a `JobScheduler` o `JobIntentService`                                                             |
-| `startService()` desde segundo plano lanza una excepción                           | Usa `startForegroundService()` y luego `startForeground()` en menos de cinco segundos, o la app recibe un ANR      |
-| Los receivers del manifest no reciben la mayoría de los broadcasts implícitos      | Regístralos en ejecución con `Context.registerReceiver()`, o reemplaza el receiver por un job                      |
-| Una notificación sin canal no se muestra                                           | Crea los canales antes de publicar; "Show notification channel warnings" en Developer options avisa de los olvidos |
-| `Build.SERIAL` está obsoleto                                                       | Llama a `Build.getSerial()` con `READ_PHONE_STATE`                                                                 |
-| `net.dns1` a `net.dns4` no están disponibles                                       | Lee los servidores DNS con `ConnectivityManager` y `NetworkCallback`                                               |
-| `notifyChange()` exige un `ContentProvider` real para la URI                       | Define el proveedor para cada authority que notificas                                                              |
-| Las librerías nativas con segmentos escribibles y ejecutables fallan               | Recompílalas sin segmentos de carga W+X                                                                            |
-| Las vistas clicables son enfocables por defecto                                    | Pon `android:focusable="false"` donde el foco no corresponde                                                       |
-| WebView rechaza HTTP si se desactivó el tráfico en claro                           | Sirve el contenido de WebView por HTTPS                                                                            |
+| Cambio                                                                             | Qué hacer                                                                                                                | Cómo comprobarlo                                           |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| Los servicios en segundo plano de una app inactiva se detienen a los pocos minutos | Lleva el trabajo a `JobScheduler` o `JobIntentService`                                                                   |                                                            |
+| `startService()` desde segundo plano lanza una excepción                           | Usa `startForegroundService()` y luego `startForeground()` en menos de cinco segundos, o la app recibe un ANR            |                                                            |
+| Los receivers del manifest no reciben la mayoría de los broadcasts implícitos      | Regístralos en ejecución con `Context.registerReceiver()`, o reemplaza el receiver por un job                            |                                                            |
+| Una notificación sin canal no se muestra                                           | Crea los canales antes de publicar                                                                                       | "Show notification channel warnings" en Developer options  |
+| Instalar otras apps exige `REQUEST_INSTALL_PACKAGES`                               | Decláralo y lleva al usuario a "Install unknown apps"                                                                    | Lint `RequestInstallPackagesPolicy` (Play Policy Insights) |
+| Un permiso concedido ya no concede todo su grupo                                   | Pide cada permiso peligroso que usas                                                                                     |                                                            |
+| `GET_ACCOUNTS` por sí solo no muestra cuentas                                      | Usa `AccountManager.newChooseAccountIntent()`; escucha cambios con `addOnAccountsUpdatedListener()`                      |                                                            |
+| Las ventanas de alerta deben usar `TYPE_APPLICATION_OVERLAY`                       | Reemplaza `TYPE_PHONE`, `TYPE_SYSTEM_ALERT` y los demás tipos antiguos                                                   |                                                            |
+| `Build.SERIAL` está obsoleto                                                       | Llama a `Build.getSerial()` con `READ_PHONE_STATE`                                                                       | Lint `HardwareIds`                                         |
+| `net.dns1` a `net.dns4` no están disponibles                                       | Lee los servidores DNS con `ConnectivityManager` y `NetworkCallback`                                                     |                                                            |
+| `notifyChange()` exige un `ContentProvider` real para la URI                       | Define el proveedor para cada authority que notificas                                                                    |                                                            |
+| Las librerías nativas con segmentos escribibles y ejecutables fallan               | Recompílalas sin segmentos de carga W+X y con encabezados ELF válidos                                                    |                                                            |
+| Las vistas clicables son enfocables por defecto                                    | Pon `android:focusable="false"` donde el foco no corresponde                                                             |                                                            |
+| WebView rechaza HTTP si se desactivó el tráfico en claro                           | Sirve el contenido de WebView por HTTPS                                                                                  |                                                            |
+| `Collections.sort()` se apoya en `List.sort()`                                     | Nunca llames a `Collections.sort()` desde un `List.sort()` sobrescrito; ordenar a mitad de una iteración lanza excepción |                                                            |
+| El sistema baja el volumen del audio por su cuenta                                 | Usa `AudioFocusRequest` si tu app debe pausar en su lugar                                                                |                                                            |
 
 Los receivers del manifest siguen recibiendo los broadcasts enviados solo a la
 propia app (como `ACTION_MY_PACKAGE_REPLACED`), los que exigen un permiso de
-firma y una lista publicada de broadcasts implícitos exentos. Los cambios de
-permisos para apps con target API 26 (instalaciones, cuentas, ventanas de
-alerta, otorgamiento por grupo) están en [Permisos](#permisos).
+firma y una lista publicada de broadcasts implícitos exentos, entre ellos
+`ACTION_BOOT_COMPLETED`. Que un broadcast esté exento no exime el trabajo que
+inicia: CommonsWare mostró que un receiver de `BOOT_COMPLETED` sigue sin poder
+iniciar un `IntentService`, porque la app cuenta como en segundo plano. Los
+interruptores de compatibilidad por cambio llegaron en Android 11, así que en
+8.0 la única prueba es `targetSdkVersion 26` en un dispositivo o emulador con
+esa versión.
+
+## Migrar a API 26
+
+De `targetSdkVersion 25` a 26, en este orden:
+
+1. **Actualiza las herramientas.** Pon `compileSdkVersion 26`, Build-Tools
+   26.0.0 y Support Library 26, que necesita el repositorio Maven `google()`.
+   Si lo saltas, `NotificationChannel` y `startForegroundService()` no
+   compilan. Comprueba: el proyecto compila y lint no muestra errores nuevos.
+2. **Crea los canales de notificación.** Crea cada canal antes de la primera
+   notificación que lo usa. Si lo saltas, esas notificaciones nunca aparecen.
+   Comprueba: activa "Show notification channel warnings" y dispara cada
+   notificación.
+3. **Mueve el trabajo en segundo plano.** Reemplaza `startService()` desde
+   segundo plano por `startForegroundService()` más `startForeground()`, o por
+   un job. Si lo saltas, la app lanza `IllegalStateException` o recibe un ANR.
+   Comprueba: en un dispositivo con Android 8.0, deja la app en segundo plano
+   varios minutos y dispara cada servicio.
+4. **Reemplaza los receivers del manifest para broadcasts implícitos.**
+   Conserva solo los de la lista de exenciones; registra el resto en ejecución
+   o pásalos a jobs. Si lo saltas, esos receivers simplemente no se ejecutan.
+   Comprueba: provoca cada evento en un dispositivo con Android 8.0 y verifica
+   que el receiver se ejecuta.
+5. **Corrige los flujos de permisos.** Declara `REQUEST_INSTALL_PACKAGES` si
+   instalas APK, pide cada permiso peligroso en lugar de contar con su grupo,
+   elige cuentas con `newChooseAccountIntent()` y dibuja superposiciones con
+   `TYPE_APPLICATION_OVERLAY`. Si lo saltas, las instalaciones fallan, las
+   comprobaciones de permisos dan denegado, las cuentas llegan vacías y los
+   tipos de superposición antiguos se rechazan. Comprueba: ejecuta cada flujo
+   en Android 8.0.
+6. **Reemplaza los identificadores retirados.** `Build.getSerial()` en lugar
+   de `Build.SERIAL`, `ConnectivityManager` en lugar de `net.dns*`. Comprueba:
+   lint `HardwareIds` lista cada identificador que lees.
+7. **Recompila las librerías nativas** sin segmentos escribibles y
+   ejecutables. Si lo saltas, la librería no carga. Comprueba: carga cada
+   librería nativa en Android 8.0.
+8. **Revisa las filas menores** de la tabla de target que te apliquen:
+   observadores de contenido, foco de vistas, tráfico en claro de WebView,
+   ordenación de listas y reducción de volumen del audio.
+9. **Prueba el resultado** en un dispositivo o emulador con Android 8.0 y
+   `targetSdkVersion 26`, con los límites de segundo plano en mente.
+
+Google Play exige al menos API 26 desde 2018, y lint `ExpiredTargetSdkVersion`
+hace fallar las builds de release por debajo del mínimo vigente de Play.
+
+Si saltas varios niveles a la vez: haz los pasos de cada versión en orden,
+desde [Android 6.0](/es/notes/android-6-marshmallow/) si tu target es 22 o
+menos.
 
 ## Qué perduró
 

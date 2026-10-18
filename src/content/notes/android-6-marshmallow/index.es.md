@@ -211,6 +211,57 @@ citations:
   - title: 'Android M Developer Preview 3 images now available for the Nexus 5, 6, 9, and Player (Android Police)'
     url: https://www.androidpolice.com/2015/08/18/android-m-developer-preview-3-images-now-available-for-download-for-the-nexus-5-nexus-6-nexus-9-and-nexus-player/
     accessedAt: 2026-10-18
+  - title: '<uses-permission-sdk-23> manifest element'
+    url: https://developer.android.com/guide/topics/manifest/uses-permission-sdk-23-element
+    accessedAt: 2026-10-18
+  - title: Manifest.permission reference
+    url: https://developer.android.com/reference/android/Manifest.permission
+    accessedAt: 2026-10-18
+  - title: ConnectivityManager reference
+    url: https://developer.android.com/reference/android/net/ConnectivityManager
+    accessedAt: 2026-10-18
+  - title: NotificationManager reference
+    url: https://developer.android.com/reference/android/app/NotificationManager
+    accessedAt: 2026-10-18
+  - title: Test backup and restore
+    url: https://developer.android.com/identity/data/testingbackup
+    accessedAt: 2026-10-18
+  - title: Platform AndroidManifest.xml at android-5.1.1_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-5.1.1_r1/core/res/AndroidManifest.xml
+    accessedAt: 2026-10-18
+  - title: Platform AndroidManifest.xml at android-6.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.0_r1/core/res/AndroidManifest.xml
+    accessedAt: 2026-10-18
+  - title: Platform AndroidManifest.xml at android-6.0.1_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r1/core/res/AndroidManifest.xml
+    accessedAt: 2026-10-18
+  - title: Settings.java at android-6.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.0_r1/core/java/android/provider/Settings.java
+    accessedAt: 2026-10-18
+  - title: Settings.java at android-6.0.1_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r1/core/java/android/provider/Settings.java
+    accessedAt: 2026-10-18
+  - title: 'Lint check MissingPermission: Missing Permissions'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/MissingPermission.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check HardwareIds: Hardware Id Usage'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/HardwareIds.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check BatteryLife: Battery Life Issues'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/BatteryLife.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check FullBackupContent: Valid Full Backup Content File'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/FullBackupContent.md.html
+    accessedAt: 2026-10-18
+  - title: 'Gracefully continue if ConnectivityManager.requestNetwork fails (WebRTC code review)'
+    url: https://codereview.webrtc.org/1863413003
+    accessedAt: 2026-10-18
+  - title: 'SYSTEM_ALERT_WINDOW, Android O, and Disappointment (CommonsWare)'
+    url: https://commonsware.com/blog/2017/05/11/system_alert_window-updates.html
+    accessedAt: 2026-10-18
+  - title: Settings strings.xml at android-6.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/packages/apps/Settings/+/refs/tags/android-6.0.0_r1/res/values/strings.xml
+    accessedAt: 2026-10-18
 ---
 
 Android 6.0 Marshmallow es la versión en la que las apps dejaron de recibir
@@ -234,6 +285,11 @@ parche de seguridad que los dispositivos informan como una fecha.
 | Dispositivos de lanzamiento        | Nexus 5X (LG) y Nexus 6P (Huawei), anunciados el 29 de septiembre de 2015 |
 | Plazo de target API en Google Play | Ninguno. La regla de target API de Play empezó en 2018, con API 26        |
 
+La tabla de Google con las versiones mínimas de Android Studio y del Android
+Gradle Plugin empieza en API 33, así que aquí no hay fila de herramientas. El
+anuncio del SDK final pedía poner `compileSdkVersion 23` y usar la Support
+Library 23.
+
 Google lanzó la primera vista previa para desarrolladores, entonces llamada
 Android M, en Google I/O el 28 de mayo de 2015. El 17 de agosto publicó el SDK
 final, le dio el nombre Marshmallow y abrió Play a las apps con target API 23.
@@ -253,7 +309,8 @@ los emoji de Unicode 8 y la vuelta de "until next alarm" en No molestar.
 
 ## Qué trajo
 
-- **Permisos en tiempo de ejecución.** Tienen su propia sección más abajo.
+- **Permisos en tiempo de ejecución.** Están en [Permisos](#permisos), más
+  abajo.
 - **Doze.** Un teléfono desenchufado, quieto y con la pantalla apagada entra en
   Doze. Se corta la red, se ignoran los wake locks, y las alarmas, los jobs y las
   sincronizaciones esperan a breves ventanas de mantenimiento.
@@ -276,6 +333,8 @@ los emoji de Unicode 8 y la vuelta de "until next alarm" en No molestar.
   `Activity#onProvideAssistContent()`. Ars Technica describe Google Now on Tap
   como la función que se apoya en ella: una pulsación larga en inicio envía la
   pantalla a Google.
+- **Barra flotante de texto.** Cortar, Copiar y Pegar pueden flotar junto a la
+  selección, con `startActionMode(callback, ActionMode.TYPE_FLOATING)`.
 - **Otros añadidos.** Direct Share (`ChooserTargetService`), interacciones por
   voz (`VoiceInteractor`), la linterna (`CameraManager#setTorchMode()`),
   `android.media.midi`, los botones del lápiz Bluetooth y los modos de pantalla
@@ -306,7 +365,9 @@ los emoji de Unicode 8 y la vuelta de "until next alarm" en No molestar.
   la comparación ocurra dentro del Trusted Execution Environment.
 - **Identificadores de hardware.** `WifiInfo.getMacAddress()` y
   `BluetoothAdapter.getAddress()` devuelven `02:00:00:00:00:00` a todas las apps.
-  Los escaneos de Wi-Fi y Bluetooth en segundo plano usan una MAC aleatoria.
+  Los escaneos de Wi-Fi y Bluetooth en segundo plano usan una MAC aleatoria. Lo
+  que implica para los permisos de ubicación está en la tabla de
+  [Permisos](#permisos).
 - **Cambios menores.** La política de SELinux se endureció (filtrado de IOCTL,
   `/proc` muy restringido). El USB arranca en modo solo carga y el acceso a
   archivos requiere la aprobación del usuario. Un nuevo chequeo de `StrictMode`
@@ -316,8 +377,64 @@ los emoji de Unicode 8 y la vuelta de "until next alarm" en No molestar.
 ## Permisos
 
 Ahora hay dos clases de permisos. Los **normales** se siguen otorgando al
-instalar. Los **peligrosos** (ubicación, contactos, cámara, micrófono, SMS y
-similares) hay que pedirlos en tiempo de ejecución si la app tiene target API 23.
+instalar. Los **peligrosos** hay que pedirlos en tiempo de ejecución si la app
+tiene target API 23. Unos pocos, muy potentes, pasaron a ser **especiales**: el
+usuario los concede en una pantalla de Ajustes, no en un diálogo.
+
+| Permiso                                             | Qué cambió en API 23                                                                                                                                                                 | Qué declarar                                                                                                             | Qué quitar o limitar                                                            |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| Permisos peligrosos                                 | Se piden en ejecución si el target es 23; el usuario puede revocarlos en cualquier app. Nueve grupos: Calendar, Camera, Contacts, Location, Microphone, Phone, Sensors, SMS, Storage | `<uses-permission>` como antes, luego `checkSelfPermission()` y `requestPermissions()`                                   | Todos los que no uses: cada uno es un diálogo                                   |
+| `<uses-permission-sdk-23>`                          | Elemento nuevo del manifiesto: el permiso solo se pide desde API 23                                                                                                                  | Úsalo para un permiso que solo necesita una función nueva, así las actualizaciones en equipos viejos no piden nada nuevo | `android:maxSdkVersion` opcional; el elemento no tiene atributo `minSdkVersion` |
+| `ACCESS_FINE_LOCATION`, `ACCESS_COARSE_LOCATION`    | Necesarios para leer identificadores de hardware de equipos cercanos con `getScanResults()`, `ACTION_FOUND` y `startScan()`                                                          | Uno de los dos si escaneas dispositivos Wi-Fi o Bluetooth, pedido en ejecución                                           | No los agregues para leer la MAC propia: es `02:00:00:00:00:00` igual           |
+| `CHANGE_NETWORK_STATE`                              | En 6.0.0 ya no se otorga al instalar a las apps con target 23; desde 6.0.1 vuelve a ser normal                                                                                       | Sigue declarándolo; en 6.0.0, `requestNetwork()` también pasa si el usuario permitió "Modify system settings"            | Nada                                                                            |
+| `WRITE_SETTINGS`                                    | Ya no se otorga al instalar a las apps con target 23; el usuario lo permite en "Modify system settings"                                                                              | Envía `Settings.ACTION_MANAGE_WRITE_SETTINGS`; comprueba `Settings.System.canWrite()`                                    | Quítalo si no escribes ajustes del sistema                                      |
+| `SYSTEM_ALERT_WINDOW`                               | Era peligroso; con target 23 el usuario debe permitirlo en "Draw over other apps"                                                                                                    | Envía `Settings.ACTION_MANAGE_OVERLAY_PERMISSION`; comprueba `Settings.canDrawOverlays()`                                | Quítalo si no dibujas sobre otras apps                                          |
+| `GET_ACCOUNTS`                                      | Era normal; ahora es peligroso, en el grupo Contacts. No hace falta para cuentas de un autenticador firmado con tu clave                                                             | Decláralo solo para leer cuentas de otras apps                                                                           | Quítalo si solo lees tus propias cuentas                                        |
+| `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`              | Nuevo, normal; necesario para `ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`                                                                                                          | Solo si Doze rompe la función principal de tu app                                                                        | En el resto de apps: la política de Play prohíbe el pedido directo              |
+| `ACCESS_NOTIFICATION_POLICY`                        | Nuevo, normal; marca las apps que cambian No molestar                                                                                                                                | Decláralo y envía `ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS`; comprueba `isNotificationPolicyAccessGranted()`          | Nada                                                                            |
+| `USE_FINGERPRINT`                                   | Nuevo, normal; protege `FingerprintManager`                                                                                                                                          | Decláralo con la API de huella                                                                                           | Obsoleto en API 28 a favor de `USE_BIOMETRIC`                                   |
+| `REQUEST_INSTALL_PACKAGES`                          | Nuevo; solo se exige a las apps con target mayor que 25                                                                                                                              | Nada todavía para API 23                                                                                                 | Nada                                                                            |
+| `READ_HISTORY_BOOKMARKS`, `WRITE_HISTORY_BOOKMARKS` | Eliminados junto con las APIs de marcadores globales                                                                                                                                 | Nada; guarda los marcadores en tu propio almacenamiento                                                                  | Borra las dos líneas del manifiesto                                             |
+
+Un solo manifiesto para una app que corre en Android 5.1 o anterior y en 6.0 o
+posterior. Deja solo los bloques que tu app necesita:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Peligroso: se declara como antes; se pide en ejecución desde API 23 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Solo lo necesita una función agregada en esta actualización: los
+         equipos anteriores a API 23 no lo ven y sus usuarios no aprueban nada nuevo -->
+    <uses-permission-sdk-23
+        android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Normal otra vez desde 6.0.1; en 6.0.0 necesita "Modify system settings" -->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+
+    <!-- Especial: se concede en una pantalla de Ajustes y se comprueba con canWrite() -->
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
+    <!-- Nuevo en API 23 -->
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+
+    <!-- Eliminados en API 23: bórralos si todavía los tienes
+    <uses-permission android:name="com.android.browser.permission.READ_HISTORY_BOOKMARKS" />
+    <uses-permission android:name="com.android.browser.permission.WRITE_HISTORY_BOOKMARKS" />
+    -->
+</manifest>
+```
+
+`CHANGE_NETWORK_STATE` es el caso que confundió a los desarrolladores. En el
+manifiesto de la plataforma de `android-6.0.0_r1` tiene el mismo nivel de
+protección que `WRITE_SETTINGS`, así que una app con target 23 no lo recibía al
+instalar. Llamadas como `requestNetwork()` lanzaban entonces
+`SecurityException`, salvo que el usuario hubiera permitido "Modify system
+settings". En `android-6.0.1_r1` vuelve a ser `normal` y la comprobación lo
+acepta primero. Un cambio de WebRTC de abril de 2016 captura el fallo por la
+misma razón: en Android 6.0.0 la llamada "requires the WRITE_SETTINGS
+permission, which is somewhat impractical to obtain".
 
 ```mermaid title="Flujo de permisos en tiempo de ejecución para una app con target API 23"
 flowchart TD
@@ -342,13 +459,6 @@ después de un rechazo agregaba la casilla "Never ask again".
 - **Apps antiguas.** Las apps con target API 22 o menor siguen recibiendo sus
   permisos al instalar. Aun así, el usuario puede desactivarlos, tanto en apps
   viejas como nuevas.
-- **Nuevo.** `USE_FINGERPRINT`.
-- **Eliminados.** `READ_HISTORY_BOOKMARKS` y `WRITE_HISTORY_BOOKMARKS`, junto
-  con `Browser.getAllBookmarks()` y `Browser.saveBookmark()`.
-- **Ubicación para escanear.** Leer identificadores de dispositivos cercanos con
-  `WifiManager.getScanResults()`, `BluetoothDevice.ACTION_FOUND` o
-  `BluetoothLeScanner.startScan()` requiere `ACCESS_FINE_LOCATION` o
-  `ACCESS_COARSE_LOCATION`.
 - **Device owners.** `DevicePolicyManager#setPermissionPolicy()` permite que el
   administrador de una empresa defina cómo se otorgan los permisos.
 
@@ -356,31 +466,84 @@ después de un rechazo agregaba la casilla "Never ask again".
 
 ### Todas las apps en Android 6.0
 
-| Cambio                                                                             | Qué hacer                                                                                                                                                                                                                                                                                             |
-| ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Doze y App Standby                                                                 | Prueba con `adb shell dumpsys deviceidle force-idle` y `adb shell am set-inactive <package> true`. Usa `setAndAllowWhileIdle()` o `setExactAndAllowWhileIdle()` para alarmas que deben sonar. Envía los push urgentes como mensajes FCM de alta prioridad: reciben acceso breve a la red durante Doze |
-| Apps que quieren quedar fuera de Doze                                              | `ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS` lleva al usuario a Ajustes. `ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` lo pide directamente, pero la política de Play solo lo permite cuando Doze rompe la función principal de la app                                                               |
-| El usuario puede desactivar permisos en cualquier app                              | Prueba con los permisos apagados, aunque no tengas target API 23                                                                                                                                                                                                                                      |
-| La MAC devuelve `02:00:00:00:00:00`                                                | No la uses como identificador del dispositivo                                                                                                                                                                                                                                                         |
-| Se eliminaron las APIs de marcadores                                               | Guarda los marcadores en tu propio almacenamiento                                                                                                                                                                                                                                                     |
-| `setStreamSolo()` y `setStreamMute()` quedan obsoletos                             | Usa `requestAudioFocus()` y `adjustStreamVolume()`                                                                                                                                                                                                                                                    |
-| El Keystore deja de soportar DSA                                                   | Usa ECDSA                                                                                                                                                                                                                                                                                             |
-| El acceso a la cámara sigue la prioridad del proceso                               | Maneja `onError()` (Camera) u `onDisconnected()` (Camera2)                                                                                                                                                                                                                                            |
-| Un APK al que le falta un archivo declarado en el manifiesto se considera corrupto | Vuelve a firmar tras quitar contenido                                                                                                                                                                                                                                                                 |
+| Cambio                                                         | Qué hacer                                                                                                                                     | Cómo comprobarlo                                                                      |
+| -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Doze y App Standby                                             | Usa `setAndAllowWhileIdle()` o `setExactAndAllowWhileIdle()` para alarmas que deben sonar; envía los push urgentes como FCM de alta prioridad | `adb shell dumpsys deviceidle force-idle`; `adb shell am set-inactive <package> true` |
+| Apps que quieren quedar fuera de Doze                          | Lleva al usuario a `ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS`; pide directo solo si Doze rompe tu función principal                        | Lint `BatteryLife`                                                                    |
+| El usuario puede desactivar permisos en cualquier app          | Prueba con los permisos apagados, aunque no tengas target API 23                                                                              |                                                                                       |
+| La MAC devuelve `02:00:00:00:00:00`                            | No la uses como identificador del dispositivo                                                                                                 | Lint `HardwareIds`                                                                    |
+| El cliente HTTP de Apache salió del SDK                        | Cambia a `HttpURLConnection` o agrega `useLibrary 'org.apache.http.legacy'` en `build.gradle`                                                 | La compilación falla con `compileSdkVersion 23`                                       |
+| Se eliminó `Notification.setLatestEventInfo()`                 | Construye las notificaciones con `Notification.Builder`                                                                                       | La compilación falla con `compileSdkVersion 23`                                       |
+| Se eliminaron las APIs de marcadores                           | Guarda los marcadores en tu propio almacenamiento                                                                                             |                                                                                       |
+| Forzar una red Wi-Fi ya no corta los datos móviles             | Desde target 21, envía el tráfico con `bindProcessToNetwork()` o `Network.openConnection()`                                                   |                                                                                       |
+| Solo tus propios objetos `WifiConfiguration`                   | No modifiques ni borres redes que crearon el usuario u otras apps                                                                             |                                                                                       |
+| `setStreamSolo()` y `setStreamMute()` quedan obsoletos         | Usa `requestAudioFocus()` y `adjustStreamVolume()`                                                                                            |                                                                                       |
+| El Keystore deja de soportar DSA                               | Usa ECDSA                                                                                                                                     |                                                                                       |
+| El acceso a la cámara sigue la prioridad del proceso           | Maneja `onError()` (Camera) u `onDisconnected()` (Camera2)                                                                                    |                                                                                       |
+| ART aplica las reglas de acceso en `newInstance()`             | Haz accesibles los constructores de las clases nombradas en XML; actualiza appcompat y recyclerview                                           |                                                                                       |
+| El enlazador dinámico sigue los soname y `RTLD_LOCAL`          | Corrige las entradas `DT_NEEDED` con rutas absolutas                                                                                          |                                                                                       |
+| Un APK sin un archivo declarado en el manifiesto está corrupto | Vuelve a firmar tras quitar contenido                                                                                                         |                                                                                       |
 
-El cliente HTTP de Apache salió del SDK, así que con `compileSdkVersion 23` ya
-no compila. Cambia a `HttpURLConnection` o agrega
-`useLibrary 'org.apache.http.legacy'` en `build.gradle`. Los dispositivos
-mantuvieron las clases en el bootclasspath hasta Android 9.
+Los dispositivos mantuvieron las clases HTTP de Apache en el bootclasspath
+hasta Android 9; solo el SDK las quitó.
 
 ### Apps con target API 23
 
-| Cambio                                                               | Qué hacer                                                                                  |
-| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Los permisos peligrosos se piden en ejecución                        | `checkSelfPermission()` antes de cada acceso, `requestPermissions()` si está denegado      |
-| Auto Backup viene activado                                           | Elige qué se respalda con `android:fullBackupContent`, o usa `android:allowBackup="false"` |
-| Se rechazan bibliotecas nativas con text relocations                 | Recompílalas sin text relocations                                                          |
-| El lápiz informa `BUTTON_STYLUS_PRIMARY` y `BUTTON_STYLUS_SECONDARY` | Léelos con `MotionEvent#getButtonState()`                                                  |
+| Cambio                                                               | Qué hacer                                                                                  | Cómo comprobarlo                                                                   |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Los permisos peligrosos se piden en ejecución                        | `checkSelfPermission()` antes de cada acceso, `requestPermissions()` si está denegado      | Lint `MissingPermission`; `adb shell dumpsys package <package>` lista los permisos |
+| `WRITE_SETTINGS` y `SYSTEM_ALERT_WINDOW` pasan por Ajustes           | Lleva al usuario a esa pantalla y comprueba antes `canWrite()` o `canDrawOverlays()`       |                                                                                    |
+| `CHANGE_NETWORK_STATE` no se otorga en Android 6.0.0                 | Captura `SecurityException` de `requestNetwork()` y de las llamadas que atan la red        | Prueba en una build 6.0.0, no solo en 6.0.1                                        |
+| Auto Backup viene activado                                           | Elige qué se respalda con `android:fullBackupContent`, o usa `android:allowBackup="false"` | Lint `FullBackupContent`; `adb shell bmgr backupnow <package>`                     |
+| Se rechazan bibliotecas nativas con text relocations                 | Recompílalas sin text relocations; registra `dlerror()` cuando falle `dlopen()`            |                                                                                    |
+| El lápiz informa `BUTTON_STYLUS_PRIMARY` y `BUTTON_STYLUS_SECONDARY` | Léelos con `MotionEvent#getButtonState()`                                                  |                                                                                    |
+
+Los ID de cambios de compatibilidad existen desde Android 11 (API 30), así que
+estas tablas no tienen ninguno.
+
+## Migrar a API 23
+
+De `targetSdkVersion 22` a 23, en este orden:
+
+1. **Actualiza las herramientas.** Pon `compileSdkVersion 23` y la Support
+   Library 23, que trae `ContextCompat.checkSelfPermission()` y
+   `ActivityCompat.requestPermissions()`. Reemplaza el cliente HTTP de Apache y
+   `setLatestEventInfo()`. Si lo saltas, la compilación falla. Comprueba: el
+   proyecto compila y lint no muestra errores nuevos.
+2. **Recorta el manifiesto.** Lista tus permisos peligrosos por grupo y quita
+   los que no usas; borra los permisos de marcadores. Pasa a
+   `<uses-permission-sdk-23>` los permisos que solo necesita una función nueva.
+   Si lo saltas, el usuario ve diálogos de funciones que nunca toca. Comprueba:
+   lee el manifiesto combinado, porque las bibliotecas también agregan permisos.
+3. **Pide en ejecución.** Comprueba antes de cada llamada que necesita un
+   permiso peligroso, pídelo cuando el usuario llega a la función, explica con
+   `shouldShowRequestPermissionRationale()` y sigue funcionando tras "Deny" y
+   "Never ask again". Si lo saltas, la llamada lanza `SecurityException` o no
+   devuelve nada. Comprueba: lint `MissingPermission`, luego niega cada permiso
+   en un dispositivo y usa la función.
+4. **Maneja los permisos especiales.** Para `WRITE_SETTINGS` y
+   `SYSTEM_ALERT_WINDOW`, comprueba `canWrite()` o `canDrawOverlays()` y lleva
+   al usuario a la pantalla de Ajustes. Captura `SecurityException` en
+   `requestNetwork()`. Si lo saltas, esas llamadas fallan en cada instalación
+   nueva. Comprueba: una instalación nueva en Android 6.0.0 y en 6.0.1.
+5. **Deja de leer identificadores de hardware.** No uses la MAC como
+   identificador; pide ubicación solo si escaneas equipos cercanos. Si lo
+   saltas, todos los dispositivos informan el mismo ID. Comprueba: lint
+   `HardwareIds`.
+6. **Decide qué guarda Auto Backup.** Excluye tokens y datos propios del
+   dispositivo con `android:fullBackupContent`, o apaga el respaldo. Si lo
+   saltas, esos archivos se restauran en un teléfono nuevo. Comprueba: lint
+   `FullBackupContent` y un respaldo y restauración con `adb shell bmgr`.
+7. **Recompila las bibliotecas nativas** con text relocations. Si lo saltas, no
+   cargan. Comprueba: registra el texto de `dlerror()` en un dispositivo 6.0.
+8. **Prueba el resultado** en un dispositivo o emulador con Android 6.0 y
+   `targetSdkVersion 23`: una vez con todos los permisos negados y otra en Doze
+   (`adb shell dumpsys deviceidle force-idle`). Para pruebas automáticas,
+   `adb install -g` otorga todos los permisos en ejecución al instalar.
+
+Si saltas varios niveles a la vez: haz los pasos de cada versión en orden,
+desde [Android 5.0](/es/notes/android-5-0-lollipop/) o
+[Android 5.1](/es/notes/android-5-1-lollipop/), según tu target actual.
 
 ## Qué perduró
 
@@ -417,3 +580,7 @@ android:required="false"/>`.
   de Wi-Fi y Bluetooth.
 - Android Police informó en mayo de 2015 que el nombre interno era Macadamia
   Nut Cookie, de ahí el nombre de la rama `mnc-dev` en AOSP.
+- `SYSTEM_ALERT_WINDOW` era un permiso peligroso en Android 5.1. En 6.0 su
+  nivel de protección pasó a ser `signature|preinstalled|appop|pre23`, el mismo
+  que `WRITE_SETTINGS`; CommonsWare lo describe como "converted into an
+  `appop`-style permission".
