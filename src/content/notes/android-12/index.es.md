@@ -127,6 +127,36 @@ citations:
   - title: "Android 12 officially brings back the dessert names with 'Snow Cone' (Android Central)"
     url: https://www.androidcentral.com/android-12-snow-cone-dessert-name
     accessedAt: 2026-10-17
+  - title: 'Android 12 home screen screenshot — Wikimedia Commons (Free screenshot, Apache 2.0)'
+    url: https://commons.wikimedia.org/wiki/File:Android_12_Homescreen_Screenshot.png
+    accessedAt: 2026-10-17
+  - title: 'Android 12 Easter egg animation — Wikimedia Commons (Hajoon0102, CC BY-SA 4.0)'
+    url: https://commons.wikimedia.org/wiki/File:Android_12_easter_egg.gif
+    accessedAt: 2026-10-17
+  - title: First preview of Android 12
+    url: https://android-developers.googleblog.com/2021/02/android-12-dp1.html
+    accessedAt: 2026-10-17
+  - title: "What's new in Android 12 Beta"
+    url: https://android-developers.googleblog.com/2021/05/whats-new-in-android-12-beta.html
+    accessedAt: 2026-10-17
+  - title: Android 12 Beta 4 and Platform Stability
+    url: https://android-developers.googleblog.com/2021/08/android-12-beta-4-and-platform-stability.html
+    accessedAt: 2026-10-17
+  - title: ScrollCaptureCallback reference
+    url: https://developer.android.com/reference/android/view/ScrollCaptureCallback
+    accessedAt: 2026-10-17
+  - title: PackageInstaller.SessionParams reference (setRequireUserAction)
+    url: https://developer.android.com/reference/android/content/pm/PackageInstaller.SessionParams#setRequireUserAction(int)
+    accessedAt: 2026-10-17
+  - title: A closer look at Android 12 (Go edition) (The Keyword)
+    url: https://blog.google/products-and-platforms/platforms/android/introducing-android-12-go-edition/
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin, March 2025
+    url: https://source.android.com/docs/security/bulletin/2025-03-01
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin, April 2025
+    url: https://source.android.com/docs/security/bulletin/2025-04-01
+    accessedAt: 2026-10-17
   - title: Android Developers content license
     url: https://developer.android.com/license
     accessedAt: 2026-10-17
@@ -139,6 +169,8 @@ apps con target API 31 les exigió `android:exported` y la mutabilidad de cada
 `PendingIntent`, y les impidió iniciar servicios en primer plano desde segundo
 plano.
 
+![La pantalla de inicio de un teléfono con un fondo rosa y morado, la fecha arriba a la izquierda, cinco íconos de apps en el dock y una barra de búsqueda de Google debajo](./assets/android-12-home-screen.png 'La pantalla de inicio de Android 12, capturada en el emulador de Android. Wikimedia Commons · Apache 2.0')
+
 ## De un vistazo
 
 |                                    |                                                                                           |
@@ -150,6 +182,11 @@ plano.
 | Lanzamiento                        | Despliegue en Pixel desde el 19 de octubre de 2021                                        |
 | Dispositivos de lanzamiento        | Pixel 6 y Pixel 6 Pro, anunciados el 19 de octubre de 2021, en tiendas desde el 28        |
 | Plazo de target API en Google Play | Apps nuevas desde el 1 de agosto de 2022, actualizaciones desde el 1 de noviembre de 2022 |
+
+Google anunció Android 12 con la Developer Preview 1 el 18 de febrero de 2021.
+La Beta 1 llegó el 18 de mayo en Google I/O, y la Beta 4 alcanzó la estabilidad
+de plataforma el 11 de agosto, con las APIs y el comportamiento hacia las apps
+ya congelados.
 
 Google publicó el código de Android 12 en AOSP el 4 de octubre de 2021. Los
 teléfonos esperaron dos semanas más: el despliegue empezó el 19 de octubre, para
@@ -182,6 +219,17 @@ de la versión.
   `windowSplashScreenAnimatedIcon`.
 - **Overscroll elástico.** Las listas se estiran y rebotan en el borde en lugar
   de mostrar un brillo.
+- **Capturas con desplazamiento.** Una captura de pantalla puede crecer hasta
+  abarcar una página entera con scroll. Las apps pueden entregar al sistema el
+  contenido desplazado de una vista propia con `ScrollCaptureCallback`,
+  registrado con `View.setScrollCaptureCallback()` o
+  `Window.registerScrollCaptureCallback()`.
+- **Botón de encendido.** En Pixel, mantener presionado el botón de encendido
+  abre Google Assistant, y el menú de apagado pasa a un botón en Quick
+  Settings. Los controles del hogar inteligente y Google Pay, que Android 11
+  había puesto en ese menú, pasaron a ser tiles de Quick Settings.
+- **Accesibilidad.** Una lupa en ventana amplía una parte de la pantalla sin
+  ocultar el resto, y "Extra dim" baja el brillo por debajo del mínimo.
 - **Inserción de contenido enriquecido.** Un solo callback,
   `OnReceiveContentListener`, recibe imágenes y otros contenidos desde el
   portapapeles, el teclado o al arrastrar y soltar.
@@ -192,12 +240,18 @@ de la versión.
   en los estilos de mensajería y de imagen grande, y acciones de notificación que
   exigen el dispositivo desbloqueado (`setAuthenticationRequired()`).
 - **Otras novedades.** APIs de esquinas redondeadas (`RoundedCorner`), hápticos
-  más ricos (`VibratorManager`), una API de Game Mode, AppSearch,
+  más ricos (`VibratorManager`), vibración generada a partir de una sesión de
+  audio (`HapticGenerator`), una API de Game Mode, AppSearch,
   picture-in-picture que entra solo (`setAutoEnterEnabled()`) y el nombre del
   chipset en `Build.SOC_MANUFACTURER` y `Build.SOC_MODEL`.
 
 La publicación de Google para desarrolladores dijo que Android 12 redujo un 22%
 el tiempo de CPU que usan los servicios centrales del sistema.
+
+Después llegó Android 12 (Go edition), para teléfonos de gama de entrada. Google
+la presentó el 14 de diciembre de 2021 para equipos que salían en 2022. Según
+Google, ahí las apps abren hasta un 30% más rápido, las apps sin uso hibernan
+solas y el panel de privacidad también está incluido.
 
 ## Seguridad y privacidad
 
@@ -263,6 +317,12 @@ el tiempo de CPU que usan los servicios centrales del sistema.
   permisos de Android 11 crece: una app que el usuario no abre en unos meses
   también pierde sus jobs, alarmas, mensajes push y caché. El interruptor es
   "Remove permissions and free up space" en App info.
+- **Actualizaciones sin confirmación.** Una tienda de apps que declara
+  `UPDATE_PACKAGES_WITHOUT_USER_ACTION`, un permiso normal que se otorga al
+  instalar, puede llamar a `setRequireUserAction(USER_ACTION_NOT_REQUIRED)` en
+  una sesión de `PackageInstaller` y actualizar apps sin un diálogo de
+  confirmación. Solo funciona con las apps que ella instaló, o consigo misma, y
+  en Android 12 solo si la app actualizada tiene target API 29 o superior.
 
 ![La pantalla Location usage del panel de privacidad: una línea de tiempo de las apps que usaron la ubicación hoy y ayer, con un botón Manage permission](./assets/privacy-dashboard.png 'El panel de privacidad de Android 12, con el uso de la ubicación en 24 horas. Android Developers · CC BY 2.5')
 
@@ -340,6 +400,9 @@ lanza la excepción.
 - **ART** como módulo dio resultado. En 2023 Google dijo que sus actualizaciones
   de ART llegaban a todos los dispositivos con Android 12 o posterior, con un
   arranque de apps hasta 30% más rápido en algunos.
+- **Los parches de seguridad** siguieron hasta marzo de 2025. El Android
+  Security Bulletin de ese mes todavía incluye 12 y 12L entre las versiones de
+  AOSP actualizadas; desde abril de 2025 la lista empieza en Android 13.
 
 La versión menor que siguió, [Android 12L](/es/notes/android-12l/) (API 32), rehízo el sistema para
 pantallas grandes y tiene su propia nota en esta serie.
@@ -348,6 +411,9 @@ pantallas grandes y tiene su propia nota en esta serie.
 
 - El Easter egg es un reloj analógico. Si se arrastran sus agujas hasta las
   12:00, empieza la etapa siguiente; el código registra "12:00 let's gooooo".
+
+![El Easter egg: una esfera de reloj gris con borde ondulado y dos agujas, sobre un degradado azul, bajo la barra de estado](./assets/easter-egg-clock.png 'Un fotograma del Easter egg, antes de que las agujas lleguen a las 12:00. Hajoon0102, Wikimedia Commons · CC BY-SA 4.0')
+
 - Después el fondo se llena de burbujas con la paleta de acentos del sistema, y
   el egg desbloquea **Paint Chips**, un widget para la pantalla de inicio que
   muestra la paleta de color dinámico "in a manner similar to a set of paint

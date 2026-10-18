@@ -118,6 +118,15 @@ citations:
   - title: 'Henry V, Act 3, Scene 1 (Folger Shakespeare Library)'
     url: https://www.folger.edu/explore/shakespeares-works/henry-v/read/3/1/
     accessedAt: 2026-10-17
+  - title: 'Android 12L home screen screenshot — Wikimedia Commons (Free screenshot, Apache 2.0)'
+    url: https://commons.wikimedia.org/wiki/File:Android_12_L_Homescreen_Screenshot.png
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin, March 2025
+    url: https://source.android.com/docs/security/bulletin/2025-03-01
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin, April 2025
+    url: https://source.android.com/docs/security/bulletin/2025-04-01
+    accessedAt: 2026-10-17
   - title: Android developers content license
     url: https://developer.android.com/license
     accessedAt: 2026-10-17
@@ -132,6 +141,8 @@ incompatible, así que nada obligaba a una app a apuntar a él.
 12L es una actualización de funciones (_feature drop_) de
 [Android 12](/es/notes/android-12/), no una versión nueva. Todo lo que Android
 12 cambió para las apps sigue vigente, y esa nota lo explica.
+
+![La pantalla de inicio de un teléfono con 12L, con un fondo oscuro, la fecha arriba a la izquierda, cuatro íconos de apps teñidos de celeste en el dock y una barra de búsqueda debajo](./assets/android-12l-home-screen.png 'La pantalla de inicio de 12L en un emulador del tamaño de un teléfono. La barra de tareas y los diseños a dos columnas solo aparecen en pantallas grandes. Wikimedia Commons · Apache 2.0')
 
 ## De un vistazo
 
@@ -246,6 +257,9 @@ Usa `WindowMetrics` de Jetpack WindowManager en lugar de
 - **La API 32 siguió siendo opcional.** El requisito de Play pasó de la API 31
   en 2022 a la API 33 en agosto de 2023. La regla de Google cuenta las versiones
   principales, y 12L fue una actualización de funciones.
+- **Los parches de seguridad** de 12L terminaron con los de Android 12. El
+  Android Security Bulletin de marzo de 2025 es el último que incluye 12L entre
+  las versiones de AOSP actualizadas.
 
 ## Para saber
 

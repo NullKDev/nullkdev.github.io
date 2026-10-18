@@ -148,6 +148,33 @@ citations:
   - title: 'File:Android logo (2019-2023).svg (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Android_logo_(2019-2023).svg
     accessedAt: 2026-10-17
+  - title: 'File:Android 10 screenshot.png (Wikimedia Commons)'
+    url: https://commons.wikimedia.org/wiki/File:Android_10_screenshot.png
+    accessedAt: 2026-10-17
+  - title: Dynamic System Updates (DSU)
+    url: https://developer.android.com/topic/dsu
+    accessedAt: 2026-10-17
+  - title: Introducing Adiantum (Google Security Blog)
+    url: https://security.googleblog.com/2019/02/introducing-adiantum-encryption-for.html
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin — February 2023
+    url: https://source.android.com/docs/security/bulletin/2023-02-01
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin — March 2023
+    url: https://source.android.com/docs/security/bulletin/2023-03-01
+    accessedAt: 2026-10-17
+  - title: OnePlus unveils new OnePlus 7T (OnePlus press release)
+    url: https://www.oneplus.com/us/press/press-release/oneplus-unveils-new-oneplus-7t
+    accessedAt: 2026-10-17
+  - title: OnePlus 7T will ship with Android 10 out of the box (9to5Google)
+    url: https://9to5google.com/2019/09/24/oneplus-7t-android-10/
+    accessedAt: 2026-10-17
+  - title: Essential Phone gets day-one Android 10 update (Android Police)
+    url: https://www.androidpolice.com/2019/09/03/essential-phone-gets-day-one-android-10-update/
+    accessedAt: 2026-10-17
+  - title: Essential Phone and Redmi K20 Pro get day-one Android 10 updates (9to5Google)
+    url: https://9to5google.com/2019/09/13/android-10-essential-phone-redmi-k20-pro/
+    accessedAt: 2026-10-17
 ---
 
 Android 10 is the release where Android stopped naming versions after
@@ -156,24 +183,30 @@ only their own files on shared storage, background location became a
 permission of its own, and apps lost IMEI and serial number. Users got gesture
 navigation and a system-wide dark theme.
 
+![The Android 10 home screen: a blue gradient wallpaper, the date and weather at the top, five app icons, the Google search bar and the three-button navigation bar](./assets/android-10-home-screen.png 'Android 10 with the Pixel Launcher and the three-button navigation bar. Wikimedia Commons · Free screenshot')
+
 ## At a glance
 
-|                                 |                                                                            |
-| ------------------------------- | -------------------------------------------------------------------------- |
-| Version                         | Android 10                                                                 |
-| API level                       | 29                                                                         |
-| Name                            | Quince Tart, internal only. Public name: Android 10                        |
-| `Build.VERSION_CODES`           | `Q`                                                                        |
-| Final SDK                       | 5 June 2019 (Beta 4, final API 29)                                         |
-| Release                         | Pixel rollout and AOSP source, 3 September 2019                            |
-| Launch devices                  | Pixel 4 and Pixel 4 XL, announced 15 October 2019                          |
-| Google Play target-API deadline | New apps from 3 August 2020, updates to existing apps from 2 November 2020 |
+|                                 |                                                                                                     |
+| ------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Version                         | Android 10                                                                                          |
+| API level                       | 29                                                                                                  |
+| Name                            | Quince Tart, internal only. Public name: Android 10                                                 |
+| `Build.VERSION_CODES`           | `Q`                                                                                                 |
+| Final SDK                       | 5 June 2019 (Beta 4, final API 29)                                                                  |
+| Release                         | Pixel rollout and AOSP source, 3 September 2019                                                     |
+| Launch devices                  | OnePlus 7T, announced 26 September 2019; Google's Pixel 4 and Pixel 4 XL, announced 15 October 2019 |
+| Google Play target-API deadline | New apps from 3 August 2020, updates to existing apps from 2 November 2020                          |
 
 Google published the final API 29 SDK with Beta 4 on 5 June 2019 and opened
 Play to apps targeting API 29 the same day. On 3 September it released the
 source to AOSP and started the rollout to the Pixel, Pixel 2, Pixel 3 and
-Pixel 3a. Android Police reported the rollout the same day. The Pixel 4 was
-the first Google phone to ship with Android 10.
+Pixel 3a. Android Police reported the rollout the same day. The Essential
+Phone and Xiaomi's Redmi K20 Pro also got the update on day one. OnePlus
+presented the 7T as the first new phone preloaded with Android 10 with Google's
+apps; the Pixel 4 was the first Google phone to ship with it. The February 2023
+security bulletin is the last one that lists Android 10 among the patched AOSP
+versions; from March 2023 the bulletins start at Android 11.
 
 ## What it brought
 
@@ -203,6 +236,10 @@ the first Google phone to ship with Android 10.
   capture, a native MIDI API, Dynamic Depth photos, 5G support, the
   `WifiNetworkSpecifier` and `WifiNetworkSuggestion` APIs, Wi-Fi Easy Connect,
   and `DnsResolver` for `SRV` and other records.
+- **Dynamic System Updates.** A device can download a Generic System Image
+  (GSI), boot it from a new dynamic partition as a guest system, and switch
+  back without touching the installed one. Google enabled it on the Pixel 3
+  and newer from Beta 4.
 - **Smaller additions.** A thermal API in `PowerManager`, Neural Networks API
   1.2, generational garbage collection in ART, `foregroundServiceType`, and
   Vulkan 1.1 as a requirement on 64-bit devices.
@@ -217,7 +254,8 @@ the first Google phone to ship with Android 10.
 - **Encryption for every new device.** The Android 10 CDD requires devices
   that launch with it to encrypt user data with file-based encryption, on by
   default after setup. Devices without AES instructions may use Adiantum,
-  the new encryption mode Android 10 added.
+  the new encryption mode Android 10 added. Google measured it at about five
+  times the speed of AES-256-XTS on an ARM Cortex-A7.
 - **TLS 1.3 by default.** Its cipher suites cannot be disabled, and 0-RTT is
   not supported. Certificates signed with SHA-1 are no longer trusted, and
   six SHA-2 CBC cipher suites were removed.
@@ -269,6 +307,10 @@ flowchart TD
   goes through `MediaProjection`, which asks the user.
 - **Old apps.** Apps targeting API 22 or lower show a permissions review screen
   the first time they run on Android 10.
+- **Go edition: no overlays.** On Android 10 (Go edition) devices, apps cannot
+  get `SYSTEM_ALERT_WINDOW`, because overlay windows use too much memory.
+  `Settings.canDrawOverlays()` returns `false`. Apps that held it before the
+  upgrade keep it.
 - **Camera metadata.** Device-specific fields from `getCameraCharacteristics()`
   require `CAMERA`.
 

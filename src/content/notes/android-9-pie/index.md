@@ -124,6 +124,36 @@ citations:
   - title: 'File:Essential PH-1 On Android Pie.jpg (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Essential_PH-1_On_Android_Pie.jpg
     accessedAt: 2026-10-17
+  - title: Previewing Android P
+    url: https://android-developers.googleblog.com/2018/03/previewing-android-p.html
+    accessedAt: 2026-10-17
+  - title: What's new in Android P Beta
+    url: https://android-developers.googleblog.com/2018/05/whats-new-in-android-p-beta.html
+    accessedAt: 2026-10-17
+  - title: Android 9 Pie is already rolling out to the Essential Phone (9to5Google)
+    url: https://9to5google.com/2018/08/06/essential-phone-android-9-pie-now-available/
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin, January 2022
+    url: https://source.android.com/docs/security/bulletin/2022-01-01
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin, February 2022
+    url: https://source.android.com/docs/security/bulletin/2022-02-01
+    accessedAt: 2026-10-17
+  - title: AppWarnings.java at android-9.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-9.0.0_r1/services/core/java/com/android/server/am/AppWarnings.java
+    accessedAt: 2026-10-17
+  - title: version_defaults.mk at android-9.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/build/+/refs/tags/android-9.0.0_r1/core/version_defaults.mk
+    accessedAt: 2026-10-17
+  - title: Framework strings.xml at android-9.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-9.0.0_r1/core/res/res/values/strings.xml
+    accessedAt: 2026-10-17
+  - title: Settings strings.xml at android-9.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/packages/apps/Settings/+/refs/tags/android-9.0.0_r1/res/values/strings.xml
+    accessedAt: 2026-10-17
+  - title: 'File:Android Pie.png (Wikimedia Commons)'
+    url: https://commons.wikimedia.org/wiki/File:Android_Pie.png
+    accessedAt: 2026-10-17
 ---
 
 Android 9 Pie is the release that cut idle apps off from the camera, the
@@ -131,6 +161,8 @@ microphone and the sensors. Apps targeting API 28 lost cleartext HTTP by
 default, and calls into hidden platform APIs started to fail. Users got a
 pill-shaped home button with swipe navigation, Adaptive Battery, and the last
 dessert name Google used in public.
+
+![The Android 9 home screen with the Pixel Launcher: the date and weather at the top, a blue wallpaper, a dock with Phone, Messages, Play Store, Chrome and Camera, a Google search bar, and a single pill-shaped home button at the bottom with no back or recents button](./assets/android-9-home-screen.jpg 'The Android 9 home screen, where the pill is the only navigation button. Wikimedia Commons · Apache License 2.0')
 
 ## At a glance
 
@@ -144,13 +176,19 @@ dessert name Google used in public.
 | Launch devices                  | Pixel, Pixel XL, Pixel 2 and Pixel 2 XL by update; Pixel 3 and Pixel 3 XL came on it |
 | Google Play target-API deadline | New apps from August 2019, app updates from November 2019                            |
 
+The first developer preview came out on 7 March 2018. The beta followed on 8
+May, during Google I/O, and thanks to Project Treble it also ran on phones from
+Essential, Nokia, Oppo, Sony, Vivo and Xiaomi.
+
 On 6 August 2018 Google pushed the source to AOSP and started the over-the-air
 update to Pixel phones. 9to5Google reported the Pixel and Pixel 2 images live
-that day, with the August security patch. Google promised the update by the
+that day, with the August security patch. Essential started pushing the final release to
+the Essential Phone the same day. Google promised the update by the
 end of fall to devices in the beta from Sony, Xiaomi, HMD Global, Oppo, Vivo,
 OnePlus and Essential, and to qualifying Android One phones. AOSP lists the
 first Pie builds for Pixel 3 and Pixel 3 XL (`PD1A`) at the September 2018
-patch level.
+patch level. AOSP security bulletins listed Android 9 for the last time in
+January 2022; from February 2022 they cover Android 10 and later.
 
 ## What it brought
 
@@ -164,10 +202,14 @@ patch level.
 - **Display cutout support.** `DisplayCutout` and `getDisplayCutout()` report
   where the notch is. The `layoutInDisplayCutoutMode` window attribute takes
   `DEFAULT`, `SHORT_EDGES` or `NEVER`. Developer options can simulate a cutout
-  on any device.
+  on any device. The 9 CDD allows cutouts only on the short edges, at most one
+  per edge.
 - **Smaller user changes.** A rotation button in the navigation bar when
   auto-rotate is off, a screenshot editor, a text magnifier while selecting,
   simplified volume controls, and Adaptive Brightness.
+  The clock moved to the left of the status bar to leave room for a notch, and
+  quick settings tiles lost their drop-down panels: a long press opens the
+  setting instead, as Ars Technica noted.
 - **Notifications.** `MessagingStyle` takes a `Person`, shows images with
   `setData()`, keeps reply drafts (`EXTRA_REMOTE_INPUT_DRAFT`) and offers smart
   replies through `RemoteInput.setChoices()`. Users can block whole channel
@@ -184,6 +226,10 @@ patch level.
 - **Machine learning and text.** Neural Networks API 1.1 with nine new
   operations, Smart Linkify on top of `TextClassifier`, `PrecomputedText`, and
   Slices and App Actions to show app content in Google surfaces.
+- **ART and tracing.** ART's ahead-of-time compiler converts an app's DEX
+  files into a more compact form, so apps start faster and use less disk and
+  RAM; low-end devices gain the most. System traces can be recorded on the
+  device itself and shared as a report, HTML included.
 - **Digital Wellbeing.** The Dashboard, App Timer, the new Do Not Disturb and
   Wind Down. It shipped as a Google app from the Play Store, in beta on Pixel
   phones running Android 9.
@@ -220,6 +266,10 @@ patch level.
   and Bluetooth, kernel CFI support, more integer overflow sanitizers, and a
   stricter seccomp filter. File-based encryption now works with adoptable
   storage, and metadata encryption arrived where hardware supports it.
+- **Lockdown.** "Show lockdown option" in the lock screen settings adds a
+  "Lockdown" button to the power menu. It turns off Smart Lock, fingerprint
+  unlocking and notifications on the lock screen until the user unlocks with a
+  PIN, pattern or password.
 - **Encrypted backups.** With a PIN, pattern or password set, Android backups
   are encrypted with a client-side secret, and restoring them needs that
   screen lock.
@@ -261,6 +311,7 @@ patch level.
 | `FLAG_ACTIVITY_NEW_TASK` enforced again from a non-activity context                 | Add the flag when starting an activity from a service or application context                                 |
 | Rotation lock can hold any rotation the top activity supports                       | Do not assume portrait                                                                                       |
 | `getCameraIdList()` can list several front or back cameras                          | Let the user choose among them                                                                               |
+| Apps targeting API 16 or lower show a warning when launched                         | Raise `targetSdkVersion` to 17 or higher                                                                     |
 
 The bucket limits jobs, alarms and high-priority FCM messages, and in "rare"
 also network access. They apply only on battery, and the manufacturer decides
@@ -269,6 +320,10 @@ how apps are assigned.
 The Wi-Fi background limit used to apply to each app: on Android 8.0 and
 [Android 8.1 Oreo](/notes/android-8-1-oreo/), every background app could scan
 once in 30 minutes. On Android 9 that one scan is shared by all of them.
+
+The old-app warning reads "This app was built for an older version of Android
+and may not work properly." AOSP shows it when `targetSdkVersion` is below
+`ro.build.version.min_supported_target_sdk`, which Pie sets to 17.
 
 Non-SDK interfaces fall into lists. The light greylist keeps working, with log
 entries and toasts to flag it. The dark greylist fails for apps targeting API

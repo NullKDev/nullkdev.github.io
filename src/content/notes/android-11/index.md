@@ -139,6 +139,24 @@ citations:
   - title: 'File:Android 11 Easter Egg Light Theme.png (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Android_11_Easter_Egg_Light_Theme.png
     accessedAt: 2026-10-17
+  - title: 'Android 11: Beta Plans (Android Developers Blog)'
+    url: https://android-developers.googleblog.com/2020/05/android-11-beta-plans.html
+    accessedAt: 2026-10-17
+  - title: Android 11 Developer Preview (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2020/02/Android-11-developer-preview.html
+    accessedAt: 2026-10-17
+  - title: Unwrapping the Android 11 Beta, plus more (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2020/06/unwrapping-android-11-beta-plus-more.html
+    accessedAt: 2026-10-17
+  - title: Vivo V20 series is first with Android 11 out of the box (9to5Google)
+    url: https://9to5google.com/2020/09/30/vivo-v20-series-beats-pixel-5-to-be-first-with-android-11-out-of-the-box/
+    accessedAt: 2026-10-17
+  - title: vivo releases full V20 specs as lineup begins global rollout (GSMArena)
+    url: https://www.gsmarena.com/vivo_releases_full_v20_specs_as_lineup_begins_rollout-news-45556.php
+    accessedAt: 2026-10-17
+  - title: Resume-on-Reboot (AOSP)
+    url: https://source.android.com/docs/core/ota/resume-on-reboot
+    accessedAt: 2026-10-17
   - title: Android Developers content license
     url: https://developer.android.com/license
     accessedAt: 2026-10-17
@@ -151,20 +169,27 @@ opt-out and hid the list of installed apps from apps targeting API 30.
 
 ## At a glance
 
-|                                 |                                                                        |
-| ------------------------------- | ---------------------------------------------------------------------- |
-| Version                         | Android 11                                                             |
-| API level                       | 30                                                                     |
-| Name                            | Red Velvet Cake, internal only. Public name: Android 11                |
-| `Build.VERSION_CODES`           | `R`                                                                    |
-| Release                         | Pixel rollout began 8 September 2020                                   |
-| Launch devices                  | Pixel 5 and Pixel 4a (5G), announced 30 September 2020                 |
-| Google Play target-API deadline | New apps from August 2021, updates to existing apps from November 2021 |
+|                                 |                                                                                                |
+| ------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Version                         | Android 11                                                                                     |
+| API level                       | 30                                                                                             |
+| Name                            | Red Velvet Cake, internal only. Public name: Android 11                                        |
+| `Build.VERSION_CODES`           | `R`                                                                                            |
+| Release                         | Pixel rollout began 8 September 2020                                                           |
+| Launch devices                  | vivo V20, on sale 30 September 2020; Google's Pixel 5 and Pixel 4a (5G) announced the same day |
+| Google Play target-API deadline | New apps from August 2021, updates to existing apps from November 2021                         |
 
 Google released Android 11 and pushed its source to AOSP on 8 September 2020,
 starting with the Pixel 2, 3, 3a, 4 and 4a. Google's announcement also named
 OnePlus, Xiaomi, OPPO and realme phones. The first phones sold with Android 11
-were the Pixel 5 and Pixel 4a (5G), announced on 30 September.
+were vivo's V20, which went on sale in Southeast Asia on 30 September. Google
+announced its own, the Pixel 5 and Pixel 4a (5G), the same day.
+
+The road there was a month longer than planned. The first developer preview
+came out on 19 February 2020. In May, Google added a fourth preview and moved
+Beta 1 and every later milestone back about a month. It then postponed the 3
+June beta event "to allow people to focus on important discussions around
+racial justice", and released Beta 1 on 10 June without one.
 
 Dave Burke, Android's VP of engineering, told the All About Android podcast in
 July 2020 that his team called the release "RVC", for Red Velvet Cake. He said
@@ -199,6 +224,16 @@ build IDs start with R (`RP1A.200720.009` was the first Pixel build).
   (`WindowInsetsAnimation.Callback`), waterfall and hinge-angle APIs, NNAPI 1.3,
   low-latency decoding in `MediaCodec`, an NDK image decoder, and wireless
   Android Auto on compatible cars.
+- **More APIs.** An NDK Thermal API reports when the device is heating up, so a
+  game can cut its load before the CPU throttles. A `CallScreeningService` can
+  read the STIR/SHAKEN verification status of an incoming call.
+  `ImageDecoder.decodeDrawable()` returns an `AnimatedImageDrawable` for an HEIF
+  file with several frames, such as a burst photo.
+- **Small things users noticed.** A notification history, off by default, keeps
+  "Recently dismissed" notifications that still open their app, and those from
+  the "Last 24 hours". Apps can be pinned to the top of the share sheet. Dark
+  theme can follow a schedule or sunset. A Wi-Fi network can be saved with
+  "Auto-connect" off.
 
 ## Security and privacy
 
@@ -220,6 +255,10 @@ build IDs start with R (`RP1A.200720.009` was the first Pixel build).
 - **Platform.** The Generic Kernel Image (GKI) moves SoC support out of the core
   kernel into modules. Virtual A/B brings seamless updates with less storage.
   GWP-ASan runs in system apps to catch heap bugs.
+- **Resume-on-Reboot.** After a reboot to install an OTA update, the device
+  can unlock credential-encrypted storage for every app, including apps without
+  Direct Boot support, so notifications arrive before the user enters the PIN.
+  Devices need the `android.hardware.reboot_escrow` feature for it.
 
 ## Permissions
 

@@ -121,6 +121,30 @@ citations:
   - title: 'File:Android Oreo logo.svg (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Android_Oreo_logo.svg
     accessedAt: 2026-10-17
+  - title: 'File:Android 8.0 Oreo Pixel.png (Wikimedia Commons)'
+    url: https://commons.wikimedia.org/wiki/File:Android_8.0_Oreo_Pixel.png
+    accessedAt: 2026-10-17
+  - title: 'O-MG, the Developer Preview of Android O is here!'
+    url: https://android-developers.googleblog.com/2017/03/first-preview-of-android-o.html
+    accessedAt: 2026-10-17
+  - title: Google releases Android O to developers, promising better battery life and notifications (The Verge)
+    url: https://www.theverge.com/2017/3/21/14990876/google-android-o-8-update-developer-preview-release-battery-life-notifications-api
+    accessedAt: 2026-10-17
+  - title: The Sony Xperia XZ1 and XZ1 Compact will be the first phones to ship with Android 8.0 Oreo (9to5Google)
+    url: https://9to5google.com/2017/08/31/sony-xperia-xz1-and-xz1-compact-official/
+    accessedAt: 2026-10-17
+  - title: Sony Xperia XZ1 is now shipping in the US for $699.99 with Android Oreo on board (Android Police)
+    url: https://www.androidpolice.com/2017/09/19/sony-xperia-xz1-now-shipping-us-699-99-android-oreo-board/
+    accessedAt: 2026-10-17
+  - title: Rescue Party (AOSP)
+    url: https://source.android.com/docs/core/tests/debug/rescue-party
+    accessedAt: 2026-10-17
+  - title: RescueParty.java at android-8.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-8.0.0_r1/services/core/java/com/android/server/RescueParty.java
+    accessedAt: 2026-10-17
+  - title: 'RIP Blobs: Google Redesigns Emojis (Emojipedia)'
+    url: https://blog.emojipedia.org/rip-blobs-google-redesigns-emojis/
+    accessedAt: 2026-10-17
 ---
 
 Android 8.0 Oreo is the release that put background work on a leash. Apps
@@ -130,20 +154,23 @@ notification has to belong to a channel the user controls. Underneath,
 Project Treble split the Android framework from the vendor code, so a phone
 could be updated without the chip maker reworking it first.
 
+![The Android 8.0 home screen on a Pixel: a Google search pill at the top left, the weather and the date, Monday, August 21, at the top right, a dark blue wallpaper, and a dock with Phone, Messages, Gmail, Chrome and Camera above the back, home and recents buttons](./assets/android-8-0-home-screen.png 'The Android 8.0 home screen on a Pixel, on launch day. Wikimedia Commons · Apache License 2.0')
+
 ## At a glance
 
-|                                 |                                                                                         |
-| ------------------------------- | --------------------------------------------------------------------------------------- |
-| Version                         | Android 8.0                                                                             |
-| API level                       | 26                                                                                      |
-| Name                            | Oreo, public                                                                            |
-| `Build.VERSION_CODES`           | `O`                                                                                     |
-| Final APIs and SDK              | 8 June 2017, with Developer Preview 3                                                   |
-| Release                         | 21 August 2017. Pixel and Nexus OTAs rolled out in phases after carrier testing         |
-| Launch devices                  | Pixel 2 and Pixel 2 XL, announced 4 October 2017, the first Google phones to ship on it |
-| Google Play target-API deadline | New apps from August 2018, updates to existing apps from November 2018                  |
+|                                 |                                                                                                                                                                                      |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Version                         | Android 8.0                                                                                                                                                                          |
+| API level                       | 26                                                                                                                                                                                   |
+| Name                            | Oreo, public                                                                                                                                                                         |
+| `Build.VERSION_CODES`           | `O`                                                                                                                                                                                  |
+| Final APIs and SDK              | 8 June 2017, with Developer Preview 3                                                                                                                                                |
+| Release                         | 21 August 2017. Pixel and Nexus OTAs rolled out in phases after carrier testing                                                                                                      |
+| Launch devices                  | Sony Xperia XZ1 and XZ1 Compact, announced 31 August 2017, the first phones to ship with it. Pixel 2 and Pixel 2 XL, announced 4 October 2017, the first Google phones to ship on it |
+| Google Play target-API deadline | New apps from August 2018, updates to existing apps from November 2018                                                                                                               |
 
-Google froze the API on 8 June 2017 and opened Play to apps targeting API 26
+The first developer preview came out on 21 March 2017, for the Nexus 5X,
+Nexus 6P, Nexus Player, Pixel, Pixel XL and Pixel C. Google froze the API on 8 June 2017 and opened Play to apps targeting API 26
 the same day. On 21 August it pushed the source to AOSP, updated Android Beta
 devices and announced that Pixel, Nexus 5X, Nexus 6P, Pixel C and Nexus Player
 builds were in carrier testing. The first public AOSP tags for those devices
@@ -183,9 +210,14 @@ Oreo cookies made by Nabisco for the launch event.
   (`requestPinShortcut()`), wide-gamut colour per activity, Wi-Fi Aware, LDAC
   and Bluetooth 5 support, `TextClassifier` for smart text selection,
   `java.time`, `java.nio.file` and `java.lang.invoke` from OpenJDK, and
-  per-app cache quotas (`getCacheQuotaBytes()`).
+  per-app cache quotas (`getCacheQuotaBytes()`). `WebView` gains Safe Browsing,
+  version, renderer termination and renderer importance APIs; an activity can
+  move between displays, and the app can pick the display it launches on;
+  companion device pairing customises the Bluetooth, BLE and Wi-Fi pairing
+  dialog.
 - **Users saw** a reorganised Settings app, a redesigned emoji set with more
-  than 60 new emoji, and boot times Google put at up to twice as fast on the
+  than 60 new emoji from Unicode 10 (the round faces replaced Google's blob
+  emoji), and boot times Google put at up to twice as fast on the
   Pixel.
 
 ## Security and privacy
@@ -324,3 +356,8 @@ are in [Permissions](#permissions).
   purpose, "to prevent its value being inlined in the app during
   compilation", because the system sets it according to the app's target
   SDK.
+- A boot loop now triggers "Rescue Party". When `system_server` restarts five
+  times in five minutes, or a persistent system app crashes five times in 30
+  seconds, the system resets settings in three escalating steps. The fourth
+  boots into recovery and offers a factory reset. In 8.0, a userdebug build
+  connected over USB skips it.

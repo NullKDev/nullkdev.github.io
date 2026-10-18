@@ -118,6 +118,15 @@ citations:
   - title: 'Henry V, Act 3, Scene 1 (Folger Shakespeare Library)'
     url: https://www.folger.edu/explore/shakespeares-works/henry-v/read/3/1/
     accessedAt: 2026-10-17
+  - title: 'Android 12L home screen screenshot — Wikimedia Commons (Free screenshot, Apache 2.0)'
+    url: https://commons.wikimedia.org/wiki/File:Android_12_L_Homescreen_Screenshot.png
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin, March 2025
+    url: https://source.android.com/docs/security/bulletin/2025-03-01
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin, April 2025
+    url: https://source.android.com/docs/security/bulletin/2025-04-01
+    accessedAt: 2026-10-17
   - title: Android developers content license
     url: https://developer.android.com/license
     accessedAt: 2026-10-17
@@ -131,6 +140,8 @@ without a single breaking change, so nothing forced an app to target it.
 12L is a feature drop for [Android 12](/notes/android-12/), not a new version
 of it. Everything Android 12 changed for apps still applies, and that note
 covers it.
+
+![A phone home screen on 12L with a dark wallpaper, the date at the top left, four app icons tinted light blue in the dock and a search bar below them](./assets/android-12l-home-screen.png 'The 12L home screen on a phone-sized emulator. The taskbar and two-column layouts appear only on large screens. Wikimedia Commons · Apache 2.0')
 
 ## At a glance
 
@@ -242,6 +253,8 @@ Use `WindowMetrics` from Jetpack WindowManager instead of
 - **API 32 stayed optional.** Play's deadline went from API 31 in 2022 to API
   33 in August 2023. Google's rule counts "major" releases, and 12L was a
   feature drop.
+- **Security patches** for 12L ended with Android 12's. The March 2025 Android
+  Security Bulletin is the last to list 12L among the updated AOSP versions.
 
 ## Worth knowing
 

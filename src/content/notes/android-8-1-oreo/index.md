@@ -118,6 +118,24 @@ citations:
   - title: 'File:Android Oreo 8.1 logo.svg (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Android_Oreo_8.1_logo.svg
     accessedAt: 2026-10-17
+  - title: 'File:Android Oreo 8.1 screenshot.png (Wikimedia Commons)'
+    url: https://commons.wikimedia.org/wiki/File:Android_Oreo_8.1_screenshot.png
+    accessedAt: 2026-10-17
+  - title: 'In case you missed it: Android announcements at Mobile World Congress'
+    url: https://blog.google/products/android/case-you-missed-it-android-announcements-mobile-world-congress/
+    accessedAt: 2026-10-17
+  - title: 'Android 8.1 feature spotlight: navigation bar dims (Android Police)'
+    url: https://www.androidpolice.com/2017/10/25/android-8-1-feature-spotlight-settings-now-colored-navigation-bar-dims/
+    accessedAt: 2026-10-17
+  - title: NavigationBarTransitions.java at android-8.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-8.0.0_r1/packages/SystemUI/src/com/android/systemui/statusbar/phone/NavigationBarTransitions.java
+    accessedAt: 2026-10-17
+  - title: NavigationBarTransitions.java at android-8.1.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-8.1.0_r1/packages/SystemUI/src/com/android/systemui/statusbar/phone/NavigationBarTransitions.java
+    accessedAt: 2026-10-17
+  - title: StatusBar.java at android-8.1.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-8.1.0_r1/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBar.java
+    accessedAt: 2026-10-17
 ---
 
 Android 8.1 Oreo is the release that made Android fit phones with 1 GB of RAM
@@ -128,16 +146,16 @@ developers it was a small API level on top of
 
 ## At a glance
 
-|                                 |                                                                                       |
-| ------------------------------- | ------------------------------------------------------------------------------------- |
-| Version                         | Android 8.1                                                                           |
-| API level                       | 27                                                                                    |
-| Name                            | Oreo, public (same name as 8.0)                                                       |
-| `Build.VERSION_CODES`           | `O_MR1`                                                                               |
-| Final APIs                      | 25 October 2017, with the first developer preview                                     |
-| Release                         | Rollout to Pixel and Nexus began 5 December 2017                                      |
-| Launch devices                  | None new. Pixel 2, Pixel 2 XL, Pixel, Pixel XL, Pixel C, Nexus 5X and Nexus 6P got it |
-| Google Play target-API deadline | None of its own. Play required API 26 in 2018 and jumped to API 28 in 2019            |
+|                                 |                                                                                                                                                        |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Version                         | Android 8.1                                                                                                                                            |
+| API level                       | 27                                                                                                                                                     |
+| Name                            | Oreo, public (same name as 8.0)                                                                                                                        |
+| `Build.VERSION_CODES`           | `O_MR1`                                                                                                                                                |
+| Final APIs                      | 25 October 2017, with the first developer preview                                                                                                      |
+| Release                         | Rollout to Pixel and Nexus began 5 December 2017                                                                                                       |
+| Launch devices                  | No new Pixel. Pixel 2, Pixel 2 XL, Pixel, Pixel XL, Pixel C, Nexus 5X and Nexus 6P got it. The first Go edition phones were announced in February 2018 |
+| Google Play target-API deadline | None of its own. Play required API 26 in 2018 and jumped to API 28 in 2019                                                                             |
 
 The first developer preview, on 25 October 2017, already carried the final
 API level 27, and Play opened to apps targeting it that day. Google announced
@@ -146,13 +164,18 @@ details on 5 December, with the update "rolling out" to Pixel and Nexus "over
 the next week". MobileSyrup reported the rollout the same day. Partner devices,
 including Go edition phones, were promised "in the months ahead".
 
+![The Android 8.1 home screen on a Nexus 5X: a date and weather line at the top, a pink and purple wallpaper, round folders named Google, Erstellen and Play, the Play Store icon, a dock with Phone, Messages, Chrome, Gmail and Camera, and a Google search bar above the back, home and recents buttons](./assets/android-8-1-home-screen.png 'Android 8.1 on a Nexus 5X, captured on 3 November 2017 during the developer preview. Wikimedia Commons · Apache License 2.0')
+
 ## What it brought
 
 - **Android Oreo (Go edition).** A configuration for entry-level phones with
   1 GB of RAM or less: platform memory savings, rebuilt Google apps that use
   less memory, storage and data, and new hardware feature constants so Play
   can target low-RAM or normal devices. The 8.1 CDD makes a handheld with 1 GB
-  or less declare `android.hardware.ram.low`.
+  or less declare `android.hardware.ram.low`. The first Go edition phones,
+  among them the Alcatel 1X, Nokia 1 and ZTE Tempo Go, were announced at
+  Mobile World Congress on 27 February 2018. Google said the configuration
+  leaves twice as much storage free out of the box.
 - **Neural Networks API.** A C API in the NDK for hardware-accelerated
   inference. Google built it as the base layer for TensorFlow Lite, Caffe2 and
   other frameworks, starting with vision models such as MobileNets and
@@ -179,6 +202,11 @@ including Go edition phones, were promised "in the months ahead".
 - **User-visible.** Wi-Fi settings label open networks by speed, from "Slow" to
   "Very Fast"; Android Police reported the labels reaching users in January 2018. Bluetooth settings show a connected device's battery, as in
   "Connected, battery 80%". Both strings first appear in AOSP at 8.1.
+- **Dimmed navigation buttons.** After 2.25 seconds without a touch, SystemUI
+  fades the back, home and recents buttons to 60% opacity, except when the
+  wallpaper is visible behind the bar. In 8.0 the buttons dimmed only when an
+  app asked for low-profile mode. Android Police spotted it in the first
+  preview and read it as a guard against burn-in; Google gave no reason.
 
 ## Security and privacy
 

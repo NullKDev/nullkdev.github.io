@@ -139,6 +139,24 @@ citations:
   - title: 'File:Android 11 Easter Egg Light Theme.png (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Android_11_Easter_Egg_Light_Theme.png
     accessedAt: 2026-10-17
+  - title: 'Android 11: Beta Plans (Android Developers Blog)'
+    url: https://android-developers.googleblog.com/2020/05/android-11-beta-plans.html
+    accessedAt: 2026-10-17
+  - title: Android 11 Developer Preview (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2020/02/Android-11-developer-preview.html
+    accessedAt: 2026-10-17
+  - title: Unwrapping the Android 11 Beta, plus more (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2020/06/unwrapping-android-11-beta-plus-more.html
+    accessedAt: 2026-10-17
+  - title: Vivo V20 series is first with Android 11 out of the box (9to5Google)
+    url: https://9to5google.com/2020/09/30/vivo-v20-series-beats-pixel-5-to-be-first-with-android-11-out-of-the-box/
+    accessedAt: 2026-10-17
+  - title: vivo releases full V20 specs as lineup begins global rollout (GSMArena)
+    url: https://www.gsmarena.com/vivo_releases_full_v20_specs_as_lineup_begins_rollout-news-45556.php
+    accessedAt: 2026-10-17
+  - title: Resume-on-Reboot (AOSP)
+    url: https://source.android.com/docs/core/ota/resume-on-reboot
+    accessedAt: 2026-10-17
   - title: Android Developers content license
     url: https://developer.android.com/license
     accessedAt: 2026-10-17
@@ -152,20 +170,29 @@ target API 30.
 
 ## De un vistazo
 
-|                                    |                                                                           |
-| ---------------------------------- | ------------------------------------------------------------------------- |
-| Versión                            | Android 11                                                                |
-| Nivel de API                       | 30                                                                        |
-| Nombre                             | Red Velvet Cake, solo interno. Nombre público: Android 11                 |
-| `Build.VERSION_CODES`              | `R`                                                                       |
-| Lanzamiento                        | Despliegue en Pixel desde el 8 de septiembre de 2020                      |
-| Dispositivos de lanzamiento        | Pixel 5 y Pixel 4a (5G), anunciados el 30 de septiembre de 2020           |
-| Plazo de target API en Google Play | Apps nuevas desde agosto de 2021, actualizaciones desde noviembre de 2021 |
+|                                    |                                                                                                               |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Versión                            | Android 11                                                                                                    |
+| Nivel de API                       | 30                                                                                                            |
+| Nombre                             | Red Velvet Cake, solo interno. Nombre público: Android 11                                                     |
+| `Build.VERSION_CODES`              | `R`                                                                                                           |
+| Lanzamiento                        | Despliegue en Pixel desde el 8 de septiembre de 2020                                                          |
+| Dispositivos de lanzamiento        | vivo V20, a la venta el 30 de septiembre de 2020; Pixel 5 y Pixel 4a (5G) de Google, anunciados ese mismo día |
+| Plazo de target API en Google Play | Apps nuevas desde agosto de 2021, actualizaciones desde noviembre de 2021                                     |
 
 Google lanzó Android 11 y publicó su código en AOSP el 8 de septiembre de 2020,
 empezando por los Pixel 2, 3, 3a, 4 y 4a. El anuncio de Google también nombró
 teléfonos de OnePlus, Xiaomi, OPPO y realme. Los primeros teléfonos vendidos con
-Android 11 fueron el Pixel 5 y el Pixel 4a (5G), anunciados el 30 de septiembre.
+Android 11 fueron los vivo V20, que salieron a la venta en el sudeste asiático
+el 30 de septiembre. Google anunció los suyos, el Pixel 5 y el Pixel 4a (5G), ese
+mismo día.
+
+El camino fue un mes más largo de lo previsto. La primera versión preliminar
+para desarrolladores salió el 19 de febrero de 2020. En mayo, Google agregó una
+cuarta versión preliminar y retrasó la Beta 1 y todas las etapas siguientes
+cerca de un mes. Luego postergó el evento del 3 de junio para dar espacio a las
+conversaciones sobre justicia racial en Estados Unidos, y publicó la Beta 1 el
+10 de junio, sin evento.
 
 Dave Burke, vicepresidente de ingeniería de Android, contó en el podcast All
 About Android en julio de 2020 que su equipo llamaba a la versión "RVC", por Red
@@ -206,6 +233,17 @@ build para Pixel).
   para el ángulo de la bisagra, NNAPI 1.3, decodificación de baja latencia en
   `MediaCodec`, un decodificador de imágenes en el NDK y Android Auto
   inalámbrico en autos compatibles.
+- **Más APIs.** Una Thermal API en el NDK avisa cuando el dispositivo se
+  calienta, para que un juego reduzca la carga antes de que la CPU baje su
+  frecuencia. Un `CallScreeningService` puede leer el estado de verificación
+  STIR/SHAKEN de una llamada entrante. `ImageDecoder.decodeDrawable()` devuelve
+  un `AnimatedImageDrawable` para un archivo HEIF con varios cuadros, como una
+  ráfaga de fotos.
+- **Detalles que notaron los usuarios.** Un historial de notificaciones,
+  desactivado por defecto, guarda las "Recently dismissed", que todavía abren su
+  app, y las de "Last 24 hours". Las apps se pueden fijar arriba en el menú de
+  compartir. El tema oscuro puede seguir un horario o la puesta del sol. Una red
+  Wi-Fi se puede guardar con "Auto-connect" desactivado.
 
 ## Seguridad y privacidad
 
@@ -231,6 +269,11 @@ build para Pixel).
   kernel común y lo lleva a módulos. Virtual A/B da actualizaciones sin
   interrupción con menos almacenamiento. GWP-ASan corre en las apps del sistema
   para detectar errores del heap.
+- **Resume-on-Reboot.** Tras reiniciar para instalar una actualización OTA, el
+  dispositivo puede desbloquear el almacenamiento cifrado por credencial de
+  todas las apps, incluso las que no soportan Direct Boot, para que las
+  notificaciones lleguen antes de que el usuario ingrese el PIN. Requiere la
+  función `android.hardware.reboot_escrow`.
 
 ## Permisos
 

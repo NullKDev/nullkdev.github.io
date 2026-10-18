@@ -124,6 +124,36 @@ citations:
   - title: 'File:Essential PH-1 On Android Pie.jpg (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Essential_PH-1_On_Android_Pie.jpg
     accessedAt: 2026-10-17
+  - title: Previewing Android P
+    url: https://android-developers.googleblog.com/2018/03/previewing-android-p.html
+    accessedAt: 2026-10-17
+  - title: What's new in Android P Beta
+    url: https://android-developers.googleblog.com/2018/05/whats-new-in-android-p-beta.html
+    accessedAt: 2026-10-17
+  - title: Android 9 Pie is already rolling out to the Essential Phone (9to5Google)
+    url: https://9to5google.com/2018/08/06/essential-phone-android-9-pie-now-available/
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin, January 2022
+    url: https://source.android.com/docs/security/bulletin/2022-01-01
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin, February 2022
+    url: https://source.android.com/docs/security/bulletin/2022-02-01
+    accessedAt: 2026-10-17
+  - title: AppWarnings.java at android-9.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-9.0.0_r1/services/core/java/com/android/server/am/AppWarnings.java
+    accessedAt: 2026-10-17
+  - title: version_defaults.mk at android-9.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/build/+/refs/tags/android-9.0.0_r1/core/version_defaults.mk
+    accessedAt: 2026-10-17
+  - title: Framework strings.xml at android-9.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-9.0.0_r1/core/res/res/values/strings.xml
+    accessedAt: 2026-10-17
+  - title: Settings strings.xml at android-9.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/packages/apps/Settings/+/refs/tags/android-9.0.0_r1/res/values/strings.xml
+    accessedAt: 2026-10-17
+  - title: 'File:Android Pie.png (Wikimedia Commons)'
+    url: https://commons.wikimedia.org/wiki/File:Android_Pie.png
+    accessedAt: 2026-10-17
 ---
 
 Android 9 Pie es la versión que dejó a las apps inactivas sin cámara, sin
@@ -132,6 +162,8 @@ cifrar por defecto, y las llamadas a APIs ocultas de la plataforma empezaron a
 fallar. Los usuarios recibieron un botón de inicio en forma de píldora con
 navegación por deslizamiento, Adaptive Battery y el último nombre de postre que
 Google usó en público.
+
+![La pantalla de inicio de Android 9 con el Pixel Launcher: la fecha y el clima arriba, un fondo azul, un dock con Teléfono, Mensajes, Play Store, Chrome y Cámara, una barra de búsqueda de Google y abajo un único botón de inicio en forma de píldora, sin botón de atrás ni de recientes](./assets/android-9-home-screen.jpg 'La pantalla de inicio de Android 9, donde la píldora es el único botón de navegación. Wikimedia Commons · Apache License 2.0')
 
 ## De un vistazo
 
@@ -145,14 +177,21 @@ Google usó en público.
 | Dispositivos de lanzamiento        | Pixel, Pixel XL, Pixel 2 y Pixel 2 XL por actualización; Pixel 3 y Pixel 3 XL llegaron con él |
 | Plazo de target API en Google Play | Apps nuevas desde agosto de 2019, actualizaciones desde noviembre de 2019                     |
 
+La primera vista previa para desarrolladores salió el 7 de marzo de 2018. La
+beta llegó el 8 de mayo, durante Google I/O, y gracias a Project Treble también
+funcionó en teléfonos de Essential, Nokia, Oppo, Sony, Vivo y Xiaomi.
+
 El 6 de agosto de 2018 Google publicó el código en AOSP y empezó la
 actualización por aire a los teléfonos Pixel. 9to5Google informó ese mismo día
 que las imágenes para Pixel y Pixel 2 ya estaban disponibles, con el parche de
-seguridad de agosto. Google prometió la actualización antes del fin del otoño
+seguridad de agosto. Essential empezó a enviar la versión final al Essential
+Phone ese mismo día. Google prometió la actualización antes del fin del otoño
 para los dispositivos de la beta de Sony, Xiaomi, HMD Global, Oppo, Vivo,
 OnePlus y Essential, y para los Android One que calificaran. AOSP registra las
 primeras compilaciones de Pie para Pixel 3 y Pixel 3 XL (`PD1A`) con el nivel de
-parche de septiembre de 2018.
+parche de septiembre de 2018. Los boletines de seguridad de AOSP incluyeron
+Android 9 por última vez en enero de 2022; desde febrero de 2022 cubren
+Android 10 y posteriores.
 
 ## Qué trajo
 
@@ -167,11 +206,14 @@ parche de septiembre de 2018.
 - **Soporte para recortes de pantalla.** `DisplayCutout` y `getDisplayCutout()`
   indican dónde está el notch. El atributo de ventana
   `layoutInDisplayCutoutMode` acepta `DEFAULT`, `SHORT_EDGES` o `NEVER`. Las
-  opciones de desarrollador pueden simular un recorte en cualquier dispositivo.
+  opciones de desarrollador pueden simular un recorte en cualquier dispositivo. El CDD de 9 solo admite recortes
+  en los bordes cortos, como máximo uno por borde.
 - **Cambios menores para el usuario.** Un botón de rotación en la barra de
   navegación cuando la rotación automática está apagada, un editor de capturas,
   una lupa al seleccionar texto, controles de volumen simplificados y Adaptive
-  Brightness.
+  Brightness. El reloj pasó a la izquierda de la barra de estado para dejar
+  sitio al notch, y los mosaicos de ajustes rápidos perdieron sus paneles
+  desplegables: una pulsación larga abre el ajuste, como señaló Ars Technica.
 - **Notificaciones.** `MessagingStyle` recibe un `Person`, muestra imágenes con
   `setData()`, guarda borradores de respuesta (`EXTRA_REMOTE_INPUT_DRAFT`) y
   ofrece respuestas sugeridas con `RemoteInput.setChoices()`. Los usuarios
@@ -189,6 +231,11 @@ parche de septiembre de 2018.
   operaciones nuevas, Smart Linkify sobre `TextClassifier`, `PrecomputedText`,
   y Slices y App Actions para mostrar contenido de las apps en superficies de
   Google.
+- **ART y trazas.** El compilador anticipado de ART convierte los archivos DEX
+  de una app a una forma más compacta, así las apps arrancan antes y usan menos
+  disco y RAM; los dispositivos de gama baja son los que más ganan. Las trazas
+  del sistema se pueden grabar en el propio dispositivo y compartir como
+  informe, también en HTML.
 - **Digital Wellbeing.** El Dashboard, App Timer, el nuevo Do Not Disturb y
   Wind Down. Llegó como una app de Google en Play Store, en beta para teléfonos
   Pixel con Android 9.
@@ -229,6 +276,10 @@ parche de septiembre de 2018.
   desbordamiento de enteros y un filtro seccomp más estricto. El cifrado basado
   en archivos ya funciona con el almacenamiento adoptable, y el cifrado de
   metadatos llegó donde el hardware lo soporta.
+- **Lockdown.** "Show lockdown option", en los ajustes de la pantalla de
+  bloqueo, agrega un botón "Lockdown" al menú de encendido. Apaga Smart Lock,
+  el desbloqueo con huella y las notificaciones en la pantalla de bloqueo hasta
+  que el usuario desbloquea con PIN, patrón o contraseña.
 - **Copias de seguridad cifradas.** Con un PIN, patrón o contraseña
   configurado, las copias de Android se cifran con un secreto del lado del
   cliente, y restaurarlas exige ese bloqueo de pantalla.
@@ -273,6 +324,7 @@ parche de septiembre de 2018.
 | `FLAG_ACTIVITY_NEW_TASK` vuelve a exigirse desde un contexto que no es una actividad          | Agrega la flag al abrir una actividad desde un servicio o el contexto de la aplicación                      |
 | El bloqueo de rotación puede fijar cualquier orientación que admita la actividad visible      | No supongas vertical                                                                                        |
 | `getCameraIdList()` puede listar varias cámaras frontales o traseras                          | Deja que el usuario elija entre ellas                                                                       |
+| Las apps con target API 16 o inferior muestran un aviso al abrirse                            | Sube `targetSdkVersion` a 17 o más                                                                          |
 
 El bucket limita jobs, alarmas y mensajes FCM de alta prioridad, y en "rare"
 también el acceso a la red. Los límites solo se aplican con batería, y el
@@ -282,6 +334,10 @@ Antes, el límite de Wi-Fi en segundo plano era por app: en Android 8.0 y en
 [Android 8.1 Oreo](/es/notes/android-8-1-oreo/), cada app en segundo plano
 podía escanear una vez cada 30 minutos. En Android 9 ese único escaneo lo
 comparten todas.
+
+El aviso para apps antiguas dice "This app was built for an older version of
+Android and may not work properly." AOSP lo muestra cuando `targetSdkVersion`
+es menor que `ro.build.version.min_supported_target_sdk`, que Pie fija en 17.
 
 Las interfaces fuera del SDK se reparten en listas. La light greylist sigue
 funcionando, con entradas de log y toasts que la señalan. La dark greylist

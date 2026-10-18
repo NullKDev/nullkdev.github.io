@@ -148,6 +148,33 @@ citations:
   - title: 'File:Android logo (2019-2023).svg (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Android_logo_(2019-2023).svg
     accessedAt: 2026-10-17
+  - title: 'File:Android 10 screenshot.png (Wikimedia Commons)'
+    url: https://commons.wikimedia.org/wiki/File:Android_10_screenshot.png
+    accessedAt: 2026-10-17
+  - title: Dynamic System Updates (DSU)
+    url: https://developer.android.com/topic/dsu
+    accessedAt: 2026-10-17
+  - title: Introducing Adiantum (Google Security Blog)
+    url: https://security.googleblog.com/2019/02/introducing-adiantum-encryption-for.html
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin — February 2023
+    url: https://source.android.com/docs/security/bulletin/2023-02-01
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin — March 2023
+    url: https://source.android.com/docs/security/bulletin/2023-03-01
+    accessedAt: 2026-10-17
+  - title: OnePlus unveils new OnePlus 7T (OnePlus press release)
+    url: https://www.oneplus.com/us/press/press-release/oneplus-unveils-new-oneplus-7t
+    accessedAt: 2026-10-17
+  - title: OnePlus 7T will ship with Android 10 out of the box (9to5Google)
+    url: https://9to5google.com/2019/09/24/oneplus-7t-android-10/
+    accessedAt: 2026-10-17
+  - title: Essential Phone gets day-one Android 10 update (Android Police)
+    url: https://www.androidpolice.com/2019/09/03/essential-phone-gets-day-one-android-10-update/
+    accessedAt: 2026-10-17
+  - title: Essential Phone and Redmi K20 Pro get day-one Android 10 updates (9to5Google)
+    url: https://9to5google.com/2019/09/13/android-10-essential-phone-redmi-k20-pro/
+    accessedAt: 2026-10-17
 ---
 
 Android 10 es la versión en la que Android dejó de ponerles nombres de postres
@@ -157,24 +184,31 @@ la ubicación en segundo plano pasó a ser un permiso propio y las apps perdiero
 el acceso al IMEI y al número de serie. Los usuarios recibieron la navegación por
 gestos y un tema oscuro para todo el sistema.
 
+![La pantalla de inicio de Android 10: un fondo degradado azul, la fecha y el clima arriba, cinco iconos de apps, la barra de búsqueda de Google y la barra de navegación de tres botones](./assets/android-10-home-screen.png 'Android 10 con el Pixel Launcher y la barra de navegación de tres botones. Wikimedia Commons · Free screenshot')
+
 ## De un vistazo
 
-|                                    |                                                                                           |
-| ---------------------------------- | ----------------------------------------------------------------------------------------- |
-| Versión                            | Android 10                                                                                |
-| Nivel de API                       | 29                                                                                        |
-| Nombre                             | Quince Tart, solo interno. Nombre público: Android 10                                     |
-| `Build.VERSION_CODES`              | `Q`                                                                                       |
-| SDK final                          | 5 de junio de 2019 (Beta 4, API 29 final)                                                 |
-| Lanzamiento                        | Despliegue en Pixel y código en AOSP, 3 de septiembre de 2019                             |
-| Dispositivos de lanzamiento        | Pixel 4 y Pixel 4 XL, anunciados el 15 de octubre de 2019                                 |
-| Plazo de target API en Google Play | Apps nuevas desde el 3 de agosto de 2020, actualizaciones desde el 2 de noviembre de 2020 |
+|                                    |                                                                                                                        |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Versión                            | Android 10                                                                                                             |
+| Nivel de API                       | 29                                                                                                                     |
+| Nombre                             | Quince Tart, solo interno. Nombre público: Android 10                                                                  |
+| `Build.VERSION_CODES`              | `Q`                                                                                                                    |
+| SDK final                          | 5 de junio de 2019 (Beta 4, API 29 final)                                                                              |
+| Lanzamiento                        | Despliegue en Pixel y código en AOSP, 3 de septiembre de 2019                                                          |
+| Dispositivos de lanzamiento        | OnePlus 7T, anunciado el 26 de septiembre de 2019; Pixel 4 y Pixel 4 XL de Google, anunciados el 15 de octubre de 2019 |
+| Plazo de target API en Google Play | Apps nuevas desde el 3 de agosto de 2020, actualizaciones desde el 2 de noviembre de 2020                              |
 
 Google publicó el SDK final de API 29 con la Beta 4 el 5 de junio de 2019 y ese
 mismo día abrió Play a las apps con target API 29. El 3 de septiembre liberó el
 código en AOSP y empezó el despliegue a Pixel, Pixel 2, Pixel 3 y Pixel 3a.
-Android Police informó del despliegue ese mismo día. El Pixel 4 fue el primer
-teléfono de Google que salió de fábrica con Android 10.
+Android Police informó del despliegue ese mismo día. El Essential Phone y el
+Redmi K20 Pro de Xiaomi también recibieron la actualización el primer día.
+OnePlus presentó el 7T como el primer teléfono nuevo con Android 10 y las apps
+de Google de fábrica; el Pixel 4 fue el primer teléfono de Google que salió con
+esta versión. El boletín de seguridad de febrero de 2023 es el último que
+incluye Android 10 entre las versiones de AOSP corregidas; desde marzo de 2023
+los boletines empiezan en Android 11.
 
 ## Qué trajo
 
@@ -210,6 +244,10 @@ teléfono de Google que salió de fábrica con Android 10.
   Depth, soporte para 5G, las APIs `WifiNetworkSpecifier` y
   `WifiNetworkSuggestion`, Wi-Fi Easy Connect y `DnsResolver` para registros
   `SRV` y otros.
+- **Dynamic System Updates.** Un dispositivo puede descargar una Generic System
+  Image (GSI), arrancarla desde una nueva partición dinámica como sistema
+  invitado y volver al sistema instalado sin modificarlo. Google lo activó en
+  el Pixel 3 y posteriores desde la Beta 4.
 - **Otros añadidos.** Una API térmica en `PowerManager`, Neural Networks API
   1.2, recolección de basura generacional en ART, `foregroundServiceType` y
   Vulkan 1.1 como requisito en dispositivos de 64 bits.
@@ -226,7 +264,8 @@ teléfono de Google que salió de fábrica con Android 10.
   dispositivos que salen con esta versión cifren los datos del usuario con
   cifrado basado en archivos, activado por defecto al terminar la
   configuración. Los dispositivos sin instrucciones AES pueden usar Adiantum, el
-  nuevo modo de cifrado que trajo Android 10.
+  nuevo modo de cifrado que trajo Android 10. Google midió que es unas cinco
+  veces más rápido que AES-256-XTS en un ARM Cortex-A7.
 - **TLS 1.3 por defecto.** Sus cipher suites no se pueden desactivar y no admite
   0-RTT. Los certificados firmados con SHA-1 dejan de ser de confianza, y se
   eliminaron seis cipher suites SHA-2 CBC.
@@ -282,6 +321,11 @@ flowchart TD
   pantalla pasa por `MediaProjection`, que le pregunta al usuario.
 - **Apps antiguas.** Las apps con target API 22 o menor muestran una pantalla de
   revisión de permisos la primera vez que corren en Android 10.
+- **Edición Go: sin superposiciones.** En dispositivos con Android 10 (Go
+  edition), las apps no pueden obtener `SYSTEM_ALERT_WINDOW`, porque las
+  ventanas superpuestas consumen demasiada memoria.
+  `Settings.canDrawOverlays()` devuelve `false`. Las apps que ya lo tenían antes
+  de la actualización lo conservan.
 - **Metadatos de cámara.** Los campos específicos del dispositivo de
   `getCameraCharacteristics()` requieren `CAMERA`.
 

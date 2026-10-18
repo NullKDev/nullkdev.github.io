@@ -127,6 +127,36 @@ citations:
   - title: "Android 12 officially brings back the dessert names with 'Snow Cone' (Android Central)"
     url: https://www.androidcentral.com/android-12-snow-cone-dessert-name
     accessedAt: 2026-10-17
+  - title: 'Android 12 home screen screenshot — Wikimedia Commons (Free screenshot, Apache 2.0)'
+    url: https://commons.wikimedia.org/wiki/File:Android_12_Homescreen_Screenshot.png
+    accessedAt: 2026-10-17
+  - title: 'Android 12 Easter egg animation — Wikimedia Commons (Hajoon0102, CC BY-SA 4.0)'
+    url: https://commons.wikimedia.org/wiki/File:Android_12_easter_egg.gif
+    accessedAt: 2026-10-17
+  - title: First preview of Android 12
+    url: https://android-developers.googleblog.com/2021/02/android-12-dp1.html
+    accessedAt: 2026-10-17
+  - title: "What's new in Android 12 Beta"
+    url: https://android-developers.googleblog.com/2021/05/whats-new-in-android-12-beta.html
+    accessedAt: 2026-10-17
+  - title: Android 12 Beta 4 and Platform Stability
+    url: https://android-developers.googleblog.com/2021/08/android-12-beta-4-and-platform-stability.html
+    accessedAt: 2026-10-17
+  - title: ScrollCaptureCallback reference
+    url: https://developer.android.com/reference/android/view/ScrollCaptureCallback
+    accessedAt: 2026-10-17
+  - title: PackageInstaller.SessionParams reference (setRequireUserAction)
+    url: https://developer.android.com/reference/android/content/pm/PackageInstaller.SessionParams#setRequireUserAction(int)
+    accessedAt: 2026-10-17
+  - title: A closer look at Android 12 (Go edition) (The Keyword)
+    url: https://blog.google/products-and-platforms/platforms/android/introducing-android-12-go-edition/
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin, March 2025
+    url: https://source.android.com/docs/security/bulletin/2025-03-01
+    accessedAt: 2026-10-17
+  - title: Android Security Bulletin, April 2025
+    url: https://source.android.com/docs/security/bulletin/2025-04-01
+    accessedAt: 2026-10-17
   - title: Android Developers content license
     url: https://developer.android.com/license
     accessedAt: 2026-10-17
@@ -137,6 +167,8 @@ system. For users it brought Material You, a privacy dashboard and switches that
 cut off every app's camera and microphone. For developers targeting API 31 it
 made `android:exported` and `PendingIntent` mutability mandatory, and it stopped
 foreground services from starting in the background.
+
+![A phone home screen with a pink and purple wallpaper, the date at the top left, five app icons in the dock and a Google search bar below them](./assets/android-12-home-screen.png 'The Android 12 home screen, captured from the Android Emulator. Wikimedia Commons · Apache 2.0')
 
 ## At a glance
 
@@ -149,6 +181,10 @@ foreground services from starting in the background.
 | Release                         | Pixel rollout began 19 October 2021                                           |
 | Launch devices                  | Pixel 6 and Pixel 6 Pro, announced 19 October 2021, in stores from 28 October |
 | Google Play target-API deadline | New apps from 1 August 2022, updates from 1 November 2022                     |
+
+Google announced Android 12 with Developer Preview 1 on 18 February 2021.
+Beta 1 followed on 18 May at Google I/O, and Beta 4 reached platform stability
+on 11 August, freezing the APIs and app-facing behaviour.
 
 Google pushed the Android 12 source to AOSP on 4 October 2021. Phones waited
 two more weeks: the rollout started on 19 October, for the Pixel 3 and newer,
@@ -177,6 +213,16 @@ name in its own release posts.
   with attributes such as `windowSplashScreenAnimatedIcon`.
 - **Stretch overscroll.** Lists stretch and bounce at the edge instead of
   showing a glow.
+- **Scrolling screenshots.** A screenshot can grow to capture a whole scrolling
+  page. Apps can feed the scrolled content of a custom view to the system with
+  `ScrollCaptureCallback`, set through `View.setScrollCaptureCallback()` or
+  `Window.registerScrollCaptureCallback()`.
+- **Power button.** On Pixel, a long press of the power button opens Google
+  Assistant, and the power menu moves to a button in Quick Settings. The smart
+  home controls and Google Pay that Android 11 put in the power menu became
+  Quick Settings tiles.
+- **Accessibility.** A window magnifier zooms part of the screen and keeps the
+  rest visible, and "Extra dim" lowers the screen below its minimum brightness.
 - **Rich content insertion.** One callback, `OnReceiveContentListener`, receives
   images and other content from the clipboard, the keyboard or drag and drop.
 - **Graphics and media.** `RenderEffect` blurs and filters a view in one call,
@@ -186,12 +232,18 @@ name in its own release posts.
   messaging and big picture styles, and notification actions that require an
   unlocked device (`setAuthenticationRequired()`).
 - **Smaller additions.** Rounded corner APIs (`RoundedCorner`), richer haptics
-  (`VibratorManager`), a Game Mode API, AppSearch, picture-in-picture that enters
+  (`VibratorManager`), haptics generated from an audio session
+  (`HapticGenerator`), a Game Mode API, AppSearch, picture-in-picture that enters
   on its own (`setAutoEnterEnabled()`), and the chipset name in
   `Build.SOC_MANUFACTURER` and `Build.SOC_MODEL`.
 
 Google's developer post said Android 12 cut the CPU time used by core system
 services by 22%.
+
+Android 12 (Go edition), for entry-level phones, followed. Google introduced it
+on 14 December 2021 for phones arriving in 2022. It said apps there launch up to
+30% faster, unused apps hibernate automatically, and the privacy dashboard comes
+along.
 
 ## Security and privacy
 
@@ -252,6 +304,12 @@ services by 22%.
 - **Hibernation.** For apps targeting 31, the permission auto-reset of Android 11
   grows: an app the user has not opened for a few months also loses its jobs, alarms, push messages and
   cache. The switch is "Remove permissions and free up space" in App info.
+- **Updates without a prompt.** An app store that declares
+  `UPDATE_PACKAGES_WITHOUT_USER_ACTION`, a normal permission granted at install,
+  can call `setRequireUserAction(USER_ACTION_NOT_REQUIRED)` on a
+  `PackageInstaller` session and update apps without a confirmation dialog. It
+  works only for apps it installed, or for itself, and on Android 12 only when
+  the updated app targets API 29 or higher.
 
 ![The Location usage screen of the privacy dashboard: a timeline of apps that used location today and yesterday, with a Manage permission button](./assets/privacy-dashboard.png 'The privacy dashboard in Android 12, showing location use over 24 hours. Android Developers · CC BY 2.5')
 
@@ -326,6 +384,9 @@ exception.
   `androidx.core:core-splashscreen`, which brings it to API 23.
 - **ART** as a module paid off. In 2023 Google said its ART updates reached all
   Android 12 and newer devices, with app startup up to 30% faster on some.
+- **Security patches** ran until March 2025. That month's Android Security
+  Bulletin still lists 12 and 12L among the updated AOSP versions; from April
+  2025 the list starts at Android 13.
 
 The point release that followed, [Android 12L](/notes/android-12l/) (API 32), reworked the system for
 large screens and has its own note in this series.
@@ -334,6 +395,9 @@ large screens and has its own note in this series.
 
 - The Easter egg is an analog clock. Drag its hands to 12:00 and the next stage
   starts; the code logs "12:00 let's gooooo".
+
+![The Easter egg: a grey scalloped clock face with two hands, on a blue gradient background, under the status bar](./assets/easter-egg-clock.png 'A frame of the Easter egg, before the hands reach 12:00. Hajoon0102, Wikimedia Commons · CC BY-SA 4.0')
+
 - The background then fills with bubbles drawn from the system accent palette,
   and the egg unlocks **Paint Chips**, a home screen widget that shows the
   dynamic color palette "in a manner similar to a set of paint samples from a
