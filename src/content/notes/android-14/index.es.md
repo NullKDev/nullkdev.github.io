@@ -20,7 +20,28 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: developer-preview-1
+    slug: developer-preview-1
+    order: 1
+  - documentId: developer-preview-2
+    slug: developer-preview-2
+    order: 2
+  - documentId: beta-1
+    slug: beta-1
+    order: 3
+  - documentId: beta-2
+    slug: beta-2
+    order: 4
+  - documentId: beta-3
+    slug: beta-3
+    order: 5
+  - documentId: beta-4
+    slug: beta-4
+    order: 6
+  - documentId: beta-5
+    slug: beta-5
+    order: 7
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -121,6 +142,54 @@ citations:
   - title: Android Developers content license
     url: https://developer.android.com/license
     accessedAt: 2026-10-17
+  - title: 'Captura de la pantalla de inicio de Android 14 — Wikimedia Commons (captura libre, Apache 2.0)'
+    url: https://commons.wikimedia.org/wiki/File:Android_14_Homescreen_screenshot.png
+    accessedAt: 2026-10-18
+  - title: Android 14 Developer Preview 2
+    url: https://android-developers.googleblog.com/2023/03/android-14-developer-preview-2.html
+    accessedAt: 2026-10-18
+  - title: Android 14 Beta 1
+    url: https://android-developers.googleblog.com/2023/04/android-14-beta-1.html
+    accessedAt: 2026-10-18
+  - title: Second Beta of Android 14
+    url: https://android-developers.googleblog.com/2023/05/android-14-beta-2.html
+    accessedAt: 2026-10-18
+  - title: Android 14 Beta 3 and Platform Stability
+    url: https://android-developers.googleblog.com/2023/06/android-14-beta-3-and-platform-stability.html
+    accessedAt: 2026-10-18
+  - title: Android 14 Beta 4
+    url: https://android-developers.googleblog.com/2023/07/android-14-beta-4.html
+    accessedAt: 2026-10-18
+  - title: Android 14 Beta 5
+    url: https://android-developers.googleblog.com/2023/08/android-14-beta-5.html
+    accessedAt: 2026-10-18
+  - title: Android 14 release notes (archived 7 September 2023)
+    url: https://web.archive.org/web/20230907134037/https://developer.android.com/about/versions/14/release-notes
+    accessedAt: 2026-10-18
+  - title: Configure a device as a webcam (AOSP)
+    url: https://source.android.com/docs/core/camera/webcam
+    accessedAt: 2026-10-18
+  - title: Google launches Android 14 Developer Preview for Pixel (9to5Google)
+    url: https://9to5google.com/2023/02/08/android-14-developer-preview-pixel/
+    accessedAt: 2026-10-18
+  - title: Google rolling out Android 14 Developer Preview 2 (9to5Google)
+    url: https://9to5google.com/2023/03/08/android-14-developer-preview-2/
+    accessedAt: 2026-10-18
+  - title: Google rolling out Android 14 Beta 1 for Pixel (9to5Google)
+    url: https://9to5google.com/2023/04/12/android-14-beta-1-pixel/
+    accessedAt: 2026-10-18
+  - title: Android 14 Beta 2 for Pixel phones rolling out (9to5Google)
+    url: https://9to5google.com/2023/05/10/android-14-beta-2-pixel/
+    accessedAt: 2026-10-18
+  - title: Android 14 Beta 3 for Pixel phones rolling out, 7a included (9to5Google)
+    url: https://9to5google.com/2023/06/07/android-14-beta-3-pixel/
+    accessedAt: 2026-10-18
+  - title: Google rolling out Android 14 Beta 4, Pixel Tablet and Fold included (9to5Google)
+    url: https://9to5google.com/2023/07/11/android-14-beta-4-pixel/
+    accessedAt: 2026-10-18
+  - title: Google rolling out Android 14 Beta 5 to Pixel (9to5Google)
+    url: https://9to5google.com/2023/08/10/android-14-beta-5-pixel/
+    accessedAt: 2026-10-18
 ---
 
 Android 14 es la versión que obligó a las apps a decir por qué se ejecutan.
@@ -128,6 +197,8 @@ Cada servicio en primer plano de una app con target API 34 necesita un tipo
 declarado y un permiso que le corresponda, y el usuario puede darle a una app
 unas pocas fotos en lugar de toda la galería. En cualquier dispositivo, las
 apps con target menor a API 23 ya no se pueden instalar.
+
+![Pantalla de inicio de un teléfono con un fondo oscuro que se aclara a celeste arriba, la fecha arriba a la izquierda, cinco íconos redondos en el dock y una barra de búsqueda de Google debajo](./assets/android-14-home-screen.png 'La pantalla de inicio de Android 14, capturada en el Android Emulator. Wikimedia Commons · Apache 2.0')
 
 ## De un vistazo
 
@@ -140,6 +211,12 @@ apps con target menor a API 23 ya no se pueden instalar.
 | Lanzamiento                        | Despliegue en Pixel desde el 4 de octubre de 2023                                        |
 | Dispositivos de lanzamiento        | Pixel 8 y Pixel 8 Pro, anunciados el 4 de octubre de 2023, a la venta desde el 12        |
 | Plazo de target API en Google Play | Apps nuevas y actualizaciones desde el 31 de agosto de 2024 (prórroga al 1 de noviembre) |
+
+Google anunció Android 14 con la Developer Preview 1 el 8 de febrero de 2023.
+La Beta 1 abrió el programa Android Beta el 12 de abril, y la Beta 3 alcanzó la
+estabilidad de plataforma el 7 de junio, con las APIs y el comportamiento hacia
+las apps ya cerrados. Las dos developer previews y las cinco betas son las
+partes que siguen a esta vista general.
 
 Google lanzó Android 14 y publicó su código en AOSP el 4 de octubre de 2023. El
 primer build para Pixel (`UP1A.231005.007`) cubrió desde el Pixel 4a (5G) hasta
@@ -167,7 +244,8 @@ empiezan con U. Los anuncios de Google solo dicen Android 14.
   un JPEG normal. Una app activa la visualización HDR por ventana.
 - **Health Connect en la plataforma.** El almacén de datos de salud deja de ser
   una app de Play Store, pasa al sistema, se actualiza con las actualizaciones
-  del sistema de Google Play y aparece en Ajustes.
+  del sistema de Google Play y aparece en Ajustes. Sumó rutas de ejercicio, y otra app
+  solo puede leer una ruta si el usuario la autoriza.
 - **Credential Manager.** Una API de plataforma (`android.credentials`) para
   contraseñas, passkeys e inicio de sesión federado. La librería de Jetpack la
   lleva hasta Android 4.4 mediante Google Play services.
@@ -342,6 +420,9 @@ datos iniciados por el usuario.
 - **El acceso a fotos elegidas** y `READ_MEDIA_VISUAL_USER_SELECTED` siguen
   siendo la forma de dar acceso parcial a una app de galería.
 - **Health Connect** y **Credential Manager** siguen siendo APIs de plataforma.
+- **Webcam USB.** Android 14 activó por defecto el driver de gadget UVC en el
+  Generic Kernel Image; usar el dispositivo como webcam USB llegó con la
+  actualización Android 14 QPR1, no con la primera versión.
 
 ## Para saber
 

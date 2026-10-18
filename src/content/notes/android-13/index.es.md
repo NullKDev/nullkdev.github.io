@@ -20,7 +20,25 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: developer-preview-1
+    slug: developer-preview-1
+    order: 1
+  - documentId: developer-preview-2
+    slug: developer-preview-2
+    order: 2
+  - documentId: beta-1
+    slug: beta-1
+    order: 3
+  - documentId: beta-2
+    slug: beta-2
+    order: 4
+  - documentId: beta-3
+    slug: beta-3
+    order: 5
+  - documentId: beta-4
+    slug: beta-4
+    order: 6
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -157,6 +175,48 @@ citations:
   - title: Android Developers content license
     url: https://developer.android.com/license
     accessedAt: 2026-10-17
+  - title: 'Captura de la pantalla de inicio de Android 13 — Wikimedia Commons (Free screenshot, Apache 2.0)'
+    url: https://commons.wikimedia.org/wiki/File:Android_13_Homescreen_Screenshot.png
+    accessedAt: 2026-10-18
+  - title: ScanResult reference (WIFI_STANDARD_11BE)
+    url: https://developer.android.com/reference/android/net/wifi/ScanResult
+    accessedAt: 2026-10-18
+  - title: Android 13 Developer Preview 2
+    url: https://android-developers.googleblog.com/2022/03/second-preview-android-13.html
+    accessedAt: 2026-10-18
+  - title: 'The Beta for Android 13 is out now: Android 13 Beta 1'
+    url: https://android-developers.googleblog.com/2022/04/android-13-beta-1-blog.html
+    accessedAt: 2026-10-18
+  - title: Second Beta of Android 13
+    url: https://android-developers.googleblog.com/2022/05/second-beta-of-android-13.html
+    accessedAt: 2026-10-18
+  - title: Android 13 Beta 3 and Platform Stability
+    url: https://android-developers.googleblog.com/2022/06/android-13-beta-3-platform-stability.html
+    accessedAt: 2026-10-18
+  - title: 'Final Android 13 Beta update, official release is next!'
+    url: https://android-developers.googleblog.com/2022/07/Final-Android-13-Beta-update-official-release-is-next.html
+    accessedAt: 2026-10-18
+  - title: 'Android 13 release notes, Developer Preview 1 to Beta 4.1 (archived 13 August 2022)'
+    url: https://web.archive.org/web/20220813171935/https://developer.android.com/about/versions/13/release-notes
+    accessedAt: 2026-10-18
+  - title: 'Android 13 gets accelerated release timeline with earlier betas (9to5Google)'
+    url: https://9to5google.com/2022/02/10/android-13-timeline/
+    accessedAt: 2026-10-18
+  - title: 'Google releases Android 13 DP2 for Pixel phones (9to5Google)'
+    url: https://9to5google.com/2022/03/17/android-13-dp2-release/
+    accessedAt: 2026-10-18
+  - title: 'Google rolling out Android 13 Beta 1 for Pixel phones (9to5Google)'
+    url: https://9to5google.com/2022/04/26/android-13-beta-1-pixel-launch/
+    accessedAt: 2026-10-18
+  - title: 'Android 13 Beta 2 hands-on: Top new features (9to5Google)'
+    url: https://9to5google.com/2022/05/11/android-13-beta-2/
+    accessedAt: 2026-10-18
+  - title: 'Google releases Android 13 Beta 3 for Pixel phones (9to5Google)'
+    url: https://9to5google.com/2022/06/08/android-13-beta-3-pixel-launch/
+    accessedAt: 2026-10-18
+  - title: 'Google rolling out Android 13 Beta 4 for Pixel (9to5Google)'
+    url: https://9to5google.com/2022/07/13/android-13-beta-4-pixel-launch/
+    accessedAt: 2026-10-18
 ---
 
 Android 13 es la versión en la que una app tuvo que pedir permiso antes de
@@ -187,6 +247,14 @@ El nombre público es solo Android 13. Tiramisu es el nombre interno de postre,
 y desde esta versión ya no está oculto: la constante es `TIRAMISU`, no una
 letra, y el SDK Manager de Android Studio muestra la plataforma como
 "Android 13.0 ("Tiramisu")". Los build IDs empiezan con T (`TP1A`).
+
+Google anunció Android 13 con la Developer Preview 1 el 10 de febrero de 2022.
+La Beta 1 llegó el 26 de abril y la Beta 3 alcanzó la estabilidad de plataforma
+el 8 de junio, con el SDK de API 33 y el comportamiento hacia las apps
+congelados. Las dos developer previews y las cuatro betas son las partes que
+siguen a esta presentación.
+
+![La pantalla de inicio de un teléfono con un fondo oscuro y una onda azul pálido arriba, la fecha arriba a la izquierda, cinco íconos redondos de apps en el dock y una barra de búsqueda de Google debajo](./assets/android-13-home-screen.png 'La pantalla de inicio de Android 13, capturada en el Android Emulator. Wikimedia Commons · Apache 2.0')
 
 ## Qué trajo
 
@@ -219,7 +287,13 @@ letra, y el SDK Manager de Android Studio muestra la plataforma como
 - **Runtime.** Llamadas JNI hasta 2,5 veces más rápidas, procesamiento de
   referencias casi sin bloqueos y un primer grupo de APIs de OpenJDK 11
   (`String.strip()`, `Optional.isEmpty()` y más), que también llegaron a
-  Android 12 por el módulo de ART.
+  Android 12 por el módulo de ART. Un recolector de basura basado en
+  `userfaultfd` del kernel no venía en la versión: Google dijo que llegaría a
+  los dispositivos con Android 13 en una actualización posterior del sistema
+  de Google Play.
+- **Wi-Fi 7.** `ScanResult.WIFI_STANDARD_11BE`, nuevo en API 33, permite que
+  una app distinga los puntos de acceso 802.11be en los resultados de escaneo.
+  Que un teléfono se conecte por Wi-Fi 7 depende de su hardware.
 - **Predictive back.** Nuevas APIs permiten que una app avise de antemano que
   maneja el gesto atrás, para que el sistema muestre el destino. En Android 13
   la animación solo está detrás de una opción de desarrollador.
@@ -255,7 +329,9 @@ letra, y el SDK Manager de Android Studio muestra la plataforma como
   como función opcional para cargas aisladas. APK Signature Scheme v3.1 permite
   que la rotación de claves apunte solo a Android 13 y posteriores. Keystore y
   KeyMint informan los errores con excepciones tipadas que dicen si conviene
-  reintentar.
+  reintentar. Bluetooth y Ultra-wideband pasaron a ser módulos Mainline, así
+  que Google puede actualizarlos con actualizaciones del sistema de Google
+  Play.
 
 ## Permisos
 

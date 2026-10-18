@@ -20,7 +20,28 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: developer-preview-1
+    slug: developer-preview-1
+    order: 1
+  - documentId: developer-preview-2
+    slug: developer-preview-2
+    order: 2
+  - documentId: beta-1
+    slug: beta-1
+    order: 3
+  - documentId: beta-2
+    slug: beta-2
+    order: 4
+  - documentId: beta-3
+    slug: beta-3
+    order: 5
+  - documentId: beta-4
+    slug: beta-4
+    order: 6
+  - documentId: beta-5
+    slug: beta-5
+    order: 7
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -121,6 +142,54 @@ citations:
   - title: Android Developers content license
     url: https://developer.android.com/license
     accessedAt: 2026-10-17
+  - title: 'Android 14 home screen screenshot — Wikimedia Commons (free screenshot, Apache 2.0)'
+    url: https://commons.wikimedia.org/wiki/File:Android_14_Homescreen_screenshot.png
+    accessedAt: 2026-10-18
+  - title: Android 14 Developer Preview 2
+    url: https://android-developers.googleblog.com/2023/03/android-14-developer-preview-2.html
+    accessedAt: 2026-10-18
+  - title: Android 14 Beta 1
+    url: https://android-developers.googleblog.com/2023/04/android-14-beta-1.html
+    accessedAt: 2026-10-18
+  - title: Second Beta of Android 14
+    url: https://android-developers.googleblog.com/2023/05/android-14-beta-2.html
+    accessedAt: 2026-10-18
+  - title: Android 14 Beta 3 and Platform Stability
+    url: https://android-developers.googleblog.com/2023/06/android-14-beta-3-and-platform-stability.html
+    accessedAt: 2026-10-18
+  - title: Android 14 Beta 4
+    url: https://android-developers.googleblog.com/2023/07/android-14-beta-4.html
+    accessedAt: 2026-10-18
+  - title: Android 14 Beta 5
+    url: https://android-developers.googleblog.com/2023/08/android-14-beta-5.html
+    accessedAt: 2026-10-18
+  - title: Android 14 release notes (archived 7 September 2023)
+    url: https://web.archive.org/web/20230907134037/https://developer.android.com/about/versions/14/release-notes
+    accessedAt: 2026-10-18
+  - title: Configure a device as a webcam (AOSP)
+    url: https://source.android.com/docs/core/camera/webcam
+    accessedAt: 2026-10-18
+  - title: Google launches Android 14 Developer Preview for Pixel (9to5Google)
+    url: https://9to5google.com/2023/02/08/android-14-developer-preview-pixel/
+    accessedAt: 2026-10-18
+  - title: Google rolling out Android 14 Developer Preview 2 (9to5Google)
+    url: https://9to5google.com/2023/03/08/android-14-developer-preview-2/
+    accessedAt: 2026-10-18
+  - title: Google rolling out Android 14 Beta 1 for Pixel (9to5Google)
+    url: https://9to5google.com/2023/04/12/android-14-beta-1-pixel/
+    accessedAt: 2026-10-18
+  - title: Android 14 Beta 2 for Pixel phones rolling out (9to5Google)
+    url: https://9to5google.com/2023/05/10/android-14-beta-2-pixel/
+    accessedAt: 2026-10-18
+  - title: Android 14 Beta 3 for Pixel phones rolling out, 7a included (9to5Google)
+    url: https://9to5google.com/2023/06/07/android-14-beta-3-pixel/
+    accessedAt: 2026-10-18
+  - title: Google rolling out Android 14 Beta 4, Pixel Tablet and Fold included (9to5Google)
+    url: https://9to5google.com/2023/07/11/android-14-beta-4-pixel/
+    accessedAt: 2026-10-18
+  - title: Google rolling out Android 14 Beta 5 to Pixel (9to5Google)
+    url: https://9to5google.com/2023/08/10/android-14-beta-5-pixel/
+    accessedAt: 2026-10-18
 ---
 
 Android 14 is the release that made apps say why they run. Every foreground
@@ -128,6 +197,8 @@ service in an app targeting API 34 needs a declared type and a matching
 permission, and users can hand an app a few photos instead of the whole
 library. On every device, apps that target an API level below 23 can no longer
 be installed.
+
+![A phone home screen with a dark wallpaper fading to pale blue at the top, the date at the top left, five round app icons in the dock and a Google search bar below them](./assets/android-14-home-screen.png 'The Android 14 home screen, captured from the Android Emulator. Wikimedia Commons · Apache 2.0')
 
 ## At a glance
 
@@ -140,6 +211,11 @@ be installed.
 | Release                         | Pixel rollout began 4 October 2023                                               |
 | Launch devices                  | Pixel 8 and Pixel 8 Pro, announced 4 October 2023, on sale from 12 October       |
 | Google Play target-API deadline | New apps and app updates from 31 August 2024 (extension to 1 November 2024)      |
+
+Google announced Android 14 with Developer Preview 1 on 8 February 2023. Beta 1
+opened the Android Beta program on 12 April, and Beta 3 reached platform
+stability on 7 June, with the APIs and app-facing behaviours final. The two
+developer previews and the five betas are the parts that follow this overview.
 
 Google released Android 14 and pushed its source to AOSP on 4 October 2023.
 The first Pixel build (`UP1A.231005.007`) covered the Pixel 4a (5G) through
@@ -166,7 +242,8 @@ with U. Google's announcements only ever say Android 14.
   JPEG. An app opts in to HDR display per window.
 - **Health Connect in the platform.** The health data store moves from a Play
   Store app into the system, updated through Google Play system updates, and
-  sits in Settings.
+  sits in Settings. It added exercise routes, and another app can read a route
+  only after the user allows that route.
 - **Credential Manager.** One platform API (`android.credentials`) for
   passwords, passkeys and federated sign-in. The Jetpack library brings it back
   to Android 4.4 through Google Play services.
@@ -331,6 +408,9 @@ WorkManager or user-initiated data transfer jobs for work that fits no type.
 - **Selected photo access** and `READ_MEDIA_VISUAL_USER_SELECTED` are still how
   a gallery app gets partial access.
 - **Health Connect** and **Credential Manager** remain platform APIs.
+- **USB webcam.** Android 14 enabled the UVC gadget driver in the Generic
+  Kernel Image by default; using the device as a USB webcam came with the
+  Android 14 QPR1 update, not the first release.
 
 ## Worth knowing
 

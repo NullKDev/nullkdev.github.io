@@ -8,6 +8,7 @@ summary: API 36, junio de 2025. Las pantallas grandes ignoran el bloqueo de orie
 visibility: public
 maturity: stable
 publishedAt: 2026-10-17
+updatedAt: 2026-10-18
 topics: [android, platform-apis, security]
 image: /banners/android-16.svg
 imageAlt: 'Banner de Android 16 Baklava, con el logo de la versión.'
@@ -20,7 +21,25 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: developer-preview-1
+    slug: developer-preview-1
+    order: 1
+  - documentId: developer-preview-2
+    slug: developer-preview-2
+    order: 2
+  - documentId: beta-1
+    slug: beta-1
+    order: 3
+  - documentId: beta-2
+    slug: beta-2
+    order: 4
+  - documentId: beta-3
+    slug: beta-3
+    order: 5
+  - documentId: beta-4
+    slug: beta-4
+    order: 6
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -109,6 +128,66 @@ citations:
   - title: Android Developers content license
     url: https://developer.android.com/license
     accessedAt: 2026-10-17
+  - title: 'Android 16 home screen screenshot — Wikimedia Commons (Free screenshot, Apache 2.0)'
+    url: https://commons.wikimedia.org/wiki/File:Android_16_home_screen_screenshot.png
+    accessedAt: 2026-10-18
+  - title: The First Developer Preview of Android 16 (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2024/11/the-first-developer-preview-android16.html
+    accessedAt: 2026-10-18
+  - title: The Second Developer Preview of Android 16 (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2024/12/second-developer-preview-android16.html
+    accessedAt: 2026-10-18
+  - title: The First Beta of Android 16 (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2025/01/first-beta-android16.html
+    accessedAt: 2026-10-18
+  - title: 'The future is adaptive: Changes to orientation and resizability APIs in Android 16 (Android Developers Blog)'
+    url: https://android-developers.googleblog.com/2025/01/orientation-and-resizability-changes-in-android-16.html
+    accessedAt: 2026-10-18
+  - title: The Second Beta of Android 16 (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2025/02/second-beta-android16.html
+    accessedAt: 2026-10-18
+  - title: The Third Beta of Android 16 (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2025/03/the-third-beta-of-android-16.html
+    accessedAt: 2026-10-18
+  - title: The Fourth Beta of Android 16 (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2025/04/the-fourth-beta-of-android-16.html
+    accessedAt: 2026-10-18
+  - title: Android 16 release notes (Android Developers)
+    url: https://developer.android.com/about/versions/16/release-notes
+    accessedAt: 2026-10-18
+  - title: Google launches Android 16 Developer Preview for Pixel (9to5Google)
+    url: https://9to5google.com/2024/11/19/android-16-developer-preview-pixel/
+    accessedAt: 2026-10-18
+  - title: Android 16 Developer Preview 2 rolling out for Pixel (9to5Google)
+    url: https://9to5google.com/2024/12/18/android-16-developer-preview-2-pixel/
+    accessedAt: 2026-10-18
+  - title: Google rolling out Android 16 Beta 1 for Pixel (9to5Google)
+    url: https://9to5google.com/2025/01/23/android-16-beta-1-pixel/
+    accessedAt: 2026-10-18
+  - title: Android 16 Beta 2 rolling out for Pixel (9to5Google)
+    url: https://9to5google.com/2025/02/13/android-16-beta-2-pixel/
+    accessedAt: 2026-10-18
+  - title: Google rolling out Android 16 Beta 3 for Pixel (9to5Google)
+    url: https://9to5google.com/2025/03/13/android-16-beta-3-pixel/
+    accessedAt: 2026-10-18
+  - title: Android 16 Beta 4 rolling out for Pixel (9to5Google)
+    url: https://9to5google.com/2025/04/17/android-16-beta-4-pixel/
+    accessedAt: 2026-10-18
+  - title: The Pixel 9a can now enroll in the Android 16 Beta (9to5Google)
+    url: https://9to5google.com/2025/04/17/the-pixel-9a-can-now-enroll-in-the-android-16-beta/
+    accessedAt: 2026-10-18
+  - title: Material 3 Expressive updates and more in the latest Pixel Drop (The Keyword)
+    url: https://blog.google/products/pixel/september-2025-pixel-drop/
+    accessedAt: 2026-10-18
+  - title: Android 16 QPR1 with Material 3 Expressive rolls out to Pixel (9to5Google)
+    url: https://9to5google.com/2025/09/03/android-16-qpr1-pixel/
+    accessedAt: 2026-10-18
+  - title: 'Samsung Galaxy Z Flip7: A Pocket-Sized AI Powerhouse With a New Edge-To-Edge FlexWindow (Samsung Newsroom)'
+    url: https://news.samsung.com/global/samsung-galaxy-z-flip7-a-pocket-sized-ai-powerhouse-with-a-new-edge-to-edge-flexwindow
+    accessedAt: 2026-10-18
+  - title: Update on Plans for Privacy Sandbox Technologies (Privacy Sandbox)
+    url: https://privacysandbox.com/news/update-on-plans-for-privacy-sandbox-technologies/
+    accessedAt: 2026-10-18
 ---
 
 Android 16 es la versión que volvió obligatorias las pantallas grandes. En
@@ -117,6 +196,8 @@ orientación ni negarse a cambiar de tamaño, y el gesto atrás predictivo y
 edge-to-edge dejaron de ser opcionales. También fue el primer Android con dos
 versiones del SDK en un mismo año: la mayor en junio y una menor, la 36.1, en
 diciembre.
+
+![La pantalla de inicio de un teléfono con un fondo oscuro y una ola celeste arriba, la fecha arriba a la izquierda, cinco íconos redondos de apps en el dock y una barra de búsqueda de Google debajo](./assets/android-16-home-screen.png 'La pantalla de inicio de Android 16, capturada en el emulador de Android. Wikimedia Commons · Apache 2.0')
 
 ## De un vistazo
 
@@ -127,7 +208,7 @@ diciembre.
 | Nombre                             | Baklava, interno; visible en la constante del SDK. Nombre público: Android 16                    |
 | `Build.VERSION_CODES`              | `BAKLAVA` (`VERSION_CODES_FULL.BAKLAVA_1` para QPR2)                                             |
 | Lanzamiento                        | Despliegue en Pixel desde el 10 de junio de 2025                                                 |
-| Dispositivos de lanzamiento        | Samsung Galaxy Z Fold7 y Z Flip7, anunciados el 9 de julio de 2025                               |
+| Dispositivos de lanzamiento        | Samsung Galaxy Z Fold7, Z Flip7 y Z Flip7 FE, anunciados el 9 de julio de 2025                   |
 | Plazo de target API en Google Play | Apps nuevas y actualizaciones desde el 31 de agosto de 2026 (prórroga posible al 1 de noviembre) |
 
 Google lanzó Android 16 el 10 de junio de 2025 para los Pixel 6 y posteriores,
@@ -136,10 +217,18 @@ público dijo que era "the earliest Android has launched a major release in the
 last few years". El primer build de AOSP, `BP2A.250605.031.A2`, lleva el parche
 de seguridad de junio de 2025.
 
+El ciclo de previews también empezó antes. La Developer Preview 1 salió el
+19 de noviembre de 2024; las cinco versiones anteriores habían abierto sus
+previews en febrero. La Beta 1 llegó el 23 de enero de 2025, la Beta 3 alcanzó
+la estabilidad de plataforma el 13 de marzo y la Beta 4, la última beta
+prevista, salió el 17 de abril. Las dos developer previews y las cuatro betas
+son las partes debajo de este resumen.
+
 Los primeros teléfonos vendidos con Android 16 fueron los Galaxy Z Fold7 y Z
 Flip7 de Samsung, anunciados el 9 de julio y a la venta desde el 25 de julio de
 2025 con One UI 8. Samsung afirma que fueron los primeros dispositivos con
-Android 16 de fábrica.
+Android 16 de fábrica. El Galaxy Z Flip7 FE, anunciado el mismo día, también
+viene con Android 16 y One UI 8.
 
 Google confirmó el nombre de postre Baklava a Android Faithful en octubre de
 2024 y dijo que es solo interno. A diferencia de Android 10 a 12, quien
@@ -170,9 +259,19 @@ desarrolla sí lo ve: la constante del SDK es `BAKLAVA`.
   profesional.
 - **Selector de fotos.** Puede integrarse dentro de la jerarquía de vistas de
   la app.
+- **Historias clínicas.** Health Connect sumó APIs de acceso anticipado para
+  leer y escribir registros médicos en formato FHIR, con consentimiento
+  explícito del usuario.
+- **Texto vertical.** Con `Paint.VERTICAL_TEXT_FLAG`, `Paint` mide y `Canvas`
+  dibuja el texto de arriba abajo, para escrituras como el japonés. Es una API
+  de bajo nivel para bibliotecas: `TextView` y las clases `Layout` no la
+  admiten.
 - **Accesibilidad.** "Outline text" reemplaza al texto de alto contraste, hay
   soporte para audio Auracast, y quien usa audífonos LE Audio puede hablar por
-  el micrófono del teléfono en lugares ruidosos.
+  el micrófono del teléfono en lugares ruidosos. Los desarrolladores recibieron
+  `setSupplementalDescription()` para grupos de vistas y
+  `AccessibilityNodeInfo.setFieldRequired()` para campos obligatorios de un
+  formulario.
 - **Otras APIs.** Un `RangingManager` para UWB, channel sounding de Bluetooth
   y Wi-Fi RTT; filtros de color AGSL (`RuntimeColorFilter`); hápticos más
   ricos en `android.os.vibrator`; y un ajuste "Measurement system" en Languages
@@ -181,8 +280,15 @@ desarrolla sí lo ve: la constante del SDK es `BAKLAVA`.
 ![Una pantalla de bloqueo con una notificación de viaje arriba, que muestra una barra de progreso con un ícono de auto](./assets/progress-centric-notification.png 'Una notificación centrada en el progreso en la pantalla de bloqueo, hecha con ProgressStyle. Android Developers · CC BY 2.5')
 
 El rediseño Material 3 Expressive no venía en la versión de junio. Google dijo
-que llegarían más cambios de diseño en 2025, y llegaron a Pixel con la
-siguiente actualización trimestral.
+que llegarían más cambios de diseño en 2025. Llegaron a los Pixel 6 y
+posteriores y al Pixel Tablet con el Pixel Drop de septiembre, el 3 de
+septiembre de 2025.
+
+El modo de ventanas de escritorio se anunció, pero tampoco venía en la versión
+de junio. Google lo hizo junto con Samsung: en pantallas grandes, las apps se
+abren en ventanas que se pueden mover y redimensionar, además de los modos de
+una sola app y de pantalla dividida. Google dijo que llegaría a dispositivos
+compatibles más adelante en 2025.
 
 ## Seguridad y privacidad
 

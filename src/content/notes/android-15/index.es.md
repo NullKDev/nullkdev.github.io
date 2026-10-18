@@ -20,7 +20,25 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: developer-preview-1
+    slug: developer-preview-1
+    order: 1
+  - documentId: developer-preview-2
+    slug: developer-preview-2
+    order: 2
+  - documentId: beta-1
+    slug: beta-1
+    order: 3
+  - documentId: beta-2
+    slug: beta-2
+    order: 4
+  - documentId: beta-3
+    slug: beta-3
+    order: 5
+  - documentId: beta-4
+    slug: beta-4
+    order: 6
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -28,6 +46,12 @@ series:
   id: android-versions
   order: 17
 citations:
+  - title: 'Android 15 home screen screenshot — Wikimedia Commons (Free screenshot, Apache 2.0)'
+    url: https://commons.wikimedia.org/wiki/File:Android_15_Homescreen_Screenshot.png
+    accessedAt: 2026-10-18
+  - title: Android common kernels (AOSP)
+    url: https://source.android.com/docs/core/architecture/kernel/android-common
+    accessedAt: 2026-10-18
   - title: 'Android 15 emblem — Wikimedia Commons (AOSP licence, trademark of Google LLC)'
     url: https://commons.wikimedia.org/wiki/File:Android_15_Developer_Preview_logo.svg
     accessedAt: 2026-10-17
@@ -82,6 +106,60 @@ citations:
   - title: The First Developer Preview of Android 15
     url: https://android-developers.googleblog.com/2024/02/first-developer-preview-android15.html
     accessedAt: 2026-10-17
+  - title: 'The Second Developer Preview of Android 15'
+    url: https://android-developers.googleblog.com/2024/03/the-second-developer-preview-of-android-15.html
+    accessedAt: 2026-10-18
+  - title: 'The First Beta of Android 15'
+    url: https://android-developers.googleblog.com/2024/04/the-first-beta-of-android-15.html
+    accessedAt: 2026-10-18
+  - title: 'The Second Beta of Android 15'
+    url: https://android-developers.googleblog.com/2024/05/the-second-beta-of-android-15.html
+    accessedAt: 2026-10-18
+  - title: 'The Third Beta of Android 15'
+    url: https://android-developers.googleblog.com/2024/06/the-third-beta-of-android-15.html
+    accessedAt: 2026-10-18
+  - title: 'The Fourth Beta of Android 15'
+    url: https://android-developers.googleblog.com/2024/07/the-fourth-beta-of-android-15.html
+    accessedAt: 2026-10-18
+  - title: 'Android 15 release notes, Developer Preview 1 and 2 (archived 5 April 2024)'
+    url: https://web.archive.org/web/20240405121053/https://developer.android.com/about/versions/15/release-notes
+    accessedAt: 2026-10-18
+  - title: 'Android 15 release notes, Beta 1 to 1.2 (archived 10 May 2024)'
+    url: https://web.archive.org/web/20240510092844/https://developer.android.com/about/versions/15/release-notes
+    accessedAt: 2026-10-18
+  - title: 'Android 15 release notes, Beta 2 to 2.2 (archived 10 June 2024)'
+    url: https://web.archive.org/web/20240610024208/https://developer.android.com/about/versions/15/release-notes
+    accessedAt: 2026-10-18
+  - title: 'Android 15 release notes, Beta 3 and 3.1 (archived 11 July 2024)'
+    url: https://web.archive.org/web/20240711141847/https://developer.android.com/about/versions/15/release-notes
+    accessedAt: 2026-10-18
+  - title: 'Android 15 release notes, Beta 4 to 4.2 (archived 24 August 2024)'
+    url: https://web.archive.org/web/20240824150600/https://developer.android.com/about/versions/15/release-notes
+    accessedAt: 2026-10-18
+  - title: 'AppWidgetManager reference (setWidgetPreview)'
+    url: https://developer.android.com/reference/android/appwidget/AppWidgetManager
+    accessedAt: 2026-10-18
+  - title: 'Android 15 Developer Preview 1 rolling out to Pixel (9to5Google)'
+    url: https://9to5google.com/2024/02/16/android-15-developer-preview-pixel/
+    accessedAt: 2026-10-18
+  - title: 'Android 15 Developer Preview 2 rolling out to Pixel (9to5Google)'
+    url: https://9to5google.com/2024/03/21/android-15-developer-preview-2-pixel/
+    accessedAt: 2026-10-18
+  - title: 'Android 15 Beta 1 rolling out to Pixel (9to5Google)'
+    url: https://9to5google.com/2024/04/11/android-15-beta-1-pixel/
+    accessedAt: 2026-10-18
+  - title: 'Android 15 Beta 2 rolling out to Pixel (9to5Google)'
+    url: https://9to5google.com/2024/05/15/android-15-beta-2-pixel/
+    accessedAt: 2026-10-18
+  - title: 'Android 15 Beta 2 available on these partner devices (9to5Google)'
+    url: https://9to5google.com/2024/05/15/android-15-beta-available-for-these-devices/
+    accessedAt: 2026-10-18
+  - title: 'Android 15 Beta 3 rolling out to Pixel (9to5Google)'
+    url: https://9to5google.com/2024/06/18/android-15-beta-3-pixel/
+    accessedAt: 2026-10-18
+  - title: 'Android 15 Beta 4 rolling out to Pixel (9to5Google)'
+    url: https://9to5google.com/2024/07/18/android-15-beta-4-pixel/
+    accessedAt: 2026-10-18
   - title: Android 15 is released to AOSP
     url: https://android-developers.googleblog.com/2024/09/android-15-is-released-to-aosp.html
     accessedAt: 2026-10-17
@@ -126,6 +204,8 @@ defecto, y los foreground services de tipo `dataSync` tienen un límite de
 tiempo diario. Para el usuario trajo el espacio privado, una zona con bloqueo
 que oculta apps del resto del teléfono.
 
+![La pantalla de inicio de un teléfono con un fondo oscuro y una onda azul pálido arriba, la fecha arriba a la izquierda, cinco íconos redondos de apps en el dock y una barra de búsqueda de Google debajo](./assets/android-15-home-screen.png 'La pantalla de inicio de Android 15, capturada en el emulador de Android. Wikimedia Commons · Apache 2.0')
+
 ## De un vistazo
 
 |                                    |                                                                                                     |
@@ -138,7 +218,10 @@ que oculta apps del resto del teléfono.
 | Dispositivos de lanzamiento        | Ninguno al salir: la serie Pixel 9 llegó con Android 14                                             |
 | Plazo de target API en Google Play | Apps nuevas y actualizaciones desde el 31 de agosto de 2025, con prórroga al 1 de noviembre de 2025 |
 
-La primera developer preview salió el 16 de febrero de 2024. El 3 de septiembre
+La primera developer preview salió el 16 de febrero de 2024. Le siguieron una
+segunda preview y cuatro betas, y la Beta 3 alcanzó la estabilidad de
+plataforma el 18 de junio de 2024. Cada hito es una de las partes que siguen a
+esta vista general. El 3 de septiembre
 de 2024 Google publicó el código de Android 15 en AOSP antes de que ningún Pixel
 recibiera la actualización, algo que rompía la costumbre de lanzar ambos el
 mismo día. La última versión que los había separado fue Android 12. El tag
@@ -180,6 +263,16 @@ informó Android Authority.
 - **Cámara.** Low Light Boost aclara la vista previa con poca luz, y
   `FLASH_SINGLE_STRENGTH_DEFAULT_LEVEL` y `FLASH_TORCH_STRENGTH_DEFAULT_LEVEL`
   dan a las apps control sobre la intensidad del flash.
+- **Audio y video.** `LoudnessCodecController` aplica el estándar de sonoridad
+  CTA-2075 al contenido AAC que trae metadatos de sonoridad. El decodificador
+  AV1 por software dav1d está disponible como `c2.android.av1-dav1d.decoder`
+  en dispositivos sin decodificación AV1 por hardware; las apps lo eligen por
+  nombre, y las actualizaciones del sistema de Google Play lo llevan hasta
+  Android 11.
+- **Pago con NFC.** En los dispositivos compatibles, el modo de observación de
+  `NfcAdapter` permite escuchar a un lector sin responderle, así una app de
+  pagos se prepara antes del primer intercambio. Un nuevo rol de Wallet
+  reemplaza el ajuste de pago sin contacto predeterminado.
 - **Herramientas de rendimiento.** `ApplicationStartInfo` informa si el
   arranque fue en frío, templado o en caliente, y por qué arrancó la app.
   `ProfilingManager` toma volcados de heap y muestras de pila desde la propia
@@ -191,6 +284,10 @@ informó Android Authority.
   diferidas de solo lectura. `Canvas.clipShader()` y `Matrix44`.
 - **Pantallas grandes.** Pares de apps guardados para pantalla dividida y una
   barra de tareas que el usuario puede fijar.
+- **Vistas previas de widgets.** `AppWidgetManager.setWidgetPreview()` permite
+  que una app envíe `RemoteViews` generadas como vista previa en el selector,
+  en lugar de una imagen estática que pocas veces coincidía con el widget
+  real.
 
 ![El cajón de apps de un launcher Android con un contenedor bloqueado llamado Private al final](./assets/private-space.png 'El espacio privado como contenedor bloqueado al final del cajón de apps. Android Developers · CC BY 2.5')
 
@@ -218,6 +315,14 @@ informó Android Authority.
   cifrada o cuando la red pide identificadores como el IMSI de una forma que
   permitiría rastrear al usuario. Los operadores ya no pueden ocultar el
   interruptor de 2G.
+- **Credential Manager.** Las apps pueden vincular campos de usuario y
+  contraseña con una solicitud de Credential Manager, así sus sugerencias
+  aparecen en el autocompletado. Credential Manager además muestra él mismo el
+  diálogo biométrico al registrarse e iniciar sesión, y los proveedores ya no
+  tienen que construir el suyo.
+- **Claves de contactos.** `E2eeContactKeysManager` guarda en el sistema las
+  claves públicas de los contactos para apps con cifrado de extremo a extremo,
+  y permite al usuario verificarlas desde la app de contactos.
 - **Plataforma.** Los permisos de firma que piden apps que no son del sistema
   pasan por una allowlist explícita. Virtual A/B versión 3 hace las
   actualizaciones más pequeñas y rápidas.
@@ -321,3 +426,7 @@ check `NewApi` de Lint lo detecta; `removeAt(0)` lo evita.
 - Google midió las páginas de 16 KB en sus propios dispositivos: arranques de
   apps cerca de un 3 % más rápidos con poca memoria libre y un inicio del
   sistema alrededor de un 8 % (unos 950 ms) más rápido de media.
+- Android 15 estrenó el kernel `android15-6.6`, sobre Linux 6.6. También admite
+  kernels GKI anteriores hasta `android12-5.10`, así que un teléfono actualizado
+  puede conservar el kernel con el que salió. Desde esta versión hay un solo
+  kernel GKI nuevo por versión de kernel: no existe `android15-6.1`.
