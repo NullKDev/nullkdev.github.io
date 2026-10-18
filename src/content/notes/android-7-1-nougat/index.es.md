@@ -191,6 +191,18 @@ citations:
   - title: "Here's everything new in Android 7.1.2 beta 2 (9to5Google)"
     url: https://9to5google.com/2017/03/20/whats-new-android-7-1-2-beta-2/
     accessedAt: 2026-10-18
+  - title: API Differences between 24 and 25, resumen de paquetes cambiados
+    url: https://developer.android.com/sdk/api_diff/25/changes/changes-summary.html
+    accessedAt: 2026-10-18
+  - title: 'Comprobación de lint: NewApi'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/NewApi.md.html
+    accessedAt: 2026-10-18
+  - title: 'Comprobación de lint: ReportShortcutUsage'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/ReportShortcutUsage.md.html
+    accessedAt: 2026-10-18
+  - title: Random Musings on the 7.1 Developer Preview 1 (CommonsWare)
+    url: https://commonsware.com/blog/2016/10/20/random-musings-7p1-developer-preview-1.html
+    accessedAt: 2026-10-18
 ---
 
 Android 7.1 es la actualización de Nougat que llegó primero al teléfono propio
@@ -211,6 +223,11 @@ forma de que los teclados envíen imágenes.
 | Lanzamiento                        | En el Pixel, octubre de 2016. 7.1.1 llegó a los Nexus desde el 5 de diciembre |
 | Dispositivos de lanzamiento        | Pixel y Pixel XL, anunciados y en preventa el 4 de octubre de 2016            |
 | Plazo de target API en Google Play | Ninguno. La regla de target API de Play empezó en 2018, con API 26            |
+| Herramientas                       | `compileSdkVersion 25`, Android Studio 2.2.2                                  |
+
+Los posts de la preview pedían "update to Android Studio 2.2.2", descargar la
+plataforma de API 25 y poner `compileSdkVersion` en 25. No nombran una versión
+mínima del Android Gradle Plugin, así que esta nota no da ninguna.
 
 Google anunció el Pixel el 4 de octubre de 2016 con "Android 7.1 Nougat". Las
 primeras imágenes de fábrica del Pixel, compilación NDE63H, son de octubre de 2016. El 11 de octubre Google anunció una developer preview para los Nexus
@@ -311,7 +328,8 @@ informó que su sensor no lo permitía, pero el registro de cambios de Google pa
 
 ## Permisos
 
-API 25 no añadió ni quitó ningún permiso. El diff de la API para el paquete
+API 25 no añadió, cambió, dividió, marcó como obsoleto ni quitó ningún permiso,
+así que no hay nada nuevo que declarar ni que quitar. El diff de la API para el paquete
 `android` solo toca `R.attr`, donde viven los atributos de los accesos directos
 y `roundIcon`. Dos funciones se protegen de otra forma:
 
@@ -342,23 +360,52 @@ Google recomienda que el provider del teclado no se exporte
 
 ### Todas las apps en Android 7.1
 
-| Cambio                                                           | Qué hacer                                                                                        |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Los launchers pueden pedir `android:roundIcon`                   | Incluye `android:icon` y `android:roundIcon`. Image Asset Studio genera los dos                  |
-| Una pulsación larga en tu icono puede mostrar accesos directos   | Añade estáticos en `res/xml/shortcuts.xml`, o dinámicos con `ShortcutManager`                    |
-| Las llamadas de accesos dinámicos tienen límite en segundo plano | Actualízalos en primer plano. El límite se reinicia cuando la app pasa a primer plano            |
-| Los accesos dinámicos no entran en la copia de seguridad         | Vuelve a publicarlos cuando la app se abra por primera vez en un dispositivo nuevo               |
-| Los teclados pueden enviar imágenes                              | Declara los tipos MIME con `EditorInfoCompat.setContentMimeTypes()` y maneja `onCommitContent()` |
-| En API 25 los teclados conceden lectura por URI                  | En un IME, activa `INPUT_CONTENT_GRANT_READ_URI_PERMISSION` cuando `SDK_INT >= N_MR1`            |
-| Falta almacenamiento                                             | Lanza `ACTION_MANAGE_STORAGE` en lugar de fallar                                                 |
+| Cambio                                                           | Qué hacer                                                                                        | Cómo comprobarlo                                                                                      |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| Los launchers pueden pedir `android:roundIcon`                   | Incluye `android:icon` y `android:roundIcon`. Image Asset Studio genera los dos                  | La imagen del emulador Google APIs para API 25, con iconos redondos y el Pixel Launcher               |
+| Una pulsación larga en tu icono puede mostrar accesos directos   | Añade estáticos en `res/xml/shortcuts.xml`, o dinámicos con `ShortcutManager`                    | Lint `NewApi` para llamadas a `ShortcutManager` con `minSdk` menor que 25; Lint `ReportShortcutUsage` |
+| Las llamadas de accesos dinámicos tienen límite en segundo plano | Actualízalos en primer plano. El límite se reinicia cuando la app pasa a primer plano            | `adb shell cmd shortcut reset-throttling`                                                             |
+| Los accesos dinámicos no entran en la copia de seguridad         | Vuelve a publicarlos cuando la app se abra por primera vez en un dispositivo nuevo               |                                                                                                       |
+| Los teclados pueden enviar imágenes                              | Declara los tipos MIME con `EditorInfoCompat.setContentMimeTypes()` y maneja `onCommitContent()` |                                                                                                       |
+| En API 25 los teclados conceden lectura por URI                  | En un IME, activa `INPUT_CONTENT_GRANT_READ_URI_PERMISSION` cuando `SDK_INT >= N_MR1`            |                                                                                                       |
+| Falta almacenamiento                                             | Lanza `ACTION_MANAGE_STORAGE` en lugar de fallar                                                 |                                                                                                       |
 
 ### Apps con target API 25
 
-Google no publicó cambios de comportamiento ligados a apuntar a API 25. Su
-página de 7.1 no tiene sección de cambios, y el post de la preview solo
-recomendaba apuntar a 25 para "test your app with compatibility behaviors
-disabled". El trabajo es opcional: accesos directos, iconos redondos y
+Ninguno. Google no publicó cambios de comportamiento ligados a apuntar a API
+25: su página de 7.1 no tiene sección de cambios, y los posts de la preview solo
+recomendaban apuntar a 25 para "test your app with compatibility behaviors
+disabled". Todo lo de 7.1 es opcional: accesos directos, iconos redondos y
 contenido enriquecido.
+
+## Migrar a API 25
+
+De `targetSdkVersion 24` a 25, en este orden:
+
+1. **Actualiza las herramientas.** Instala la plataforma de API 25 y pon
+   `compileSdkVersion 25`. Si lo omites, `ShortcutManager` y
+   `android:roundIcon` no compilan. Comprobación: el proyecto compila y lint
+   `NewApi` no reporta errores nuevos.
+2. **Sube `targetSdkVersion` a 25.** No trae cambios de comportamiento de la
+   plataforma, así que nada se rompe. Comprobación: ejecuta la app en un
+   dispositivo con Android 7.1 o en el emulador de API 25.
+3. **Añade un icono redondo.** Genera `android:roundIcon` con Image Asset
+   Studio junto a `android:icon`. Si lo omites, nada se rompe. Comprobación: la
+   imagen del emulador Google APIs para API 25 usa el Pixel Launcher.
+   CommonsWare también recomendó revisar cada lugar donde la app muestra su
+   propio icono.
+4. **Añade accesos directos si ayudan a tus usuarios.** Cada `<intent>` de un
+   acceso estático necesita `android:action`; sin él, el acceso no funciona.
+   Publica los dinámicos en primer plano y vuelve a publicarlos tras una
+   restauración. Comprobación: pulsación larga en el icono en Android 7.1,
+   reinicio del límite con `adb shell cmd shortcut reset-throttling` y lint
+   `ReportShortcutUsage`.
+5. **Acepta imágenes del teclado** solo si tus campos de texto las reciben,
+   como en la tabla de arriba.
+
+Si saltas varios niveles a la vez: haz los pasos de cada versión en orden,
+desde [Android 7.0](/es/notes/android-7-0-nougat/) si tu target es 23, o desde
+[Android 6.0](/es/notes/android-6-marshmallow/) si es 22 o menor.
 
 ## Qué perduró
 

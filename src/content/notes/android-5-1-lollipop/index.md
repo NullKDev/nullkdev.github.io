@@ -30,7 +30,7 @@ series:
 citations:
   - title: Android 5.1 APIs
     url: https://developer.android.com/about/versions/android-5.1
-    accessedAt: 2026-10-17
+    accessedAt: 2026-10-18
   - title: 'Android 5.1: Unwrapping a new Lollipop update'
     url: https://android.googleblog.com/2015/03/android-51-unwrapping-new-lollipop.html
     accessedAt: 2026-10-17
@@ -42,19 +42,19 @@ citations:
     accessedAt: 2026-10-17
   - title: SubscriptionManager reference
     url: https://developer.android.com/reference/android/telephony/SubscriptionManager
-    accessedAt: 2026-10-17
+    accessedAt: 2026-10-18
   - title: TelephonyManager reference
     url: https://developer.android.com/reference/android/telephony/TelephonyManager
     accessedAt: 2026-10-17
   - title: CarrierMessagingService reference
     url: https://developer.android.com/reference/android/service/carrier/CarrierMessagingService
-    accessedAt: 2026-10-17
+    accessedAt: 2026-10-18
   - title: CarrierConfigManager reference
     url: https://developer.android.com/reference/android/telephony/CarrierConfigManager
     accessedAt: 2026-10-17
   - title: Manifest.permission reference
     url: https://developer.android.com/reference/android/Manifest.permission
-    accessedAt: 2026-10-17
+    accessedAt: 2026-10-18
   - title: DevicePolicyManager reference
     url: https://developer.android.com/reference/android/app/admin/DevicePolicyManager
     accessedAt: 2026-10-17
@@ -93,7 +93,7 @@ citations:
     accessedAt: 2026-10-17
   - title: Android 6.0 changes
     url: https://developer.android.com/about/versions/marshmallow/android-6.0-changes
-    accessedAt: 2026-10-17
+    accessedAt: 2026-10-18
   - title: Build.java at android-5.1.0_r1 (AOSP)
     url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-5.1.0_r1/core/java/android/os/Build.java
     accessedAt: 2026-10-17
@@ -142,6 +142,27 @@ citations:
   - title: Fire OS overview (Amazon Developer)
     url: https://developer.amazon.com/docs/fire-tv/fire-os-overview.html
     accessedAt: 2026-10-17
+  - title: Build.VERSION_CODES reference
+    url: https://developer.android.com/reference/android/os/Build.VERSION_CODES
+    accessedAt: 2026-10-18
+  - title: Android 9 behavior changes for apps targeting API 28
+    url: https://developer.android.com/about/versions/pie/android-9.0-changes-28
+    accessedAt: 2026-10-18
+  - title: CarrierMessagingService.java at android-5.1.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-5.1.0_r1/core/java/android/service/carrier/CarrierMessagingService.java
+    accessedAt: 2026-10-18
+  - title: CarrierMessagingService.java at android-6.0.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.0_r1/core/java/android/service/carrier/CarrierMessagingService.java
+    accessedAt: 2026-10-18
+  - title: 'Lint check: MissingPermission'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/MissingPermission.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check: NewApi'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/NewApi.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check: UseCompatLoadingForDrawables'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/UseCompatLoadingForDrawables.md.html
+    accessedAt: 2026-10-18
 ---
 
 Android 5.1 is a small update to Lollipop with its own API level. For users it
@@ -284,31 +305,95 @@ but none for 5.1.
 
 Android 5.1 keeps 5.0's model: every permission is granted at install.
 Runtime permissions came in [Android 6.0](/notes/android-6-marshmallow/).
+API 22 added one permission, for carrier apps only:
 
-- **Added.** `BIND_CARRIER_MESSAGING_SERVICE`, which protects a
-  `CarrierMessagingService` so that only the system can bind to it.
-- **`READ_PHONE_STATE`** is what an app needs to read active SIMs and to
-  register `OnSubscriptionsChangedListener`.
-- **Carrier privileges** are not a manifest permission. The SIM card grants
-  them by certificate, as described above.
+| Permission                       | What changed in API 22                                                                  | What to declare                                                                  | What to remove or limit                                                     |
+| -------------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `BIND_CARRIER_MESSAGING_SERVICE` | New; protects a `CarrierMessagingService` so that only the system can bind to it        | `android:permission` on that `<service>`, in a carrier app                       | Deprecated in API 23 for `BIND_CARRIER_SERVICES`                            |
+| `READ_PHONE_STATE`               | Unchanged, but it now guards `SubscriptionManager` and `OnSubscriptionsChangedListener` | `<uses-permission>` if you read the active SIMs; carrier privileges also suffice | Nothing; from API 23 it is a runtime permission you must request in context |
+
+Carrier privileges are not a manifest permission. The SIM card grants them by
+certificate, as described above.
+
+One manifest for an app that reads the active SIMs, and for a carrier app that
+handles SMS and MMS:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Active SIMs and subscription changes, from API 22 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <application>
+        <!-- Carrier apps only. On API 22 the documented permission is
+             BIND_CARRIER_MESSAGING_SERVICE; from API 23 it is
+             BIND_CARRIER_SERVICES, shown here. -->
+        <service
+            android:name=".MyMessagingService"
+            android:permission="android.permission.BIND_CARRIER_SERVICES">
+            <intent-filter>
+                <action android:name="android.service.carrier.CarrierMessagingService" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>
+```
+
+The `CarrierMessagingService` Javadoc at `android-5.1.0_r1` declares the
+service with `BIND_CARRIER_MESSAGING_SERVICE`; at `android-6.0.0_r1`, and in
+today's reference, with `BIND_CARRIER_SERVICES`. A `<service>` takes one
+`android:permission`, and neither source shows how to cover both levels.
 
 ## What changed for your app
 
 ### All apps on Android 5.1
 
-| Change                                                                | What to do                                                                                               |
-| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `org.apache.http` and `AndroidHttpClient` are deprecated              | Move to `HttpURLConnection`. In Android 6.0 they leave the SDK                                           |
-| A device can have more than one active SIM                            | Do not assume one subscription. Read `SubscriptionManager` and react to `OnSubscriptionsChangedListener` |
-| `Resources.getDrawable(int)` and `getDrawableForDensity()` deprecated | Use the overloads that take a `Resources.Theme`                                                          |
-| `AccountManager.removeAccount(Account, callback, Handler)` deprecated | Use the overload that takes an `Activity`, or `removeAccountExplicitly()`                                |
+| Change                                                                | What to do                                                                                               | How to check                                                |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `org.apache.http` and `AndroidHttpClient` are deprecated              | Move to `HttpURLConnection`. In Android 6.0 they leave the SDK                                           |                                                             |
+| A device can have more than one active SIM                            | Do not assume one subscription. Read `SubscriptionManager` and react to `OnSubscriptionsChangedListener` | Lint `MissingPermission` flags a missing `READ_PHONE_STATE` |
+| `Resources.getDrawable(int)` and `getDrawableForDensity()` deprecated | Use the overloads that take a `Resources.Theme`                                                          | Lint `UseCompatLoadingForDrawables` (AppCompat)             |
+| `AccountManager.removeAccount(Account, callback, Handler)` deprecated | Use the overload that takes an `Activity`, or `removeAccountExplicitly()`                                |                                                             |
 
 ### Apps targeting API 22
 
-Google published no list of behaviour changes for apps targeting API 22. The
-5.1 API page covers new APIs and the HTTP deprecation only. The `LOLLIPOP_MR1`
-constant in AOSP carries a one-line joke instead of the change list that
-`LOLLIPOP` has (see below).
+None. Google published no behaviour changes gated on `targetSdkVersion 22`.
+The 5.1 API page covers new APIs and the HTTP deprecation only, and the
+`Build.VERSION_CODES` reference gives `LOLLIPOP_MR1` no "Applications
+targeting this or a later release" list, while `LOLLIPOP` and `M` have one. In
+AOSP the constant carries a one-line joke instead (see below).
+
+## Migrating to API 22
+
+From `targetSdk 21` to 22 there is little to do, because nothing changes
+behaviour on the target alone:
+
+1. **Update the toolchain.** Install the Android 5.1 SDK Platform and set
+   `compileSdk` and `targetSdk` to 22, as Google's API page asks. Skipped, the
+   API 22 classes (`SubscriptionManager`, `CarrierMessagingService`) do not
+   compile. Verify: the project builds.
+2. **Move off Apache HTTP.** Replace `org.apache.http` and `AndroidHttpClient`
+   with `HttpURLConnection`. Skipped, nothing breaks on 5.1, but the classes
+   leave the SDK in Android 6.0. Verify: the build shows no deprecation
+   warnings for those classes.
+3. **Adopt the multi-SIM APIs** if your app cares about the network or SMS.
+   Declare `READ_PHONE_STATE`, read `getActiveSubscriptionInfoList()`, check
+   roaming per SIM with `isNetworkRoaming(subId)`, and send SMS through
+   `getSmsManagerForSubscriptionId()`. Skipped, the app keeps working on the
+   default SIM only. Verify: lint `MissingPermission`, then a dual-SIM device
+   or emulator.
+4. **Guard the new calls.** If `minSdk` is below 22, check
+   `Build.VERSION.SDK_INT` before each API 22 call. Skipped, older devices
+   crash when they reach them. Verify: lint `NewApi`.
+5. **Clear the smaller deprecations**: the themed `getDrawable()` overloads
+   and the new `AccountManager.removeAccount()`. Verify: lint
+   `UseCompatLoadingForDrawables` in an AppCompat project.
+6. **Test** the app on an Android 5.1 system image, then publish.
+
+Skipping several levels at once: start from the
+[Android 5.0 note](/notes/android-5-0-lollipop/) and go straight on to
+[Android 6.0](/notes/android-6-marshmallow/), where runtime permissions make
+`READ_PHONE_STATE` a request.
 
 ## What lasted
 

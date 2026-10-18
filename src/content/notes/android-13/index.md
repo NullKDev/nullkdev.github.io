@@ -217,6 +217,51 @@ citations:
   - title: 'Google rolling out Android 13 Beta 4 for Pixel (9to5Google)'
     url: https://9to5google.com/2022/07/13/android-13-beta-4-pixel-launch/
     accessedAt: 2026-10-18
+  - title: Compatibility framework changes (Android 13)
+    url: https://developer.android.com/about/versions/13/reference/compat-framework-changes
+    accessedAt: 2026-10-18
+  - title: Compatibility framework tools (test and debug)
+    url: https://developer.android.com/guide/app-compatibility/test-debug
+    accessedAt: 2026-10-18
+  - title: 'Android Gradle plugin: minimum versions of tools for each API level'
+    url: https://developer.android.com/build/releases/about-agp
+    accessedAt: 2026-10-18
+  - title: Manifest.permission reference
+    url: https://developer.android.com/reference/android/Manifest.permission
+    accessedAt: 2026-10-18
+  - title: Request permission to access nearby Wi-Fi devices
+    url: https://developer.android.com/develop/connectivity/wifi/wifi-permissions
+    accessedAt: 2026-10-18
+  - title: Handle user-initiated stopping of apps running foreground services
+    url: https://developer.android.com/develop/background-work/services/fgs/handle-user-stopping
+    accessedAt: 2026-10-18
+  - title: 'Behavior changes: apps targeting Android 16 (health permissions)'
+    url: https://developer.android.com/about/versions/16/behavior-changes-16
+    accessedAt: 2026-10-18
+  - title: AdvertisingIdClient.Info reference (AD_ID and tools:node="remove")
+    url: https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info
+    accessedAt: 2026-10-18
+  - title: Advertising ID (Play Console Help)
+    url: https://support.google.com/googleplay/android-developer/answer/6048248
+    accessedAt: 2026-10-18
+  - title: 'Lint check NotificationPermission: Notifications Without Permission'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/NotificationPermission.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check ScopedStorage: Affected by scoped storage'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/ScopedStorage.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check ExactAlarm: Invalid Usage of Exact Alarms'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/ExactAlarm.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check UnspecifiedRegisterReceiverFlag: Missing registerReceiver() exported flag'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/UnspecifiedRegisterReceiverFlag.md.html
+    accessedAt: 2026-10-18
+  - title: 'Android 13 review: The update we need, not the one we want (Android Police)'
+    url: https://www.androidpolice.com/android-13-review/
+    accessedAt: 2026-10-18
+  - title: 'Android 13 Developer Preview 1 is here (XDA Developers)'
+    url: https://www.xda-developers.com/android-13-developer-preview-1/
+    accessedAt: 2026-10-18
 ---
 
 Android 13 is the release where an app had to ask before it could send a
@@ -236,6 +281,12 @@ delivery.
 | Release                         | Source in AOSP and Pixel rollout from 15 August 2022               |
 | Launch devices                  | Pixel 7 and Pixel 7 Pro, announced 6 October 2022                  |
 | Google Play target-API deadline | New apps and app updates from 31 August 2023 (extensions to 1 Nov) |
+| Toolchain                       | `compileSdk 33`, Android Gradle Plugin 7.2 or later (Studio below) |
+
+Google's compatibility table lists Android Studio Flamingo (2022.2.1) as the
+minimum for API 33. The Android 13 SDK setup page, written at launch,
+recommends Chipmunk (2021.2.1) or higher, and writes `compileSdk 33` for AGP
+7.0 or later. Use the newer table when the two disagree.
 
 Google pushed Android 13 to AOSP and began the Pixel rollout on 15 August 2022.
 Its announcement named Samsung, Asus, HMD, Motorola, OnePlus, OPPO, Sony,
@@ -271,9 +322,9 @@ and four betas are the parts below this overview.
   many apps run a foreground service, with a "Stop" button for each.
 - **Quick Settings placement API.** An app can ask the user, in one system
   dialog, to add its custom tile.
-- **Media controls.** For apps targeting 33, the system builds the media player
-  buttons from `PlaybackState` actions instead of the notification's action
-  list.
+- **Media controls.** The system media player is rebuilt from the media
+  session's `PlaybackState`; what that changes for apps targeting 33 is in
+  [the targeting table](#apps-targeting-api-33).
 - **Audio.** Built-in Bluetooth LE Audio on compatible devices, MIDI 2.0 over
   USB, spatial audio with head tracking, and `AudioManager` APIs that tell an
   app how its audio will be routed.
@@ -326,14 +377,66 @@ and four betas are the parts below this overview.
 
 ## Permissions
 
-New runtime permissions in Android 13:
+Android 13 added seven permissions an app can declare. Four older ones get a
+new upper bound or a new rule:
 
-| Permission                                                  | Replaces or extends                                   | Granted by                              |
-| ----------------------------------------------------------- | ----------------------------------------------------- | --------------------------------------- |
-| `POST_NOTIFICATIONS`                                        | Notifications were on by default                      | Runtime dialog                          |
-| `READ_MEDIA_IMAGES`, `READ_MEDIA_VIDEO`, `READ_MEDIA_AUDIO` | `READ_EXTERNAL_STORAGE` for other apps' media         | Runtime dialog                          |
-| `NEARBY_WIFI_DEVICES`                                       | `ACCESS_FINE_LOCATION` for Wi-Fi scanning and connect | Runtime dialog (`NEARBY_DEVICES` group) |
-| `BODY_SENSORS_BACKGROUND`                                   | Extends `BODY_SENSORS` to the background              | Hard-restricted; installer allowlist    |
+| Permission                                | What changed in API 33                                                                                                                           | What to declare                                                                                        | What to remove or limit                                                                 |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| `POST_NOTIFICATIONS`                      | New runtime permission; new installs start with notifications off                                                                                | `<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />`, then request it in context | Nothing                                                                                 |
+| `READ_MEDIA_IMAGES`                       | New runtime permission for other apps' images                                                                                                    | Declare it only if you read others' images; prefer the photo picker, which needs none                  | Nothing                                                                                 |
+| `READ_MEDIA_VIDEO`                        | New runtime permission for other apps' videos; shares one dialog with images                                                                     | Declare it only if you read others' videos; prefer the photo picker                                    | Nothing                                                                                 |
+| `READ_MEDIA_AUDIO`                        | New runtime permission for other apps' audio files                                                                                               | Declare it if you read others' audio                                                                   | Nothing                                                                                 |
+| `READ_EXTERNAL_STORAGE`                   | Has no effect for apps targeting 33                                                                                                              | Keep it for devices up to Android 12L                                                                  | `android:maxSdkVersion="32"`                                                            |
+| `NEARBY_WIFI_DEVICES`                     | New runtime permission in the `NEARBY_DEVICES` group for Wi-Fi Aware, Wi-Fi Direct, local-only hotspot and Wi-Fi RTT                             | `android:usesPermissionFlags="neverForLocation"` if you never derive location from Wi-Fi               | Nothing                                                                                 |
+| `ACCESS_FINE_LOCATION`                    | No longer needed for those Wi-Fi APIs; still needed for `getScanResults()` and `startScan()`                                                     | Keep it for older versions                                                                             | `android:maxSdkVersion="32"`, only if you need no location and call neither scan method |
+| `BODY_SENSORS_BACKGROUND`                 | New; background reads of body sensors need it on top of `BODY_SENSORS`. Hard-restricted: the installer must allowlist it                         | Declare and request it after `BODY_SENSORS`                                                            | Nothing; apps targeting Android 16 move to `android.permission.health` permissions      |
+| `USE_EXACT_ALARM`                         | New, granted at install and not revocable; only for apps whose core feature is an alarm clock, timer or calendar, and Google Play audits its use | Declare it only for that core feature                                                                  | Never in other apps; they keep `SCHEDULE_EXACT_ALARM`                                   |
+| `SCHEDULE_EXACT_ALARM`                    | Same as in Android 12, but a device should see only one of it and `USE_EXACT_ALARM`                                                              | Keep it for exact alarms that are a secondary feature                                                  | `android:maxSdkVersion="32"` when you switch to `USE_EXACT_ALARM`                       |
+| `com.google.android.gms.permission.AD_ID` | Google Play services returns a zeroed advertising ID to apps targeting 33 that do not declare it                                                 | Declare it if you use the advertising ID; ad SDKs often merge it in                                    | `tools:node="remove"` to block a merged copy when you do not use it                     |
+
+One manifest for an app that runs on Android 12L and earlier and on 13 and
+later. Keep only the blocks your app needs:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Notifications: a runtime permission from API 33 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Media: the old permission up to API 32, the granular ones from 33 -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+
+    <!-- Wi-Fi: location up to API 32, nearby devices from 33.
+         Drop maxSdkVersion if you call getScanResults() or startScan(). -->
+    <uses-permission
+        android:name="android.permission.ACCESS_FINE_LOCATION"
+        android:maxSdkVersion="32" />
+    <uses-permission
+        android:name="android.permission.NEARBY_WIFI_DEVICES"
+        android:usesPermissionFlags="neverForLocation" />
+
+    <!-- Alarm clock, timer or calendar apps only -->
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
+    <!-- No advertising ID used: block the copy an SDK merges in -->
+    <uses-permission
+        android:name="com.google.android.gms.permission.AD_ID"
+        tools:node="remove" />
+</manifest>
+```
+
+Google's storage guides set `maxSdkVersion="32"` on `READ_EXTERNAL_STORAGE`;
+the text of the `ScopedStorage` lint check says 33. The permission has no
+effect from API 33 on, so either value grants the same access.
 
 The notification permission reaches every app, but how depends on the target:
 
@@ -357,49 +460,96 @@ Images and video share one dialog if requested together. An app that held
 `READ_EXTERNAL_STORAGE` gets the new media permissions automatically when it
 updates its target.
 
-Two more changes:
-
-- **Exact alarms.** `USE_EXACT_ALARM` is granted at install and cannot be
-  revoked, but it is meant only for alarm clocks, timers and calendars, and a
-  Google Play policy restricts it to them. Everyone else keeps `SCHEDULE_EXACT_ALARM`, which the user can
-  revoke.
-- **Giving permissions back.** `Context.revokeSelfPermissionsOnKill()` lets an
-  app drop runtime permissions it no longer needs. It takes effect when the
-  app's processes are killed, not while it is in the foreground.
+`Context.revokeSelfPermissionsOnKill()` lets an app give back runtime
+permissions it no longer needs. It takes effect when the app's processes are
+killed, not while it is in the foreground.
 
 ## What changed for your app
 
 ### All apps on Android 13
 
-| Change                                                                                                 | What to do                                                                       |
-| ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
-| New installs start with notifications off                                                              | Target 33 and ask for `POST_NOTIFICATIONS` in context                            |
-| The clipboard shows a preview of copied content                                                        | Set `EXTRA_IS_SENSITIVE` on passwords and card numbers; drop your own copy toast |
-| Users can stop a foreground service from the Task Manager                                              | Handle being stopped like a user force-stop                                      |
-| Foreground service notifications can be swiped away                                                    | Do not rely on the notification staying visible                                  |
-| Prefetch jobs run before the predicted next launch                                                     | Check that `setPrefetch()` work still runs when you expect                       |
-| An app the user restricts for battery cannot start foreground services; its jobs and alarms do not run | Test with `adb shell cmd appops set <package> RUN_ANY_IN_BACKGROUND ignore`      |
-| High-priority FCM that never shows a notification is downgraded                                        | Send normal priority when no notification follows                                |
-| The Google app's speech service trampoline is gone                                                     | Use the device's default `SpeechService`, not a hard-coded package               |
+| Change                                                                                                 | What to do                                                                                                             | How to check                                                                                                                 |
+| ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| New installs start with notifications off                                                              | Target 33 and ask for `POST_NOTIFICATIONS` in context                                                                  | `adb shell pm revoke <package> android.permission.POST_NOTIFICATIONS` simulates a fresh install                              |
+| The clipboard shows a preview of copied content                                                        | Set `EXTRA_IS_SENSITIVE` on passwords and card numbers; drop your own copy toast                                       |                                                                                                                              |
+| Users can stop a foreground service from the Task Manager                                              | Handle being stopped like a user force-stop; read `REASON_USER_REQUESTED` from `ApplicationExitInfo` on the next start | `adb shell cmd activity stop-app <package>`                                                                                  |
+| Foreground service notifications can be swiped away                                                    | Do not rely on the notification staying visible                                                                        |                                                                                                                              |
+| Prefetch jobs run before the predicted next launch                                                     | Check that `setPrefetch()` work still runs when you expect                                                             |                                                                                                                              |
+| An app the user restricts for battery cannot start foreground services; its jobs and alarms do not run | Handle each of those failing                                                                                           | `adb shell cmd appops set <package> RUN_ANY_IN_BACKGROUND ignore` and `adb shell am set-standby-bucket <package> restricted` |
+| High-priority FCM that never shows a notification is downgraded                                        | Send normal priority when no notification follows                                                                      |                                                                                                                              |
+| The Google app's speech service trampoline is gone                                                     | Use the device's default `SpeechService`, not a hard-coded package                                                     |                                                                                                                              |
+| A shared user ID can be dropped for new installs                                                       | Set `android:sharedUserMaxSdkVersion="32"`; never remove `android:sharedUserId`, or updates fail                       |                                                                                                                              |
 
 ### Apps targeting API 33
 
-| Change                                                          | What to do                                                                                    |
-| --------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| You control when the notification dialog appears                | Request `POST_NOTIFICATIONS` after a user action, not at launch                               |
-| `READ_EXTERNAL_STORAGE` no longer gives access to others' media | Request `READ_MEDIA_*`, or use the photo picker for images and video                          |
-| Wi-Fi APIs require `NEARBY_WIFI_DEVICES`                        | Declare it with `android:usesPermissionFlags="neverForLocation"` if you never derive location |
-| Intents from other apps must match your `<intent-filter>`       | Check exported components; a sender gets `ActivityNotFoundException` on no match              |
-| Background body sensor access needs `BODY_SENSORS_BACKGROUND`   | Request it after `BODY_SENSORS`                                                               |
-| Advertising ID is zeros without `AD_ID`                         | Declare `com.google.android.gms.permission.AD_ID` if you use it                               |
-| `BluetoothAdapter.enable()` and `disable()` return false        | Send the user to Bluetooth settings                                                           |
-| `WebView.setForceDark()` is a no-op                             | Let `isLightTheme` drive `prefers-color-scheme`; use `setAlgorithmicDarkeningAllowed()`       |
-| No `BOOT_COMPLETED` while the user restricts your battery use   | Do not depend on it for restricted apps                                                       |
+| Change                                                                                           | What to do                                                                                    | How to check                                                                           |
+| ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| You control when the notification dialog appears                                                 | Request `POST_NOTIFICATIONS` after a user action, not at launch                               | Lint `NotificationPermission`; compat `NOTIFICATION_PERM_CHANGE_ID` (194833441)        |
+| Without the notification permission, foreground service notices show only in the Task Manager    | Do not use that notification as the only way to tell the user something                       |                                                                                        |
+| `READ_EXTERNAL_STORAGE` no longer gives access to others' media                                  | Request `READ_MEDIA_*`, or use the photo picker for images and video                          | Lint `ScopedStorage`; `adb shell cmd appops get --uid <package>` lists upgraded grants |
+| Wi-Fi APIs require `NEARBY_WIFI_DEVICES` and throw `SecurityException` without it                | Declare it with `android:usesPermissionFlags="neverForLocation"` if you never derive location |                                                                                        |
+| Intents from other apps must match your `<intent-filter>`                                        | Check exported components; a sender gets `ActivityNotFoundException` on no match              | Compat `ENFORCE_INTENTS_TO_MATCH_INTENT_FILTERS` (161252188)                           |
+| Background body sensor access needs `BODY_SENSORS_BACKGROUND`                                    | Request it after `BODY_SENSORS`                                                               |                                                                                        |
+| `USE_EXACT_ALARM` becomes available                                                              | Use it only for an alarm clock, timer or calendar                                             | Lint `ExactAlarm`; compat `ENABLE_USE_EXACT_ALARM` (218533173)                         |
+| Advertising ID is zeros without `AD_ID`                                                          | Declare `com.google.android.gms.permission.AD_ID` if you use it                               |                                                                                        |
+| `BluetoothAdapter.enable()` and `disable()` return false                                         | Send the user to Bluetooth settings                                                           |                                                                                        |
+| `WebView.setForceDark()` is a no-op                                                              | Let `isLightTheme` drive `prefers-color-scheme`; use `setAlgorithmicDarkeningAllowed()`       | Compat `ENABLE_SIMPLIFIED_DARK_MODE` (214741472)                                       |
+| No `BOOT_COMPLETED` while the user restricts your battery use                                    | Do not depend on it for restricted apps                                                       | Compat `DEFER_BOOT_COMPLETED_BROADCAST_CHANGE_ID` (203704822)                          |
+| Media controls come from `PlaybackState` actions, not the notification's action list             | Declare play, skip and custom actions on the session's `PlaybackState`                        | Compat `MEDIA_CONTROL_SESSION_ACTIONS` (203800354)                                     |
+| Prefetch jobs cannot have a deadline                                                             | Remove `setOverrideDeadline()` from jobs built with `setPrefetch(true)`                       | Compat `DISALLOW_DEADLINES_FOR_PREFETCH_JOBS` (194532703)                              |
+| An invalid `JobInfo.Builder.setPriority()` value throws                                          | Pass only valid priority values                                                               | Compat `THROW_ON_INVALID_PRIORITY_VALUE` (140852299)                                   |
+| `registerComponentCallbacks()` on an activity registers on that activity, not on the application | Unregister from the same context; register on the application if you meant app-wide           | Compat `OVERRIDABLE_COMPONENT_CALLBACKS` (193247900)                                   |
 
 Intent matching is not enforced for components without any intent filter,
 intents from inside the same app, and intents from the system or root.
+Google's compat list marks it "Enabled for all apps", while the intents guide
+ties it to the receiving app's target.
+The compat list also holds telephony, splash screen and text layout changes
+that few apps meet.
 
 ![Two Quick Settings screens: the first has a button reading 1 at the bottom; tapping it opens an Active apps list with a Stop button next to an app](./assets/fgs-task-manager.png 'The Foreground Services Task Manager in Quick Settings. Android Developers · CC BY 2.5')
+
+## Migrating to API 33
+
+From `targetSdk 32` to 33, in this order:
+
+1. **Update the toolchain.** Set `compileSdk 33` and use AGP 7.2 or later.
+   Skipped, the new constants (`POST_NOTIFICATIONS`, `READ_MEDIA_*`) do not
+   compile. Verify: the project builds and lint runs clean of new errors.
+2. **Ask for notifications.** Declare `POST_NOTIFICATIONS` and request it after
+   a user action that needs it; handle "Don't allow". Skipped, new installs
+   never show your notifications. Verify: lint `NotificationPermission`, then
+   the three `adb shell pm` sequences on the notification permission page
+   (fresh install, upgrade with notifications on, upgrade with them off).
+3. **Move media access.** Use the photo picker for images and video; request
+   `READ_MEDIA_*` only for what it cannot do, and cap `READ_EXTERNAL_STORAGE`
+   at `maxSdkVersion="32"`. Skipped, reads of other apps' media fail on
+   Android 13. Verify: a fresh install on an Android 13 device, and lint
+   `ScopedStorage`.
+4. **Move Wi-Fi access.** Declare `NEARBY_WIFI_DEVICES` with
+   `neverForLocation`; keep `ACCESS_FINE_LOCATION` for scans and older
+   versions. Skipped, Wi-Fi Direct, Aware, hotspot and RTT calls throw
+   `SecurityException`. Verify: run each Wi-Fi flow on Android 13.
+5. **Check exported components.** Every intent another app sends you must
+   match an `<intent-filter>`. Skipped, those callers get
+   `ActivityNotFoundException`. Verify: with `targetSdk 33`, send each
+   intent other apps really send you, from a test app or `adb shell am start`,
+   and check that it arrives.
+6. **Go through the smaller rows** of the targeting table that apply to you:
+   body sensors, exact alarms, `AD_ID`, Bluetooth toggling, WebView dark
+   theme, media controls, prefetch jobs and job priorities.
+7. **Test the result** on an Android 13 device or emulator with
+   `targetSdk 33`. To isolate one change, toggle it on a debuggable build in
+   Developer options > "App Compatibility Changes", or with
+   `adb shell am compat disable <change ID> <package>`.
+
+Optional while you are here: pass `RECEIVER_EXPORTED` or
+`RECEIVER_NOT_EXPORTED` to `registerReceiver()`. Lint
+`UnspecifiedRegisterReceiverFlag` finds the calls, and apps targeting
+Android 14 must do it.
+
+Skipping several levels at once: do each version's steps in order, starting
+from [Android 12](/notes/android-12/) if you target 30 or lower.
 
 ## What lasted
 
@@ -415,6 +565,10 @@ intents from inside the same app, and intents from the system or root.
   SMS permissions, besides accessibility and notification listeners.
 - **Predictive back** left the developer option in Android 15, for apps that
   opted in.
+- **Body sensors.** For apps targeting Android 16, `BODY_SENSORS` and
+  `BODY_SENSORS_BACKGROUND` give way to `android.permission.health`
+  permissions: `READ_HEART_RATE` and others while in use,
+  `READ_HEALTH_DATA_IN_BACKGROUND` in the background.
 - The **photo picker** now also reaches Android 4.4 to 10 as a backported
   module through Google Play services.
 

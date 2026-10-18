@@ -191,6 +191,18 @@ citations:
   - title: "Here's everything new in Android 7.1.2 beta 2 (9to5Google)"
     url: https://9to5google.com/2017/03/20/whats-new-android-7-1-2-beta-2/
     accessedAt: 2026-10-18
+  - title: API Differences between 24 and 25, summary of changed packages
+    url: https://developer.android.com/sdk/api_diff/25/changes/changes-summary.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check: NewApi'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/NewApi.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check: ReportShortcutUsage'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/ReportShortcutUsage.md.html
+    accessedAt: 2026-10-18
+  - title: Random Musings on the 7.1 Developer Preview 1 (CommonsWare)
+    url: https://commonsware.com/blog/2016/10/20/random-musings-7p1-developer-preview-1.html
+    accessedAt: 2026-10-18
 ---
 
 Android 7.1 is the Nougat update that shipped first on Google's own phone, the
@@ -210,6 +222,11 @@ icon, round icons and a way for keyboards to send images.
 | Release                         | On the Pixel, October 2016. Nexus rollout of 7.1.1 began 5 December   |
 | Launch devices                  | Pixel and Pixel XL, announced and opened for pre-order 4 October 2016 |
 | Google Play target-API deadline | None. Play's target-API rule started in 2018, at API 26               |
+| Toolchain                       | `compileSdkVersion 25`, Android Studio 2.2.2                          |
+
+Google's preview posts asked developers to "update to Android Studio 2.2.2",
+download the API 25 platform and set `compileSdkVersion` to 25. They name no
+minimum Android Gradle Plugin, so this note gives none.
 
 Google announced the Pixel on 4 October 2016 with "Android 7.1 Nougat" on
 board. The first Pixel factory images, build NDE63H, are dated October 2016. On
@@ -302,7 +319,8 @@ on 5X/6P", as reported by Ars Technica.
 
 ## Permissions
 
-No permission was added or removed in API 25. The API diff for the `android`
+No permission was added, changed, split, deprecated or removed in API 25, so
+there is nothing new to declare or remove. The API diff for the `android`
 package touches only `R.attr`, where the shortcut and `roundIcon` attributes
 live. Two features are guarded in other ways:
 
@@ -333,22 +351,50 @@ Google recommends that the keyboard's provider is not exported
 
 ### All apps on Android 7.1
 
-| Change                                                      | What to do                                                                                      |
-| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Launchers may ask for `android:roundIcon`                   | Ship both `android:icon` and `android:roundIcon`. Image Asset Studio generates both             |
-| Long press on your icon can show shortcuts                  | Add static shortcuts in `res/xml/shortcuts.xml`, or dynamic ones with `ShortcutManager`         |
-| Dynamic shortcut calls are rate-limited for background apps | Update them from the foreground. Rate limiting resets when the app comes to the foreground      |
-| Dynamic shortcuts are not backed up                         | Re-publish them when the app first opens on a new device                                        |
-| Keyboards can commit images                                 | Declare MIME types with `EditorInfoCompat.setContentMimeTypes()` and handle `onCommitContent()` |
-| Keyboards on API 25 grant reads per URI                     | In an IME, set `INPUT_CONTENT_GRANT_READ_URI_PERMISSION` when `SDK_INT >= N_MR1`                |
-| Not enough storage                                          | Fire `ACTION_MANAGE_STORAGE` instead of failing                                                 |
+| Change                                                      | What to do                                                                                      | How to check                                                                            |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Launchers may ask for `android:roundIcon`                   | Ship both `android:icon` and `android:roundIcon`. Image Asset Studio generates both             | The Google APIs emulator image for API 25, which has round icons and the Pixel Launcher |
+| Long press on your icon can show shortcuts                  | Add static shortcuts in `res/xml/shortcuts.xml`, or dynamic ones with `ShortcutManager`         | Lint `NewApi` for `ShortcutManager` calls below `minSdk 25`; Lint `ReportShortcutUsage` |
+| Dynamic shortcut calls are rate-limited for background apps | Update them from the foreground. Rate limiting resets when the app comes to the foreground      | `adb shell cmd shortcut reset-throttling`                                               |
+| Dynamic shortcuts are not backed up                         | Re-publish them when the app first opens on a new device                                        |                                                                                         |
+| Keyboards can commit images                                 | Declare MIME types with `EditorInfoCompat.setContentMimeTypes()` and handle `onCommitContent()` |                                                                                         |
+| Keyboards on API 25 grant reads per URI                     | In an IME, set `INPUT_CONTENT_GRANT_READ_URI_PERMISSION` when `SDK_INT >= N_MR1`                |                                                                                         |
+| Not enough storage                                          | Fire `ACTION_MANAGE_STORAGE` instead of failing                                                 |                                                                                         |
 
 ### Apps targeting API 25
 
-Google published no behaviour changes tied to targeting API 25. Its 7.1 page
-has no changes section, and the preview post only advised targeting 25 to
-"test your app with compatibility behaviors disabled". The work is opt-in:
-shortcuts, round icons and rich content.
+None. Google published no behaviour changes tied to targeting API 25: its 7.1
+page has no changes section, and the preview posts only advised targeting 25 to
+"test your app with compatibility behaviors disabled". Everything in 7.1 is
+opt-in: shortcuts, round icons and rich content.
+
+## Migrating to API 25
+
+From `targetSdkVersion 24` to 25, in this order:
+
+1. **Update the toolchain.** Install the API 25 platform and set
+   `compileSdkVersion 25`. Skipped, `ShortcutManager` and `android:roundIcon`
+   do not compile. Verify: the project builds and lint `NewApi` reports no
+   new errors.
+2. **Raise `targetSdkVersion` to 25.** No platform behaviour changes with it,
+   so nothing breaks. Verify: run the app on an Android 7.1 device or the API
+   25 emulator.
+3. **Add a round icon.** Generate `android:roundIcon` with Image Asset Studio
+   next to `android:icon`. Skipped, nothing breaks. Verify: the Google APIs
+   emulator image for API 25 runs the Pixel Launcher. CommonsWare also advised
+   checking every other place that shows your own icon.
+4. **Add shortcuts if they help your users.** Every `<intent>` in a static
+   shortcut needs `android:action`; without it the shortcut does not work.
+   Publish dynamic ones from the foreground and re-publish them after a
+   restore. Verify: long-press the icon on Android 7.1, reset rate limiting
+   with `adb shell cmd shortcut reset-throttling`, and run lint
+   `ReportShortcutUsage`.
+5. **Accept keyboard images** only if your text fields take them, as in the
+   table above.
+
+Skipping several levels at once: do each version's steps in order, starting
+from [Android 7.0](/notes/android-7-0-nougat/) if you target 23, or from
+[Android 6.0](/notes/android-6-marshmallow/) if you target 22 or lower.
 
 ## What lasted
 
