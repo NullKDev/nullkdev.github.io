@@ -299,6 +299,76 @@
   margin: 0;
 }
 
+/* Wide prose tables become one card per row (`scripts/hast-tables.mjs` marks
+   them). A record such as a permission and its four facts reads down, not
+   across: as a grid it measured 1,375 px in a 704 px column and its last
+   column was never seen. The header row leaves the layout but stays in the
+   accessibility tree; each field carries its header as a visible label. */
+.prose [data-table-stack] {
+  overflow-x: visible;
+  background: none;
+}
+.prose [data-table-stack] :where(table, tbody, tr, td) {
+  display: block;
+}
+.prose [data-table-stack] thead {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.prose [data-table-stack] tbody tr {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.prose [data-table-stack] tbody tr:first-child {
+  border-top: 2px solid var(--line-strong);
+}
+.prose [data-table-stack] tbody tr:hover {
+  background: none;
+}
+.prose [data-table-stack] tbody td {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 10.5rem) minmax(0, 1fr);
+  gap: 0.2rem 1rem;
+  padding: 0.18rem 0;
+  border-bottom: 0;
+}
+.prose [data-table-stack] tbody td::before {
+  content: attr(data-label);
+  padding-top: 0.2em;
+  color: var(--ink-muted);
+  font:
+    600 0.68rem/1.5 'IBM Plex Mono',
+    monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+/* The first field names the record, so it is the card's title. */
+.prose [data-table-stack] tbody td:first-child {
+  display: block;
+  padding-bottom: 0.35rem;
+  font-size: 1.02em;
+  font-weight: 560;
+}
+.prose [data-table-stack] tbody td:first-child::before {
+  content: none;
+}
+.prose [data-table-stack] td[data-empty] {
+  display: none;
+}
+.prose [data-table-stack] code {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+@media (max-width: 36rem) {
+  .prose [data-table-stack] tbody td {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* Benchmark comparison: bar as the reading, number as the proof.
    Inherits the prose table rules above and adds the plot. */
 .prose .benchmark {

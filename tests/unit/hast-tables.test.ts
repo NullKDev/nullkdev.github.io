@@ -170,4 +170,108 @@ describe('hastTables', () => {
     expect(wrapper?.children?.[0]?.tagName).toBe('table')
     expect(wrapper?.children?.[0]?.children?.length).toBe(2)
   })
+
+  describe('stacking wide prose tables into cards', () => {
+    const permissions = () =>
+      run(
+        table(
+          ['Permission', 'What changed', 'What to declare', 'Remove or limit'],
+          [
+            [
+              'POST_NOTIFICATIONS',
+              'New runtime permission',
+              'Declare it',
+              'Nothing',
+            ],
+            [
+              'READ_EXTERNAL_STORAGE',
+              'No effect at 33',
+              'Keep for 32',
+              'maxSdkVersion 32',
+            ],
+          ],
+        ),
+      )
+
+    it('marks a prose table of three or more columns to stack', () => {
+      const wrapper = permissions().children?.[0]
+      expect(wrapper?.properties?.['data-table-stack']).toBe('')
+    })
+
+    it('labels every body cell with its column header', () => {
+      const labels: string[] = []
+      const walk = (node: Node) => {
+        if (node.tagName === 'td')
+          labels.push(String(node.properties?.['data-label']))
+        for (const child of node.children ?? []) walk(child)
+      }
+      walk(permissions())
+      expect(labels).toEqual([
+        'Permission',
+        'What changed',
+        'What to declare',
+        'Remove or limit',
+        'Permission',
+        'What changed',
+        'What to declare',
+        'Remove or limit',
+      ])
+    })
+
+    it('keeps mixed code and text in one block per field', () => {
+      const tree = run(
+        table(
+          ['Permission', 'Change', 'Declare'],
+          [['A', 'New', 'code and text']],
+        ),
+      )
+      const fields: Node[] = []
+      const walk = (node: Node) => {
+        if (node.tagName === 'td') fields.push(node)
+        for (const child of node.children ?? []) walk(child)
+      }
+      walk(tree)
+      for (const field of fields) {
+        expect(field.children).toHaveLength(1)
+        expect(field.children?.[0]?.tagName).toBe('span')
+      }
+    })
+
+    it('marks an empty field so the card can leave it out', () => {
+      const tree = run(
+        table(['Change', 'What to do', 'How to check'], [['A', 'Do it', '']]),
+      )
+      const empty: string[] = []
+      const walk = (node: Node) => {
+        if (
+          node.tagName === 'td' &&
+          node.properties?.['data-empty'] !== undefined
+        ) {
+          empty.push(String(node.properties?.['data-label']))
+        }
+        for (const child of node.children ?? []) walk(child)
+      }
+      walk(tree)
+      expect(empty).toEqual(['How to check'])
+    })
+
+    it('keeps two-column and numeric tables as tables', () => {
+      const pair = run(table(['Field', 'Value'], [['API', 'Tiramisu']]))
+      expect(
+        pair.children?.[0]?.properties?.['data-table-stack'],
+      ).toBeUndefined()
+      const numbers = run(
+        table(
+          ['Model', 'Score', 'Cost'],
+          [
+            ['A', '92%', '10'],
+            ['B', '85%', '12'],
+          ],
+        ),
+      )
+      expect(
+        numbers.children?.[0]?.properties?.['data-table-stack'],
+      ).toBeUndefined()
+    })
+  })
 })

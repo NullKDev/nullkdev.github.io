@@ -19,6 +19,13 @@
  * A column qualifies when most of its filled body cells read as a pure
  * quantity, so a version string or prose containing a number cannot drag a
  * column of labels to the right.
+ *
+ * 3. **Stack wide prose tables into cards.** A table of three or more columns
+ *    with no numeric column is a list of records, not a grid to compare
+ *    across: a permissions table measured 1,375 px in a 704 px column, and its
+ *    last column was never seen. Each body cell gets its header as
+ *    `data-label`, and the wrapper gets `data-table-stack`, so CSS can show
+ *    one card per row with every field labelled and no sideways scroll.
  */
 
 /** A whole cell that is a quantity: `0.785`, `92%`, `10–50%`, `1.44`, `130`. */
@@ -62,10 +69,12 @@ const mark = (cell) => {
   cell.properties = { ...cell.properties, 'data-numeric': '' }
 }
 
+/** Marks numeric columns and reports whether any column qualified. */
 const alignNumericColumns = (table) => {
   const head = rowsOf(table, 'thead')
   const body = rowsOf(table, 'tbody')
-  if (body.length === 0) return
+  if (body.length === 0) return false
+  let anyNumeric = false
 
   const width = Math.max(...body.map((row) => cellsOf(row).length))
 
@@ -84,11 +93,47 @@ const alignNumericColumns = (table) => {
 
     if (filled === 0 || numeric / filled < NUMERIC_SHARE) continue
 
+    anyNumeric = true
     for (const row of [...head, ...body]) {
       const cell = cellsOf(row)[column]
       if (cell) mark(cell)
     }
   }
+  return anyNumeric
+}
+
+/** Minimum columns before a prose table reads better as one card per row. */
+const STACK_COLUMNS = 3
+
+/** Gives each body cell its column header as a label; false if it cannot. */
+const labelCells = (table) => {
+  const head = rowsOf(table, 'thead')[0]
+  const body = rowsOf(table, 'tbody')
+  const headers = head ? cellsOf(head).map((cell) => textOf(cell).trim()) : []
+  if (headers.length < STACK_COLUMNS || headers.some((label) => !label)) {
+    return false
+  }
+  for (const row of body) {
+    cellsOf(row).forEach((cell, column) => {
+      const empty = !textOf(cell).trim()
+      cell.properties = {
+        ...cell.properties,
+        'data-label': headers[column],
+        ...(empty ? { 'data-empty': '' } : {}),
+      }
+      // One block per field: as a grid cell, code followed by text would
+      // otherwise split into separate grid items and drop under the label.
+      cell.children = [
+        {
+          type: 'element',
+          tagName: 'span',
+          properties: {},
+          children: cell.children ?? [],
+        },
+      ]
+    })
+  }
+  return true
 }
 
 const visit = (node, parent, index, fn) => {
@@ -115,7 +160,8 @@ export default function hastTables() {
         return
       }
 
-      alignNumericColumns(node)
+      const numeric = alignNumericColumns(node)
+      const stack = !numeric && labelCells(node)
 
       parent.children[index] = {
         type: 'element',
@@ -128,6 +174,7 @@ export default function hastTables() {
           // to derive one from. An unnamed region is an axe failure; a
           // focusable scroll container is the accessible pattern.
           tabindex: '0',
+          ...(stack ? { 'data-table-stack': '' } : {}),
         },
         children: [node],
       }

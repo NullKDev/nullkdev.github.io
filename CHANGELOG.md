@@ -11,6 +11,14 @@ real.
 **Se escribe al mergear cada PR, no en el release.** El autor agrega su línea
 bajo `## [Unreleased]`, en la categoría que corresponda. Es parte del review.
 
+### Cambiado
+
+- Las tablas de texto de tres columnas o más se leen como tarjetas: una por
+  fila, con la primera columna como título y cada campo con su etiqueta. Una
+  tabla de permisos medía 1.375 px en una columna de 704 px y su última
+  columna no se veía; ahora no hay desplazamiento lateral. Las tablas con
+  números siguen siendo tablas.
+
 **Una feature sin publicar es UNA sola entrada** (regla _single-story_).
 Mientras vive bajo `## [Unreleased]`, la feature y cualquier corrección o
 continuación posterior — aunque sean commits o sesiones distintas — se pliegan
