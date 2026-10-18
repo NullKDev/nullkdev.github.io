@@ -10,6 +10,7 @@ import { parse } from 'yaml'
  * other content test, then failed the build with "Unexpected scalar".
  */
 const FRONTMATTER = /^---\n([\s\S]*?)\n---/
+const SUMMARY_LIMIT = 180
 
 const contentFiles = async (): Promise<string[]> => {
   const files: string[] = []
@@ -35,5 +36,22 @@ describe('content frontmatter', () => {
       }
     }
     expect(failures).toEqual([])
+  })
+
+  // The schema caps every summary at 180 characters, but only `astro build`
+  // enforced it; writers who cannot build kept finding 181-character Spanish
+  // summaries one step too late.
+  it('keeps every summary within the 180-character cap', async () => {
+    const tooLong: string[] = []
+    for (const file of await contentFiles()) {
+      const match = FRONTMATTER.exec(await readFile(file, 'utf8'))
+      if (!match) continue
+      const data = parse(match[1]) as { summary?: unknown } | null
+      const summary = data?.summary
+      if (typeof summary === 'string' && summary.length > SUMMARY_LIMIT) {
+        tooLong.push(`${file}: ${summary.length}`)
+      }
+    }
+    expect(tooLong).toEqual([])
   })
 })
