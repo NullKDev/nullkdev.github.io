@@ -128,6 +128,11 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ### Corregido
 
+- El índice de la derecha solo resaltaba los subtítulos (2.1, 2.2): un título
+  de sección activo seguía en el mismo color que los demás, porque la regla que
+  los pinta en negrita le ganaba en especificidad al estado activo. Ahora la
+  sección que se está leyendo se marca en color de acento.
+
 - El índice de Notas, sus filtros y el RSS ponían primero las ocho notas con
   `featuredRank` y dejaban detrás todas las demás, aunque fueran más nuevas.
   Ahora van de la más reciente a la más antigua, contando una revisión

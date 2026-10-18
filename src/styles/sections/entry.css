@@ -408,7 +408,10 @@
 .toc-list a:hover {
   color: var(--ink);
 }
-.toc-list a[aria-current='true'] {
+/* `li > a` matches the specificity of the top-rung rule above, which paints
+   section titles in ink; without it an active section title stayed ink and
+   only subsections ever looked active. Declared later, so it wins. */
+.toc-list li > a[aria-current='true'] {
   border-left-color: var(--accent);
   color: var(--accent);
   font-weight: 600;

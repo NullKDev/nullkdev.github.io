@@ -158,3 +158,32 @@ for (const url of [
     expect(rendered).toEqual(indexed)
   })
 }
+
+// A section title in the index is already bold ink when idle, so the active
+// state has to change its colour too, or only subsections ever look active.
+test('the index marks the section being read, not only subsections', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'desktop index only')
+  await page.goto('/notes/android-13/')
+  const permissions = page.locator('.prose > h2').nth(3)
+  await permissions.evaluate((heading) =>
+    window.scrollTo(
+      0,
+      heading.getBoundingClientRect().top + window.scrollY - 120,
+    ),
+  )
+  const index = page.locator('.toc-list')
+  const active = index.locator('a[aria-current="true"]')
+  await expect(active).toHaveCount(1)
+  await expect(active).toContainText('Permissions')
+  // The link colour transitions, so poll until it settles instead of reading
+  // it mid-fade.
+  const idle = index
+    .locator('li[data-level="1"] > a:not([aria-current])')
+    .first()
+  const idleColour = await idle.evaluate(
+    (element) => getComputedStyle(element).color,
+  )
+  await expect(active).not.toHaveCSS('color', idleColour)
+})
