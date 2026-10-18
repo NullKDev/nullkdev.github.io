@@ -3,7 +3,12 @@ import Icon from '@/components/primitives/Icon.astro'
 import { pageTitle } from '@/data/brand'
 import type { IconName } from '@/lib/icons'
 import { about, type ChannelKind } from '@/data/about'
-import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import {
+  getAlternateLocale,
+  getDictionary,
+  getLocalizedPath,
+  type Locale,
+} from '@/i18n'
 import {
   formatDuration,
   formatPeriod,
@@ -11,6 +16,10 @@ import {
   isCurrent,
 } from '@/lib/about'
 import Layout from '@/layouts/Layout.astro'
+import { buildProfileLd } from '@/lib/structured-data'
+import '@/styles/global.css'
+import '@/styles/archive.css'
+import '@/styles/sections/about.css'
 
 interface Props {
   locale: Locale
@@ -51,26 +60,8 @@ const measures = [
   locale={locale}
   title={pageTitle(dictionary.nav.about)}
   description={metaDescription}
-  counterpartPath={locale === 'en' ? '/es/about/' : '/about/'}
-  jsonLd={{
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    name: profile.name,
-    url: Astro.site?.toString(),
-    jobTitle: profile.role,
-    description: `${profile.bio.thesis} ${profile.bio.note}`,
-    ...(current
-      ? { worksFor: { '@type': 'Organization', name: current.org } }
-      : {}),
-    alumniOf: profile.education.map((entry) => ({
-      '@type': 'CollegeOrUniversity',
-      name: entry.issuer,
-    })),
-    knowsAbout: profile.capabilities.flatMap((group) => group.items),
-    sameAs: profile.links
-      .filter((link) => !link.href.startsWith('mailto:'))
-      .map((link) => link.href),
-  }}
+  alternatePath={getLocalizedPath('/about/', getAlternateLocale(locale))}
+  jsonLd={buildProfileLd({ profile, current, site: Astro.site })}
 >
   <main class="about-page">
     <header class="about-heading">

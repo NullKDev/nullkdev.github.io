@@ -171,6 +171,13 @@ export const assertRouteBudget = (
   }
 }
 
+/** Per-locale ceiling for `/notes-search.json`, gzip bytes. */
+const SEARCH_INDEX_GZIP = 12_000
+
+// CSS is split per surface (src/styles/sections/*.css), so each route ships
+// the shared sheet plus only its own section CSS. The CSS budgets sit ~25%
+// above what that split ships, so a section stylesheet drifting back into the
+// shared one fails the build instead of passing under the old 30 KB ceiling.
 const routes: Record<string, { file: string; budget: RouteBudget }> = {
   home: {
     // The 3D glass hero (Three.js + R3F + drei) is code-split into a lazy chunk
@@ -181,7 +188,7 @@ const routes: Record<string, { file: string; budget: RouteBudget }> = {
     budget: {
       totalGzip: 320_000,
       jsGzip: 90_000,
-      cssGzip: 30_000,
+      cssGzip: 20_000,
       fontGzip: 330_000,
     },
   },
@@ -190,7 +197,7 @@ const routes: Record<string, { file: string; budget: RouteBudget }> = {
     budget: {
       totalGzip: 360_000,
       jsGzip: 20_000,
-      cssGzip: 30_000,
+      cssGzip: 20_000,
       fontGzip: 330_000,
     },
   },
@@ -201,7 +208,7 @@ const routes: Record<string, { file: string; budget: RouteBudget }> = {
     budget: {
       totalGzip: 370_000,
       jsGzip: 90_000,
-      cssGzip: 30_000,
+      cssGzip: 28_000,
       fontGzip: 330_000,
     },
   },
@@ -210,7 +217,7 @@ const routes: Record<string, { file: string; budget: RouteBudget }> = {
     budget: {
       totalGzip: 390_000,
       jsGzip: 20_000,
-      cssGzip: 30_000,
+      cssGzip: 28_000,
       fontGzip: 330_000,
       imageGzip: 30_000,
     },
@@ -220,7 +227,7 @@ const routes: Record<string, { file: string; budget: RouteBudget }> = {
     budget: {
       totalGzip: 470_000,
       jsGzip: 110_000,
-      cssGzip: 30_000,
+      cssGzip: 28_000,
       fontGzip: 330_000,
     },
   },
@@ -233,6 +240,18 @@ const run = async () => {
     console.info(
       `${name}: total=${weight.totals.totalGzip}B gzip html=${weight.htmlGzip}B js=${weight.totals.js}B css=${weight.totals.css}B fonts=${weight.totals.font}B images=${weight.totals.image}B`,
     )
+  }
+  // The notes search index is fetched on the first keystroke and by the 404
+  // suggestions. It carries every note's headings, so it grows with the
+  // writing; the ceiling keeps it a small request, not a second page.
+  for (const file of ['notes-search.json', 'es/notes-search.json']) {
+    const gzip = gzipSync(await readFile(resolve('dist', file))).byteLength
+    if (gzip > SEARCH_INDEX_GZIP) {
+      throw new Error(
+        `${file} performance budget failed: ${gzip}B gzip > ${SEARCH_INDEX_GZIP}B`,
+      )
+    }
+    console.info(`${file}: ${gzip}B gzip`)
   }
   console.info(
     `Performance budgets passed for ${Object.keys(routes).length} route classes.`,

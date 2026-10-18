@@ -18,19 +18,19 @@ evidence: []
 protection: { mode: public }
 ---
 
-import PretextStreamingDemo from '@/components/demos/PretextStreamingDemo'
+import PretextStreamingIsland from '@/components/demos/PretextStreamingIsland.astro'
 
 ## The demo
 
-Hit **Simulate Stream** to watch AI messages arrive token by token. Each bubble expands smoothly as text fills in — no jank, no reflow, no layout thrashing. Then switch to **🐢 DOM mode** and run it again to see the difference in the fps counter.
+Hit **Simulate stream** to watch AI messages arrive token by token. Each bubble expands smoothly as text fills in — no jank, no reflow, no layout thrashing. Then switch to **DOM mode** and run it again to see the difference in the fps counter.
 
-<PretextStreamingDemo client:only="react" />
+<PretextStreamingIsland locale="en" />
 
 ---
 
 ## What's happening
 
-In **⚡ pretext mode**, every frame does this:
+In **pretext mode**, every frame does this:
 
 1. Get the current streamed text slice
 2. Call `prepare(text, font)` — canvas measurement, runs once when text changes
@@ -39,7 +39,7 @@ In **⚡ pretext mode**, every frame does this:
 
 No DOM reads after step 2. The browser's layout tree is never dirtied by the measurement itself.
 
-In **🐢 DOM mode**, every frame does this instead:
+In **DOM mode**, every frame does this instead:
 
 1. Get the current streamed text slice
 2. Create a hidden `<div>`, set its text and styles, append to `document.body`

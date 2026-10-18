@@ -6,7 +6,12 @@ the parts (what to reach for when building).
 ## Tokens
 
 Defined in `src/styles/global.css` on `:root`, overridden on
-`:root[data-theme='dark']`. Never hardcode a colour in a component.
+`:root[data-theme='dark']`. Never hardcode a colour in a component. Tailwind's
+`dark:` variant is bound to the same attribute (`@custom-variant dark` at the top
+of `global.css`), so it follows the site toggle, never the OS preference.
+
+Controls that need JavaScript are hidden under `@media (scripting: none)`: the
+header drops its menu and theme buttons and shows the section links instead.
 
 | Token | Use |
 |---|---|
@@ -30,6 +35,31 @@ Add a lifecycle value to the map, not a new colour to a component.
 - **IBM Plex Mono** for technical accents only — labels, metadata, status lines,
   counts, code, tabular numerics. Not as decoration. If mono is being used to
   make something "look technical", that is the wrong reason.
+
+### Reading structure (entry and subpost pages)
+
+- **Measure.** Running text (`p`, lists, blockquotes) is capped at `58ch`,
+  which measures ~70 characters a line in Switzer — `68ch` measured 82, because
+  `ch` is the wide "0". Figures, code, tables and diagrams keep the column.
+- **One outline, three surfaces.** `src/lib/outline.ts` builds it; the wide
+  index, the phone contents and the language switch all read it. Top-level
+  items carry the same two-digit number the prose counter prints.
+- **Wide index (≥1024px).** Sticky, never taller than the window; the list
+  scrolls itself and the script keeps the active link in view without moving
+  the page. Subpost parts are `<details>` groups that open while being read.
+- **Phone contents (<1024px).** One collapsed `<details>` before the first
+  paragraph, top rung only. Below 1024px the index never sits beside the text.
+- **Part card.** Each subpost inlined in its entry opens with
+  `entry/PartCard.astro`: "Part N of M · X min" (no count for a single part),
+  the title as the part's first `h2` but set larger than its own `h2`s
+  (chapter > section), the `summary` as a standfirst, and "Read on its own →"
+  to the part's own URL, its accessible name carrying the title. Raised
+  surface, 2px accent line on top; it replaces the old hairline and kicker.
+  Minutes come from the same `toPart` values the outline shows.
+- **Section links.** Each anchored `h2`/`h3` gets a registry `sectionLink`
+  self-link, hidden until hover or focus; the heading stays named by its text.
+- **Print.** Chrome, indexes, banner and controls are hidden; black on white in
+  both themes; external link URLs are printed after the link.
 
 ## Icons
 
@@ -97,7 +127,8 @@ They share the same drawing conventions.
 | `StatusChip.astro` | `lifecycle`, `locale`, `size` | Derives tone and label itself |
 | `Breadcrumb.astro` | `locale`, `trail[]` | Semantic `<ol>`; chevrons drawn in CSS so they never reach the a11y tree |
 | `Pagination.astro` | `current`, `total`, `href()`, `labels` | Route-based paging; used by Notes |
-| `BrandMark.astro` · `SignalMotif.astro` | — | Brand marks |
+| `BrandMark.astro` | — | The brand mark |
+| `DiagramControls.astro` | — | Zoom and fit controls for a compiled diagram |
 
 `src/components/ui/` is **shadcn's**. Do not add to it.
 
@@ -232,4 +263,4 @@ Work status ribbon had to keep their light-theme values in dark.
   or it is omitted.
 - Every block is conditional on real data. Prefer a shorter page to an empty heading.
 - Both themes ship together. A new accent/ink pair passes AA before it lands.
-- Motion: one authored moment per surface, neutralised under `prefers-reduced-motion`.
+- Motion: one authored moment per surface, neutralised under `prefers-reduced-motion` — except the home robot, which keeps animating and offers a pause toggle instead (see `docs/decisions.md`).

@@ -1,0 +1,50 @@
+---
+import { Picture } from 'astro:assets'
+import { resolveGalleryImage } from '@/lib/gallery'
+
+interface Props {
+  /** The public path recorded in `items.yml`. */
+  src: string
+  alt: string
+  /** Authored dimensions, used when the asset is served as-is. */
+  dimensions?: [number, number]
+  /** Candidate widths, in CSS pixels at 1x, for the responsive set. */
+  widths: number[]
+  sizes: string
+}
+
+const { src, alt, dimensions, widths, sizes } = Astro.props
+
+/* A raster authored in the collection's assets folder goes through
+   `astro:assets`: AVIF and WebP at a few widths, with intrinsic dimensions so
+   the box is reserved before it loads. Anything else — a vector, or a file the
+   glob does not know — is served as authored, still with its dimensions. */
+const image = resolveGalleryImage(src)
+// Never upscale: widths beyond the original drop out, and an original
+// smaller than every requested width is offered at its own size.
+const fitting = image ? widths.filter((width) => width <= image.width) : []
+const candidates = image && fitting.length === 0 ? [image.width] : fitting
+---
+
+{
+  image ? (
+    <Picture
+      src={image}
+      alt={alt}
+      formats={['avif', 'webp']}
+      widths={candidates}
+      sizes={sizes}
+      loading="lazy"
+      decoding="async"
+    />
+  ) : (
+    <img
+      src={src}
+      alt={alt}
+      width={dimensions?.[0]}
+      height={dimensions?.[1]}
+      loading="lazy"
+      decoding="async"
+    />
+  )
+}

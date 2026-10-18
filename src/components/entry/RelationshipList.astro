@@ -1,0 +1,36 @@
+---
+// Typed links between records: what this one references, or what references
+// it. The pairs are resolved in `src/lib/content.ts`.
+import RecordBlockHead from '@/components/entry/RecordBlockHead.astro'
+import type { Locale } from '@/i18n'
+import { getArchiveLabel } from '@/i18n/archive'
+import { getEntryPath, type ArchiveEntry } from '@/lib/content'
+
+interface Props {
+  title: string
+  items: readonly {
+    reference: ArchiveEntry['data']['references'][number]
+    entry: ArchiveEntry
+  }[]
+  locale: Locale
+}
+const { title, items, locale } = Astro.props
+---
+
+{
+  items.length > 0 && (
+    <section class="record-block">
+      <RecordBlockHead icon="links" title={title} />
+      <div class="relationship-list">
+        {items.map(({ reference, entry }) => (
+          <a href={getEntryPath(entry)}>
+            <span>
+              {getArchiveLabel('relationship', reference.relationship, locale)}
+            </span>
+            <strong>{entry.data.title}</strong>
+          </a>
+        ))}
+      </div>
+    </section>
+  )
+}

@@ -76,17 +76,61 @@ export const canLoadRobot = ({
   webglHealthy: boolean
 }): boolean => nearViewport && webglHealthy
 
+/**
+ * `motionAllowed` is the reader's pause control (WCAG 2.2.2). It is one more
+ * condition rather than a separate mode, so a pause and an offscreen hero stop
+ * the same things — the running clip and the pending gap — and lifting one
+ * never overrides the other.
+ */
 export const canAnimateRobot = ({
   fullyVisible,
   documentVisible,
   loaded,
   webglHealthy,
+  motionAllowed,
 }: {
   fullyVisible: boolean
   documentVisible: boolean
   loaded: boolean
   webglHealthy: boolean
-}): boolean => fullyVisible && documentVisible && loaded && webglHealthy
+  motionAllowed: boolean
+}): boolean =>
+  fullyVisible && documentVisible && loaded && webglHealthy && motionAllowed
+
+type PauseStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
+
+/** sessionStorage key holding the reader's pause. */
+export const ROBOT_PAUSE_KEY = 'nullkdev-robot-paused'
+
+/**
+ * A pause holds for the browsing session: returning to the home page must not
+ * restart motion the reader stopped. It is deliberately not `localStorage` —
+ * the robot animating is the default every new visit is meant to see, and a
+ * stale preference from months ago should not silently replace it.
+ *
+ * Storage can be missing or throw (private mode, blocked site data); both read
+ * as "not paused", and a failed write only loses the memory, never the pause
+ * itself, which the page keeps in memory.
+ */
+export const readRobotPaused = (storage: PauseStorage | undefined): boolean => {
+  try {
+    return storage?.getItem(ROBOT_PAUSE_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+export const writeRobotPaused = (
+  storage: PauseStorage | undefined,
+  paused: boolean,
+): void => {
+  try {
+    if (paused) storage?.setItem(ROBOT_PAUSE_KEY, '1')
+    else storage?.removeItem(ROBOT_PAUSE_KEY)
+  } catch {
+    // Memory only: the toggle still works for this page view.
+  }
+}
 
 export const getNextRobotAnimation = ({
   availableAnimations,

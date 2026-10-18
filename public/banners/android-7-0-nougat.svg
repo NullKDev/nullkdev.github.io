@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Android 7.0 Nougat banner, with the version logo.">
+  <defs>
+    <linearGradient id="bg-android-7-0-nougat" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#0B2B22"/>
+    </linearGradient>
+    <radialGradient id="glow-android-7-0-nougat" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00875A" stop-opacity="0.22000000000000003"/>
+      <stop offset="100%" stop-color="#00875A" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="lift-android-7-0-nougat" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#00875A" flood-opacity="0.275"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg-android-7-0-nougat)"/>
+  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-android-7-0-nougat)"/>
+<g filter="url(#lift-android-7-0-nougat)"><image x="730" y="130" width="370" height="370" preserveAspectRatio="xMidYMid meet" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDEyLjcgMzMxMS4zIj4KICA8cGF0aCBkPSJNMCA1MTQuN2wxMjEzLjQgMTIwOC42djEwODdMMCAzMzA0VjUxNC43eiIgZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGw9IiNmYmQzY2MiLz4KICA8cGF0aCBkPSJNMTIxMy40IDIxMjd2LTQwMy44TDEyLjEgNTI2LjcgMTIxMy40IDIxMjd6IiBmaWxsPSIjYmE5Zjk4Ii8+CiAgPHBhdGggZD0iTTQwMTIuNyAyODEzLjZMMjc5OS4zIDE2MDUuMXYtMTA4N0w0MDEyLjcgMHYyODEzLjZ6IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZmlsbD0iI2M3ZDRiNyIvPgogIDxwYXRoIGQ9Ik0yNzk5LjMgMTIwMS4zdjQwMy44bDEyMDEuMyAxMTk2LjYtMTIwMS4zLTE2MDAuNHoiIGZpbGw9IiM5NTlmOGEiLz4KICA8cGF0aCBkPSJNMCA1MTQuNUwxMjEzLjQgMGwyNzk5LjMgMjgxMy43LTEyMDIuMyA0OTcuNkwwIDUxNC41eiIgZmlsbD0iI2UxZTFkNCIvPgo8L3N2Zz4K"/></g>
+  <rect x="96" y="150" width="76" height="4" rx="2" fill="#00875A"/>
+  <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#00875A">API 24 · AUG 2016</text>
+  <text x="96" y="318" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="96" font-weight="600" letter-spacing="-3" fill="#F8FAFC">Android 7.0</text>
+  <text x="96" y="392" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="52" font-weight="500" letter-spacing="-1" fill="#94A3B8">Nougat</text>
+  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">Multi-window · FileProvider</text>
+</svg>

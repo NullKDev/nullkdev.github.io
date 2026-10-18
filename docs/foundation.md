@@ -10,16 +10,16 @@ The root shell uses CSS variables through Tailwind CSS 4. Theme selection is app
 
 The component boundary is deliberate:
 
-- `src/components/primitives/` owns project-authored shared UI: `Icon`, `StatusChip`, `Breadcrumb`, `Pagination`, `BrandMark`, `SignalMotif`. These are the only components with no domain knowledge.
+- `src/components/primitives/` owns project-authored shared UI: `Icon`, `StatusChip`, `Breadcrumb`, `Pagination`, `BrandMark`. These are the only components with no domain knowledge.
 - `src/components/ui/` belongs to **shadcn**. `components.json` maps the `ui` alias here, so the CLI writes into it and may overwrite. Never put project components in it. It currently holds only `button.tsx`.
 - `src/components/` owns semantic Astro composition such as the header, home, and section shells.
 - `src/components/{lab,notes,gallery}/` own one domain each: its index, its card, and anything only that section uses.
 - Focused stateful React domains remain the island convention: `components/lab/` for local transformations and `components/protection/` for protected-content state. Create another focused domain only when a feature has a real hydration boundary; do not duplicate every primitive in Astro and React.
 - **Never write an inline `<svg>` in a component.** Every icon is mapped in `src/lib/icons.ts` and renders through `<Icon>` or `renderIcon()`. The registry resolves **Lucide** (interface marks, normalised to this site's 1.7 stroke) and **Simple Icons** (brand logos) at build time via `@iconify/utils`; `@iconify-json/lucide`, `@iconify-json/simple-icons` and `@iconify/utils` are devDependencies and never reach the browser. The one deliberate exception is `src/components/lab/lab-icons.ts`, whose per-entry glyphs are content, not chrome.
 
-`components.json` is valid metadata for possible future shadcn code generation against Tailwind CSS 4, `src/styles/global.css`, CSS variables, and the real `@components`, `@ui`, and `@lib` aliases. It does not mean shadcn or its CLI is installed. The current button admits only the utilities it consumes: CVA, `clsx`, `tailwind-merge`, and Radix Slot.
+`components.json` is metadata for possible future shadcn code generation against Tailwind CSS 4, `src/styles/global.css`, and CSS variables. Its `aliases` block still names the retired `@components`, `@ui`, `@lib`, and `@hooks` prefixes; point them at `@/components`, `@/components/ui`, `@/lib`, and `@/hooks` before running the CLI, or generated code will fail `astro check`. It does not mean shadcn or its CLI is installed. The current button admits only the utilities it consumes: CVA, `clsx`, `tailwind-merge`, and Radix Slot.
 
-TypeScript is the editor and Astro/Vite alias source of truth. Vitest mirrors aliases explicitly because its project config does not consume all TypeScript path mappings automatically. Available prefixes are `@`, `@components`, `@ui`, `@layouts`, `@lib`, `@content`, `@styles`, `@i18n`, `@data`, `@assets`, and `@hooks` (defined but not yet used).
+TypeScript is the editor and Astro/Vite alias source of truth, and it declares exactly one internal alias: `@/*` → `src/*`. The per-folder prefixes (`@components`, `@ui`, `@lib`, `@i18n`, …) were retired; an ESLint `no-restricted-imports` rule rejects them, because Vitest declares its own aliases and would otherwise keep resolving them in tests.
 
 The visual identity is a clean, modern product surface — an airy neutral canvas, one indigo accent, and an emerald signal colour kept from the systems metaphor. It deliberately replaced an earlier editorial world (serif display, terracotta, newspaper rules); see `DESIGN.md` for the direction and why it changed.
 
@@ -58,7 +58,7 @@ All pages read records through `src/lib/content.ts`; pages must not call `getCol
 - `/:domain/:slug` renders public records or generated protected manifests.
 - `/:domain/:slug/:document` renders ordered nested records.
 - Spanish counterparts use the same shapes under `/es` and may have independent slugs.
-- `/rss.xml`, `/robots.txt`, sitemap output, and `/404.html` cover discovery and failures.
+- `/rss.xml`, `/robots.txt`, sitemap output, and `/404.html` cover discovery and failures. Both 404 pages are noindex and name no canonical: the page stands in for every missing path.
 - Known legacy `/blog`, `/projects`, `/tools`, and `/photos` routes emit accessible noindex compatibility pages with canonical targets and visible explanations. Retired demos and unverified photos are not restored.
 
 ## Local Lab tools

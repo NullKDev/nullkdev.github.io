@@ -1,0 +1,46 @@
+---
+// The contents on narrow screens, where the index cannot sit beside the text.
+// It used to render after the article — 12,000px down on a phone — so a reader
+// met it only once they had finished. This one sits before the first
+// paragraph, collapsed to a single line, and lists the top rung (the entry's
+// sections and its parts) — or, when there is only one, that section and its
+// subsections (`getCompactOutline`): the full outline belongs to the wide
+// index. A native `<details>`, so it opens without JavaScript. Hidden where the
+// wide index shows (`entry.css`).
+import { getDictionary, type Locale } from '@/i18n'
+import { getCompactOutline, type OutlineItem } from '@/lib/outline'
+
+interface Props {
+  items: readonly OutlineItem[]
+  locale: Locale
+}
+const { items, locale } = Astro.props
+const dictionary = getDictionary(locale)
+const top = getCompactOutline(items)
+const label = `${top.length} ${
+  top.length === 1 ? dictionary.archive.section : dictionary.archive.sections
+}`
+---
+
+{
+  top.length > 1 && (
+    <details class="toc-mobile">
+      <summary>
+        <span class="toc-mobile__title">{dictionary.archive.contents}</span>
+        <span class="toc-mobile__count">{label}</span>
+      </summary>
+      <nav aria-label={dictionary.archive.contents}>
+        <ol class="toc-mobile__list" data-toc>
+          {top.map((item) => (
+            <li class:list={[item.level === 2 && 'toc-mobile__sub']}>
+              <a href={`#${item.slug}`}>
+                {item.number && <span class="toc-num">{item.number}</span>}
+                <span class="toc-text">{item.text}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </details>
+  )
+}

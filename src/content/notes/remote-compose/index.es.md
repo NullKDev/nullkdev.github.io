@@ -169,7 +169,7 @@ Hitos significativos hasta ahora:
 
 ---
 
-## De acá en adelante
+## De aquí en adelante
 
 En el recorrido de configuración que sigue, construimos un ejemplo práctico: crear un documento Remote Compose simple en el lado de creación, serializarlo, y renderizarlo dentro de una app Android usando `remote-player-view`.
 

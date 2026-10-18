@@ -44,7 +44,7 @@ citations:
 Chandra 2 salió en marzo de 2026 y el titular es genuinamente impresionante:
 **85.9% en el benchmark olmOCR con un modelo de 5 mil millones de parámetros**,
 contra 67.6% de Gemini 2.5 Flash y 60.5% de GPT-5 Mini. La mitad de parámetros
-que Chandra 1, mejor puntaje, y lo podés correr vos.
+que Chandra 1, mejor puntaje, y lo puedes correr tú.
 
 Fui a buscar la letra chica y encontré dos cosas. Ninguna es un defecto del
 modelo. Las dos son cosas que un leaderboard no puede mostrarte.
@@ -102,7 +102,7 @@ base de datos, porque una página transcripta 95% bien puede estar 100% mal en e
 
 **La consecuencia práctica:** el leaderboard te dice qué modelo poner en la lista
 corta. No te dice si alguno pasa tu umbral. Eso sigue requiriendo tus documentos,
-tus campos, y contar los errores vos.
+tus campos, y contar los errores tú mismo.
 
 ## Qué permite la licencia
 
@@ -114,8 +114,8 @@ modificada: gratis para investigación, uso personal, y startups por debajo de
 **2 millones de dólares en financiamiento o ingresos** — y, explícitamente,
 **no se pueden usar para competir con la API de Datalab**.
 
-Leé esa segunda cláusula con cuidado. Un umbral de ingresos es un umbral; sabés
-cuándo lo cruzás. "No competitivamente con nuestra API" es un juicio sobre qué es
+Lee esa segunda cláusula con cuidado. Un umbral de ingresos es un umbral; sabes
+cuándo lo cruzas. "No competitivamente con nuestra API" es un juicio sobre qué es
 tu producto, hecho por la parte con cuya API estarías compitiendo. Si estás
 construyendo una función de procesamiento de documentos dentro de un producto más
 grande, probablemente estés bien. Si el procesamiento de documentos **es** el
@@ -135,7 +135,7 @@ de VRAM, lo que en la práctica significa que nadie se comprometió con uno.
 Para un modelo visión-lenguaje de 5B se puede razonar el piso: los pesos en bf16
 son unos 10GB antes de cualquier KV cache o tensor de imagen, así que una placa de
 consumo de 24GB es plausible para trabajo de una página, y una H100 es lo que
-necesitás para las 1.44 páginas/segundo con 96 secuencias concurrentes. Son
+necesitas para las 1.44 páginas/segundo con 96 secuencias concurrentes. Son
 máquinas muy distintas. Si tu plan implica procesar un archivo entero, el número de
 throughput y el hardware donde se midió viajan juntos.
 
@@ -151,18 +151,18 @@ Un promedio de 72.7% en 90 idiomas es compatible con rendimiento excelente en lo
 veinte idiomas que dominan los datos de entrenamiento y con ser casi inservible en
 la cola. Si tus documentos están en inglés, ese promedio subestima lo que vas a
 obtener. Si están en un idioma de pocos recursos, lo sobreestima — posiblemente
-por mucho. Mirá tu idioma, no la media.
+por mucho. Mira tu idioma, no la media.
 
 ## Qué haría yo
 
-- **Ponelo en la lista corta.** Para modelos abiertos de este tamaño el puntaje de
+- **Ponlo en la lista corta.** Para modelos abiertos de este tamaño el puntaje de
   olmOCR es real, y la salida que preserva layout tiene la forma correcta para
   cualquier cosa que venga después.
-- **No confíes en el puntaje para tu caso.** Tomá cincuenta documentos tuyos, extraé
-  los campos que realmente necesitás, y contá los errores. RealDocBench existe
+- **No confíes en el puntaje para tu caso.** Toma cincuenta documentos tuyos, extrae
+  los campos que realmente necesitas, y cuenta los errores. RealDocBench existe
   porque esa brecha es medible y consistente.
-- **Chequeá tu idioma contra la tabla por idioma**, no contra el promedio.
-- **Resolvé la licencia antes de integrar**, no después. La línea de los 2 millones
+- **Chequea tu idioma contra la tabla por idioma**, no contra el promedio.
+- **Resuelve la licencia antes de integrar**, no después. La línea de los 2 millones
   es clara; la cláusula de no competencia no lo es, y esa es la que hay que dejar
   por escrito.
 

@@ -20,9 +20,11 @@ export default defineConfig({
     },
     { name: 'mobile-chromium', use: { ...devices['Pixel 7'] } },
   ],
+  // --ignore-lock keeps preview in the foreground: Astro 7.4 detaches it when
+  // run by a coding agent, and Playwright then reads the exit as a crash.
   webServer: {
     command:
-      'PRIVATE_CONTENT_INCLUDE_EXAMPLE=1 PRIVATE_CONTENT_KEY_DEMO_FOUNDATION=foundation-fixture-passphrase bun run build && bun run preview --host 127.0.0.1',
+      'PRIVATE_CONTENT_INCLUDE_EXAMPLE=1 PRIVATE_CONTENT_KEY_DEMO_FOUNDATION=foundation-fixture-passphrase bun run build && bun run preview --host 127.0.0.1 --ignore-lock',
     url: 'http://127.0.0.1:4321',
     reuseExistingServer: false,
     timeout: 180_000,

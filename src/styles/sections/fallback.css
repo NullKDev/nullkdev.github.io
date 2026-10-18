@@ -1,0 +1,93 @@
+/* Fallback pages — imported by NotFoundPage.astro and CompatibilityPage.astro.
+   The 404 and legacy compatibility pages. */
+
+.compatibility-page {
+  display: grid;
+  align-content: center;
+  max-width: 60rem;
+  min-height: auto;
+  padding: calc(clamp(3rem, 6vw, 5rem) * var(--density)) 0;
+}
+.compatibility-page h1 {
+  max-width: 16ch;
+  margin: 0;
+  font-size: calc(clamp(2.4rem, 5vw, 4rem) * var(--display-mult));
+  font-weight: 460;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+}
+.compatibility-page > p:not(.kicker) {
+  max-width: 45rem;
+  color: var(--ink-muted);
+  font-size: 1.15rem;
+  line-height: 1.65;
+}
+.not-found-page {
+  display: grid;
+  align-content: center;
+  min-height: 60svh;
+  padding: calc(clamp(3rem, 6vw, 5rem) * var(--density)) 0;
+}
+.not-found-page h1 {
+  max-width: 10ch;
+  margin: 0;
+  font-size: calc(clamp(3rem, 7vw, 5.5rem) * var(--display-mult));
+  font-weight: 450;
+  line-height: 0.9;
+  letter-spacing: -0.06em;
+}
+.not-found-page > p:not(.kicker) {
+  max-width: 45rem;
+  color: var(--ink-muted);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+/* Closest notes to the address that missed — filled by NotFoundPage's script,
+   hidden until there is something to show. */
+.not-found-suggestions {
+  max-width: 45rem;
+  margin-top: 2.5rem;
+}
+.not-found-suggestions h2 {
+  margin: 0 0 0.75rem;
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.not-found-suggestions ul {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+.not-found-suggestions a {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.3rem 1rem;
+  padding: 0.85rem 0.4rem;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+}
+.not-found-suggestions a:hover strong {
+  color: var(--accent);
+}
+.not-found-suggestions strong {
+  font-weight: 540;
+  line-height: 1.3;
+}
+.not-found-suggestions__kind {
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+@media (max-width: 520px) {
+  .not-found-suggestions a {
+    grid-template-columns: 1fr;
+  }
+}

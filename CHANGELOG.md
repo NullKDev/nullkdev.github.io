@@ -51,6 +51,289 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-10-18
+
+### Agregado
+
+- Cada subpost dentro de su nota abre con una tarjeta de parte: «Parte N de M ·
+  minutos», el título más grande que las secciones que le siguen, su resumen y
+  un enlace «Leer por separado». Una nota de varias partes se lee como
+  capítulos en lugar de una sola columna sin cortes.
+
+- Serie «Android, versión por versión»: una nota investigada por cada versión
+  desde la 4.4 KitKat hasta la 17 (18 notas, en inglés y español) más una nota
+  principal con la tabla de todas las versiones y los hilos que las cruzan
+  (permisos, segundo plano, almacenamiento, seguridad, nombres). Cada nota da el
+  nombre y el nivel de API, qué trajo, seguridad, permisos, qué cambia para tu
+  app y una captura del sistema con su licencia. Las developer previews y betas
+  de cada versión, desde la L Preview de 2014, son partes de su nota en orden
+  cronológico, cada una con el anuncio oficial de Google como fuente; la 4.4 y
+  la 5.1 no tuvieron previews públicas. Las cuatro notas de Android 17 pasan a
+  ser una sola con seis partes (Beta 1 a 4, la versión estable y los límites de
+  memoria), corregidas contra las fuentes primarias. Contrastar con Wikipedia
+  corrigió datos de la propia serie: el primer teléfono con Android 8.0 fue el
+  Sony Xperia XZ1, con Android 10 el OnePlus 7T y con Android 11 el vivo V20, y
+  el Nexus 5X y 6P sí recibieron el gesto en el sensor de huella en la 7.1.2.
+  Cada banner de la serie muestra el emblema de su versión con «Android X» como
+  titular y el nombre de la versión debajo. Las imágenes de una nota pueden
+  llevar pie de foto con su crédito
+  (`![alt](./assets/x.png 'Pie. Fuente · Licencia')`), que se compila a
+  `<figure>` en el build sin perder la optimización de imágenes.
+
+- Vuelven los diagramas de la nota de Codex Security: la arquitectura (qué parte
+  corre en tu máquina y cuál queda cerrada en OpenAI) y los códigos de salida en
+  CI. Ahora se compilan a SVG estático en el build con `beautiful-mermaid`, en
+  lugar de dibujarse en el navegador del lector: con Mermaid en el cliente, el
+  mismo diagrama medía 351px en un navegador y más de 1.600px en otro. El tamaño
+  se decide en el build: llenan la columna hasta 1,25×, con tope de alto, y
+  nunca se achican por debajo de lo dibujado; un diagrama más ancho que la
+  columna se desplaza dentro de su panel, con controles de zoom. Al hacer zoom,
+  el panel queda como una ventana fija: el diagrama crece adentro, centrado en
+  lo que se estaba mirando y se arrastra con el mouse, sin empujar el resto
+  del artículo. Los colores
+  salen de los tokens del sitio, así que un mismo SVG sigue los dos temas sin
+  redibujarse. Cada diagrama lleva un nombre accesible obligatorio (el build
+  falla sin `title`). Se elimina `astro-mermaid` y sus ~248 KB de JavaScript.
+
+- El índice de los artículos largos ya no se corta: la columna lateral tiene
+  como máximo el alto de la ventana y desplaza su propia lista (nunca la
+  página) para mantener a la vista la sección que se está leyendo. En una nota
+  con subpartes, cada parte muestra su título, cuántas secciones tiene y sus
+  minutos de lectura, y despliega sus encabezados solo cuando se está leyendo
+  (con `<details>`, así que funciona sin JavaScript). Las secciones de primer
+  nivel llevan el mismo número que el texto ("06 Breaking changes") y las
+  subsecciones se numeran según su sección ("2.1", "2.2"), igual en el índice
+  y en el encabezado; los números ya no se escriben a mano en el título. Los temas
+  ("Archivado en") salen de la columna y pasan al final del texto.
+- Índice en el teléfono: un `<details>` plegado ("En este registro · N
+  secciones") antes del primer párrafo, con las secciones de primer nivel.
+  Antes el índice aparecía después del artículo, a más de 12.000px.
+- Cada encabezado de sección tiene un enlace a sí mismo, visible al pasar el
+  cursor o con el foco del teclado y con nombre accesible localizado ("Enlace
+  a la sección: …"), sin alterar el nombre del encabezado. Cambiar de idioma
+  conserva la posición: la sección i en inglés lleva a la sección i en
+  español, solo cuando ambas traducciones tienen el mismo esquema (lo verifica
+  una prueba sobre las notas reales); si no, o si el lector está por encima de
+  la primera sección, se llega al inicio.
+- Estilos de impresión: sin cabecera, navegación, índices, banner, barra de
+  progreso ni botones de copiar; negro sobre blanco en ambos temas, sin cortar
+  bloques de código, figuras ni tablas, y con la URL de cada enlace externo.
+- Una nota dice en qué estado está, arriba del todo: una nota reemplazada
+  enlaza a la que la reemplazó ("Esta nota fue reemplazada por …", en el idioma
+  de la página) y una archivada sin reemplazo lo explica en una frase. Las notas
+  de una serie muestran "Parte 2 de 3 · Android 17" en la cabecera y en su
+  tarjeta, con el título de la serie desde `src/data/series.ts` (el esquema
+  rechaza un `series.id` que no esté ahí). "Parte" queda solo para las
+  subpartes ("4 partes", "Parte 3 de 4") y ninguna cuenta de uno se anuncia. La
+  cabecera muestra la madurez de la redacción ("Redacción: Estable"), y el chip
+  de ciclo de vida explica qué es y enlaza a la nueva sección del colofón que
+  define los tres estados.
+- La página 404 sugiere las notas más cercanas a la dirección que no existe
+  (una ruta antigua de `/blog/`, un slug mal escrito o cortado), en inglés y en
+  español, a partir del mismo índice que la búsqueda. Sin JavaScript, o sin
+  nada parecido, se queda con los enlaces de siempre.
+
+### Corregido
+
+- El índice de la derecha solo resaltaba los subtítulos (2.1, 2.2): un título
+  de sección activo seguía en el mismo color que los demás, porque la regla que
+  los pinta en negrita le ganaba en especificidad al estado activo. Ahora la
+  sección que se está leyendo se marca en color de acento.
+
+- El índice de Notas, sus filtros y el RSS ponían primero las ocho notas con
+  `featuredRank` y dejaban detrás todas las demás, aunque fueran más nuevas.
+  Ahora van de la más reciente a la más antigua, contando una revisión
+  (`updatedAt`) como reciente; `featuredRank` solo elige qué destacar en el
+  inicio.
+
+- La navegación de una serie decía «Parte 7 de 6» cuando había notas aún sin
+  escribir entre medio: ahora cuenta la posición entre las notas publicadas en
+  ese idioma, no el número de orden crudo.
+
+- Las fechas ya no salen un día antes: una fecha del frontmatter
+  (`2026-03-27`) es medianoche UTC y se formateaba en la zona del build
+  (GMT-5), así que la página decía 26. Toda fecha pasa por `formatDate` en
+  `src/lib/dates.ts`, en UTC, y los `datetime` son fechas ISO. "Actualizado"
+  se oculta cuando coincide con el día de publicación, y la lectura dice
+  "7 min" en lugar de "Lectura: 7 min de lectura".
+- Etiquetas que confundían: la navegación de subpartes decía "Documentos" (el
+  nombre interno de la colección) y ahora dice "Partes"; la serie se nombraba
+  por su id; un tema en una nota lleva al listado de Notas filtrado, como en las
+  tarjetas, en lugar de a `/tags`; los conteos de `/tags` ya no llevan cero a la
+  izquierda; la Galería muestra "23 piezas" en lugar de "+18"; el botón de
+  Trabajo de la portada usa una flecha y no el ícono de enlace externo; y el
+  filtro del Laboratorio y sus tarjetas omiten temas presentes en el 85% o más
+  de las entradas, que no filtraban nada; cada cifra del filtro cuenta las
+  mismas etiquetas con las que filtra. El build falla si vuelve a aparecer
+  "Documents" o un "1 / 1" en la navegación de partes y series, o un id de
+  serie en el HTML.
+- El español es neutro en todo el contenido: se quitó el voseo (podés, tenés,
+  subís, probá…) de las notas, el Laboratorio y Trabajo, y una prueba lo
+  detecta en el contenido en español y en `es.ts` (fuera de bloques de código).
+- El robot de la portada se puede pausar: un botón visible de 44 px, operable
+  con teclado, con nombre fijo ("Pausar la animación del robot") y
+  `aria-pressed`. La pausa detiene el clip en curso y la espera hasta el
+  siguiente, se mantiene durante la sesión y convive con las pausas
+  automáticas (fuera de pantalla, pestaña oculta, fallo de WebGL). La
+  animación sigue siendo autónoma para todos, también con movimiento reducido.
+  El fin de cada clip se escucha con el evento público `finished` de
+  model-viewer, sin tocar sus propiedades internas.
+- Las demos de Pretext hablan el idioma de la página: botones, textos de
+  ayuda, el artículo de Matteflow y la conversación simulada se traducen desde
+  los diccionarios, con iconos del registro en lugar de emojis. Sin
+  JavaScript, cada demo explica que lo necesita en vez de dejar un hueco.
+  Matteflow ya no promete un video de ejemplo que no existe: muestra el
+  artículo y pide elegir un video, informa si no se puede reproducir y libera
+  el video subido al salir. Elegir un video propio nunca había funcionado en
+  producción: la CSP bloqueaba los `blob:` en `media-src`, y ahora los
+  permite. El chat simulado se puede detener y deja de
+  actualizarse al abandonar la página.
+- Las páginas 404 ya no declaran como canónica la portada (`/` y `/es/`), lo
+  que les decía a los buscadores que el error y el archivo eran el mismo
+  documento. Siguen fuera del índice y sus textos se traducen desde los
+  diccionarios.
+- Sin JavaScript, el encabezado ya no ofrece controles que no funcionan: el
+  botón de menú y el de tema se ocultan, y bajo 760 px los enlaces de sección
+  quedan visibles en su propia fila en lugar de esconderse detrás de un botón
+  inerte. La sección actual se reconoce por segmento de ruta, no por
+  subcadena. El botón de tema es un interruptor con nombre fijo ("Tema
+  oscuro") y `aria-pressed`; antes también cambiaba su nombre y anunciaba el
+  estado dos veces. Las utilidades `dark:` de Tailwind siguen el tema elegido
+  en el sitio (`data-theme`) y no el del sistema operativo.
+- La búsqueda de Notas maneja los errores: si el índice no carga, lo dice en
+  pantalla y lo anuncia, y el archivo sigue visible; se descarga una sola vez
+  aunque se escriba rápido, y una respuesta tardía ya no muestra resultados de
+  una búsqueda que se borró. Los resultados se anuncian en una región viva que
+  existe desde el inicio, y cada uno indica sus minutos de lectura con unidad.
+  Los enlaces "Más antiguas" y "Más recientes" de la paginación llevan la barra
+  final y ya no pasan por una redirección.
+- El visor de la Galería detiene el video al cerrarse y no cambia de pieza
+  cuando las flechas se usan en los controles del video; la semilla de una
+  imagen generada se muestra traducida. La marca de "Destacado" en las
+  tarjetas de Trabajo sale del registro de íconos en lugar de un carácter.
+- El panel de diseño de desarrollo ya no deja sus estilos ni su script en el
+  build de producción (unos 700 bytes gzip menos por página).
+- El logo, el selector de idioma y el botón de menú del encabezado anunciaban
+  un nombre accesible que no contenía su texto visible ("Home" para el logo,
+  "Open navigation" para un botón que dice "Menu"), lo que incumple WCAG 2.5.3
+  y deja sin respuesta a quien navega por voz. Ahora el nombre empieza por lo
+  que se ve. Lo detectó la regla `label-content-name-mismatch` de axe-core 4.14.
+- La consola de los laboratorios anunciaba "este navegador no cumple los
+  requisitos" en una región viva que aparecía junto con el mensaje, y los
+  lectores de pantalla podían perderlo. La región ahora existe desde el inicio
+  y solo cambia su texto.
+- Las páginas con traducción declaran `hreflang="x-default"` apuntando a la
+  versión en inglés, para quien no lee ninguno de los dos idiomas. Los
+  `hreflang` solo nombran la traducción real de la misma página: una entrada
+  sin traducir ya no anuncia el índice de su sección, la página 2 de Notas ya
+  no anuncia la página 1 del otro idioma, y las páginas `noindex` (404,
+  contenido protegido, rutas antiguas) no declaran ninguno. El build falla si
+  un par no es recíproco.
+- Una subpublicación abierta en su propia URL ahora tiene las mismas
+  herramientas de lectura que dentro de su entrada: botón para copiar el código
+  y su lenguaje, barra de progreso, marcador de la sección activa en el índice
+  y visor de imágenes. Antes solo tenía el zoom de diagramas, y su índice
+  listaba todos los niveles de título mientras la entrada mostraba solo `h2` y
+  `h3`; ahora ambas siguen la misma regla.
+- El visor de imágenes de los artículos se puede usar con teclado: cada imagen
+  es un botón con nombre accesible, el visor es un diálogo modal nativo que
+  retiene el foco, se cierra con Escape y devuelve el foco a la imagen que lo
+  abrió. Siempre tiene nombre, aunque la imagen no tenga texto alternativo, y
+  el botón de cerrar usa el ícono del registro con un área de 44 px.
+- La búsqueda de Notas encuentra los títulos de sección: el índice incluye los
+  encabezados `h2`/`h3` de cada nota con su ancla, y un resultado que solo
+  coincide en un encabezado lleva directo a esa sección ("en la sección
+  AlarmManager"). Los accesos a filtros ignoran tildes, igual que las notas.
+  Sin resultados, dice qué se buscó y ofrece limpiar la búsqueda o explorar
+  temas; el recuento ya no habla de "todo el archivo", solo de notas. Mientras
+  se busca, las pestañas de tipo ocultan sus totales, y queda un único botón
+  para limpiar. El build falla si una ancla indexada no existe o si el índice
+  supera su presupuesto gzip.
+- Quien lee en español recibe un feed en español: `/es/rss.xml` existe, con
+  `<language>es</language>` y solo las notas en español, y las páginas en
+  español lo enlazan en el `<head>`, el pie y la cabecera de Notas. El feed en
+  inglés declara `<language>en</language>`. El build verifica que cada idioma
+  enlace su propio feed y que ambos se lean como XML.
+- Las herramientas del Lab se usan en el teléfono: entrada y salida se apilan
+  en una columna por debajo de 760 px en lugar de quedar lado a lado a unos
+  150 px cada una. La regla para apilarlas existía pero perdía por
+  especificidad frente a la de dos columnas.
+- En `astro dev`, la CSP ya no bloquea los scripts que inician las islas de
+  React, así que las herramientas del Lab y las demos funcionan al
+  desarrollar. La política publicada no cambia.
+- Ajustes de diseño adaptable encontrados al recorrer cada tipo de página en
+  móvil, tablet y escritorio, en los dos temas
+  (`tests/e2e/responsive.spec.ts`). En pantallas táctiles, el enlace propio de
+  cada encabezado de sección queda visible: antes solo aparecía al pasar el
+  mouse, así que en el teléfono era un objetivo táctil invisible. En el índice
+  de notas, los temas que pasan a una segunda línea ya no superponen sus áreas
+  táctiles con los de la línea anterior. En la portada, los estantes de
+  tarjetas usan el ancho disponible en tablet: a 1024 px caben tres tarjetas en
+  lugar de dos con un tercio de la fila vacío, y a 820 px quedan dos tarjetas
+  holgadas.
+
+### Rendimiento
+
+- Las fotos de la Galería pasan por `astro:assets`: se sirven en AVIF y WebP a
+  varios anchos con `srcset`/`sizes` y con dimensiones intrínsecas, en lugar
+  del JPG original. El índice de la Galería baja de ~1,3 MB a ~33 KB de
+  imágenes en el peor caso, y el álbum de San Francisco de ~6,5 MB a ~0,9 MB.
+  El enlace de cada pieza y el visor abren una versión WebP de hasta 2048 px,
+  no el original de cámara. Las miniaturas del índice reservan su espacio, y
+  un video sin póster ya no se muestra como imagen rota.
+- El CSS se divide por tipo de página, en lugar de una sola hoja con el de todo
+  el sitio. El inicio y el índice de Notas bajan de ~29 KB a ~15 KB de CSS
+  comprimido y la página 404 a ~13 KB. Las páginas de sección (Trabajo, Lab,
+  Galería, Acerca de y las secundarias) comparten un paquete de ~22 KB, igual
+  que las fichas, que incluyen los estilos de Lab y Galería; las subentradas
+  quedan en ~19 KB. También se eliminan reglas que ya no usaba ninguna página.
+
+### Cambiado
+
+- Tipografía de lectura: el texto corrido queda en ~70 caracteres por línea
+  (antes ~83 a 1280px); por debajo de 1024px el índice deja de ir al lado del
+  texto, que a 820px quedaba en 441px. Títulos de entrada con menos
+  interletrado (−0,035em; "17:qué" se pegaba), `text-wrap` en párrafos y
+  encabezados, guiones automáticos en español en pantallas angostas y una sola
+  fuente monoespaciada para el código.
+- En las notas, el banner se ajusta al ancho de la columna de texto (misma
+  proporción `--banner-ratio`): pasa de 471px a 282px de alto y el texto
+  empieza ~190px más arriba. Dentro de una serie, el paginador por fecha dice
+  "Nota más antigua / más reciente" en lugar de un segundo "Anterior", y una
+  serie de una sola nota ya no muestra navegación de serie.
+- Los datos estructurados de cada página salen de un solo módulo. Las entradas
+  de Notas y Galería se declaran `Article`, y las de Trabajo y Lab
+  `TechArticle` (Lab usaba `SoftwareApplication`, que sin precio ni
+  valoración es un resultado enriquecido inválido); todas indican autor e
+  imagen, la misma que se comparte en redes. Una subpublicación abierta en su
+  propia URL comparte el banner de su entrada en lugar de la tarjeta genérica
+  del sitio. El build falla si una entrada o subpublicación pierde cualquiera
+  de las dos.
+
+### Seguridad
+
+- Se cierran los 35 advisories (16 high) en dependencias transitivas
+  (`devalue`, `brace-expansion`, `fast-uri`, `source-map-js`, `smol-toml`,
+  `sharp`, `undici`, `dompurify`, entre otras). Como en 0.4.0, los parches ya
+  cabían en los rangos de sus paquetes padre y bastó con volver a resolver el
+  lockfile. El `audit` en rojo bloqueaba todos los PR de Dependabot. El último,
+  en `katex`, se fue con `mermaid` al compilar los diagramas en el build.
+- La CSP ya no autoriza cualquier script inline que salga del build: solo
+  sella los del `<head>`, el runtime de hidratación de Astro (comparado byte a
+  byte con el paquete instalado) y los marcados con `data-csp-inline`.
+  Cualquier otro hace fallar el build, en vez de quedar permitido sin que
+  nadie lo note. Los scripts de componentes ya no se insertan en el HTML: se
+  sirven como archivos `/_astro/*.js`, así que un `<script type="module">`
+  inline en el `<body>`, indistinguible de uno inyectado, también hace fallar
+  el build. `'wasm-unsafe-eval'` queda solo en las
+  páginas que muestran el robot 3D, cuyo visor compila WebAssembly al cargar;
+  el resto del sitio ya no lo concede.
+- El JSON que se escribe dentro de un `<script>` (JSON-LD, la galería, la
+  consola de laboratorios) escapa `<`, así que un valor con `</script>` ya no
+  puede cerrar el elemento e inyectar marcado.
+- El build exige que cada clave `PRIVATE_CONTENT_KEY_*` tenga al menos 16
+  caracteres: el contenido cifrado es público y se ataca sin conexión.
+
 ## [0.4.0] — 2026-08-30
 
 ### Agregado

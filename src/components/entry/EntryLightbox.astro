@@ -1,0 +1,33 @@
+---
+// The image viewer of a long-form page, opened by
+// `src/lib/entry-enhancements.ts`. Rendered here rather than built in the
+// browser so the close mark comes from the icon registry and every label from
+// the locale dictionary. The image itself is added on open, so no source-less
+// image tag ships. Modelled on `GalleryLightbox.astro`: a native modal dialog
+// keeps focus inside and closes on Escape.
+import Icon from '@/components/primitives/Icon.astro'
+import { getDictionary, type Locale } from '@/i18n'
+
+interface Props {
+  locale: Locale
+}
+const { locale } = Astro.props
+const dictionary = getDictionary(locale)
+---
+
+<dialog
+  class="lightbox"
+  data-entry-lightbox
+  aria-label={dictionary.archive.image}
+  data-open-label={dictionary.archive.openImage}
+  data-fallback-label={dictionary.archive.image}
+>
+  <button
+    type="button"
+    class="lightbox__close"
+    data-lightbox-close
+    aria-label={dictionary.nav.closeText}
+  >
+    <Icon name="cross" size={20} />
+  </button>
+</dialog>

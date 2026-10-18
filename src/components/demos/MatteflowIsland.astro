@@ -1,0 +1,26 @@
+---
+// Server-side seat for the Matteflow island. An island cannot read the page's
+// locale or the build-time icon registry, so this wrapper resolves both and
+// passes plain strings. Without JavaScript the island never mounts and the
+// fallback says so in the page's language, instead of an empty gap.
+import MatteflowDemo from '@/components/demos/MatteflowDemo'
+import { getDictionary, type Locale } from '@/i18n'
+import { renderIcon } from '@/lib/icons'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const { demos } = getDictionary(locale)
+const icons = {
+  play: renderIcon('play', 16),
+  pause: renderIcon('pause', 16),
+  loading: renderIcon('loading', 16),
+  upload: renderIcon('upload', 16),
+}
+---
+
+<MatteflowDemo client:only="react" labels={demos.matteflow} icons={icons}>
+  <p class="demo-fallback" slot="fallback">{demos.needsScript}</p>
+</MatteflowDemo>

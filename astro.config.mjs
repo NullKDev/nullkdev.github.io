@@ -1,10 +1,12 @@
 import { SITE_URL } from './site.config.mjs'
 import mdx from '@astrojs/mdx'
+import { unified } from '@astrojs/markdown-remark'
 import react from '@astrojs/react'
 import sitemap from '@astrojs/sitemap'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'astro/config'
-import mermaid from 'astro-mermaid'
+import hastDiagrams from './scripts/hast-diagrams.mjs'
+import hastFigures from './scripts/hast-figures.mjs'
 import hastTables from './scripts/hast-tables.mjs'
 import {
   createReadStream,
@@ -84,32 +86,6 @@ export default defineConfig({
   output: 'static',
   site: SITE_URL,
   integrations: [
-    // Must precede mdx() — it injects a rehype plugin that turns ```mermaid
-    // fences into diagrams before markdown processing runs.
-    mermaid({
-      // autoTheme swaps mermaid's 'default'/'dark' themes off our own
-      // data-theme attribute on <html>, so diagrams track the site toggle.
-      theme: 'default',
-      autoTheme: true,
-      enableLog: false,
-      mermaidConfig: {
-        fontFamily: 'Switzer, ui-sans-serif, system-ui, sans-serif',
-        flowchart: {
-          curve: 'basis',
-          // Mermaid's 50px default leaves a diagram mostly empty space, which
-          // is what made a five-node flow 829px tall. Tighter ranks keep the
-          // same drawing inside the viewer without scrolling it.
-          rankSpacing: 36,
-          nodeSpacing: 36,
-          // Mermaid otherwise caps the SVG at its intrinsic width and scales the
-          // whole drawing down to fit narrow screens — at 390px that took a
-          // 651px diagram to 47%, and 12px labels with it. Sizing is handled in
-          // the viewer instead, which zooms on request and scrolls otherwise,
-          // so type never falls below what it was drawn at.
-          useMaxWidth: false,
-        },
-      },
-    }),
     react(),
     mdx(),
     sitemap({
@@ -129,23 +105,29 @@ export default defineConfig({
     routing: { prefixDefaultLocale: false },
   },
   markdown: {
-    /* Wraps every table in its own scroll container and marks numeric columns,
-       neither of which markdown table syntax can express. See the module.
+    /* `.md` and `.mdx` share one unified pipeline, declared here once.
 
-       This option is deprecated in Astro 7, and the replacements were both
-       measured against it rather than assumed:
+       hastTables wraps every table in its own scroll container and marks
+       numeric columns, neither of which markdown table syntax can express.
+       hastDiagrams compiles ```mermaid fences to static SVG. hastFigures turns
+       a standalone image with a title into a captioned figure. See each module.
 
-       - `processor: satteri({ hastPlugins })` is the native path and silences
-         the warning, but Sätteri only renders `.md`. MDX keeps its own unified
-         pipeline, so every `.mdx` entry silently lost the treatment — verified
-         as 0 wrappers on a page that had 2.
-       - `mdx({ rehypePlugins })` is deprecated as well and did not apply.
+       Astro 7 defaults `.md` to Sätteri, which renders only `.md`; MDX always
+       runs unified. Declaring `processor: unified()` keeps both formats on the
+       same renderer, and @astrojs/mdx inherits `processor.options.rehypePlugins`
+       when the processor is unified, so one list reaches both. The deprecated
+       `markdown.rehypePlugins` did the same thing — Astro coerced it into
+       `unified()` at config load — and only added a warning.
 
-       Reaching a clean log would mean moving the whole site onto the unified
-       processor: a different renderer for 168 pages in exchange for one table
-       fix. The deprecated option works on both `.md` and `.mdx` today, so it
-       stays until the Sätteri and MDX pipelines converge. */
-    rehypePlugins: [hastTables],
+       Not `satteri({ hastPlugins })`: MDX would not inherit them, and every
+       `.mdx` entry silently lost the treatment (0 wrappers on a page that had
+       2). Not `mdx({ rehypePlugins })`: deprecated, and redundant here. */
+    processor: unified({
+      rehypePlugins: [hastTables, hastDiagrams, hastFigures],
+    }),
+    // Shiki runs before the plugins above. Excluding mermaid leaves the fence
+    // as plain `code.language-mermaid` with its `title` meta for hastDiagrams.
+    syntaxHighlight: { type: 'shiki', excludeLangs: ['math', 'mermaid'] },
     shikiConfig: {
       themes: {
         light: 'github-light',
@@ -165,5 +147,15 @@ export default defineConfig({
   },
   vite: {
     plugins: [tailwindcss(), galleryAssets()],
+    build: {
+      /* Astro inlines a component script under this limit as a bare
+         `<script type="module">`, which the CSP sealer cannot tell apart from
+         one injected at build time. `false` for `.js` keeps every processed
+         script a `/_astro/*.js` file that `script-src 'self'` covers; any
+         other asset returns `undefined`, which keeps the default 4 KB rule
+         (it is what inlines small stylesheets). See `scripts/apply-csp.ts`. */
+      assetsInlineLimit: (filePath) =>
+        filePath.endsWith('.js') ? false : undefined,
+    },
   },
 })

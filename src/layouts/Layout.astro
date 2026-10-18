@@ -1,24 +1,37 @@
 ---
 import { createHash } from 'node:crypto'
 
-import Header from '@components/Header.astro'
+import Header from '@/components/Header.astro'
 import { brand } from '@/data/brand'
-import Footer from '@components/Footer.astro'
-import Analytics from '@components/Analytics.astro'
-import DesignPanel from '@components/dev/DesignPanel.astro'
-import { getDictionary, type Locale } from '@i18n/index'
-import '@styles/global.css'
-import '@styles/archive.css'
+import Footer from '@/components/Footer.astro'
+import Analytics from '@/components/Analytics.astro'
+import DesignPanel from '@/components/dev/DesignPanel.astro'
+import { getDictionary, type Locale } from '@/i18n'
+import { serializeJsonForScript } from '@/lib/json-script'
+import { getFeedCopy, getFeedPath } from '@/lib/rss'
+import type { JsonLd } from '@/lib/structured-data'
+import '@/styles/global.css'
+import '@/styles/archive.css'
 
 interface Props {
   locale: Locale
   title: string
   description: string
+  /** Where the language switch goes. A fallback is fine here — a section
+      index for an untranslated entry — and it defaults to `alternatePath`. */
   counterpartPath?: string
+  /** The real translation of this exact page, if one exists. Only this feeds
+      hreflang and `x-default`; a fallback here is a one-way annotation search
+      engines discard. */
+  alternatePath?: string
   image?: string
   noindex?: boolean
-  jsonLd?: Record<string, unknown>
+  jsonLd?: JsonLd
+  /** This page's own URL, when the route path is not it. */
   canonicalPath?: string
+  /** Omits `<link rel="canonical">` on a noindex page that should not name
+      itself as the preferred URL of anything, like the 404. */
+  omitCanonical?: boolean
   imageAlt?: string
 }
 
@@ -27,14 +40,34 @@ const {
   title,
   description,
   counterpartPath,
+  alternatePath,
   image = '/og/signal-archive.png',
   imageAlt,
   noindex,
   jsonLd,
   canonicalPath,
+  omitCanonical,
 } = Astro.props
 const dictionary = getDictionary(locale)
+/* The tuner gates its own markup on DEV, but a rendered component still ships
+   its processed script — a no-op `/_astro/*.js` request on every production
+   page. Not rendering it at all keeps the script out of the build. */
+const showDesignPanel = import.meta.env.DEV
 const canonical = new URL(canonicalPath ?? Astro.url.pathname, Astro.site)
+const switchPath = counterpartPath ?? alternatePath
+/* hreflang describes indexable pages only. A noindex page — the 404, a
+   protected record, a legacy compatibility page — is a translation of
+   nothing; its language switch still works. */
+const showAlternates = !noindex
+const alternateUrl =
+  showAlternates && alternatePath
+    ? new URL(alternatePath, Astro.site)
+    : undefined
+/* `x-default` names the page for a reader whose language matches neither
+   alternate. It is emitted only when a real reciprocal counterpart exists —
+   a lone page has no choice to default — and it always points at English, the
+   unprefixed locale. `check-built-metadata.ts` asserts the pair is mutual. */
+const xDefaultUrl = alternateUrl && (locale === 'en' ? canonical : alternateUrl)
 
 /* Theme has to resolve before the first paint or the page flashes the wrong
    one, which rules out an external file. That means one inline script — and an
@@ -68,16 +101,32 @@ const themeScriptHash = createHash('sha256')
 
    Styles keep `unsafe-inline` because a static build has no per-request nonce.
    Scripts do not: everything executable is either a bundled module from this
-   origin or the hashed theme script above. Keep this list closed — anything
-   added is something a compromised dependency is then allowed to reach. */
+   origin or a hashed inline script. `scripts/apply-csp.ts` replaces the
+   `script-src` below after the build, and it hashes only inline scripts it
+   expects — this <head>, Astro's own scripts, or a body script marked
+   `data-csp-inline` — and fails the build on any other. Keep this list
+   closed — anything added is something a compromised dependency is then
+   allowed to reach.
+
+   `astro dev` is the one exception, and only there. Nothing seals the dev
+   server's output, and Astro inlines the island loaders into every page it
+   serves, so the production `script-src` blocked them and no React island
+   (lab tools, demos) hydrated in dev. Dev swaps the theme hash for
+   'unsafe-inline' — a hash would make browsers ignore 'unsafe-inline' — and
+   keeps every other directive, so dev still fails on a new origin. A build
+   never takes this branch: `import.meta.env.DEV` is false there, and
+   `scripts/apply-csp.ts` rewrites `script-src` from the shipped bytes anyway. */
+const scriptSource = import.meta.env.DEV
+  ? "script-src 'self' 'unsafe-inline'"
+  : `script-src 'self' 'sha256-${themeScriptHash}'`
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'sha256-${themeScriptHash}'`,
+  scriptSource,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self'",
   "connect-src 'self'",
-  "media-src 'self'",
+  "media-src 'self' blob:",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   "object-src 'none'",
@@ -105,7 +154,7 @@ const csp = [
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta name="generator" content={Astro.generator} />
-    <link rel="canonical" href={canonical} />
+    {!omitCanonical && <link rel="canonical" href={canonical} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     {
@@ -125,17 +174,26 @@ const csp = [
     <link
       rel="alternate"
       type="application/rss+xml"
-      title={`${brand.name} Notes`}
-      href="/rss.xml"
+      title={getFeedCopy(locale).title}
+      href={getFeedPath(locale)}
     />
-    <link rel="alternate" hreflang={locale} href={canonical} />
     {
-      counterpartPath && (
+      showAlternates && (
+        <link rel="alternate" hreflang={locale} href={canonical} />
+      )
+    }
+    {
+      alternateUrl && (
         <link
           rel="alternate"
           hreflang={locale === 'en' ? 'es' : 'en'}
-          href={new URL(counterpartPath, Astro.site)}
+          href={alternateUrl}
         />
+      )
+    }
+    {
+      xDefaultUrl && (
+        <link rel="alternate" hreflang="x-default" href={xDefaultUrl} />
       )
     }
     <meta property="og:type" content="website" />
@@ -166,7 +224,7 @@ const csp = [
         <script
           is:inline
           type="application/ld+json"
-          set:html={JSON.stringify(jsonLd)}
+          set:html={serializeJsonForScript(jsonLd)}
         />
       )
     }
@@ -179,10 +237,10 @@ const csp = [
     <Header
       locale={locale}
       pathname={Astro.url.pathname}
-      counterpartPath={counterpartPath}
+      counterpartPath={switchPath}
     />
     <div id="main-content" tabindex="-1"><slot /></div>
     <Footer locale={locale} pathname={Astro.url.pathname} />
-    <DesignPanel />
+    {showDesignPanel && <DesignPanel />}
   </body>
 </html>

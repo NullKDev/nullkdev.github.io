@@ -46,8 +46,9 @@ Roles (finalized in `global.css` on first build):
 
 ## Signature: 3D hero
 
-- Built with **React Three Fiber** as a lazy, isolated island (`client:visible`/idle), bounded draw cost, capped DPR, paused when offscreen.
-- **Graceful fallback is mandatory, not the default experience:** a static, well-composed poster/SVG for `prefers-reduced-motion`, no-WebGL, and low-power clients.
+- Built with **`<model-viewer>`**, loaded only near the viewport, bounded draw cost, paused when offscreen, when the tab is hidden, or when WebGL fails.
+- **Motion is for everyone, and the reader can stop it.** The robot animates autonomously, including under `prefers-reduced-motion` (owner's decision), with a visible 44px pause/play toggle that holds for the session (WCAG 2.2.2). See `docs/decisions.md`.
+- **Graceful fallback is mandatory, not the default experience:** without WebGL, or when the model fails to load, the hero says so honestly instead of showing a broken stage.
 - Concept ties to the brand's **signal/systems** identity; professional and calm, never gamey. (Exact motif chosen with the user — see surface brief for home.)
 - Respect the light/dark theme; the object re-materials per theme.
 
@@ -57,7 +58,7 @@ Purposeful and quiet: entrance reveals (respecting `prefers-reduced-motion`), so
 
 ## Responsive
 
-Mobile-first integrity: the 3D hero degrades to the static poster on small/low-power screens; grids collapse to single column; the mono labels and structure remain legible. Existing responsive breakpoints in `global.css` are preserved and adapted.
+Mobile-first integrity: the 3D hero keeps the same behaviour and pause control on small screens, and falls back to its honest status message without WebGL; grids collapse to single column; the mono labels and structure remain legible. Existing responsive breakpoints in `global.css` are preserved and adapted.
 
 ## Accessibility
 

@@ -103,6 +103,9 @@ Two mechanisms; never mix them.
 - React only where something genuinely runs in the browser, always with a
   hydration directive and a no-JS fallback.
 - Dark mode via `data-theme` on `<html>`; tokens in `src/styles/global.css`.
+- CSS is split per surface: `global.css` + `archive.css` for every page,
+  `src/styles/sections/<surface>.css` imported by the owning component after
+  the two shared sheets. See [docs/architecture.md](docs/architecture.md).
 - Anything that looks actionable works completely and is keyboard-operable, or
   it is omitted.
 - `src/components/ui/` belongs to shadcn; project components go in
@@ -129,6 +132,13 @@ Declared, not drawn. Add a spec to `src/data/banners.ts`, run
 last stop. A lone registry icon is a category badge: it says which section the
 post is filed under and nothing about the post. Registry marks appear **inside**
 a motif, at content scale, never floating in a corner.
+
+**Exception: a banner whose subject *is* a mark.** A note about one version of a
+platform shows that version's logo (`logo` in the spec, a licensed SVG credited
+in the note, or a registry icon when no licensed file exists). The headline is
+then the name a reader searches for ("Android 6.0") and the subtext what it was
+called ("Marshmallow"). The owner chose this for the `android-versions` series:
+the marshmallow says more about Android 6.0 than a generic shield.
 
 Four files per banner — two locales × two surfaces:
 
@@ -223,6 +233,29 @@ Every rule above exists because something broke invisibly.
 - **If a check blocks a correct change, fix the check.** A metadata assertion
   once forced every page to share the same preview image.
 
+### Visual check in a real browser
+
+The `chrome-devtools` MCP server (installed at user scope) drives a real
+Chrome. Use it to **see** a UI change before calling it done — tests prove
+behaviour, not that it looks right. Playwright's bundled Chromium is not the
+reader's browser: a client-rendered diagram once measured 351px there and past
+1,600px in the owner's Chrome.
+
+| When | What to do |
+|---|---|
+| Any visual change | `bun run dev` (it backgrounds itself when an agent runs it), open the page, screenshot at **1280** and **390** wide, in **both themes** and **both locales** |
+| Layout or sizing | read the rendered box with a script (`getBoundingClientRect`), not the declared CSS |
+| Interaction (zoom, menus, dialogs) | click through it and screenshot before and after; check the page did not shift |
+| Any page you touched | list console messages and network requests — no errors, no third-party origin besides Google Analytics |
+| Performance-sensitive change | run a trace or a Lighthouse audit on the built site (`bun run build && bun run preview`) |
+
+- **Report what you saw**, with the screenshot, not "it should look fine".
+- It is a check, not a test. Anything worth keeping becomes an assertion in
+  `tests/e2e/` so CI holds the line.
+- The browser is real: never sign in to accounts or open private data in it.
+- Stop the server when done (`bunx astro dev stop`); a stray server on :4321
+  makes `test:e2e` fail with "exited early".
+
 ## Branching
 
 ```
@@ -299,19 +332,38 @@ describing it must say so. `private:scan` fails the build if plaintext reaches
 
 - Never commit secrets. Build secrets must not reach HTML, JS, source maps or
   logs.
-- PBKDF2 at 600,000 iterations, salted, stored as `base64(salt):hash`.
+- Protected content is AES-256-GCM, keyed by PBKDF2-SHA-256 at 600,000
+  iterations. Each payload ships as a versioned JSON envelope carrying its own
+  random salt (16 bytes) and IV (12 bytes) in base64, with the entry context
+  bound as additional data (`src/lib/protection/crypto.ts`). Passphrases
+  (`PRIVATE_CONTENT_KEY_*`) must be at least 16 characters or the build fails.
 - CSP is emitted by `src/layouts/Layout.astro` and **sealed after the build** by
-  `scripts/apply-csp.ts`, which hashes the inline scripts that shipped. Never
-  hand-maintain those hashes.
+  `scripts/apply-csp.ts`, which hashes only the inline scripts it expects —
+  `<head>`, Astro's hydration runtime, and body scripts marked
+  `data-csp-inline` — and fails the build on any other. Never hand-maintain
+  those hashes.
+- **`astro dev` only** relaxes `script-src` to `'self' 'unsafe-inline'`
+  (`import.meta.env.DEV` in the Layout): nothing seals dev output, and without
+  it no React island hydrates. Every other directive is the same, and a build
+  never takes that branch — production `script-src` is still the sealed hashes.
+- Component `<script>` blocks ship as `/_astro/*.js` files, never inline:
+  `vite.build.assetsInlineLimit` in `astro.config.mjs` returns `false` for
+  `.js`. An inline bare `<script type="module">` in `<body>` fails the build,
+  because it is indistinguishable from an injected one.
+- JSON written into a `<script>` goes through `serializeJsonForScript`
+  (`src/lib/json-script.ts`), never a bare `JSON.stringify`.
 - `script-src` is `'self'` plus hashes. `'unsafe-inline'` is styles only.
 - **Google Analytics is the only third-party origin**, and only when
-  `PUBLIC_GOOGLE_ANALYTICS_ID` is set. Any other third-party request is blocked
+  `PUBLIC_GOOGLE_ANALYTICS_ID` is set — then the CSP gains the Google origins
+  automatically and the tag loads without a consent prompt
+  (`analytics_storage` granted). Any other third-party request is blocked
   and the feature visibly fails — bundle the dependency instead of widening the
   allowlist.
 - GitHub Pages cannot set response headers: `frame-ancestors`, HSTS,
   `X-Content-Type-Options` and `Permissions-Policy` are unavailable, and a
   `_headers` file does nothing. See [SECURITY.md](SECURITY.md).
-- Workflows must pass `actionlint` and `zizmor`; actions are pinned to SHAs.
+- Workflows and `dependabot.yml` must pass `actionlint` and `zizmor`; actions
+  are pinned to SHAs.
 
 ## Skills
 
@@ -334,6 +386,7 @@ Invoke before working, matched by file and task.
 | [docs/architecture.md](docs/architecture.md) | adding a page, lib module or component |
 | [docs/design-system.md](docs/design-system.md) | building or restyling any UI |
 | [docs/content-schema.md](docs/content-schema.md) | adding an entry or a frontmatter field |
+| [docs/writing-notes.md](docs/writing-notes.md) | writing or revising any note, in either language |
 | [docs/decisions.md](docs/decisions.md) | before revisiting a settled question |
 | [docs/foundation.md](docs/foundation.md) | changing config or the pipeline |
 | [PRODUCT.md](PRODUCT.md) | what the site is for |

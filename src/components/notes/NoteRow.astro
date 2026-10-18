@@ -1,4 +1,5 @@
 ---
+import { formatDate, isoDate } from '@/lib/dates'
 import { bannerStyle, getBannerSources } from '@/lib/banners'
 import type { CollectionEntry } from 'astro:content'
 import Icon from '@/components/primitives/Icon.astro'
@@ -6,7 +7,13 @@ import { getTopicLabel } from '@/data/taxonomy'
 import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
 import { getArchiveLabel } from '@/i18n/archive'
 import { getEntryPath } from '@/lib/content'
+import { getNotesViewPath } from '@/lib/notes'
 import type { IconName } from '@/lib/icons'
+import {
+  formatPartCount,
+  formatPartOf,
+  type SeriesPosition,
+} from '@/lib/series'
 
 interface Props {
   entry: CollectionEntry<'notes'>
@@ -15,9 +22,11 @@ interface Props {
   /** Subpost titles, in order. */
   parts: string[]
   supersededBy?: CollectionEntry<'notes'>
+  /** Where the note sits in a run of notes, when it belongs to one. */
+  series?: SeriesPosition
 }
 
-const { entry, locale, minutes, parts, supersededBy } = Astro.props
+const { entry, locale, minutes, parts, supersededBy, series } = Astro.props
 const dictionary = getDictionary(locale)
 const data = entry.data
 
@@ -42,7 +51,10 @@ const topics = data.topics.slice(0, 3)
 const showThumb = Boolean(data.image)
 const showSteps = data.kind === 'guide' || data.kind === 'reference'
 const showCitations = data.kind === 'paper' && data.citations.length > 0
-const showParts = partCount > 0 && !showSteps
+// "Parts" are subposts. A single one is not worth announcing.
+const partLabel = showSteps
+  ? undefined
+  : formatPartCount(dictionary.notes.partCount, partCount)
 
 const banner = getBannerSources(data.image, locale)
 ---
@@ -115,7 +127,9 @@ const banner = getBannerSources(data.image, locale)
             {topics.map((topic) => (
               <li>
                 <a
-                  href={`${getLocalizedPath('/notes', locale)}/topic/${topic}/`}
+                  href={getNotesViewPath(getLocalizedPath('/notes', locale), {
+                    topic,
+                  })}
                 >
                   {getTopicLabel(topic, locale)}
                 </a>
@@ -129,20 +143,22 @@ const banner = getBannerSources(data.image, locale)
     <p class="note-row__meta">
       {
         date && (
-          <time datetime={date.toISOString()}>
-            {date.toLocaleDateString(locale, {
-              month: 'short',
-              year: 'numeric',
-            })}
+          <time datetime={isoDate(date)}>
+            {formatDate(date, locale, 'month')}
           </time>
         )
       }
       <span>{minutes} {dictionary.notes.readTime}</span>
+      {partLabel && <span>{partLabel}</span>}
       {
-        showParts && (
-          <span>
-            {dictionary.notes.series} {partCount}{' '}
-            {partCount === 1 ? dictionary.notes.part : dictionary.notes.parts}
+        series && (
+          <span data-series-position>
+            {formatPartOf(
+              dictionary.archive.partOf,
+              series.order,
+              series.total,
+            )}{' '}
+            · {series.title}
           </span>
         )
       }

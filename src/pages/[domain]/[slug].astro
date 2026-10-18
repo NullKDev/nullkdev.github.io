@@ -2,7 +2,7 @@
 import EntryPage from '@/components/EntryPage.astro'
 import { pageTitle } from '@/data/brand'
 import { UnlockContent } from '@/components/protection/UnlockContent'
-import { getDictionary } from '@/i18n'
+import { getDictionary, getLocalizedPath } from '@/i18n'
 import Layout from '@/layouts/Layout.astro'
 import {
   getAllPublicEntries,
@@ -37,7 +37,7 @@ const dictionary = getDictionary('en')
       locale="en"
       title={pageTitle(dictionary.nav[props.manifest.domain])}
       description={dictionary.protection.explanation}
-      counterpartPath={`/es/${props.manifest.domain}/`}
+      counterpartPath={getLocalizedPath(`/${props.manifest.domain}/`, 'es')}
       noindex
     >
       <main class="protected-page">

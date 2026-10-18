@@ -66,6 +66,16 @@ describe('reading log storage', () => {
     expect(getReadingLog()).toEqual({})
   })
 
+  it('keeps only finite numeric timestamps from a stored log', () => {
+    /* Storage is user-editable: a value that is not a number would make every
+       later comparison meaningless, so it is dropped rather than trusted. */
+    localStorage.setItem(
+      KEY,
+      JSON.stringify({ good: 5, text: 'x', nil: null, nested: { a: 1 } }),
+    )
+    expect(getReadingLog()).toEqual({ good: 5 })
+  })
+
   it('records a timestamp when marking read', () => {
     vi.spyOn(Date, 'now').mockReturnValue(1_700_000_000_000)
     markRead('alpha')
@@ -97,6 +107,11 @@ describe('read state', () => {
   it('treats an entry that was never opened as unread', () => {
     expect(getReadState(log, 'unknown', '2026-01-01')).toBe('unread')
     expect(getReadState(log, undefined, '2026-01-01')).toBe('unread')
+  })
+
+  it('does not mistake inherited object keys for read entries', () => {
+    expect(getReadState({}, 'constructor', '2026-01-01')).toBe('unread')
+    expect(getReadState({}, 'toString', undefined)).toBe('unread')
   })
 
   it('flags revised only when the change came after the visit', () => {

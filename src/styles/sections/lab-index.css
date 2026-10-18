@@ -1,0 +1,277 @@
+/* Lab index — imported by LabIndex.astro.
+   Faceted workbench grid and lab cards. */
+
+/* ================================================================
+   LAB — a faceted workbench index. One grid of uniform records that
+   the reader narrows by the technologies and topics they carry, so an
+   entry can sit in several groups without being duplicated.
+   ================================================================ */
+.lab-head {
+  max-width: 52rem;
+  margin-bottom: clamp(1.75rem, 3.5vw, 2.5rem);
+}
+.lab-head h1 {
+  margin: 0;
+  font-size: calc(clamp(2.8rem, 6.5vw, 4.75rem) * var(--display-mult));
+  font-weight: 520;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+}
+.lab-lead {
+  max-width: 62ch;
+  margin: 1.1rem 0 0;
+  color: var(--ink-muted);
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  line-height: 1.6;
+}
+.lab-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 1rem 2.5rem;
+  margin: 1.75rem 0 0;
+  padding-top: 1.15rem;
+  border-top: 1px solid var(--line);
+}
+.lab-facts > div {
+  display: grid;
+  gap: 0.3rem;
+}
+.lab-facts dt {
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.lab-facts dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.lab-filter {
+  margin-bottom: 1.6rem;
+}
+.lab-filter__bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.lab-filter__bar button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-raised);
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+.lab-filter__bar button:hover {
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+.lab-filter__bar button[aria-pressed='true'] {
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  background: var(--accent-soft);
+  color: color-mix(in srgb, var(--accent) 80%, var(--ink));
+}
+.lab-filter__n {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.66rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.72;
+}
+.lab-filter__status {
+  min-height: 1.2rem;
+  margin: 0.8rem 0 0;
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+}
+
+.lab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17.5rem, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lab-grid > li {
+  display: flex;
+}
+/* `display: flex` would otherwise defeat the hidden attribute the filter sets. */
+.lab-grid > li[hidden] {
+  display: none;
+}
+.lab-card {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 1.4rem 1.4rem 1.15rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-1);
+  transition:
+    transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+}
+/* The 2px signal rule from the design language, drawn on approach. */
+.lab-card::after {
+  position: absolute;
+  inset: -1px -1px auto;
+  height: 2px;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 280ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  content: '';
+}
+.lab-card:hover,
+.lab-card:focus-within {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  box-shadow: var(--shadow-2);
+}
+.lab-card:hover::after,
+.lab-card:focus-within::after {
+  transform: scaleX(1);
+}
+.lab-card__hit {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  border-radius: var(--radius-lg);
+}
+.lab-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.lab-card__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--accent-soft) 72%, var(--surface-raised));
+  color: var(--accent);
+}
+.lab-card__icon svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+/* Pinned entries invert the plate instead of taking more space — the grid
+   stays scannable and the hierarchy still reads. */
+.lab-card[data-featured] .lab-card__icon {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+.lab-card__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.12rem;
+  font-weight: 560;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+.lab-card__summary {
+  margin: 0 0 1.2rem;
+  color: var(--ink-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+.lab-card__foot {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: auto;
+}
+.lab-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lab-card__tags li {
+  padding: 0.2rem 0.52rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+}
+.lab-card__line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--line);
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.lab-card__open {
+  display: inline-flex;
+  gap: 0.25rem;
+  color: var(--accent);
+}
+.lab-card__open span {
+  display: inline-block;
+  transition: transform 180ms ease;
+}
+.lab-card:hover .lab-card__open span {
+  transform: translateX(3px);
+}
+.lab-none,
+.lab-empty {
+  margin: 2.5rem 0 0;
+  color: var(--ink-muted);
+}
+.lab-card__notice {
+  --tone: var(--ink-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: -0.6rem 0 1.2rem;
+  color: color-mix(in srgb, var(--tone) 78%, var(--ink));
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.66rem;
+}
+.lab-card__notice::before {
+  width: 0.36rem;
+  height: 0.36rem;
+  border-radius: 50%;
+  background: var(--tone);
+  content: '';
+}
+.lab-card__notice[data-network] {
+  --tone: #b45309;
+}
+:root[data-theme='dark'] .lab-card__notice[data-network] {
+  --tone: #fbbf24;
+}

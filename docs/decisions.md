@@ -8,6 +8,93 @@ Format: what was decided · why · what it rules out.
 
 ---
 
+## 2026-10-17 — Search finds headings; tab counts step out while searching
+
+**Decided.** `/notes-search.json` carries every note's outline (h2/h3 and
+inlined subpost parts) with its anchors, read through the same
+`buildEntryOutline` the page renders. A note that matches only in a heading
+links to `path#slug` and says which section. While a query is active the type
+tabs keep their links but hide their counts.
+
+**Why.** A reader searching for a term they saw as a section title got "0 of
+9". Per-query tab counts were rejected: the tabs are routes that drop the
+query, so a count beside them would promise a filtered list the link does not
+open.
+
+**Rules out.** Full-text search of note bodies — it would multiply the index
+for terms the outline already locates. The build fails if an indexed anchor is
+missing from its page or the index outgrows its gzip budget.
+
+## 2026-10-17 — The robot keeps moving, and the reader can stop it
+
+**Decided.** The home robot animates autonomously for every visitor,
+including under `prefers-reduced-motion`, and carries a visible pause/play
+toggle: 44px, keyboard-operable, constant accessible name with `aria-pressed`.
+A pause stops the running clip and the pending gap, is one more condition in
+the same activity gate as offscreen/hidden/WebGL loss, and is remembered in
+`sessionStorage` for the visit.
+
+**Why.** The owner asked for the robot to perform for everyone. WCAG 2.2.2
+requires that motion lasting over five seconds can be paused; a control
+satisfies that without taking the animation away from visitors who did not ask
+for stillness. Session rather than permanent memory: a returning visitor sees
+the default again instead of a months-old choice.
+
+**Rules out.** A static poster for reduced motion (the earlier `DESIGN.md`
+wording), hiding the toggle behind hover, and resuming motion on its own after
+the reader paused it.
+
+## 2026-10-17 — Component scripts ship as files, never inline
+
+**Decided.** `vite.build.assetsInlineLimit` returns `false` for `.js`, so every
+processed component `<script>` is emitted as `/_astro/*.js` and covered by
+`script-src 'self'`. `scripts/apply-csp.ts` no longer accepts a bare inline
+`<script type="module">` in `<body>`.
+
+**Why.** Astro inlined component scripts under 4 KB as a bare module script,
+and the sealer had to hash them. A script injected at build time — raw HTML in
+an entry, a compromised dependency writing markup — looks exactly like one, so
+the allowance was a hole the CSP could not close. Externalising costs one
+cached request per component script; every route stayed inside its budget.
+
+**Rules out.** Re-allowing bare inline module scripts in the sealer. A body
+script that must be inline opts in with `data-csp-inline` and is reviewed as
+such.
+
+## 2026-10-17 — `.md` and `.mdx` share the unified processor
+
+**Decided.** `markdown.processor` is `unified({ rehypePlugins })` from
+`@astrojs/markdown-remark`, a direct dependency. MDX inherits the plugins from
+it.
+
+**Why.** Astro 7 defaults `.md` to Sätteri, but MDX always runs unified, and
+`satteri({ hastPlugins })` never reaches `.mdx` — measured as 0 table wrappers
+on a page that had 2. The deprecated `markdown.rehypePlugins` was already
+coerced into `unified()` at config load; declaring it directly produced a
+byte-identical build without the warning.
+
+**Rules out.** Sätteri for `.md` until MDX can inherit its plugins — otherwise
+the two formats render tables and diagrams differently.
+
+## 2026-10-17 — Diagrams are compiled at build, not drawn in the browser
+
+**Decided.** Mermaid fences compile to static SVG during the build with
+`beautiful-mermaid` (pure TypeScript, no DOM), coloured by the site tokens
+through CSS variables. `astro-mermaid` and its ~248 KB client bundle are gone.
+
+**Why.** Client-side Mermaid measures text in the reader's browser: the same
+diagram laid out at 351px in a test browser and past 1,600px in the owner's
+Chrome, and no page code could predict which. Sizing a figure needs its size
+known before it ships. Alternatives were prototyped on the real diagrams:
+`rehype-mermaid` needs a headless browser at build and its shapes are not
+deterministic (roughjs); D2 (`@d2lang/d2`) is deterministic but drew ~50%
+larger, could not embed the variable Switzer face, and needed its colour
+classes remapped. Mermaid 12 itself states it requires a browser.
+
+**Rules out.** Any diagram rendered on the client. Mermaid features
+beautiful-mermaid does not implement — reach for D2 if a diagram ever needs
+them, rather than bringing a browser back into the build.
+
 ## 2026-07-30 — A shared link shows what was shared
 
 **Decided.** An entry's social preview is its own banner; only home, About and
@@ -17,7 +104,7 @@ WhatsApp render nothing at all for an SVG `og:image`.
 
 **Why.** Every page advertised the same card, which still carried the previous
 brand and section names. The blocker was not the missing prop: the metadata
-checker *asserted* that every page use the shared image, so the correct change
+checker _asserted_ that every page use the shared image, so the correct change
 could not pass the build. When a check enforces the wrong thing, the check is
 the defect.
 
@@ -50,7 +137,7 @@ light tint.
 
 **Why.** The light surface was `#F8FAFC`, which measures 1.05:1 against the
 `#ffffff` card and 1.01:1 against the page. The banner had no edge; its corner
-*was* the surface behind it, so the artwork read as floating on the card. The
+_was_ the surface behind it, so the artwork read as floating on the card. The
 100-level tints had the same problem at 1.13–1.23:1 — a colour present in the
 file and absent on screen. Measuring also caught what looking could not: emerald
 `#059669` clears 3:1 on three grounds and fails its own light tint at 2.94:1.
@@ -84,7 +171,7 @@ being retyped in fifteen files.
 **Why.** The owner wanted a name that reads as a person rather than a handle.
 
 **Rules out.** A global find-and-replace on "nullkdev". Four kinds of string
-only *look* like the brand and must never be swept up: the host
+only _look_ like the brand and must never be swept up: the host
 (`nullkdev.github.io`), the GitHub URLs, and two classes of identifier —
 `nullkdev:notes-read`, whose rename discards every visitor's reading history,
 and `nullkdev:protected:v*`, which is bound into the encryption envelope and
@@ -109,7 +196,7 @@ cannot return a string, but `renderIcon()` is consumed by `set:html` in 19
 places. Consuming the JSON packs directly preserved both APIs. Also rules out
 subsetting IBM Plex Mono — the Lab's Unicode inspector renders arbitrary
 visitor-supplied code points, so any subset guarantees fallback glyphs exactly
-where the glyph *is* the content.
+where the glyph _is_ the content.
 
 ## 2026-07-25 — Gallery items live in a manifest, filled by a scanner
 
@@ -136,7 +223,7 @@ frontmatter (a 200-image `index.md` is an unreviewable diff).
 **Decided.** `galleryItems` is a discriminated union on `type`: `image`,
 `video`, `document`, `archive`, `link`. Every item carries `origin`
 (`captured | generated | derived | third-party`), and `origin: generated`
-*requires* a `generation` block with tool, model, and prompt — enforced by a
+_requires_ a `generation` block with tool, model, and prompt — enforced by a
 schema refinement in both directions.
 
 **Why.** A generated image and a photograph are not the same kind of object and
@@ -163,7 +250,7 @@ and every card is the same component.
 
 **Why.** "Most popular" is impossible — the site has no analytics by design and
 `PRODUCT.md` forbids inventing metrics. "Newest" is already stated by position:
-the first card *is* the newest, so featuring it repeated the same fact at a cost
+the first card _is_ the newest, so featuring it repeated the same fact at a cost
 of 464px above the fold. On a page built for browsing and filtering, the first
 screen should show more choices, not fewer.
 

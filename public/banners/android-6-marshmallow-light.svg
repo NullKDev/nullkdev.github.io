@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Android 6.0 Marshmallow banner, with the version logo.">
+  <defs>
+    <linearGradient id="bg-android-6-marshmallow-light" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E2E8F0"/>
+      <stop offset="100%" stop-color="#A7F3D0"/>
+    </linearGradient>
+    <radialGradient id="glow-android-6-marshmallow-light" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00875A" stop-opacity="0.08800000000000001"/>
+      <stop offset="100%" stop-color="#00875A" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="lift-android-6-marshmallow-light" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#00875A" flood-opacity="0.11"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg-android-6-marshmallow-light)"/>
+  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-android-6-marshmallow-light)"/>
+<g filter="url(#lift-android-6-marshmallow-light)"><image x="730" y="130" width="370" height="370" preserveAspectRatio="xMidYMid meet" href="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDIzLjAuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIKCSBpZD0ic3ZnMTAiIGlua3NjYXBlOnZlcnNpb249IjEuMC4yIChlODZjODcwODc5LCAyMDIxLTAxLTE1LCBjdXN0b20pIiBzb2RpcG9kaTpkb2NuYW1lPSJBbmRyb2lkX01hcnNobWFsbG93X2xvZ28uc3ZnIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOmlua3NjYXBlPSJodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy9uYW1lc3BhY2VzL2lua3NjYXBlIiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiIHhtbG5zOnNvZGlwb2RpPSJodHRwOi8vc29kaXBvZGkuc291cmNlZm9yZ2UubmV0L0RURC9zb2RpcG9kaS0wLmR0ZCIgeG1sbnM6c3ZnPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKCSB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjcwOHB4IiBoZWlnaHQ9IjcwOHB4IgoJIHZpZXdCb3g9IjAgMCA3MDggNzA4IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA3MDggNzA4IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPGc+Cgk8Y2lyY2xlIGZpbGw9IiNFOTFFNjMiIGN4PSIzNTQiIGN5PSIzNTQiIHI9IjM1NCIvPgoJPHBhdGggZmlsbD0iI0YwNjI5MiIgZD0iTTM1NCwzNTRsMjUwLjMtMjUwLjNDNjcwLjcsMTcwLDcwOCwyNjAuMSw3MDgsMzU0YzAsMTk0LjItMTU5LjgsMzU0LTM1NCwzNTRjLTkzLjksMC0xODQtMzcuMy0yNTAuMy0xMDMuNwoJCUwzNTQsMzU0eiIvPgoJPHBhdGggZmlsbD0iI0VFNEM4MyIgZD0iTTE5My4zLDUxMy45TDM4Niw3MDYuNmMxNzAuNS0xNS4zLDMwNi4xLTE1MS4zLDMyMC43LTMyMmwtMTkyLTE5MkwxOTMuMyw1MTMuOXoiLz4KCTxnPgoJCTxwb2x5Z29uIGZpbGw9IiNFRUVFRUUiIHBvaW50cz0iMTkzLjMsNTEzLjkgMzU0LDUxMy45IDM1NCwzNTMuMyAxOTMuMywxOTIuNiAJCSIvPgoJCTxwb2x5Z29uIGZpbGw9IiNGRkZGRkYiIHBvaW50cz0iNTE0LjcsNTEzLjkgMzU0LDUxMy45IDM1NCwzNTMuMyA1MTQuNywxOTIuNiAJCSIvPgoJCTxwb2x5Z29uIGZpbGw9IiNEREREREQiIHBvaW50cz0iNTE0LjcsNTEzLjkgMzU0LDUxMy45IDUxNC43LDM1My4zIAkJIi8+CgkJPHBvbHlnb24gZmlsbD0iI0RERERERCIgcG9pbnRzPSIxOTMuMyw1MTMuOSAzNTQsNTEzLjkgMTkzLjMsMzUzLjMgCQkiLz4KCTwvZz4KPC9nPgo8L3N2Zz4K"/></g>
+  <rect x="96" y="150" width="76" height="4" rx="2" fill="#00875A"/>
+  <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#00875A">API 23 · OCT 2015</text>
+  <text x="96" y="318" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="96" font-weight="600" letter-spacing="-3" fill="#0F172A">Android 6.0</text>
+  <text x="96" y="392" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="52" font-weight="500" letter-spacing="-1" fill="#475569">Marshmallow</text>
+  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#55617A">Runtime permissions · Doze</text>
+</svg>

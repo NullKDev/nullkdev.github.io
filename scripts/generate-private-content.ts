@@ -60,108 +60,142 @@ const writeJson = async (path: string, value: unknown) => {
   await writeFile(path, `${JSON.stringify(value)}\n`)
 }
 
-await rm(outputRoot, { recursive: true, force: true })
-await mkdir(outputRoot, { recursive: true })
+/**
+ * The passphrase is the only thing between a reader and the plaintext, and it
+ * is attacked offline: the envelope ships publicly, so guesses cost nothing
+ * but PBKDF2 time. 16 characters is the floor. It also keeps the secret well
+ * above the 8-character cut-off below which `scan-private-leaks.ts` stops
+ * searching the build for it.
+ */
+export const MIN_PASSPHRASE_LENGTH = 16
 
-const sourceFiles = (await Promise.all(sourceRoots.map(walkFiles))).flat()
-const indexes = sourceFiles.filter((path) => path.endsWith(`${sep}index.md`))
-
-for (const indexPath of indexes) {
-  const entryDirectory = resolve(indexPath, '..')
-  const parsed = parsePrivateMarkdown(await readFile(indexPath, 'utf8'))
-  const { entryId, locale, keyId, domain, slug } = parsed.metadata
-  if (
-    entryDirectory.split(sep).at(-1) !== locale ||
-    entryDirectory.split(sep).at(-2) !== entryId
-  ) {
-    throw new Error(
-      `Private content path does not match frontmatter: ${indexPath}`,
-    )
-  }
-
-  const environmentName = secretEnvironmentName(keyId)
-  const password = process.env[environmentName]
-  if (!password)
+export const requirePassphrase = (
+  environmentName: string,
+  value: string | undefined,
+): string => {
+  if (!value) {
     throw new Error(
       `Missing required private-content secret: ${environmentName}`,
     )
-
-  const assetDirectory = join(entryDirectory, 'assets')
-  const assetFiles = await walkFiles(assetDirectory)
-  const assets = assetFiles.map((path, index) => ({
-    path,
-    source: safeAssetPath(relative(entryDirectory, path).split(sep).join('/')),
-    assetId: `asset-${index + 1}`,
-  }))
-
-  let markdown = parsed.markdown
-  for (const asset of assets) {
-    markdown = markdown.replaceAll(
-      `./${asset.source}`,
-      `protected-asset:${asset.assetId}`,
-    )
-    markdown = markdown.replaceAll(
-      asset.source,
-      `protected-asset:${asset.assetId}`,
+  }
+  if (value.length < MIN_PASSPHRASE_LENGTH) {
+    throw new Error(
+      `${environmentName} must be at least ${MIN_PASSPHRASE_LENGTH} ` +
+        `characters long (got ${value.length}).`,
     )
   }
-  const rendered = sanitizeRenderedHtml(
-    (await marked.parse(markdown)).replaceAll(
-      /src="protected-asset:([a-z0-9-]+)"/g,
-      'data-protected-asset="$1"',
-    ),
-  )
+  return value
+}
 
-  const contentContext: ProtectionContext = {
-    entryId,
-    locale,
-    payloadKind: 'document',
-    payloadId: 'content',
-    contentType: 'text/html; charset=utf-8',
-  }
-  const targetDirectory = join(outputRoot, entryId, locale)
-  await writeJson(
-    join(targetDirectory, 'content.envelope.json'),
-    await encryptPayload(
-      password,
-      new TextEncoder().encode(rendered),
-      contentContext,
-    ),
-  )
+const run = async (): Promise<void> => {
+  await rm(outputRoot, { recursive: true, force: true })
+  await mkdir(outputRoot, { recursive: true })
 
-  const manifestAssets = []
-  for (const asset of assets) {
-    const contentType = mimeType(asset.path)
-    const envelopeName = `${asset.assetId}.envelope.json`
-    await writeJson(
-      join(targetDirectory, envelopeName),
-      await encryptPayload(
-        password,
-        new Uint8Array(await readFile(asset.path)),
-        {
-          entryId,
-          locale,
-          payloadKind: 'asset',
-          payloadId: asset.assetId,
-          contentType,
-        },
+  const sourceFiles = (await Promise.all(sourceRoots.map(walkFiles))).flat()
+  const indexes = sourceFiles.filter((path) => path.endsWith(`${sep}index.md`))
+
+  for (const indexPath of indexes) {
+    const entryDirectory = resolve(indexPath, '..')
+    const parsed = parsePrivateMarkdown(await readFile(indexPath, 'utf8'))
+    const { entryId, locale, keyId, domain, slug } = parsed.metadata
+    if (
+      entryDirectory.split(sep).at(-1) !== locale ||
+      entryDirectory.split(sep).at(-2) !== entryId
+    ) {
+      throw new Error(
+        `Private content path does not match frontmatter: ${indexPath}`,
+      )
+    }
+
+    const environmentName = secretEnvironmentName(keyId)
+    const password = requirePassphrase(
+      environmentName,
+      process.env[environmentName],
+    )
+
+    const assetDirectory = join(entryDirectory, 'assets')
+    const assetFiles = await walkFiles(assetDirectory)
+    const assets = assetFiles.map((path, index) => ({
+      path,
+      source: safeAssetPath(
+        relative(entryDirectory, path).split(sep).join('/'),
+      ),
+      assetId: `asset-${index + 1}`,
+    }))
+
+    let markdown = parsed.markdown
+    for (const asset of assets) {
+      markdown = markdown.replaceAll(
+        `./${asset.source}`,
+        `protected-asset:${asset.assetId}`,
+      )
+      markdown = markdown.replaceAll(
+        asset.source,
+        `protected-asset:${asset.assetId}`,
+      )
+    }
+    const rendered = sanitizeRenderedHtml(
+      (await marked.parse(markdown)).replaceAll(
+        /src="protected-asset:([a-z0-9-]+)"/g,
+        'data-protected-asset="$1"',
       ),
     )
-    manifestAssets.push({
-      assetId: asset.assetId,
-      url: `/protected/${entryId}/${locale}/${envelopeName}`,
+
+    const contentContext: ProtectionContext = {
+      entryId,
+      locale,
+      payloadKind: 'document',
+      payloadId: 'content',
+      contentType: 'text/html; charset=utf-8',
+    }
+    const targetDirectory = join(outputRoot, entryId, locale)
+    await writeJson(
+      join(targetDirectory, 'content.envelope.json'),
+      await encryptPayload(
+        password,
+        new TextEncoder().encode(rendered),
+        contentContext,
+      ),
+    )
+
+    const manifestAssets = []
+    for (const asset of assets) {
+      const contentType = mimeType(asset.path)
+      const envelopeName = `${asset.assetId}.envelope.json`
+      await writeJson(
+        join(targetDirectory, envelopeName),
+        await encryptPayload(
+          password,
+          new Uint8Array(await readFile(asset.path)),
+          {
+            entryId,
+            locale,
+            payloadKind: 'asset',
+            payloadId: asset.assetId,
+            contentType,
+          },
+        ),
+      )
+      manifestAssets.push({
+        assetId: asset.assetId,
+        url: `/protected/${entryId}/${locale}/${envelopeName}`,
+      })
+    }
+
+    await writeJson(join(targetDirectory, 'manifest.json'), {
+      version: 1,
+      entryId,
+      locale,
+      domain,
+      slug,
+      content: { url: `/protected/${entryId}/${locale}/content.envelope.json` },
+      assets: manifestAssets,
     })
   }
 
-  await writeJson(join(targetDirectory, 'manifest.json'), {
-    version: 1,
-    entryId,
-    locale,
-    domain,
-    slug,
-    content: { url: `/protected/${entryId}/${locale}/content.envelope.json` },
-    assets: manifestAssets,
-  })
+  console.log(
+    `Generated ${indexes.length} encrypted private-content record(s).`,
+  )
 }
 
-console.log(`Generated ${indexes.length} encrypted private-content record(s).`)
+if (import.meta.main) await run()

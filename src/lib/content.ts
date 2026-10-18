@@ -6,8 +6,9 @@ import {
   type IntegrityDocument,
   type IntegrityEntry,
 } from '@/content/integrity'
-import type { Locale } from '@/i18n'
+import { getAlternateLocale, getLocalizedPath, type Locale } from '@/i18n'
 import { buildDocumentPath, buildEntryPath } from '@/lib/archive-routes'
+import { itemsInCollection, summarizeGallery } from '@/lib/gallery'
 
 export const archiveDomains = ['work', 'lab', 'notes', 'gallery'] as const
 export type ArchiveDomain = (typeof archiveDomains)[number]
@@ -41,11 +42,33 @@ const sortEntries = (entries: ArchiveEntry[]) =>
     return leftRank - rightRank || dateValue(right) - dateValue(left)
   })
 
+/** Notes of one series published the same day keep their reading order. */
+const seriesOrder = (left: ArchiveEntry, right: ArchiveEntry): number => {
+  const a = 'series' in left.data ? left.data.series : undefined
+  const b = 'series' in right.data ? right.data.series : undefined
+  return a && b && a.id === b.id ? a.order - b.order : 0
+}
+
+const sortNewestFirst = (entries: ArchiveEntry[]) =>
+  entries.toSorted(
+    (left, right) =>
+      dateValue(right) - dateValue(left) || seriesOrder(left, right),
+  )
+
+/**
+ * Notes is a stream: newest first, a revision counting as new. `featuredRank`
+ * picks what the home page shows; it used to order the Notes index too, which
+ * parked every unranked note — the newest included — behind the eight ranked
+ * ones. Work and Lab are inventories, so their featured entries still lead.
+ */
+const sortForDomain = (domain: ArchiveDomain) =>
+  domain === 'notes' ? sortNewestFirst : sortEntries
+
 export const getArchiveEntries = async (
   domain: ArchiveDomain,
   locale: Locale,
 ) =>
-  sortEntries(
+  sortForDomain(domain)(
     (await loadDomain(domain)).filter(
       ({ data }) =>
         data.locale === locale &&
@@ -68,21 +91,13 @@ export const getAllPublicEntries = async (locale?: Locale) => {
   )
 }
 
-export const getEntryBySlug = async (
-  domain: ArchiveDomain,
-  locale: Locale,
-  slug: string,
-) =>
-  (await getArchiveEntries(domain, locale)).find(
-    ({ data }) => data.slug === slug,
-  )
-
-export const getEntryDomain = (entry: ArchiveEntry): ArchiveDomain => {
-  if ('lifecycle' in entry.data && 'domains' in entry.data) return 'work'
-  if ('execution' in entry.data) return 'lab'
-  if ('citations' in entry.data) return 'notes'
-  return 'gallery'
-}
+/**
+ * The domain is the collection the record was loaded from. Inferring it from
+ * which fields exist filed any record by its first matching field — a gallery
+ * entry that gained `citations` would have become a note.
+ */
+export const getEntryDomain = (entry: ArchiveEntry): ArchiveDomain =>
+  entry.collection
 
 export const getEntryPath = (entry: ArchiveEntry) =>
   buildEntryPath(getEntryDomain(entry), entry.data.slug, entry.data.locale)
@@ -119,12 +134,21 @@ export const getCounterpartEntry = async (entry: ArchiveEntry) => {
   )
 }
 
-export const getEntryCounterpartPath = async (entry: ArchiveEntry) => {
+/** The real translation's URL, or `undefined` — the input to hreflang. */
+export const getEntryAlternatePath = async (
+  entry: ArchiveEntry,
+): Promise<string | undefined> => {
   const counterpart = await getCounterpartEntry(entry)
-  if (counterpart) return getEntryPath(counterpart)
-  const locale: Locale = entry.data.locale === 'en' ? 'es' : 'en'
-  return `${locale === 'es' ? '/es' : ''}/${getEntryDomain(entry)}/`
+  return counterpart ? getEntryPath(counterpart) : undefined
 }
+
+/** Where the language switch goes: the translation, else the section index. */
+export const getEntryCounterpartPath = async (entry: ArchiveEntry) =>
+  (await getEntryAlternatePath(entry)) ??
+  getLocalizedPath(
+    `/${getEntryDomain(entry)}/`,
+    getAlternateLocale(entry.data.locale),
+  )
 
 export const getCounterpartDocument = async (document: ArchiveDocument) => {
   const locale: Locale = document.data.locale === 'en' ? 'es' : 'en'
@@ -136,20 +160,30 @@ export const getCounterpartDocument = async (document: ArchiveDocument) => {
   )
 }
 
-export const getDocumentCounterpartPath = async (
+/** The subpost's real translation, or `undefined` — the input to hreflang. */
+export const getDocumentAlternatePath = async (
   entry: ArchiveEntry,
   document: ArchiveDocument,
-) => {
+): Promise<string | undefined> => {
   const [counterpartEntry, counterpartDocument] = await Promise.all([
     getCounterpartEntry(entry),
     getCounterpartDocument(document),
   ])
-  if (counterpartEntry && counterpartDocument) {
-    return getDocumentPath(counterpartEntry, counterpartDocument)
-  }
-  const locale: Locale = entry.data.locale === 'en' ? 'es' : 'en'
-  return `${locale === 'es' ? '/es' : ''}/${getEntryDomain(entry)}/`
+  return counterpartEntry && counterpartDocument
+    ? getDocumentPath(counterpartEntry, counterpartDocument)
+    : undefined
 }
+
+/** Where the language switch goes: the translation, else the section index. */
+export const getDocumentCounterpartPath = async (
+  entry: ArchiveEntry,
+  document: ArchiveDocument,
+) =>
+  (await getDocumentAlternatePath(entry, document)) ??
+  getLocalizedPath(
+    `/${getEntryDomain(entry)}/`,
+    getAlternateLocale(entry.data.locale),
+  )
 
 export const getAdjacentDocuments = async (
   entry: ArchiveEntry,
@@ -175,7 +209,7 @@ export const getAdjacentEntries = async (entry: ArchiveEntry) => {
 }
 
 export const getNotesSeriesNavigation = async (entry: ArchiveEntry) => {
-  if (!('citations' in entry.data) || !entry.data.series) return undefined
+  if (entry.collection !== 'notes' || !entry.data.series) return undefined
   const seriesId = entry.data.series.id
   const seriesOrder = entry.data.series.order
   const series = (await getArchiveEntries('notes', entry.data.locale))
@@ -237,23 +271,17 @@ export const getTopicIndex = async (locale: Locale) => {
   return topics
 }
 
-export const getFeaturedByDomain = async (locale: Locale) =>
-  Object.fromEntries(
-    await Promise.all(
-      archiveDomains.map(async (domain) => [
-        domain,
-        (await getArchiveEntries(domain, locale))[0],
-      ]),
-    ),
-  ) as Record<ArchiveDomain, ArchiveEntry | undefined>
-
 export interface HomeSection {
   domain: ArchiveDomain
   items: ArchiveEntry[]
   total: number
 }
 
-/** Most recent `limit` entries per domain, plus the domain total, in nav order. */
+/**
+ * The first `limit` entries per domain in archive order — featured entries by
+ * `featuredRank`, then the most recently updated — plus the domain total, in
+ * nav order.
+ */
 export const getHomeSections = async (
   locale: Locale,
   limit = 3,
@@ -261,12 +289,13 @@ export const getHomeSections = async (
   Promise.all(
     archiveDomains.map(async (domain) => {
       const all = await getArchiveEntries(domain, locale)
-      return { domain, items: all.slice(0, limit), total: all.length }
+      return {
+        domain,
+        items: sortEntries(all).slice(0, limit),
+        total: all.length,
+      }
     }),
   )
-
-export const getPublicEnglishNotes = async () =>
-  (await getArchiveEntries('notes', 'en')) as CollectionEntry<'notes'>[]
 
 export const assertTrackedContentIntegrity = async () => {
   const collections = await Promise.all(
@@ -361,6 +390,17 @@ export const assertTrackedContentIntegrity = async () => {
  * do, and those are bilingual inside the record.
  */
 export const getGalleryItems = async (entry: ArchiveEntry) =>
-  (await getCollection('galleryItems'))
-    .filter(({ data }) => data.collection === entry.data.translationKey)
-    .toSorted((left, right) => left.data.order - right.data.order)
+  itemsInCollection(
+    await getCollection('galleryItems'),
+    entry.data.translationKey,
+  )
+
+/**
+ * The Gallery index's contact sheets and totals, from one read of the item
+ * manifest — the same grouping `getGalleryItems` uses for a detail page.
+ */
+export const getGallerySheets = async <
+  Entry extends CollectionEntry<'gallery'>,
+>(
+  entries: readonly Entry[],
+) => summarizeGallery(entries, await getCollection('galleryItems'))

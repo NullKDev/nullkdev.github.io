@@ -1,0 +1,21 @@
+---
+// Heading row of a record block: registry mark, title, optional count.
+import { renderIcon, type IconName } from '@/lib/icons'
+
+interface Props {
+  icon: IconName
+  title: string
+  count?: number
+}
+const { icon, title, count } = Astro.props
+---
+
+<header class="record-block__head">
+  <span
+    class="record-block__icon"
+    aria-hidden="true"
+    set:html={renderIcon(icon)}
+  />
+  <h2>{title}</h2>
+  {count !== undefined && <span class="record-block__count">{count}</span>}
+</header>

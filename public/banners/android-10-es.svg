@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Banner de Android 10 Quince Tart, con el logo de la versión.">
+  <defs>
+    <linearGradient id="bg-android-10-es" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#0B2B22"/>
+    </linearGradient>
+    <radialGradient id="glow-android-10-es" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00875A" stop-opacity="0.22000000000000003"/>
+      <stop offset="100%" stop-color="#00875A" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="lift-android-10-es" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#00875A" flood-opacity="0.275"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg-android-10-es)"/>
+  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-android-10-es)"/>
+<g filter="url(#lift-android-10-es)"><image x="730" y="130" width="370" height="370" preserveAspectRatio="xMidYMid meet" href="data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgNjk3LjUgNjk3LjUiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDY5Ny41IDY5Ny41IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPGcgaWQ9IkxheWVyXzEtMiI+Cgk8cGF0aCBmaWxsPSIjRkVGRUZFIiBkPSJNMzQ4LjYsNjk3LjVMMzQ4LjYsNjk3LjVDMTU2LjEsNjk3LjUsMCw1NDEuNSwwLDM0OC45djBDMCwxNTYuNCwxNTYuMSwwLjQsMzQ4LjYsMC40aDAKCQljMTkyLjUsMCwzNDguNiwxNTYuMSwzNDguNiwzNDguNnYwQzY5Ny4yLDU0MS41LDU0MS4xLDY5Ny41LDM0OC42LDY5Ny41eiIvPgoJPHBhdGggZmlsbD0iIzNEREM4NCIgZD0iTTM0OC45LDY5Ny41Yy04OC40LTEtMTY2LjQtMzAtMjMyLjUtODlDNTgsNTU2LjMsMjEuNiw0OTEuMiw2LjMsNDE0LjRjLTMuNC0xNy42LTUuNC0zNS41LTUuOC01My41CgkJYy0yLjQtODAuNCwxOS42LTE1My40LDY3LjEtMjE4QzExOS41LDcyLjQsMTg4LjcsMjcuNiwyNzQuMSw4LjJjMjkuNC02LjcsNTkuNi05LjMsODkuOC03LjdjNzIuOCwzLjUsMTM4LjUsMjcuMSwxOTYuNiw3MS4yCgkJYzQwLjcsMzAuOCw3NCw3MC4zLDk3LjUsMTE1LjVjMTksMzYuMSwzMS41LDc0LjUsMzYuNSwxMTVjMTIsOTcuNy0xMiwxODUuOC03Mi43LDI2My42Yy03LjEsOC45LTE0LjYsMTcuNS0yMi41LDI1LjcKCQljLTEuNywxLjgtMi42LDIuMS00LjUsMC4yYy0xNy4yLTE3LjQtMzQuNS0zNC43LTUxLjktNTEuOWMtMS41LTEuNS0xLjctMi4yLTAuMS0zLjljMzYuNS0zOC4yLDU5LjktODMuMiw3MC4xLTEzNQoJCWM1LTI1LjMsNi4yLTUxLjIsMy42LTc2LjhjLTUuMi01Mi43LTIzLjktMTAwLjEtNTctMTQxLjRjLTQwLjgtNTAuOS05My4yLTgzLjEtMTU3LjMtOTYuNGMtMjEuMi00LjUtNDIuOC02LjItNjQuNC01LjEKCQlDMjY1LDg0LjksMjAzLjEsMTEyLjksMTUzLDE2NS45Yy0zNi43LDM4LjgtNTkuOCw4NC43LTY4LjUsMTM3LjRjLTEyLjgsNzcuMyw0LDE0Ny45LDUxLjgsMjEwLjJjNDEuMSw1My42LDk1LjUsODcsMTYyLDk5LjkKCQljNjEuMywxMS44LDExOS44LDMsMTc1LjMtMjUuN2MyLjYtMS40LDQuMS0xLjIsNi4yLDFjMTcuNCwxNy42LDM0LjksMzUuMSw1Mi40LDUyLjRjMi4yLDIuMiwyLjMsMy4xLTAuNSw0LjgKCQljLTM5LjksMjQuNS04NC4zLDQwLjctMTMwLjUsNDcuNkMzODMuOCw2OTYuMiwzNjYuNCw2OTcuNSwzNDguOSw2OTcuNXoiLz4KCTxwYXRoIGZpbGw9IiMzRERDODQiIGQ9Ik0xNTkuMSwzNTYuN2MtMC42LTEzLjksMC4zLTI3LjgsMi44LTQxLjVjNi41LTM3LjMsMjQuMy03MS44LDUwLjktOTguOGMyNy41LTI4LjIsNjAuNS00Ni44LDk5LjItNTMuOQoJCWM2Mi4yLTExLjUsMTE3LjYsMy42LDE2NC43LDQ1LjhjMzIuOCwyOS40LDUyLjksNjYuMyw1OS42LDEwOS45YzguOCw1Ni42LTUuNSwxMDcuMy00MS41LDE1MS45Yy0zLjEsMy45LTYuMiw3LjktMTAuMywxMC45CgkJYy0zLjMtMy4yLTIxMy44LTIxMy40LTIyMS4yLTIyMS4yYy0yLjUtMi42LTMuOC0yLjktNi41LTAuMWMtMzEuMiwzMS40LTYyLjQsNjIuNy05My44LDkzLjljLTEsMS4yLTIsMi40LTIuOSwzLjZMMTU5LjEsMzU2Ljd6Ii8+Cgk8cGF0aCBmaWxsPSIjM0REQzg0IiBkPSJNNDE3LDUyNi4yYy0xMy45LDUuNC0yOC40LDkuMS00My4xLDExYy0zOC40LDQuOS03NS0xLjItMTA5LjYtMTguNWMtMzIuNC0xNi4yLTU4LTM5LjgtNzcuMi03MC41CgkJYy0xLjYtMi42LTEuOS00LjEsMC42LTYuNWMyMy40LTIzLjIsNDYuOC00Ni42LDcwLTcwYzItMi4xLDMuMS0yLjEsNS4xLDBjNTAuNiw1MC44LDEwMS4zLDEwMS41LDE1MiwxNTIuMQoJCUM0MTUuNCw1MjQuNSw0MTYsNTI1LjEsNDE3LDUyNi4yeiIvPgo8L2c+Cjwvc3ZnPgo="/></g>
+  <rect x="96" y="150" width="76" height="4" rx="2" fill="#00875A"/>
+  <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#00875A">API 29 · SEP 2019</text>
+  <text x="96" y="318" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="96" font-weight="600" letter-spacing="-3" fill="#F8FAFC">Android 10</text>
+  <text x="96" y="392" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="52" font-weight="500" letter-spacing="-1" fill="#94A3B8">Quince Tart</text>
+  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">Nombre interno · almacenamiento acotado</text>
+</svg>

@@ -1,12 +1,21 @@
 ---
 import type { CollectionEntry } from 'astro:content'
-import { brand, pageTitle } from '@/data/brand'
+import { pageTitle } from '@/data/brand'
 import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
 import LabCard from '@/components/lab/LabCard.astro'
-import { getTopicLabel } from '@/data/taxonomy'
-import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import {
+  getAlternateLocale,
+  getDictionary,
+  getLocalizedPath,
+  type Locale,
+} from '@/i18n'
 import { getArchiveLabel } from '@/i18n/archive'
 import Layout from '@/layouts/Layout.astro'
+import { getLabFacets, getLabTags, getUbiquitousLabTags } from '@/lib/lab'
+import { buildCollectionPageLd } from '@/lib/structured-data'
+import '@/styles/global.css'
+import '@/styles/archive.css'
+import '@/styles/sections/lab-index.css'
 
 interface Props {
   locale: Locale
@@ -17,21 +26,10 @@ const { locale, entries } = Astro.props
 const dictionary = getDictionary(locale)
 const total = entries.length
 
-// Facets come from the records themselves. A tag carried by every entry cannot
-// narrow anything, so it never becomes a filter.
-const facetCounts = new Map<string, number>()
-for (const entry of entries) {
-  const tags = entry.data.technologies.length
-    ? entry.data.technologies
-    : entry.data.topics
-  for (const tag of new Set(tags)) {
-    facetCounts.set(tag, (facetCounts.get(tag) ?? 0) + 1)
-  }
-}
-const facets = [...facetCounts.entries()]
-  .filter(([, count]) => count < total)
-  .map(([id, count]) => ({ id, count, label: getTopicLabel(id, locale) }))
-  .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, locale))
+// Facets come from the records; a tag on nearly every entry is left out
+// because it cannot narrow anything. The rule lives in `getLabFacets`.
+const facets = getLabFacets(entries, locale)
+const ubiquitous = getUbiquitousLabTags(entries)
 
 // Status distribution, in the order a workbench actually reads: what is moving
 // first, what is settled after, what is put away last.
@@ -60,25 +58,19 @@ const entryWord = total === 1 ? dictionary.lab.entry : dictionary.lab.entries
 /* Same `CollectionPage` treatment as the other index surfaces — Lab and
    Gallery render through their own components, which is how they were the last
    two indexable pages left without structured data. */
-const collectionJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'CollectionPage',
+const collectionJsonLd = buildCollectionPageLd({
   name: dictionary.nav.lab,
   description: dictionary.section.lab,
-  inLanguage: locale,
-  isPartOf: {
-    '@type': 'WebSite',
-    name: brand.name,
-    url: Astro.site?.toString(),
-  },
-}
+  locale,
+  site: Astro.site,
+})
 ---
 
 <Layout
   locale={locale}
   title={pageTitle(dictionary.nav.lab)}
   description={dictionary.section.lab}
-  counterpartPath={locale === 'en' ? '/es/lab/' : '/lab/'}
+  alternatePath={getLocalizedPath('/lab/', getAlternateLocale(locale))}
   jsonLd={collectionJsonLd}
 >
   <main class="lab-index">
@@ -146,12 +138,8 @@ const collectionJsonLd = {
       entries.length ? (
         <ul class="lab-grid" data-lab-grid>
           {entries.map((entry) => (
-            <li
-              data-topics={[
-                ...new Set([...entry.data.technologies, ...entry.data.topics]),
-              ].join(' ')}
-            >
-              <LabCard entry={entry} locale={locale} />
+            <li data-topics={getLabTags(entry).join(' ')}>
+              <LabCard entry={entry} locale={locale} ubiquitous={ubiquitous} />
             </li>
           ))}
         </ul>

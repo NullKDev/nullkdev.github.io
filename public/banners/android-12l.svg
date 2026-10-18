@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Android 12L banner, with the Android 12 logo.">
+  <defs>
+    <linearGradient id="bg-android-12l" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#0B2B22"/>
+    </linearGradient>
+    <radialGradient id="glow-android-12l" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00875A" stop-opacity="0.22000000000000003"/>
+      <stop offset="100%" stop-color="#00875A" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="lift-android-12l" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#00875A" flood-opacity="0.275"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg-android-12l)"/>
+  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-android-12l)"/>
+<g filter="url(#lift-android-12l)"><image x="730" y="130" width="370" height="370" preserveAspectRatio="xMidYMid meet" href="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTk2IDE5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTk4IDE5NkMxNTIuMTI0IDE5NiAxOTYgMTUyLjEyNCAxOTYgOThDMTk2IDQzLjg3NjEgMTUyLjEyNCAwIDk4IDBDNDMuODc2MSAwIDAgNDMuODc2MSAwIDk4QzAgMTUyLjEyNCA0My44NzYxIDE5NiA5OCAxOTZaIiBmaWxsPSIjM0REQzg0Ii8+CjxwYXRoIGQ9Ik00OS43NjU2IDUyLjI5MjJDNTMuODEwOCA1Mi4zMTY1IDU3LjY4MiA1My45NDA1IDYwLjUzMzkgNTYuODA5NUM2My4zODU3IDU5LjY3ODUgNjQuOTg2MyA2My41NTk0IDY0Ljk4NjIgNjcuNjA0N1YxNDMuNzA4IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjYuMTMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNMTQ2LjIzNCAxNDMuNzA4SDg1LjMwNTlWMTI4LjQ3MkM4NS4zMDU5IDEyMC4zOSA4OC41MTYzIDExMi42NCA5NC4yMzA5IDEwNi45MjVDOTkuOTQ1NSAxMDEuMjEgMTA3LjY5NiA5OCAxMTUuNzc4IDk4SDEzMS4wOUMxMzMuMDk3IDk4IDEzNS4wODQgOTcuNjAzMyAxMzYuOTM2IDk2LjgzMjdDMTM4Ljc4OSA5Ni4wNjIgMTQwLjQ3MSA5NC45MzI3IDE0MS44ODYgOTMuNTA5NkMxNDMuMyA5Mi4wODY0IDE0NC40MTkgOTAuMzk3NyAxNDUuMTc5IDg4LjU0MDRDMTQ1LjkzOCA4Ni42ODMxIDE0Ni4zMjMgODQuNjk0IDE0Ni4zMTEgODIuNjg3NUMxNDYuMzEzIDc1LjQ4NzMgMTQzLjc2NiA2OC41MTg4IDEzOS4xMjEgNjMuMDE3NkMxMzQuNDc1IDU3LjUxNjMgMTI4LjAzMiA1My44Mzc4IDEyMC45MzMgNTIuNjM0MkMxMTMuODM0IDUxLjQzMDUgMTA2LjUzOCA1Mi43Nzk2IDEwMC4zMzkgNTYuNDQyMUM5NC4xMzk5IDYwLjEwNDYgODkuNDM4IDY1Ljg0MzkgODcuMDY2OCA3Mi42NDI1Qzg2LjQ5MDkgNzQuMjgzIDg2LjA1MDUgNzUuOTY3OSA4NS43NSA3Ny42ODAzIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjYuMTMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K"/></g>
+  <rect x="96" y="150" width="76" height="4" rx="2" fill="#00875A"/>
+  <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#00875A">API 32 · MAR 2022</text>
+  <text x="96" y="318" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="96" font-weight="600" letter-spacing="-3" fill="#F8FAFC">Android 12L</text>
+  <text x="96" y="392" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="52" font-weight="500" letter-spacing="-1" fill="#94A3B8">Large screens</text>
+  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">S_V2 · tablets and foldables</text>
+</svg>

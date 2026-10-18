@@ -4,13 +4,13 @@ locale: es
 translationKey: yaml-validator
 slug: validador-yaml
 title: Validador YAML
-summary: Validá y transformá YAML localmente con el mismo parser mantenido que utiliza el pipeline de compilación del archivo.
+summary: Valida y transforma YAML localmente con el mismo parser mantenido que utiliza el pipeline de compilación del archivo.
 visibility: public
 maturity: stable
 publishedAt: 2026-07-23
 updatedAt: 2026-07-23
 topics: [developer-tools, yaml, web]
-statusNote: El formato puede normalizar comentarios y estilos de escalares; revisá la salida antes de reemplazar archivos fuente.
+statusNote: El formato puede normalizar comentarios y estilos de escalares; revisa la salida antes de reemplazar archivos fuente.
 links:
   - label: Código del sitio
     href: https://github.com/NullKDev/nullkdev.github.io

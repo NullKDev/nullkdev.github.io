@@ -1,16 +1,35 @@
 ---
 import type { Page } from 'astro'
-import { brand, pageTitle } from '@/data/brand'
+import { pageTitle } from '@/data/brand'
 import type { CollectionEntry } from 'astro:content'
 import NoteRow from '@/components/notes/NoteRow.astro'
 import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
 import Icon from '@/components/primitives/Icon.astro'
 import Pagination from '@/components/primitives/Pagination.astro'
-import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import {
+  getAlternateLocale,
+  getDictionary,
+  getLocalizedPath,
+  type Locale,
+} from '@/i18n'
 import { getTopicLabel } from '@/data/taxonomy'
 import { getArchiveLabel } from '@/i18n/archive'
 import Layout from '@/layouts/Layout.astro'
-import { countByKind, getAvailableKinds, getSupersededBy } from '@/lib/notes'
+import { buildCollectionPageLd } from '@/lib/structured-data'
+import { getArchiveEntries } from '@/lib/content'
+import { getFeedPath } from '@/lib/rss'
+import {
+  countByKind,
+  getAvailableKinds,
+  getNotesPagePath,
+  getNotesViewPath,
+  getSupersededBy,
+  resolveNotesCounterpart,
+} from '@/lib/notes'
+import { getSeriesPosition } from '@/lib/series'
+import '@/styles/global.css'
+import '@/styles/archive.css'
+import '@/styles/sections/notes.css'
 
 interface Props {
   locale: Locale
@@ -32,14 +51,24 @@ const counts = countByKind(all)
 const kinds = getAvailableKinds(all)
 const base = getLocalizedPath('/notes', locale)
 
-// One place that knows how a Notes URL is built, for every axis and page.
-const viewPath = topic
-  ? `${base}/topic/${topic}/`
-  : kind
-    ? `${base}/type/${kind}/`
-    : `${base}/`
-const pageHref = (target: number) =>
-  target === 1 ? viewPath : `${viewPath}${target}/`
+const viewPath = getNotesViewPath(base, { kind, topic })
+/* Every page link, numbered or stepped, comes from here. Astro's
+   `page.url.next` omits the trailing slash the routes are served under, which
+   cost every "Older" click a redirect. */
+const pageHref = (target: number) => getNotesPagePath(viewPath, target)
+/* The language switch may fall back; hreflang may not. Page 2 of English is
+   not page 1 of Spanish, and a filter one locale lacks has no translation. */
+const otherLocale = getAlternateLocale(locale)
+const counterpart = resolveNotesCounterpart({
+  otherEntries: (await getArchiveEntries(
+    'notes',
+    otherLocale,
+  )) as CollectionEntry<'notes'>[],
+  otherBase: getLocalizedPath('/notes', otherLocale),
+  page: page.currentPage,
+  kind,
+  topic,
+})
 const topicLabel = topic ? getTopicLabel(topic, locale) : undefined
 
 // No lead entry: the stream is reverse-chronological, so the first card is
@@ -82,19 +111,13 @@ const countWord =
 /* A list page is a `CollectionPage`, not an `Article`. Without it these
    surfaces carried no structured data at all — 44 indexable pages, most of
    them the topic and type filters that exist precisely to be found. */
-const collectionJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'CollectionPage',
+const collectionJsonLd = buildCollectionPageLd({
   name: title,
   description,
-  inLanguage: locale,
-  isPartOf: {
-    '@type': 'WebSite',
-    name: brand.name,
-    url: Astro.site?.toString(),
-  },
+  locale,
+  site: Astro.site,
   numberOfItems: page.total,
-}
+})
 ---
 
 <Layout
@@ -102,9 +125,8 @@ const collectionJsonLd = {
   title={title}
   description={description}
   jsonLd={collectionJsonLd}
-  counterpartPath={locale === 'en'
-    ? `/es${viewPath}`
-    : viewPath.replace('/es', '')}
+  counterpartPath={counterpart.switchPath}
+  alternatePath={counterpart.alternatePath}
 >
   <main class="notes-index">
     <header class="notes-head">
@@ -129,7 +151,7 @@ const collectionJsonLd = {
         <p class="notes-head__count">
           {all.length}
           <span>{countWord}</span>
-          <a class="notes-head__feed" href="/rss.xml">
+          <a class="notes-head__feed" href={getFeedPath(locale)}>
             <Icon name="feed" size={14} />
             RSS
           </a>
@@ -142,9 +164,7 @@ const collectionJsonLd = {
       class="notes-search"
       role="search"
       data-notes-search
-      data-endpoint={locale === 'en'
-        ? '/notes-search.json'
-        : '/es/notes-search.json'}
+      data-endpoint={getLocalizedPath('/notes-search.json', locale)}
       hidden
     >
       <label for="notes-q" class="sr-only">{dictionary.notes.search}</label>
@@ -201,6 +221,7 @@ const collectionJsonLd = {
               minutes={meta[entry.id]?.minutes ?? 1}
               parts={meta[entry.id]?.parts ?? []}
               supersededBy={getSupersededBy(entry, all)}
+              series={getSeriesPosition(entry, all, locale)}
             />
           ))}
         </div>
@@ -209,13 +230,36 @@ const collectionJsonLd = {
       )
     }
 
-    <section class="notes-results" data-notes-results hidden aria-live="polite">
+    {
+      /* The live region is always rendered: one that starts hidden is not in
+         the accessibility tree, so its first update is never announced. Only
+         the visible results toggle. */
+    }
+    <p class="sr-only" role="status" data-notes-status></p>
+    <section class="notes-results" data-notes-results hidden>
       <p
         class="notes-results__count"
         data-notes-count
         data-template={dictionary.notes.results}
         data-jump={dictionary.notes.jumpTo}
+        data-minutes={dictionary.notes.readTime}
+        data-error={dictionary.notes.searchError}
+        data-section={dictionary.notes.inSection}
       >
+      </p>
+      <p
+        class="notes-results__empty"
+        data-notes-empty
+        data-template={dictionary.notes.noMatch}
+        hidden
+      >
+        <span data-notes-empty-text></span>{' '}<button
+          type="button"
+          data-notes-clear>{dictionary.notes.clearSearch}</button
+        >{` ${dictionary.notes.or} `}<a
+          href={getLocalizedPath('/tags/', locale)}
+          >{dictionary.notes.browseTopics}</a
+        >.
       </p>
       <ol class="notes-results__list" data-notes-list></ol>
     </section>
@@ -224,8 +268,8 @@ const collectionJsonLd = {
       locale={locale}
       current={page.currentPage}
       total={page.lastPage}
-      prev={page.url.prev}
-      next={page.url.next}
+      prev={page.url.prev && pageHref(page.currentPage - 1)}
+      next={page.url.next && pageHref(page.currentPage + 1)}
       href={pageHref}
       labels={{
         previous: dictionary.notes.newer,
@@ -261,20 +305,19 @@ const collectionJsonLd = {
 </script>
 
 <script>
+  import {
+    matchesQuery,
+    searchNotes,
+    type SearchHit,
+    type SearchRow,
+  } from '@/lib/notes-search'
+
   // Search runs over the whole collection, not the current page — the same
   // reason filtering and pagination are routes. The field only appears once
-  // this script can actually make it work.
-  type Row = {
-    title: string
-    summary: string
-    kindLabel: string
-    topics: string[]
-    path: string
-    minutes: number
-    date: string
-  }
+  // this script can actually make it work. Matching lives in lib/notes-search
+  // so the build, this field and the 404 suggestions read the index one way.
   type Filter = { label: string; count: number; path: string }
-  type Index = { entries: Row[]; filters: Filter[] }
+  type Index = { entries: SearchRow[]; filters: Filter[] }
 
   const form = document.querySelector<HTMLFormElement>('[data-notes-search]')
   const input = form?.querySelector<HTMLInputElement>('input')
@@ -282,84 +325,144 @@ const collectionJsonLd = {
   const results = document.querySelector<HTMLElement>('[data-notes-results]')
   const list = document.querySelector<HTMLOListElement>('[data-notes-list]')
   const count = document.querySelector<HTMLElement>('[data-notes-count]')
+  const status = document.querySelector<HTMLElement>('[data-notes-status]')
+  const empty = document.querySelector<HTMLElement>('[data-notes-empty]')
+  const emptyText = empty?.querySelector<HTMLElement>('[data-notes-empty-text]')
+  const emptyClear =
+    empty?.querySelector<HTMLButtonElement>('[data-notes-clear]')
+  const filterBar = document.querySelector<HTMLElement>('.notes-filter')
   const stream = document.querySelector<HTMLElement>('.notes-stream')
   const pagination = document.querySelector<HTMLElement>('.pagination')
   const template = count?.dataset.template ?? ''
   const jumpLabel = count?.dataset.jump ?? ''
+  const minutesUnit = count?.dataset.minutes ?? ''
+  const errorText = count?.dataset.error ?? ''
+  const sectionLabel = count?.dataset.section ?? ''
+  const emptyTemplate = empty?.dataset.template ?? ''
 
   if (form && input && results && list && count) {
-    let index: Index | undefined
+    let index: Promise<Index> | undefined
     let pending: number | undefined
 
-    const load = async () => {
-      if (index) return index
-      const response = await fetch(form.dataset.endpoint ?? '')
-      index = (await response.json()) as Index
+    // One request however fast the reader types: every keystroke before the
+    // index arrives awaits the same promise. A failure is not cached, so the
+    // next keystroke tries again.
+    const load = () => {
+      index ??= fetch(form.dataset.endpoint ?? '').then((response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        return response.json() as Promise<Index>
+      })
+      index.catch(() => {
+        index = undefined
+      })
       return index
     }
 
-    const filterRow = (filter: Filter) => {
+    const announce = (message: string) => {
+      if (status) status.textContent = message
+    }
+
+    // The type tabs count the whole collection and their links drop the
+    // query, so a number beside them while searching would describe a list
+    // the reader is not looking at. The tabs stay; their counts step out.
+    const setSearching = (searching: boolean) => {
+      filterBar?.toggleAttribute('data-searching', searching)
+      if (stream) stream.hidden = searching
+      if (pagination) pagination.hidden = searching
+      if (reset) reset.hidden = input.value === ''
+    }
+
+    const resultRow = (
+      href: string,
+      kindText: string,
+      titleText: string,
+      metaText: string,
+      section?: string,
+    ) => {
       const item = document.createElement('li')
-      item.className = 'notes-results__jump'
       const link = document.createElement('a')
-      link.href = filter.path
+      link.href = href
       const kind = document.createElement('span')
       kind.className = 'notes-results__kind'
-      kind.textContent = jumpLabel
+      kind.textContent = kindText
+      const body = document.createElement('span')
+      body.className = 'notes-results__body'
       const title = document.createElement('strong')
-      title.textContent = filter.label
+      title.textContent = titleText
+      body.append(title)
+      if (section) {
+        const where = document.createElement('span')
+        where.className = 'notes-results__section'
+        where.textContent = `${sectionLabel} ${section}`
+        body.append(where)
+      }
       const meta = document.createElement('span')
       meta.className = 'notes-results__meta'
-      meta.textContent = String(filter.count)
-      link.append(kind, title, meta)
+      meta.textContent = metaText
+      link.append(kind, body, meta)
       item.append(link)
       return item
     }
 
+    const filterRow = (filter: Filter) => {
+      const item = resultRow(
+        filter.path,
+        jumpLabel,
+        filter.label,
+        String(filter.count),
+      )
+      item.className = 'notes-results__jump'
+      return item
+    }
+
+    const hitRow = ({ row, section, href }: SearchHit) =>
+      resultRow(
+        href,
+        row.kindLabel,
+        row.title,
+        `${row.date} · ${row.minutes} ${minutesUnit}`,
+        section?.text,
+      )
+
     const render = (query: string, data: Index) => {
-      const needle = query.toLowerCase()
       const jumps = data.filters.filter((filter) =>
-        filter.label.toLowerCase().includes(needle),
+        matchesQuery(filter.label, query),
       )
-      const matches = data.entries.filter((row) =>
-        [row.title, row.summary, row.kindLabel, ...row.topics]
-          .join(' ')
-          .toLowerCase()
-          .includes(needle),
-      )
-      list.replaceChildren(
-        ...jumps.map(filterRow),
-        ...matches.map((row) => {
-          const item = document.createElement('li')
-          const link = document.createElement('a')
-          link.href = row.path
-          const kind = document.createElement('span')
-          kind.className = 'notes-results__kind'
-          kind.textContent = row.kindLabel
-          const title = document.createElement('strong')
-          title.textContent = row.title
-          const meta = document.createElement('span')
-          meta.className = 'notes-results__meta'
-          meta.textContent = `${row.date} · ${row.minutes}`
-          link.append(kind, title, meta)
-          item.append(link)
-          return item
-        }),
-      )
+      const hits = searchNotes(data.entries, query)
+      list.replaceChildren(...jumps.map(filterRow), ...hits.map(hitRow))
+
+      // Nothing at all: say what was searched and offer the two ways on,
+      // instead of a bare "0 of 9".
+      const nothing = jumps.length === 0 && hits.length === 0
+      if (empty && emptyText) {
+        emptyText.textContent = emptyTemplate.replace('{query}', query)
+        empty.hidden = !nothing
+      }
+      count.hidden = nothing
       count.textContent = template
-        .replace('{shown}', String(matches.length))
+        .replace('{shown}', String(hits.length))
         .replace('{total}', String(data.entries.length))
+      announce(nothing ? (emptyText?.textContent ?? '') : count.textContent)
       results.hidden = false
-      if (stream) stream.hidden = true
-      if (pagination) pagination.hidden = true
-      if (reset) reset.hidden = false
+      setSearching(true)
+    }
+
+    // The archive below stays in place: search is an addition to the filters,
+    // so losing it must not take the list away too.
+    const fail = () => {
+      list.replaceChildren()
+      if (empty) empty.hidden = true
+      count.hidden = false
+      count.textContent = errorText
+      announce(errorText)
+      results.hidden = false
+      setSearching(false)
     }
 
     const clear = () => {
+      announce('')
       results.hidden = true
-      if (stream) stream.hidden = false
-      if (pagination) pagination.hidden = false
-      if (reset) reset.hidden = true
+      setSearching(false)
     }
 
     input.addEventListener('input', () => {
@@ -370,12 +473,38 @@ const collectionJsonLd = {
         return
       }
       pending = window.setTimeout(async () => {
-        render(query, await load())
+        let data: Index
+        try {
+          data = await load()
+        } catch {
+          // Only report it if the reader is still searching.
+          if (input.value.trim().length >= 2) fail()
+          return
+        }
+        // The index can arrive after the field was cleared or changed; only
+        // what is in the field now is rendered.
+        const current = input.value.trim()
+        if (current.length >= 2) render(current, data)
       }, 120)
+    })
+
+    // One way to clear: the labelled button. The browser's own cancel glyph
+    // is hidden in notes.css, and Escape does what the button does in every
+    // browser, not only the ones that clear a search field natively.
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && input.value !== '') {
+        event.preventDefault()
+        form.reset()
+      }
+    })
+    emptyClear?.addEventListener('click', () => {
+      form.reset()
+      input.focus()
     })
 
     form.addEventListener('submit', (event) => event.preventDefault())
     form.addEventListener('reset', () => {
+      window.clearTimeout(pending)
       window.setTimeout(clear, 0)
     })
 

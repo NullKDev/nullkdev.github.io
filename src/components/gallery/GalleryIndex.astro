@@ -1,13 +1,23 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content'
-import { brand, pageTitle } from '@/data/brand'
+import type { CollectionEntry } from 'astro:content'
+import { pageTitle } from '@/data/brand'
 import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
 import StatusChip from '@/components/primitives/StatusChip.astro'
-import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import {
+  getAlternateLocale,
+  getDictionary,
+  getLocalizedPath,
+  type Locale,
+} from '@/i18n'
 import { getArchiveLabel } from '@/i18n/archive'
 import Layout from '@/layouts/Layout.astro'
-import { getEntryPath } from '@/lib/content'
-import { isMedia } from '@/lib/gallery'
+import { buildCollectionPageLd } from '@/lib/structured-data'
+import GalleryImage from '@/components/gallery/GalleryImage.astro'
+import { getEntryPath, getGallerySheets } from '@/lib/content'
+import { formatPieceCount, galleryStill } from '@/lib/gallery'
+import '@/styles/global.css'
+import '@/styles/archive.css'
+import '@/styles/sections/gallery-index.css'
 
 interface Props {
   locale: Locale
@@ -17,59 +27,26 @@ interface Props {
 const { locale, entries } = Astro.props
 const dictionary = getDictionary(locale)
 
-// One read for the whole page, grouped by collection key. Items are shared
-// across locales, so this is the same lookup the detail pages use.
-const allItems = await getCollection('galleryItems')
-const itemsFor = (entry: CollectionEntry<'gallery'>) =>
-  allItems
-    .filter((item) => item.data.collection === entry.data.translationKey)
-    .toSorted((left, right) => left.data.order - right.data.order)
-
-const sheets = entries.map((entry) => {
-  const items = itemsFor(entry)
-  const media = items.filter(isMedia)
-  const tally = items.reduce<Record<string, number>>((counts, item) => {
-    counts[item.data.type] = (counts[item.data.type] ?? 0) + 1
-    return counts
-  }, {})
-  return {
-    entry,
-    items,
-    // The sheet shows real contents. A collection with nothing visual still
-    // gets a card — it just leads with its file tally instead of a mosaic.
-    thumbs: media.slice(0, 5),
-    generated: items.filter((item) => item.data.origin === 'generated').length,
-    tally,
-  }
-})
-
-const totalPieces = sheets.reduce((sum, sheet) => sum + sheet.items.length, 0)
-const totalGenerated = sheets.reduce((sum, sheet) => sum + sheet.generated, 0)
+const { sheets, totals } = await getGallerySheets(entries)
 const pieceWord =
-  totalPieces === 1 ? dictionary.gallery.item : dictionary.gallery.items
+  totals.pieces === 1 ? dictionary.gallery.item : dictionary.gallery.items
 
 /* Same `CollectionPage` treatment as the other index surfaces — Lab and
    Gallery render through their own components, which is how they were the last
    two indexable pages left without structured data. */
-const collectionJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'CollectionPage',
+const collectionJsonLd = buildCollectionPageLd({
   name: dictionary.nav.gallery,
   description: dictionary.section.gallery,
-  inLanguage: locale,
-  isPartOf: {
-    '@type': 'WebSite',
-    name: brand.name,
-    url: Astro.site?.toString(),
-  },
-}
+  locale,
+  site: Astro.site,
+})
 ---
 
 <Layout
   locale={locale}
   title={pageTitle(dictionary.nav.gallery)}
   description={dictionary.section.gallery}
-  counterpartPath={locale === 'en' ? '/es/gallery/' : '/gallery/'}
+  alternatePath={getLocalizedPath('/gallery/', getAlternateLocale(locale))}
   jsonLd={collectionJsonLd}
 >
   <main class="gallery-index">
@@ -87,22 +64,22 @@ const collectionJsonLd = {
         <div>
           <dt>
             {
-              entries.length === 1
+              totals.collections === 1
                 ? dictionary.gallery.collection
                 : dictionary.gallery.collections
             }
           </dt>
-          <dd>{entries.length}</dd>
+          <dd>{totals.collections}</dd>
         </div>
         <div>
           <dt>{pieceWord}</dt>
-          <dd>{totalPieces}</dd>
+          <dd>{totals.pieces}</dd>
         </div>
         {
-          totalGenerated > 0 && (
+          totals.generated > 0 && (
             <div>
               <dt>{dictionary.gallery.generated}</dt>
-              <dd>{totalGenerated}</dd>
+              <dd>{totals.generated}</dd>
             </div>
           )
         }
@@ -125,17 +102,18 @@ const collectionJsonLd = {
                 />
 
                 <div class="gallery-sheet__contact" data-count={thumbs.length}>
-                  {thumbs.map((item) => (
-                    <img
-                      src={item.data.src}
+                  {thumbs.map((item, index) => (
+                    <GalleryImage
+                      src={galleryStill(item) ?? ''}
                       alt=""
-                      loading="lazy"
-                      decoding="async"
+                      dimensions={item.data.dimensions}
+                      widths={index === 0 ? [240, 480] : [160, 320]}
+                      sizes={index === 0 ? '15rem' : '9rem'}
                     />
                   ))}
                   {items.length > thumbs.length && thumbs.length > 0 && (
                     <span class="gallery-sheet__more">
-                      +{items.length - thumbs.length}
+                      {formatPieceCount(items.length, dictionary.archive)}
                     </span>
                   )}
                 </div>
@@ -152,7 +130,7 @@ const collectionJsonLd = {
                   <h2>{entry.data.title}</h2>
                   <p class="gallery-sheet__summary">{entry.data.summary}</p>
                   <ul class="gallery-sheet__tally">
-                    {Object.entries(tally).map(([type, count]) => (
+                    {tally.map(({ type, count }) => (
                       <li>
                         <b>{count}</b>{' '}
                         {getArchiveLabel(

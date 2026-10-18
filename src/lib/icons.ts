@@ -55,6 +55,7 @@ const registry = {
   minus: 'lucide:minus',
   plus: 'lucide:plus',
   fitWidth: 'lucide:scan',
+  sectionLink: 'lucide:hash',
 
   // Record apparatus — the blocks under an entry
   outcomes: 'lucide:target',
@@ -66,6 +67,8 @@ const registry = {
   shield: 'lucide:shield',
 
   archive: 'lucide:archive',
+  // Marks a featured record; always beside the word it stands for.
+  star: 'lucide:star',
   search: 'lucide:search',
   feed: 'lucide:rss',
 
@@ -104,6 +107,17 @@ const registry = {
   // Theme toggle
   sun: 'lucide:sun',
   moon: 'lucide:moon',
+
+  /* Media and demo controls. `pause`/`play` are the robot's motion toggle and
+     the demos' playback button; `fast`/`slow` name the two measuring paths the
+     streaming demo compares, so they read as speed, not as brand marks. */
+  pause: 'lucide:pause',
+  play: 'lucide:play',
+  stop: 'lucide:square',
+  loading: 'lucide:loader-circle',
+  upload: 'lucide:upload',
+  fast: 'lucide:zap',
+  slow: 'lucide:turtle',
 
   /* Callout tones — consumed by src/components/mdx/Callout.astro, which used to
      carry its own private icon set at a fourth stroke width. Named after the

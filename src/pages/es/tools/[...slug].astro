@@ -1,24 +1,9 @@
 ---
 import CompatibilityPage from '@/components/CompatibilityPage.astro'
-import { getLegacyRoutes } from '@/data/legacy-routes'
-export const getStaticPaths = () =>
-  getLegacyRoutes()
-    .filter(
-      ({ locale, source }) =>
-        locale === 'es' && source.startsWith('/es/tools/'),
-    )
-    .map((route) => ({
-      params: {
-        slug: route.source.slice('/es/tools/'.length, -1) || undefined,
-      },
-      props: {
-        route,
-        counterpart: getLegacyRoutes().find(
-          ({ locale, source }) =>
-            locale === 'en' && `/es${source}` === route.source,
-        ),
-      },
-    }))
+import { getLegacyStaticPaths } from '@/lib/legacy-routes'
+
+export const getStaticPaths = () => getLegacyStaticPaths('tools', 'es')
+
 const { route, counterpart } = Astro.props
 ---
 

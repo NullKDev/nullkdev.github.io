@@ -4,6 +4,7 @@ import { brand } from '@/data/brand'
 import Icon from '@/components/primitives/Icon.astro'
 import { about } from '@/data/about'
 import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
+import { getFeedPath } from '@/lib/rss'
 
 interface Props {
   locale: Locale
@@ -23,7 +24,7 @@ const reference = ['uses', 'stack', 'tags', 'colophon'] as const
       <a
         class="wordmark"
         href={getLocalizedPath('/', locale)}
-        aria-label={dictionary.nav.home}
+        aria-label={`${brand.mark}, ${dictionary.nav.home}`}
       >
         <BrandMark />
         <span>{brand.mark}</span>
@@ -72,7 +73,7 @@ const reference = ['uses', 'stack', 'tags', 'colophon'] as const
           </a>
         ))
       }
-      <a href="/rss.xml">
+      <a href={getFeedPath(locale)}>
         <Icon name="feed" size={15} />
         {dictionary.footer.feed}
       </a>

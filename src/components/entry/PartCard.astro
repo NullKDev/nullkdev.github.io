@@ -1,0 +1,46 @@
+---
+import Icon from '@/components/primitives/Icon.astro'
+import { getDictionary, type Locale } from '@/i18n'
+
+/* The opening of a subpost inlined in its entry: where it sits, its title,
+   what it covers, and the way out to the part on its own URL. A hairline and
+   a kicker over an h2 the size of the part's own h2s did not say where one
+   chapter ended and the next began.
+
+   The title stays the first `h2` in the part's `<section>`: the active-section
+   tracker watches that heading, and the outline already lists it as the part.
+   `position` is absent for a single part — a count of one says nothing — and
+   keeps the `subpost-index` class the built-copy gate reads. */
+interface Props {
+  title: string
+  summary: string
+  href: string
+  minutes: number | undefined
+  position: string | undefined
+  locale: Locale
+}
+
+const { title, summary, href, minutes, position, locale } = Astro.props
+const dictionary = getDictionary(locale)
+---
+
+<header class="part-card">
+  {
+    (position || minutes !== undefined) && (
+      <div class="part-card__meta">
+        {position && <p class="subpost-index">{position}</p>}
+        {minutes !== undefined && (
+          <p class="part-card__minutes">
+            {minutes} {dictionary.archive.minutes}
+          </p>
+        )}
+      </div>
+    )
+  }
+  <h2 class="part-card__title">{title}</h2>
+  <p class="part-card__summary">{summary}</p>
+  <a class="part-card__link" href={href}>
+    {dictionary.archive.readPartAlone}<span class="sr-only">: {title}</span>
+    <Icon name="arrowRight" size={16} />
+  </a>
+</header>

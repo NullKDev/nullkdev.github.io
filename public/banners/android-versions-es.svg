@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Banner de Android, versión por versión, con el robot de Android.">
+  <defs>
+    <linearGradient id="bg-android-versions-es" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#0B2B22"/>
+    </linearGradient>
+    <radialGradient id="glow-android-versions-es" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00875A" stop-opacity="0.22000000000000003"/>
+      <stop offset="100%" stop-color="#00875A" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="lift-android-versions-es" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#00875A" flood-opacity="0.275"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg-android-versions-es)"/>
+  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-android-versions-es)"/>
+<g filter="url(#lift-android-versions-es)"><image x="730" y="130" width="370" height="370" preserveAspectRatio="xMidYMid meet" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBhcmlhLWhpZGRlbj0idHJ1ZSIgZm9jdXNhYmxlPSJmYWxzZSI+PHBhdGggZmlsbD0iIzAwODc1QSIgZD0iTTE4LjQ0IDUuNTU5cS0xLjAxNSAxLjc0OC0yLjAyOCAzLjQ5OHEtLjA1NS0uMDIzLS4xMTEtLjA0M2ExMi4xIDEyLjEgMCAwIDAtOC42OC4wMzNDNy41MzcgOC44OTcgNS44NjggNi4wMjYgNS42IDUuNTZhMSAxIDAgMCAwLS4xNDEtLjE5YTEuMTA0IDEuMTA0IDAgMCAwLTEuNzY4IDEuMjk4YzEuOTQ3IDMuMzctLjA5Ni0uMjE2IDEuOTQ4IDMuMzZjLjAxNy4wMy0uNDk1LjI2My0xLjM5MyAxLjAxN0MyLjkgMTIuMTc2LjQ1MiAxNC43NzIgMCAxOC45OWgyNGExMS43IDExLjcgMCAwIDAtLjc0Ni0zLjA2OGExMi4xIDEyLjEgMCAwIDAtMi43NC00LjE4NGExMiAxMiAwIDAgMC0yLjEzMS0xLjY4N2MuNjYtMS4xMjIgMS4zMTItMi4yNTYgMS45NjUtMy4zODVhMS4xMSAxLjExIDAgMCAwLS4wMDgtMS4xMmExLjEgMS4xIDAgMCAwLS44NTItLjUzMmMtLjUyMi0uMDU0LS45MzkuMzEzLTEuMDQ5LjU0NW0tLjA0IDguNDZjLjM5NS41OTMuMzI0IDEuMzMxLS4xNTYgMS42NWMtLjQ4LjMyLTEuMTg4LjEtMS41ODItLjQ5M3MtLjMyNC0xLjMzLjE1Ni0xLjY1Yy40NzMtLjMxNiAxLjE4Mi0uMTEgMS41ODIuNDk0bS0xMS4xOTMtLjQ5MmMuNDguMzIuNTUgMS4wNTguMTU2IDEuNjVjLS4zOTQuNTkzLTEuMTAzLjgxNS0xLjU4NC40OTVjLS40OC0uMzItLjU1LTEuMDU4LS4xNTYtMS42NWMuNC0uNjAzIDEuMTA5LS44MTEgMS41ODQtLjQ5NSIvPjwvc3ZnPg=="/></g>
+  <rect x="96" y="150" width="76" height="4" rx="2" fill="#00875A"/>
+  <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#00875A">API 19–37 · 2013–2026</text>
+  <text x="96" y="318" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="96" font-weight="600" letter-spacing="-3" fill="#F8FAFC">Android</text>
+  <text x="96" y="392" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="52" font-weight="500" letter-spacing="-1" fill="#94A3B8">Versión por versión</text>
+  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">18 versiones · de KitKat a Cinnamon Bun</text>
+</svg>

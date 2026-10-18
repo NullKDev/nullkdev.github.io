@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Banner de Android 11 Red Velvet Cake, con el logo de la versión.">
+  <defs>
+    <linearGradient id="bg-android-11-es-light" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E2E8F0"/>
+      <stop offset="100%" stop-color="#A7F3D0"/>
+    </linearGradient>
+    <radialGradient id="glow-android-11-es-light" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00875A" stop-opacity="0.08800000000000001"/>
+      <stop offset="100%" stop-color="#00875A" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="lift-android-11-es-light" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#00875A" flood-opacity="0.11"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg-android-11-es-light)"/>
+  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-android-11-es-light)"/>
+<g filter="url(#lift-android-11-es-light)"><image x="730" y="130" width="370" height="370" preserveAspectRatio="xMidYMid meet" href="data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNTEyIDUxMjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8Y2lyY2xlIHN0eWxlPSJmaWxsOiMwODMwNDI7IiBjeD0iMjU2IiBjeT0iMjU2IiByPSIyNTYiLz4KPGc+Cgk8Zz4KCQk8cGF0aCBzdHlsZT0iZmlsbDojRjg2NzM0OyIgZD0iTTQxNi4yMzMsMjM2LjYyMWgtMTAuNjcxYy0xLjQ2NSwwLTIuNjUzLTEuMTg4LTIuNjUzLTIuNjUzdi05Ljg0OAoJCQljMC0xLjQ2NSwxLjE4OC0yLjY1MywyLjY1My0yLjY1M2gyMy4zNzJjMS40NjUsMCwyLjY1MywxLjE4OCwyLjY1MywyLjY1M3Y2Ni44OTZjMCwxLjQ2NS0xLjE4OCwyLjY1My0yLjY1MywyLjY1M2gtMTAuMDQ4CgkJCWMtMS40NjUsMC0yLjY1My0xLjE4OC0yLjY1My0yLjY1M1YyMzYuNjIxeiIvPgoJPC9nPgoJPGc+CgkJPHBhdGggc3R5bGU9ImZpbGw6I0Y4NjczNDsiIGQ9Ik00NTUuNTEyLDIzNi42MjFINDQ0Ljg0Yy0xLjQ2NSwwLTIuNjUzLTEuMTg4LTIuNjUzLTIuNjUzdi05Ljg0OGMwLTEuNDY1LDEuMTg4LTIuNjUzLDIuNjUzLTIuNjUzCgkJCWgyMy4zNzJjMS40NjUsMCwyLjY1MywxLjE4OCwyLjY1MywyLjY1M3Y2Ni44OTZjMCwxLjQ2NS0xLjE4OCwyLjY1My0yLjY1MywyLjY1M2gtMTAuMDQ4Yy0xLjQ2NSwwLTIuNjUzLTEuMTg4LTIuNjUzLTIuNjUzCgkJCVYyMzYuNjIxeiIvPgoJPC9nPgo8L2c+CjxnPgoJPGNpcmNsZSBzdHlsZT0iZmlsbDojRDZGMEZGOyIgY3g9IjM2NC4xMTkiIGN5PSI0MDQuNTkiIHI9IjQuMzM5Ii8+Cgk8Y2lyY2xlIHN0eWxlPSJmaWxsOiNENkYwRkY7IiBjeD0iMjc1LjQ2MyIgY3k9IjQzOC4zNzMiIHI9IjQuODQyIi8+Cgk8Y2lyY2xlIHN0eWxlPSJmaWxsOiNENkYwRkY7IiBjeD0iMTg0LjUxNiIgY3k9IjQyNC4xODUiIHI9IjUuMzYyIi8+Cgk8Y2lyY2xlIHN0eWxlPSJmaWxsOiNENkYwRkY7IiBjeD0iMTEwLjQxNyIgY3k9IjM2NS4wODEiIHI9IjUuODk0Ii8+Cgk8Y2lyY2xlIHN0eWxlPSJmaWxsOiNENkYwRkY7IiBjeD0iNzUuOTQiIGN5PSIyNzYuNTk2IiByPSI2LjQzNSIvPgoJPGNpcmNsZSBzdHlsZT0iZmlsbDojRDZGMEZGOyIgY3g9Ijg5LjQ3NyIgY3k9IjE4NS41NDgiIHI9IjYuOTg0Ii8+Cgk8Y2lyY2xlIHN0eWxlPSJmaWxsOiNENkYwRkY7IiBjeD0iMTQ3Ljk3MiIgY3k9IjExMS4wODEiIHI9IjcuNTM4Ii8+Cgk8Y2lyY2xlIHN0eWxlPSJmaWxsOiNENkYwRkY7IiBjeD0iMjM2LjYyOCIgY3k9Ijc0Ljc5OSIgcj0iOC4wOTYiLz4KCTxjaXJjbGUgc3R5bGU9ImZpbGw6I0Q2RjBGRjsiIGN4PSIzMjcuMDkxIiBjeT0iODYuOTYzIiByPSI4LjY1OCIvPgoJPGNpcmNsZSBzdHlsZT0iZmlsbDojRDZGMEZGOyIgY3g9IjQwMS4wNTIiIGN5PSIxNDYuMTg2IiByPSI5LjIyMyIvPgo8L2c+CjxnPgoJPGNpcmNsZSBzdHlsZT0iZmlsbDojM0REQjg1OyIgY3g9IjI1NS40NDkiIGN5PSIyNTcuNTY4IiByPSIxMjguMTA5Ii8+Cgk8Y2lyY2xlIHN0eWxlPSJmaWxsOiNGRkZGRkY7IiBjeD0iMzM5LjIzMSIgY3k9IjI1Ny41NjgiIHI9IjIxLjQ3NiIvPgo8L2c+Cjwvc3ZnPgo="/></g>
+  <rect x="96" y="150" width="76" height="4" rx="2" fill="#00875A"/>
+  <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#00875A">API 30 · SEP 2020</text>
+  <text x="96" y="318" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="96" font-weight="600" letter-spacing="-3" fill="#0F172A">Android 11</text>
+  <text x="96" y="392" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="52" font-weight="500" letter-spacing="-1" fill="#475569">Red Velvet Cake</text>
+  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#55617A">Nombre interno · permisos de una vez</text>
+</svg>

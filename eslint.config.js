@@ -33,6 +33,30 @@ export default tseslint.config(
     },
   },
   {
+    /* `@/` is the one internal alias. The per-folder prefixes (`@components`,
+       `@lib`, …) were retired from tsconfig.json and vitest.config.ts; this
+       keeps an import from reintroducing them where no resolver would flag it. */
+    files: [
+      'src/**/*.{ts,tsx,astro}',
+      'tests/**/*.{ts,tsx}',
+      'scripts/**/*.ts',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              regex:
+                '^@(components|ui|layouts|lib|content|styles|i18n|data|assets|hooks)(/|$)',
+              message: 'Import internal modules through the `@/` alias.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['src/**/*.tsx'],
     plugins: {
       'jsx-a11y': jsxA11y,

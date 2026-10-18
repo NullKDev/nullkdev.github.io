@@ -11,15 +11,15 @@ export const getStaticPaths = (async ({ paginate }) => {
     'notes',
     'en',
   )) as CollectionEntry<'notes'>[]
-  return paginate(entries, { pageSize: NOTES_PER_PAGE })
+  // Derived once for the whole set, not once per paginated page.
+  const meta = await getNotesMeta(entries)
+  return paginate(entries, {
+    pageSize: NOTES_PER_PAGE,
+    props: { all: entries, meta },
+  })
 }) satisfies GetStaticPaths
 
-const { page } = Astro.props
-const all = (await getArchiveEntries(
-  'notes',
-  'en',
-)) as CollectionEntry<'notes'>[]
-const meta = await getNotesMeta(all)
+const { page, all, meta } = Astro.props
 ---
 
 <NotesIndex locale="en" page={page} all={all} meta={meta} />

@@ -4,7 +4,7 @@ locale: es
 translationKey: json-formatter
 slug: formateador-json
 title: Formateador JSON
-summary: Formateá, minificá y validá JSON localmente en el navegador con errores explícitos y sin solicitudes de red.
+summary: Formatea, minifica y valida JSON localmente en el navegador con errores explícitos y sin solicitudes de red.
 visibility: public
 maturity: stable
 publishedAt: 2026-07-23
@@ -37,4 +37,4 @@ outputs: [JSON formateado, JSON minificado, resultado de validación]
 implementationId: json-formatter
 ---
 
-Usá este espacio para inspeccionar JSON sin enviarlo a un servicio. El parseo sigue `JSON.parse` y el formato es determinista mediante `JSON.stringify`.
+Usa este espacio para inspeccionar JSON sin enviarlo a un servicio. El parseo sigue `JSON.parse` y el formato es determinista mediante `JSON.stringify`.

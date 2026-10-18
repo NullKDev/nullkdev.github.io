@@ -1,4 +1,4 @@
-import type { Locale } from '@/i18n'
+import { getLocalizedPath, type Locale } from '@/i18n'
 
 export interface LegacyRoute {
   source: string
@@ -10,7 +10,6 @@ export interface LegacyRoute {
 
 const migrated = {
   blog: {
-    'android-17-beta-3': 'notes/android-17-beta-3',
     'compose-remote': 'notes/remote-compose',
     'compose-remote/getting-started': 'notes/remote-compose/getting-started',
     'gof-patterns-android': 'notes/gof-patterns-android',
@@ -42,7 +41,6 @@ const migrated = {
 } as const
 
 const spanishTargets: Record<string, string> = {
-  'notes/android-17-beta-3': 'notes/android-17-beta-3',
   'notes/remote-compose': 'notes/composicion-remota',
   'notes/remote-compose/getting-started':
     'notes/composicion-remota/primeros-pasos',
@@ -78,8 +76,8 @@ const route = (
   kind: LegacyRoute['kind'] = 'migrated',
   retirement?: LegacyRoute['retirement'],
 ): LegacyRoute => ({
-  source: `${locale === 'es' ? '/es' : ''}/${source}/`.replaceAll('//', '/'),
-  target: `${locale === 'es' ? '/es' : ''}/${target}/`.replaceAll('//', '/'),
+  source: getLocalizedPath(`/${source}/`, locale),
+  target: getLocalizedPath(`/${target}/`, locale),
   locale,
   kind,
   retirement,

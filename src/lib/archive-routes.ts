@@ -1,4 +1,4 @@
-import type { Locale } from '@/i18n'
+import { getAlternateLocale, getLocalizedPath, type Locale } from '@/i18n'
 
 export type ArchiveDomain = 'work' | 'lab' | 'notes' | 'gallery'
 
@@ -8,13 +8,11 @@ interface TranslatedRouteEntry {
   slug: string
 }
 
-const localePrefix = (locale: Locale) => (locale === 'es' ? '/es' : '')
-
 export const buildEntryPath = (
   domain: ArchiveDomain,
   slug: string,
   locale: Locale,
-) => `${localePrefix(locale)}/${domain}/${slug}/`
+) => getLocalizedPath(`/${domain}/${slug}/`, locale)
 
 export const buildDocumentPath = (
   domain: ArchiveDomain,
@@ -29,7 +27,7 @@ export const getCounterpartPath = (
   domain: ArchiveDomain,
   fallbackPath: string,
 ) => {
-  const targetLocale: Locale = entry.locale === 'en' ? 'es' : 'en'
+  const targetLocale = getAlternateLocale(entry.locale)
   const counterpart = entries.find(
     (candidate) =>
       candidate.translationKey === entry.translationKey &&
@@ -38,5 +36,5 @@ export const getCounterpartPath = (
   if (counterpart) {
     return buildEntryPath(domain, counterpart.slug, targetLocale)
   }
-  return `${localePrefix(targetLocale)}${fallbackPath}`
+  return getLocalizedPath(fallbackPath, targetLocale)
 }

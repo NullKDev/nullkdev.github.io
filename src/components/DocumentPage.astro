@@ -3,11 +3,15 @@ import { getDictionary, getLocalizedPath, type Locale } from '@/i18n'
 import { pageTitle } from '@/data/brand'
 import { render } from 'astro:content'
 import Layout from '@/layouts/Layout.astro'
+import { getBannerSources } from '@/lib/banners'
 import {
   getAdjacentDocuments,
+  getCounterpartDocument,
+  getDocumentAlternatePath,
   getDocumentCounterpartPath,
   getDocumentPath,
   getDocumentRelationships,
+  getDocumentsForEntry,
   getEntryDomain,
   getEntryPath,
   type ArchiveDocument,
@@ -15,8 +19,19 @@ import {
 } from '@/lib/content'
 import { getTopicLabel } from '@/data/taxonomy'
 import { getArchiveLabel } from '@/i18n/archive'
-import DiagramControls from '@/components/primitives/DiagramControls.astro'
+import { buildDocumentOutline, getCounterpartAnchors } from '@/lib/outline'
+import { formatPartOf } from '@/lib/series'
+import { buildDocumentArticleLd } from '@/lib/structured-data'
+import EntryContentsCompact from '@/components/entry/EntryContentsCompact.astro'
+import EntryOutline from '@/components/entry/EntryOutline.astro'
+import EntryReadingTools from '@/components/entry/EntryReadingTools.astro'
+import EvidenceList from '@/components/entry/EvidenceList.astro'
+import RelationshipList from '@/components/entry/RelationshipList.astro'
 import Icon from '@/components/primitives/Icon.astro'
+import '@/styles/global.css'
+import '@/styles/archive.css'
+import '@/styles/sections/entry.css'
+import '@/styles/sections/prose.css'
 
 interface Props {
   entry: ArchiveEntry
@@ -27,9 +42,33 @@ const { entry, document, locale } = Astro.props
 const dictionary = getDictionary(locale)
 const domain = getEntryDomain(entry)
 const counterpartPath = await getDocumentCounterpartPath(entry, document)
+const alternatePath = await getDocumentAlternatePath(entry, document)
+/* A subpost is a part of its entry, so it shares the entry's banner — the
+   social PNG, since scrapers render nothing for SVG. Without this every
+   subpost previewed as the generic identity card. */
+const banner = getBannerSources(entry.data.image, locale)
+const socialImage = banner?.social
 const adjacent = await getAdjacentDocuments(entry, document)
+// "Part 3 of 4" says where the reader is; the old "NOTES / 03" named the
+// section and a zero-padded index nobody counts by.
+const partTotal = (await getDocumentsForEntry(entry)).length
+const partLabel =
+  partTotal > 1
+    ? formatPartOf(dictionary.archive.partOf, document.data.order, partTotal)
+    : getArchiveLabel('domain', domain, locale)
 const relationships = await getDocumentRelationships(document)
 const { Content, headings } = await render(document)
+// The same depth rule the subpost gets when its entry inlines it.
+const outline = buildDocumentOutline(headings)
+// Heading i → heading i of the translation, for the language switch; see
+// `getCounterpartAnchors` and `mountLocaleAnchor`.
+const counterpartDocument = await getCounterpartDocument(document)
+const counterpartAnchors = getCounterpartAnchors(
+  outline,
+  counterpartDocument
+    ? buildDocumentOutline((await render(counterpartDocument)).headings)
+    : undefined,
+)
 
 /* Just the subpost. Concatenating the parent title produced 153-character
    <title> elements that a search result truncates into uselessness — "How
@@ -37,6 +76,17 @@ const { Content, headings } = await render(document)
    relationship is already carried by the breadcrumb, the canonical URL and the
    JSON-LD; the title does not need to restate it. */
 const documentTitle = pageTitle(document.data.title)
+const jsonLd = buildDocumentArticleLd({
+  title: document.data.title,
+  summary: document.data.summary,
+  locale,
+  path: getDocumentPath(entry, document),
+  parentPath: getEntryPath(entry),
+  image: socialImage,
+  publishedAt: document.data.publishedAt,
+  updatedAt: document.data.updatedAt,
+  site: Astro.site,
+})
 ---
 
 <Layout
@@ -44,17 +94,21 @@ const documentTitle = pageTitle(document.data.title)
   title={documentTitle}
   description={document.data.summary}
   counterpartPath={counterpartPath}
-  jsonLd={{
-    '@context': 'https://schema.org',
-    '@type': 'TechArticle',
-    headline: document.data.title,
-    description: document.data.summary,
-    inLanguage: locale,
-    isPartOf: new URL(getEntryPath(entry), Astro.site).toString(),
-  }}
+  alternatePath={alternatePath}
+  image={socialImage}
+  imageAlt={banner ? entry.data.imageAlt : undefined}
+  jsonLd={jsonLd}
 >
-  <main class="entry-page document-page">
-    <DiagramControls locale={locale} />
+  <main
+    class="entry-page document-page"
+    data-domain={domain}
+    data-counterpart-anchors={counterpartAnchors
+      ? JSON.stringify(counterpartAnchors)
+      : undefined}
+    data-copy={dictionary.archive.copy}
+    data-copied={dictionary.archive.copied}
+  >
+    <EntryReadingTools locale={locale} />
     <nav class="breadcrumbs" aria-label={dictionary.archive.breadcrumb}>
       <a href={getLocalizedPath(`/${domain}`, locale)}
         >{dictionary.nav[domain]}</a
@@ -65,91 +119,44 @@ const documentTitle = pageTitle(document.data.title)
       >
     </nav>
     <header class="entry-heading">
-      <p class="kicker">
-        {getArchiveLabel('domain', domain, locale)} / {
-          String(document.data.order).padStart(2, '0')
-        }
-      </p><h1>{document.data.title}</h1><p class="lede">
+      <p class="kicker">{partLabel}</p><h1>{document.data.title}</h1><p
+        class="lede"
+      >
         {document.data.summary}
       </p>
     </header>
+    <EntryContentsCompact items={outline} locale={locale} />
     <div class="entry-layout">
-      <article class="prose"><Content /></article><aside
-        class="entry-index"
-        aria-label={dictionary.archive.contents}
-      >
-        {
-          headings.length > 0 && (
-            <>
-              <>
-                <h2>{dictionary.archive.contents}</h2>
-                <ol>
-                  {headings.map((heading) => (
-                    <li>
-                      <a href={`#${heading.slug}`}>{heading.text}</a>
-                    </li>
-                  ))}
-                </ol>
-              </>
-            </>
-          )
-        }<h2>{dictionary.archive.topics}</h2><ul class="topic-list">
-          {
-            document.data.topics.map((topic) => (
-              <li>{getTopicLabel(topic, locale)}</li>
-            ))
-          }
-        </ul>
-      </aside>
+      <article class="prose"><Content /></article>
+      <div class="entry-index">
+        <EntryOutline items={outline} locale={locale} />
+      </div>
     </div>
     {
-      document.data.evidence.length > 0 && (
-        <section class="record-section">
-          <h2>{dictionary.archive.evidence}</h2>
-          {document.data.evidence.map((item) => (
-            <div class="evidence-row">
-              <strong>{item.claim}</strong>
-              <p>
-                {item.source} ·{' '}
-                {getArchiveLabel('provenance', item.provenance, locale)}
-                {item.url && (
-                  <>
-                    {' '}
-                    ·{' '}
-                    <a href={item.url}>
-                      {dictionary.archive.source}
-                      <Icon name="external" size={13} />
-                    </a>
-                  </>
-                )}
-              </p>
-            </div>
-          ))}
+      document.data.topics.length > 0 && (
+        <section class="entry-topics" aria-labelledby="entry-topics-title">
+          <h2 id="entry-topics-title">{dictionary.archive.topics}</h2>
+          <ul class="topic-list">
+            {document.data.topics.map((topic) => (
+              <li>{getTopicLabel(topic, locale)}</li>
+            ))}
+          </ul>
         </section>
       )
     }
     {
-      relationships.length > 0 && (
-        <section class="record-section">
-          <h2>{dictionary.archive.references}</h2>
-          <div class="relationship-list">
-            {relationships.map(({ reference, entry: target }) => (
-              <a href={getEntryPath(target)}>
-                <span>
-                  {getArchiveLabel(
-                    'relationship',
-                    reference.relationship,
-                    locale,
-                  )}
-                </span>
-                <strong>{target.data.title}</strong>
-              </a>
-            ))}
-          </div>
-        </section>
+      (document.data.evidence.length > 0 || relationships.length > 0) && (
+        <div class="entry-record">
+          <EvidenceList items={document.data.evidence} locale={locale} />
+          <RelationshipList
+            title={dictionary.archive.references}
+            items={relationships}
+            locale={locale}
+          />
+        </div>
       )
     }
-    <nav class="series-navigation" aria-label={dictionary.archive.documents}>
+    <nav class="series-navigation" aria-label={dictionary.archive.parts}>
       <div>
         {
           adjacent.previous && (
@@ -177,10 +184,11 @@ const documentTitle = pageTitle(document.data.title)
 </Layout>
 
 <script>
-  import { mountDiagramViewers } from '@/lib/diagram-viewer'
+  import { mountEntryEnhancements } from '@/lib/entry-enhancements'
 
-  // A subpost read on its own URL gets the same diagram viewer as the entry
-  // that inlines it; without this the identical diagram is zoomable in one
-  // place and fixed in the other.
-  mountDiagramViewers()
+  // A subpost read on its own URL gets the same reading tools as the entry
+  // that inlines it: copy buttons, figures and the image viewer, diagram zoom,
+  // reading progress and the active-section marker. Mounting only the diagram
+  // viewer left the same code block copyable in one place and not the other.
+  mountEntryEnhancements(document.querySelector<HTMLElement>('.entry-page'))
 </script>

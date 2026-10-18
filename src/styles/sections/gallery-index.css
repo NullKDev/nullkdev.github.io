@@ -1,0 +1,212 @@
+/* Gallery index — imported by GalleryIndex.astro.
+   Contact-sheet shelf of collections. */
+
+/* ================================================================
+   GALLERY — collections of things. The index shows contact sheets of
+   real contents rather than one chosen banner, so a card looks like
+   what it holds. The detail splits by nature: pictures get a bento to
+   be looked at, files and links get a list to be taken.
+   ================================================================ */
+.gallery-index {
+  padding: calc(clamp(2.5rem, 5vw, 4.5rem) * var(--density)) 0;
+}
+.gallery-head {
+  margin-bottom: clamp(1.75rem, 3.5vw, 2.75rem);
+}
+.gallery-head h1 {
+  margin: 0;
+  font-size: calc(clamp(2.8rem, 6.5vw, 4.75rem) * var(--display-mult));
+  font-weight: 520;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+}
+.gallery-lead {
+  max-width: 62ch;
+  margin: 1.1rem 0 0;
+  color: var(--ink-muted);
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  line-height: 1.6;
+}
+.gallery-tally {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2.5rem;
+  margin: 1.6rem 0 0;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--line);
+}
+.gallery-tally > div {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.gallery-tally dt {
+  order: 2;
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.gallery-tally dd {
+  margin: 0;
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.gallery-shelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(26rem, 1fr));
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gallery-shelf > li {
+  display: flex;
+}
+.gallery-sheet {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-1);
+  transition:
+    transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+.gallery-sheet:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--domain-gallery) 45%, var(--line));
+  box-shadow: var(--shadow-2);
+}
+.gallery-sheet__hit {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+}
+
+/* The contact sheet: the first piece leads, the rest tile beside it. */
+.gallery-sheet__contact {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr;
+  grid-template-rows: repeat(2, 6.25rem);
+  gap: 2px;
+  background: var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.gallery-sheet__contact img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--surface);
+  padding: 0.6rem;
+}
+/* `astro:assets` wraps each thumbnail in a picture element; letting it
+   dissolve keeps the image itself as the grid item. Its <source> children
+   would then become grid items too — empty cells that pushed the lead photo
+   into the third column and the rest into extra rows — so they leave layout. */
+.gallery-sheet__contact picture {
+  display: contents;
+}
+.gallery-sheet__contact source {
+  display: none;
+}
+.gallery-sheet__contact > img:first-child,
+.gallery-sheet__contact > picture:first-child img {
+  grid-row: span 2;
+  padding: 1rem;
+}
+.gallery-sheet__contact[data-count='1'] {
+  grid-template-columns: 1fr;
+}
+.gallery-sheet__contact[data-count='2'],
+.gallery-sheet__contact[data-count='3'] {
+  grid-template-columns: 1.6fr 1fr;
+}
+.gallery-sheet[data-empty] .gallery-sheet__contact {
+  display: none;
+}
+.gallery-sheet__more {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 78%, transparent);
+  color: var(--paper);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.66rem;
+}
+
+.gallery-sheet__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 1.15rem 1.3rem 1.25rem;
+}
+.gallery-sheet__kind {
+  display: inline-flex;
+  align-self: start;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.7rem;
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.gallery-sheet h2 {
+  margin: 0 0 0.4rem;
+  font-size: clamp(1.25rem, 1.9vw, 1.55rem);
+  font-weight: 550;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+.gallery-sheet__summary {
+  margin: 0 0 1rem;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.gallery-sheet__tally {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  margin: auto 0 0;
+  padding: 0.85rem 0 0;
+  border-top: 1px solid var(--line);
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
+  list-style: none;
+  text-transform: uppercase;
+}
+.gallery-sheet__tally b {
+  color: var(--ink);
+  font-weight: 600;
+}
+.gallery-sheet__tally [data-generated] {
+  color: color-mix(in srgb, var(--domain-gallery) 75%, var(--ink));
+}
+.gallery-sheet__tally [data-generated] b {
+  color: inherit;
+}
+
+@media (max-width: 760px) {
+  .gallery-shelf {
+    grid-template-columns: 1fr;
+  }
+}

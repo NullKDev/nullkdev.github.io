@@ -3,9 +3,15 @@ import { stack } from '@/data/stack'
 import { brand, pageTitle } from '@/data/brand'
 import { uses } from '@/data/uses'
 import { getTopicLabel } from '@/data/taxonomy'
-import { getDictionary, type Locale } from '@/i18n'
+import {
+  getAlternateLocale,
+  getDictionary,
+  getLocalizedPath,
+  type Locale,
+} from '@/i18n'
 import { getArchiveLabel } from '@/i18n/archive'
 import Layout from '@/layouts/Layout.astro'
+import { buildWebPageLd } from '@/lib/structured-data'
 import Icon from '@/components/primitives/Icon.astro'
 import {
   getEntryDomain,
@@ -13,6 +19,10 @@ import {
   getTopicIndex,
   type ArchiveEntry,
 } from '@/lib/content'
+import '@/styles/global.css'
+import '@/styles/archive.css'
+import '@/styles/sections/prose.css'
+import '@/styles/sections/secondary.css'
 
 type Section = 'uses' | 'stack' | 'tags' | 'colophon'
 interface Props {
@@ -28,25 +38,19 @@ const description = dictionary.secondary[`${section}Description`]
 
 /* These are reference pages about the site itself, so `WebPage` rather than
    `CollectionPage`: they describe, they do not list records. */
-const pageJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'WebPage',
+const pageJsonLd = buildWebPageLd({
   name: title,
   description,
-  inLanguage: locale,
-  isPartOf: {
-    '@type': 'WebSite',
-    name: brand.name,
-    url: Astro.site?.toString(),
-  },
-}
+  locale,
+  site: Astro.site,
+})
 ---
 
 <Layout
   locale={locale}
   title={pageTitle(title)}
   description={description}
-  counterpartPath={locale === 'en' ? `/es/${section}/` : `/${section}/`}
+  alternatePath={getLocalizedPath(`/${section}/`, getAlternateLocale(locale))}
   jsonLd={pageJsonLd}
 >
   <main class="secondary-page">
@@ -96,7 +100,7 @@ const pageJsonLd = {
               <section id={topic}>
                 <h2>{getTopicLabel(topic, locale)}</h2>
                 <p>
-                  {String(records.length).padStart(2, '0')}{' '}
+                  {records.length}{' '}
                   {records.length === 1
                     ? dictionary.archive.record
                     : dictionary.archive.records}
@@ -128,7 +132,7 @@ const pageJsonLd = {
           <>
             <p>{dictionary.secondary.colophonBody}</p>
             {dictionary.secondary.colophonSections.map((item) => (
-              <section>
+              <section id={'id' in item ? item.id : undefined}>
                 <h2>{item.title}</h2>
                 <p>{item.body}</p>
               </section>

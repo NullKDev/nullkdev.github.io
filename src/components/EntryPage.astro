@@ -2,7 +2,13 @@
 import type { CollectionEntry } from 'astro:content'
 import { pageTitle } from '@/data/brand'
 import Breadcrumb from '@/components/primitives/Breadcrumb.astro'
-import DiagramControls from '@/components/primitives/DiagramControls.astro'
+import EntryContentsCompact from '@/components/entry/EntryContentsCompact.astro'
+import EntryOutline from '@/components/entry/EntryOutline.astro'
+import EntryReadingTools from '@/components/entry/EntryReadingTools.astro'
+import EvidenceList from '@/components/entry/EvidenceList.astro'
+import PartCard from '@/components/entry/PartCard.astro'
+import RecordBlockHead from '@/components/entry/RecordBlockHead.astro'
+import RelationshipList from '@/components/entry/RelationshipList.astro'
 import Icon from '@/components/primitives/Icon.astro'
 import StatusChip from '@/components/primitives/StatusChip.astro'
 import LabConsole from '@/components/lab/LabConsole.astro'
@@ -17,7 +23,10 @@ import Layout from '@/layouts/Layout.astro'
 import {
   getAdjacentEntries,
   getArchiveEntries,
+  getCounterpartEntry,
+  getDocumentPath,
   getDocumentsForEntry,
+  getEntryAlternatePath,
   getEntryCounterpartPath,
   getEntryDomain,
   getEntryPath,
@@ -30,6 +39,27 @@ import { getTopicLabel } from '@/data/taxonomy'
 import { getArchiveLabel } from '@/i18n/archive'
 import { getRelatedLabEntries } from '@/lib/lab'
 import { renderIcon } from '@/lib/icons'
+import { formatDate, isoDate, isSameDay } from '@/lib/dates'
+import {
+  getNeighbourAge,
+  getNotesViewPath,
+  getReadingMinutes,
+  getSupersededBy,
+} from '@/lib/notes'
+import { formatPartOf, getSeriesPosition } from '@/lib/series'
+import {
+  buildEntryOutline,
+  getCounterpartAnchors,
+  getPartAnchor,
+  type OutlinePart,
+} from '@/lib/outline'
+import { buildEntryArticleLd } from '@/lib/structured-data'
+import '@/styles/global.css'
+import '@/styles/archive.css'
+import '@/styles/sections/entry.css'
+import '@/styles/sections/prose.css'
+import '@/styles/sections/lab-entry.css'
+import '@/styles/sections/gallery-detail.css'
 
 interface Props {
   entry: ArchiveEntry
@@ -40,6 +70,7 @@ const dictionary = getDictionary(locale)
 const domain = getEntryDomain(entry)
 const documents = await getDocumentsForEntry(entry)
 const counterpartPath = await getEntryCounterpartPath(entry)
+const alternatePath = await getEntryAlternatePath(entry)
 const series = await getNotesSeriesNavigation(entry)
 const adjacent = await getAdjacentEntries(entry)
 const relationships = await getEntryRelationships(entry)
@@ -65,45 +96,70 @@ const renderedDocuments = await Promise.all(
   })),
 )
 
-// Reading time from the combined word count of the entry and its subposts.
-const readingSource = [entry, ...documents]
-  .map((item) => item.body ?? '')
-  .join(' ')
-const wordCount = readingSource.split(/\s+/).filter(Boolean).length
-const readingMinutes = Math.max(1, Math.round(wordCount / 200))
+// Reading time counts the subposts too: they render inline on this page.
+const readingMinutes = getReadingMinutes([
+  entry.body,
+  ...documents.map((document) => document.body),
+])
 
-/* A single anchored table of contents spanning the entry and its subposts.
-   Subposts are read continuously rather than navigated, so their own headings
-   belong in the index too — nested under the part they live in. `level` is the
-   normalised outline depth (1-3) the sidebar indents by; the raw markdown depth
-   would collapse an entry h2 and a subpost h2 onto the same rung despite one
-   sitting inside the other. */
-const outlineLevel = (depth: number, offset: number) =>
-  Math.min(depth - 2 + offset, 3)
+// One anchored outline spanning the entry and its subposts; see lib/outline.
+// Each part carries its own reading time, so a collapsed part still says how
+// long it is.
+const toPart = (
+  document: (typeof documents)[number],
+  partHeadings: OutlinePart['headings'],
+): OutlinePart => ({
+  slug: getPartAnchor(document.data.order),
+  title: document.data.title,
+  minutes: getReadingMinutes([document.body]),
+  headings: partHeadings,
+})
+const parts = renderedDocuments.map(({ document, rendered }) =>
+  toPart(document, rendered.headings),
+)
+const tableOfContents = buildEntryOutline(headings, parts)
 
-const tableOfContents = [
-  ...headings
-    .filter(({ depth }) => depth >= 2 && depth < 4)
-    .map((heading) => ({
-      slug: heading.slug,
-      text: heading.text,
-      level: outlineLevel(heading.depth, 1),
-    })),
-  ...renderedDocuments.flatMap(({ document, rendered }) => [
-    {
-      slug: `part-${document.data.order}`,
-      text: document.data.title,
-      level: 1,
-    },
-    ...rendered.headings
-      .filter(({ depth }) => depth >= 2 && depth < 4)
-      .map((heading) => ({
-        slug: heading.slug,
-        text: heading.text,
-        level: outlineLevel(heading.depth, 2),
-      })),
-  ]),
-]
+// The translation's outline, so the language switch can land on the same
+// section (heading i → heading i). Only kept when both outlines match; see
+// `getCounterpartAnchors`.
+const counterpart = await getCounterpartEntry(entry)
+const counterpartOutline = counterpart
+  ? buildEntryOutline(
+      (await render(counterpart)).headings,
+      await Promise.all(
+        (await getDocumentsForEntry(counterpart)).map(async (document) =>
+          toPart(document, (await render(document)).headings),
+        ),
+      ),
+    )
+  : undefined
+const counterpartAnchors = getCounterpartAnchors(
+  tableOfContents,
+  counterpartOutline,
+)
+
+// Inside a series the date pager sits under the series navigation. Two
+// "Previous" links pointing at different notes read as a contradiction, so
+// there the pager names the direction in time instead. Neighbours published
+// the same day are neither older nor newer, so it names their place in the
+// Notes list rather than falling back to a second "Previous".
+const inSeries = Boolean(series && series.total > 1)
+const pagerLabel = (
+  neighbour: ArchiveEntry | undefined,
+  fallback: string,
+  listed: 'above' | 'below',
+): string => {
+  if (!inSeries || !neighbour) return fallback
+  const age = getNeighbourAge(
+    entry.data.publishedAt,
+    neighbour.data.publishedAt,
+  )
+  if (age === 'newer') return dictionary.archive.newerNote
+  if (age === 'older') return dictionary.archive.olderNote
+  return listed === 'above'
+    ? dictionary.archive.aboveInList
+    : dictionary.archive.belowInList
+}
 
 /* One derivation for every surface that renders a banner — see
    `src/lib/banners.ts` for why it does not live here. */
@@ -111,18 +167,49 @@ const banner = getBannerSources(entry.data.image, locale)
 const socialImage = banner?.social
 
 const published = entry.data.publishedAt
-const updated = entry.data.updatedAt ?? entry.data.publishedAt
+// An update on the day of publication is not news; only a later one is shown.
+const updated =
+  entry.data.updatedAt && !isSameDay(entry.data.updatedAt, published)
+    ? entry.data.updatedAt
+    : undefined
 const role = 'role' in entry.data ? entry.data.role : undefined
 
-// Section markers and typed link marks come from the shared registry so the
-// same drawing is never redefined per component.
-const sectionIcon = {
-  outcomes: renderIcon('outcomes'),
-  conditions: renderIcon('conditions'),
-  evidence: renderIcon('evidence'),
-  citations: renderIcon('citations'),
-  links: renderIcon('links'),
-}
+// Notes say where they stand: what replaced them, and which run they belong
+// to. Both resolve inside this locale, so the link lands on the translation
+// the reader is already in.
+const noteEntry =
+  domain === 'notes' ? (entry as CollectionEntry<'notes'>) : undefined
+const notesPool = noteEntry
+  ? ((await getArchiveEntries('notes', locale)) as CollectionEntry<'notes'>[])
+  : []
+const replacement = noteEntry
+  ? getSupersededBy(noteEntry, notesPool)
+  : undefined
+const isArchivedNote = noteEntry?.data.lifecycle === 'archived'
+const seriesPosition = noteEntry
+  ? getSeriesPosition(noteEntry, notesPool, locale)
+  : undefined
+
+// The lifecycle chip and the write-up maturity are separate axes, but on a
+// Lab record they often carry the same word ("Stable"). Saying it twice reads
+// as a glitch, so the maturity fact is shown only when it adds something.
+const labMaturity = labEntry
+  ? getArchiveLabel('maturity', labEntry.data.maturity, locale)
+  : undefined
+const showLabMaturity =
+  labMaturity !== undefined &&
+  labMaturity !== getArchiveLabel('lifecycle', entry.data.lifecycle, locale)
+
+// A note's topic opens the Notes list filtered on it; other sections have no
+// topic route, so they land on the topic in the tags hub.
+const topicHref = (topic: string) =>
+  domain === 'notes'
+    ? getNotesViewPath(getLocalizedPath('/notes', locale), { topic })
+    : getLocalizedPath(`/tags/#${topic}`, locale)
+const statusHref = getLocalizedPath('/colophon/#record-status', locale)
+
+// Typed link marks come from the shared registry so the same drawing is never
+// redefined per component.
 const checkIcon = renderIcon('check')
 const linkIcon: Record<string, string> = {
   repository: renderIcon('repository'),
@@ -131,21 +218,17 @@ const linkIcon: Record<string, string> = {
   publication: renderIcon('publication'),
   external: renderIcon('external'),
 }
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type':
-    domain === 'notes'
-      ? 'Article'
-      : domain === 'lab'
-        ? 'SoftwareApplication'
-        : 'CreativeWork',
-  headline: entry.data.title,
-  description: entry.data.summary,
-  inLanguage: locale,
-  datePublished: entry.data.publishedAt?.toISOString(),
-  dateModified: entry.data.updatedAt?.toISOString(),
-  url: new URL(getEntryPath(entry), Astro.site).toString(),
-}
+const jsonLd = buildEntryArticleLd({
+  domain,
+  title: entry.data.title,
+  summary: entry.data.summary,
+  locale,
+  path: getEntryPath(entry),
+  image: socialImage,
+  publishedAt: entry.data.publishedAt,
+  updatedAt: entry.data.updatedAt,
+  site: Astro.site,
+})
 ---
 
 <Layout
@@ -153,25 +236,26 @@ const jsonLd = {
   title={pageTitle(entry.data.title)}
   description={entry.data.summary}
   counterpartPath={counterpartPath}
+  alternatePath={alternatePath}
   image={socialImage}
   imageAlt={banner ? entry.data.imageAlt : undefined}
   jsonLd={jsonLd}
 >
   <main
     class="entry-page"
+    data-domain={domain}
+    data-counterpart-anchors={counterpartAnchors
+      ? JSON.stringify(counterpartAnchors)
+      : undefined}
     data-copy={dictionary.archive.copy}
     data-copied={dictionary.archive.copied}
-    data-close={dictionary.nav.closeText}
     data-note-key={isLab
       ? undefined
       : domain === 'notes'
         ? entry.data.translationKey
         : undefined}
   >
-    <DiagramControls locale={locale} />
-    <div class="read-progress" aria-hidden="true">
-      <span data-read-progress></span>
-    </div>
+    <EntryReadingTools locale={locale} />
     <Breadcrumb
       locale={locale}
       trail={[
@@ -194,10 +278,33 @@ const jsonLd = {
             </span>
           )
         }
-        <StatusChip lifecycle={entry.data.lifecycle} locale={locale} />
+        <a
+          class="entry-status-link"
+          href={statusHref}
+          title={dictionary.archive.lifecycleHint}
+        >
+          <StatusChip lifecycle={entry.data.lifecycle} locale={locale} />
+        </a>
       </p>
       <h1>{entry.data.title}</h1>
       <p class="lede">{entry.data.summary}</p>
+      {
+        replacement ? (
+          <p class="entry-superseded" data-superseded>
+            <Icon name="arrowRight" size={14} />
+            <span>
+              {dictionary.archive.supersededBy}{' '}
+              <a href={getEntryPath(replacement)}>{replacement.data.title}</a>
+            </span>
+          </p>
+        ) : (
+          isArchivedNote && (
+            <p class="entry-superseded" data-archived>
+              <span>{dictionary.archive.archivedNote}</span>
+            </p>
+          )
+        )
+      }
       <dl class="entry-facts">
         {
           role && (
@@ -212,22 +319,20 @@ const jsonLd = {
             <div class="fact">
               <dt>{dictionary.archive.published}</dt>
               <dd>
-                <time datetime={published.toISOString()}>
-                  {published.toLocaleDateString(locale, {
-                    dateStyle: 'medium',
-                  })}
+                <time datetime={isoDate(published)}>
+                  {formatDate(published, locale)}
                 </time>
               </dd>
             </div>
           )
         }
         {
-          updated && entry.data.updatedAt && (
+          updated && (
             <div class="fact">
               <dt>{dictionary.archive.updated}</dt>
               <dd>
-                <time datetime={updated.toISOString()}>
-                  {updated.toLocaleDateString(locale, { dateStyle: 'medium' })}
+                <time datetime={isoDate(updated)}>
+                  {formatDate(updated, locale)}
                 </time>
               </dd>
             </div>
@@ -240,17 +345,42 @@ const jsonLd = {
               <dd>{galleryItems.length}</dd>
             </div>
           ) : labEntry ? (
-            <div class="fact fact--text">
-              <dt>{dictionary.lab.maturity}</dt>
-              <dd>
-                {getArchiveLabel('maturity', labEntry.data.maturity, locale)}
-              </dd>
-            </div>
+            showLabMaturity && (
+              <div class="fact fact--text">
+                <dt>{dictionary.archive.writeUp}</dt>
+                <dd>{labMaturity}</dd>
+              </div>
+            )
           ) : (
             <div class="fact">
               <dt>{dictionary.archive.reading}</dt>
               <dd>
-                {readingMinutes} {dictionary.archive.readTime}
+                {readingMinutes} {dictionary.archive.minutes}
+              </dd>
+            </div>
+          )
+        }
+        {
+          noteEntry && (
+            <div class="fact fact--text">
+              <dt>{dictionary.archive.writeUp}</dt>
+              <dd>
+                {getArchiveLabel('maturity', noteEntry.data.maturity, locale)}
+              </dd>
+            </div>
+          )
+        }
+        {
+          seriesPosition && (
+            <div class="fact fact--text">
+              <dt>{dictionary.archive.series}</dt>
+              <dd data-series-position>
+                {formatPartOf(
+                  dictionary.archive.partOf,
+                  seriesPosition.order,
+                  seriesPosition.total,
+                )}{' '}
+                · {seriesPosition.title}
               </dd>
             </div>
           )
@@ -314,53 +444,58 @@ const jsonLd = {
       )
     }
 
+    <EntryContentsCompact items={tableOfContents} locale={locale} />
+
     <div class="entry-layout">
       <article class="prose">
         <Content />
         {
-          renderedDocuments.map(({ document, rendered }) => {
+          renderedDocuments.map(({ document, rendered }, index) => {
             const DocumentContent = rendered.Content
+            const part = parts[index]
             return (
-              <section class="subpost" id={`part-${document.data.order}`}>
-                <p class="subpost-index">
-                  {dictionary.archive.part} {document.data.order} /{' '}
-                  {documents.length}
-                </p>
-                <h2>{document.data.title}</h2>
+              <section class="subpost" id={part.slug}>
+                <PartCard
+                  title={part.title}
+                  summary={document.data.summary}
+                  href={getDocumentPath(entry, document)}
+                  minutes={part.minutes}
+                  position={
+                    documents.length > 1
+                      ? formatPartOf(
+                          dictionary.archive.partOf,
+                          document.data.order,
+                          documents.length,
+                        )
+                      : undefined
+                  }
+                  locale={locale}
+                />
                 <DocumentContent />
               </section>
             )
           })
         }
       </article>
-      <aside class="entry-index" aria-label={dictionary.archive.contents}>
-        {
-          tableOfContents.length > 0 && (
-            <nav class="toc" aria-label={dictionary.archive.contents}>
-              <h2>{dictionary.archive.contents}</h2>
-              <ol class="toc-list" data-toc>
-                {tableOfContents.map((item) => (
-                  <li data-level={item.level}>
-                    <a href={`#${item.slug}`}>{item.text}</a>
-                  </li>
-                ))}
-              </ol>
-            </nav>
-          )
-        }
-        <h2>{dictionary.archive.topics}</h2><ul class="topic-list">
-          {
-            entry.data.topics.map((topic) => (
-              <li>
-                <a href={getLocalizedPath(`/tags#${topic}`, locale)}>
-                  {getTopicLabel(topic, locale)}
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </aside>
+      <div class="entry-index">
+        <EntryOutline items={tableOfContents} locale={locale} />
+      </div>
     </div>
+
+    {
+      entry.data.topics.length > 0 && (
+        <section class="entry-topics" aria-labelledby="entry-topics-title">
+          <h2 id="entry-topics-title">{dictionary.archive.topics}</h2>
+          <ul class="topic-list">
+            {entry.data.topics.map((topic) => (
+              <li>
+                <a href={topicHref(topic)}>{getTopicLabel(topic, locale)}</a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
 
     {
       (('outcomes' in entry.data && entry.data.outcomes.length > 0) ||
@@ -374,17 +509,11 @@ const jsonLd = {
         <div class="entry-record">
           {'outcomes' in entry.data && entry.data.outcomes.length > 0 && (
             <section class="record-block">
-              <header class="record-block__head">
-                <span
-                  class="record-block__icon"
-                  aria-hidden="true"
-                  set:html={sectionIcon.outcomes}
-                />
-                <h2>{dictionary.archive.outcomes}</h2>
-                <span class="record-block__count">
-                  {entry.data.outcomes.length}
-                </span>
-              </header>
+              <RecordBlockHead
+                icon="outcomes"
+                title={dictionary.archive.outcomes}
+                count={entry.data.outcomes.length}
+              />
               <ol class="outcome-list">
                 {entry.data.outcomes.map((outcome) => (
                   <li class="outcome">
@@ -424,17 +553,11 @@ const jsonLd = {
           {'operatingConditions' in entry.data &&
             entry.data.operatingConditions.length > 0 && (
               <section class="record-block">
-                <header class="record-block__head">
-                  <span
-                    class="record-block__icon"
-                    aria-hidden="true"
-                    set:html={sectionIcon.conditions}
-                  />
-                  <h2>{dictionary.archive.conditions}</h2>
-                  <span class="record-block__count">
-                    {entry.data.operatingConditions.length}
-                  </span>
-                </header>
+                <RecordBlockHead
+                  icon="conditions"
+                  title={dictionary.archive.conditions}
+                  count={entry.data.operatingConditions.length}
+                />
                 <dl class="condition-list">
                   {entry.data.operatingConditions.map(
                     ({ condition, implication }) => (
@@ -447,53 +570,14 @@ const jsonLd = {
                 </dl>
               </section>
             )}
-          {entry.data.evidence.length > 0 && (
-            <section class="record-block">
-              <header class="record-block__head">
-                <span
-                  class="record-block__icon"
-                  aria-hidden="true"
-                  set:html={sectionIcon.evidence}
-                />
-                <h2>{dictionary.archive.evidence}</h2>
-                <span class="record-block__count">
-                  {entry.data.evidence.length}
-                </span>
-              </header>
-              <ul class="evidence-list">
-                {entry.data.evidence.map((item) => (
-                  <li class="evidence-item">
-                    <p class="evidence-item__claim">{item.claim}</p>
-                    <p class="cite-line">
-                      <span class="cite-line__source">{item.source}</span>
-                      <span class="prov" data-prov={item.provenance}>
-                        {getArchiveLabel('provenance', item.provenance, locale)}
-                      </span>
-                      {item.url && (
-                        <a href={item.url}>
-                          {dictionary.archive.source}
-                          <Icon name="external" size={13} />
-                        </a>
-                      )}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+          <EvidenceList items={entry.data.evidence} locale={locale} />
           {'citations' in entry.data && entry.data.citations.length > 0 && (
             <section class="record-block">
-              <header class="record-block__head">
-                <span
-                  class="record-block__icon"
-                  aria-hidden="true"
-                  set:html={sectionIcon.citations}
-                />
-                <h2>{dictionary.archive.citations}</h2>
-                <span class="record-block__count">
-                  {entry.data.citations.length}
-                </span>
-              </header>
+              <RecordBlockHead
+                icon="citations"
+                title={dictionary.archive.citations}
+                count={entry.data.citations.length}
+              />
               <ul class="citation-list">
                 {entry.data.citations.map((citation) => (
                   <li>
@@ -503,8 +587,10 @@ const jsonLd = {
                     </a>
                     {citation.accessedAt && (
                       <span class="citation-list__date">
-                        {dictionary.archive.updated}{' '}
-                        {citation.accessedAt.toLocaleDateString(locale)}
+                        {dictionary.archive.accessed}{' '}
+                        <time datetime={isoDate(citation.accessedAt)}>
+                          {formatDate(citation.accessedAt, locale)}
+                        </time>
                       </span>
                     )}
                   </li>
@@ -514,14 +600,7 @@ const jsonLd = {
           )}
           {entry.data.links.length > 0 && (
             <section class="record-block">
-              <header class="record-block__head">
-                <span
-                  class="record-block__icon"
-                  aria-hidden="true"
-                  set:html={sectionIcon.links}
-                />
-                <h2>{dictionary.archive.links}</h2>
-              </header>
+              <RecordBlockHead icon="links" title={dictionary.archive.links} />
               <div class="record-links">
                 {entry.data.links.map((link) => (
                   <a href={link.href} class="record-link">
@@ -544,73 +623,33 @@ const jsonLd = {
               </div>
             </section>
           )}
-          {relationships.references.length > 0 && (
-            <section class="record-block">
-              <header class="record-block__head">
-                <span
-                  class="record-block__icon"
-                  aria-hidden="true"
-                  set:html={sectionIcon.links}
-                />
-                <h2>{dictionary.archive.references}</h2>
-              </header>
-              <div class="relationship-list">
-                {relationships.references.map(
-                  ({ reference, entry: target }) => (
-                    <a href={getEntryPath(target)}>
-                      <span>
-                        {getArchiveLabel(
-                          'relationship',
-                          reference.relationship,
-                          locale,
-                        )}
-                      </span>
-                      <strong>{target.data.title}</strong>
-                    </a>
-                  ),
-                )}
-              </div>
-            </section>
-          )}
-          {relationships.backlinks.length > 0 && (
-            <section class="record-block">
-              <header class="record-block__head">
-                <span
-                  class="record-block__icon"
-                  aria-hidden="true"
-                  set:html={sectionIcon.links}
-                />
-                <h2>{dictionary.archive.backlinks}</h2>
-              </header>
-              <div class="relationship-list">
-                {relationships.backlinks.map(({ reference, entry: source }) => (
-                  <a href={getEntryPath(source)}>
-                    <span>
-                      {getArchiveLabel(
-                        'relationship',
-                        reference.relationship,
-                        locale,
-                      )}
-                    </span>
-                    <strong>{source.data.title}</strong>
-                  </a>
-                ))}
-              </div>
-            </section>
-          )}
+          <RelationshipList
+            title={dictionary.archive.references}
+            items={relationships.references}
+            locale={locale}
+          />
+          <RelationshipList
+            title={dictionary.archive.backlinks}
+            items={relationships.backlinks}
+            locale={locale}
+          />
         </div>
       )
     }
     <RelatedLab entries={relatedLab} locale={locale} />
     {
-      series && (
+      series && inSeries && seriesPosition && (
         <nav class="series-navigation" aria-label={dictionary.archive.series}>
           <p>
             <strong>
-              {dictionary.archive.series}: {series.id}
+              {dictionary.archive.series}: {seriesPosition.title}
             </strong>
             <span>
-              {dictionary.archive.part} {series.order} / {series.total}
+              {formatPartOf(
+                dictionary.archive.partOf,
+                seriesPosition.order,
+                seriesPosition.total,
+              )}
             </span>
           </p>
           <div>
@@ -641,7 +680,11 @@ const jsonLd = {
             >
               <span class="pager-link__label">
                 <Icon name="arrowLeft" size={14} />{' '}
-                {dictionary.archive.previous}
+                {pagerLabel(
+                  adjacent.previous,
+                  dictionary.archive.previous,
+                  'above',
+                )}
               </span>
               <span class="pager-link__title">
                 {adjacent.previous.data.title}
@@ -657,7 +700,8 @@ const jsonLd = {
               href={getEntryPath(adjacent.next)}
             >
               <span class="pager-link__label">
-                {dictionary.archive.next} <Icon name="arrowRight" size={14} />
+                {pagerLabel(adjacent.next, dictionary.archive.next, 'below')}{' '}
+                <Icon name="arrowRight" size={14} />
               </span>
               <span class="pager-link__title">{adjacent.next.data.title}</span>
             </a>
@@ -669,170 +713,12 @@ const jsonLd = {
 </Layout>
 
 <script>
-  import { mountDiagramViewers } from '@/lib/diagram-viewer'
+  import { mountEntryEnhancements } from '@/lib/entry-enhancements'
   import { markRead } from '@/lib/reading-log'
 
-  // Opening a note records it locally so the index can show what is left.
-  const noteKey =
-    document.querySelector<HTMLElement>('.entry-page')?.dataset.noteKey
-  if (noteKey) markRead(noteKey)
-
-  // Reading progress: fraction of the article scrolled past the viewport.
-  const bar = document.querySelector<HTMLElement>('[data-read-progress]')
-  const article = document.querySelector<HTMLElement>('.entry-page .prose')
-  if (bar && article) {
-    let ticking = false
-    const update = () => {
-      ticking = false
-      const rect = article.getBoundingClientRect()
-      const total = rect.height - window.innerHeight
-      const scrolled = -rect.top
-      const ratio = total > 0 ? Math.min(1, Math.max(0, scrolled / total)) : 0
-      bar.style.transform = `scaleX(${ratio})`
-    }
-    const onScroll = () => {
-      if (ticking) return
-      ticking = true
-      requestAnimationFrame(update)
-    }
-    update()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll, { passive: true })
-  }
-
-  // Wrap each code block with a language label and a copy button.
   const main = document.querySelector<HTMLElement>('.entry-page')
-  const copyText = main?.dataset.copy ?? 'Copy'
-  const copiedText = main?.dataset.copied ?? 'Copied'
-  document
-    .querySelectorAll<HTMLPreElement>('.entry-page .prose pre.astro-code')
-    .forEach((pre) => {
-      if (pre.parentElement?.classList.contains('code-block')) return
-      const lang = pre.getAttribute('data-language') ?? ''
-      const wrap = document.createElement('div')
-      wrap.className = 'code-block'
-      const bar = document.createElement('div')
-      bar.className = 'code-block__bar'
-      const label = document.createElement('span')
-      label.className = 'code-block__lang'
-      label.textContent = lang === 'plaintext' ? '' : lang
-      const button = document.createElement('button')
-      button.type = 'button'
-      button.className = 'code-block__copy'
-      button.textContent = copyText
-      button.addEventListener('click', async () => {
-        try {
-          await navigator.clipboard.writeText(pre.innerText)
-          button.textContent = copiedText
-          button.classList.add('is-copied')
-          setTimeout(() => {
-            button.textContent = copyText
-            button.classList.remove('is-copied')
-          }, 1600)
-        } catch {
-          /* Clipboard may be unavailable; ignore. */
-        }
-      })
-      bar.append(label, button)
-      pre.replaceWith(wrap)
-      wrap.append(bar, pre)
-    })
-
-  // Table of contents: mark the section currently in view as active.
-  const tocLinks = Array.from(
-    document.querySelectorAll<HTMLAnchorElement>('[data-toc] a[href^="#"]'),
-  )
-  if (tocLinks.length && 'IntersectionObserver' in window) {
-    const linkById = new Map<string, HTMLAnchorElement>()
-    const targets: HTMLElement[] = []
-    tocLinks.forEach((link) => {
-      const id = decodeURIComponent(link.hash.slice(1))
-      const target = document.getElementById(id)
-      if (target) {
-        linkById.set(id, link)
-        targets.push(target)
-      }
-    })
-    let activeId: string | null = null
-    const setActive = (id: string) => {
-      if (id === activeId) return
-      activeId = id
-      tocLinks.forEach((link) => link.removeAttribute('aria-current'))
-      linkById.get(id)?.setAttribute('aria-current', 'true')
-    }
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
-        if (visible[0]) setActive(visible[0].target.id)
-      },
-      { rootMargin: '-12% 0px -70% 0px', threshold: 0 },
-    )
-    targets.forEach((target) => observer.observe(target))
-  }
-
-  mountDiagramViewers()
-
-  // Figures & lightbox: promote standalone markdown images to <figure> with a
-  // caption from their alt text, and open any zoomable image in a lightbox.
-  const prose = document.querySelector<HTMLElement>('.entry-page .prose')
-  const closeLabel = main?.dataset.close ?? 'Close'
-  if (prose) {
-    prose.querySelectorAll<HTMLImageElement>('img').forEach((img) => {
-      img.dataset.zoomable = ''
-      if (img.closest('figure')) return
-      const parent = img.parentElement
-      // A markdown image on its own line renders as a paragraph whose only
-      // child is the image; promote that whole paragraph to a figure.
-      const alone = parent?.tagName === 'P' && parent.childNodes.length === 1
-      const figure = document.createElement('figure')
-      ;(alone ? parent : img).replaceWith(figure)
-      figure.appendChild(img)
-      const alt = img.getAttribute('alt')?.trim()
-      if (alt) {
-        const caption = document.createElement('figcaption')
-        caption.textContent = alt
-        figure.appendChild(caption)
-      }
-    })
-
-    let lightbox: HTMLElement | null = null
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') closeLightbox()
-    }
-    function closeLightbox() {
-      lightbox?.remove()
-      lightbox = null
-      document.removeEventListener('keydown', onKey)
-    }
-    const openLightbox = (src: string, alt: string) => {
-      lightbox = document.createElement('div')
-      lightbox.className = 'lightbox'
-      lightbox.setAttribute('role', 'dialog')
-      lightbox.setAttribute('aria-modal', 'true')
-      if (alt) lightbox.setAttribute('aria-label', alt)
-      const big = document.createElement('img')
-      big.src = src
-      big.alt = alt
-      const close = document.createElement('button')
-      close.type = 'button'
-      close.className = 'lightbox__close'
-      close.setAttribute('aria-label', closeLabel)
-      close.textContent = '✕'
-      lightbox.append(big, close)
-      lightbox.addEventListener('click', (event) => {
-        if (event.target === lightbox || event.target === close) closeLightbox()
-      })
-      document.body.appendChild(lightbox)
-      document.addEventListener('keydown', onKey)
-      close.focus()
-    }
-    prose.addEventListener('click', (event) => {
-      const image = (event.target as HTMLElement)?.closest<HTMLImageElement>(
-        'img[data-zoomable]',
-      )
-      if (image) openLightbox(image.currentSrc || image.src, image.alt)
-    })
-  }
+  // Opening a note records it locally so the index can show what is left.
+  const noteKey = main?.dataset.noteKey
+  if (noteKey) markRead(noteKey)
+  mountEntryEnhancements(main)
 </script>

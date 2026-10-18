@@ -1,111 +1,126 @@
 /**
- * Zoom and pan for rendered mermaid diagrams.
+ * Zoom controls for build-time diagrams.
  *
- * Mermaid draws at a fixed intrinsic size, so a diagram is either wider than
- * the column on a phone or narrower than it on a desktop. Its own answer is to
- * scale the whole drawing to fit, which solves the first case by taking a
- * 651px diagram to 47% and its 12px labels with it. So the pane scrolls and the
- * reader zooms instead, and type never falls below what it was drawn at.
+ * The diagram already arrives sized: `scripts/hast-diagrams.mjs` writes its
+ * fitted width into the figure, and CSS fills the column with it. This only
+ * adds the reader's override — zoom in to read a dense drawing, zoom out for an
+ * overview, drag or scroll the pane to move around, reset to the fitted size.
  *
- * Progressive enhancement: without this the `.mermaid` block is still a framed,
- * scrollable figure. Nothing here is required to read the diagram.
+ * The pane is a fixed window while zoomed. Letting it grow with the drawing
+ * pushed the article down on every press, so the reader lost their place in
+ * the text to look at a diagram. Its height is locked on the first zoom and
+ * released on reset; everything outside the figure stays where it was.
+ *
+ * Progressive enhancement: without this the figure is still a complete,
+ * scrollable diagram at its fitted size. Nothing here is required to read it.
  *
  * The toolbar is cloned from a `<template>` rendered on the server rather than
  * built here, which is what keeps its marks coming from the icon registry and
  * its labels from the locale dictionary — see `DiagramControls.astro`.
  */
 
-const MIN = 0.4
+const MIN = 0.5
 const MAX = 3
-/** Horizontal padding of the pane, excluded when measuring the space to fill. */
-const PANE_PADDING = 48
+const STEP = 0.25
 
-const widthOf = (element: SVGElement): number => {
-  const viewBox = element.getAttribute('viewBox')?.split(/\s+/).map(Number)
-  return viewBox?.[2] ?? element.getBoundingClientRect().width
+/** The point at the centre of the pane, as a share of its scrollable content. */
+const centreOf = (pane: HTMLElement) => ({
+  x: (pane.scrollLeft + pane.clientWidth / 2) / pane.scrollWidth,
+  y: (pane.scrollTop + pane.clientHeight / 2) / pane.scrollHeight,
+})
+
+/**
+ * Drag to pan, for a mouse. Touch already pans an overflowing pane natively,
+ * and taking it over here would break that and the page scroll with it.
+ */
+const enableDrag = (pane: HTMLElement): void => {
+  let origin: { x: number; y: number; left: number; top: number } | undefined
+
+  pane.addEventListener('pointerdown', (event) => {
+    if (event.pointerType !== 'mouse' || event.button !== 0) return
+    if (!pane.classList.contains('is-zoomed')) return
+    origin = {
+      x: event.clientX,
+      y: event.clientY,
+      left: pane.scrollLeft,
+      top: pane.scrollTop,
+    }
+    pane.setPointerCapture(event.pointerId)
+    pane.classList.add('is-dragging')
+  })
+  pane.addEventListener('pointermove', (event) => {
+    if (!origin) return
+    pane.scrollLeft = origin.left - (event.clientX - origin.x)
+    pane.scrollTop = origin.top - (event.clientY - origin.y)
+  })
+  const release = () => {
+    origin = undefined
+    pane.classList.remove('is-dragging')
+  }
+  pane.addEventListener('pointerup', release)
+  pane.addEventListener('pointercancel', release)
 }
 
-const build = (node: HTMLElement, controls: HTMLTemplateElement): boolean => {
-  let svg = node.querySelector('svg')
-  if (!svg || node.closest('.diagram')) return false
-
-  let intrinsic = widthOf(svg)
-  if (!intrinsic) return false
-
+const build = (figure: HTMLElement, controls: HTMLTemplateElement): void => {
+  const pane = figure.querySelector<HTMLElement>('.diagram__pane')
+  const svg = pane?.querySelector<SVGSVGElement>(':scope > svg')
   const bar = controls.content.firstElementChild?.cloneNode(true) as
     HTMLElement | undefined
-  if (!bar) return false
+  if (!pane || !svg || !bar) return
   const readout = bar.querySelector<HTMLElement>('[data-zoom-readout]')
 
-  const figure = document.createElement('figure')
-  figure.className = 'diagram'
-  node.replaceWith(figure)
-
-  const pane = document.createElement('div')
-  pane.className = 'diagram__pane'
-  // Focusable so the diagram can be scrolled from the keyboard.
-  pane.tabIndex = 0
-  pane.appendChild(node)
-
   let zoom = 1
-  const apply = () => {
-    if (!svg) return
-    svg.style.maxWidth = 'none'
-    svg.style.width = `${Math.round(intrinsic * zoom)}px`
-    svg.style.height = 'auto'
+  // Measured on the first zoom, not at mount: the fitted width depends on the
+  // column, and the column can change between page load and the first press.
+  let fitted = 0
+
+  const set = (next: number) => {
+    const target = Math.min(MAX, Math.max(MIN, Number(next.toFixed(2))))
+    if (target === zoom) return
+
+    if (zoom === 1) {
+      fitted = svg.getBoundingClientRect().width
+      pane.style.height = `${pane.getBoundingClientRect().height}px`
+    }
+    const centre = centreOf(pane)
+    zoom = target
+
+    if (zoom === 1) {
+      // Hand sizing back to CSS, so the diagram keeps tracking the column.
+      svg.style.removeProperty('width')
+      svg.style.removeProperty('min-width')
+      pane.style.removeProperty('height')
+      pane.classList.remove('is-zoomed')
+    } else {
+      svg.style.width = `${Math.round(fitted * zoom)}px`
+      svg.style.minWidth = '0'
+      pane.classList.add('is-zoomed')
+      // Keep the point the reader was looking at under the same spot.
+      pane.scrollLeft = centre.x * pane.scrollWidth - pane.clientWidth / 2
+      pane.scrollTop = centre.y * pane.scrollHeight - pane.clientHeight / 2
+    }
     if (readout) readout.textContent = `${Math.round(zoom * 100)}%`
   }
-  const set = (next: number) => {
-    zoom = Math.min(MAX, Math.max(MIN, Number(next.toFixed(2))))
-    apply()
-  }
-  /* Pressing "fit to width" fits, in both directions. An earlier version
-     refused to shrink — protecting legibility — which made the control do
-     nothing on exactly the diagrams a reader would press it for. Trading
-     readable labels for an overview is the reader's call to make. */
-  const fit = () => set((pane.clientWidth - PANE_PADDING) / intrinsic)
 
   const steps: Record<string, () => void> = {
-    out: () => set(zoom - 0.2),
-    in: () => set(zoom + 0.2),
-    fit,
+    out: () => set(zoom - STEP),
+    in: () => set(zoom + STEP),
+    fit: () => set(1),
   }
   bar.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach((item) => {
     const step = steps[item.dataset.zoom ?? '']
     if (step) item.addEventListener('click', step)
   })
 
-  figure.append(pane, bar)
-  /* Opens at the size mermaid drew, every time. Scaling to fill the column
-     sounds tidier but pushes a tall diagram past the pane's height, so the
-     reader lands on a fragment of it; and scaling down to fit is what made the
-     labels unreadable to begin with. 100% is the one size known to be legible,
-     and both buttons lead away from it. */
-  apply()
-
-  /* Toggling the theme makes mermaid redraw and swap in a brand-new <svg>.
-     Without re-acquiring it the controls keep sizing a detached element: the
-     readout still counts up and the diagram never moves. Comparing identity is
-     what keeps `apply()` from retriggering this forever. */
-  new MutationObserver(() => {
-    const current = node.querySelector('svg')
-    if (!current || current === svg) return
-    svg = current
-    intrinsic = widthOf(current) || intrinsic
-    apply()
-  }).observe(node, { childList: true, subtree: true })
-
-  return true
+  enableDrag(pane)
+  // The readout is a live region, so each zoom is announced. Writing the first
+  // value before it joins the page keeps every diagram from announcing "100%"
+  // on load.
+  if (readout) readout.textContent = '100%'
+  figure.append(bar)
 }
 
-/**
- * Attach a viewer to every mermaid block inside `selector`.
- *
- * Safe to call before mermaid has drawn anything: it renders on the client, so
- * the `<svg>` usually does not exist yet and enhancing straight away finds
- * nothing at all. Each block is upgraded now if it is already drawn, and
- * watched until it is otherwise.
- */
+/** Attach zoom controls to every diagram inside `selector`. */
 export const mountDiagramViewers = (selector = '.entry-page .prose'): void => {
   const controls = document.querySelector<HTMLTemplateElement>(
     '[data-diagram-controls]',
@@ -113,12 +128,6 @@ export const mountDiagramViewers = (selector = '.entry-page .prose'): void => {
   if (!controls) return
 
   document
-    .querySelectorAll<HTMLElement>(`${selector} .mermaid`)
-    .forEach((node) => {
-      if (build(node, controls)) return
-      const observer = new MutationObserver(() => {
-        if (build(node, controls)) observer.disconnect()
-      })
-      observer.observe(node, { childList: true, subtree: true })
-    })
+    .querySelectorAll<HTMLElement>(`${selector} figure.diagram`)
+    .forEach((figure) => build(figure, controls))
 }

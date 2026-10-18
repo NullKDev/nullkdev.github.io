@@ -18,13 +18,13 @@ evidence: []
 protection: { mode: public }
 ---
 
-import MatteflowDemo from '@/components/demos/MatteflowDemo'
+import MatteflowIsland from '@/components/demos/MatteflowIsland.astro'
 
 ## El demo
 
 Carga cualquier video de una persona contra un fondo liso. El demo extrae el sujeto usando un matte de distancia de color y fluye texto alrededor de la silueta en movimiento — en cada fotograma, usando pretext para la colocación de líneas.
 
-<MatteflowDemo client:only="react" />
+<MatteflowIsland locale="es" />
 
 > **Mejores resultados:** videos con una persona contra un fondo sólido o con poca textura (pantalla verde/blanca de estudio, pared lisa). Los sliders te permiten ajustar la fuerza del wrap, la escala del sujeto y la posición.
 
@@ -32,7 +32,7 @@ Carga cualquier video de una persona contra un fondo liso. El demo extrae el suj
 
 ## Cómo funciona
 
-Este demo es un port comprimido de [Matteflow](https://github.com/summerKK/Matteflow) por summerKK — un prototipo de layout editorial que demuestra exactamente por qué existe pretext. El original tiene cuatro módulos; aquí están colapsados en un solo componente React.
+Este demo es un port comprimido de [Matteflow](https://github.com/summerKK/Matteflow) por summerKK — un prototipo de layout editorial que demuestra exactamente por qué existe pretext. El original tiene cuatro módulos; aquí están portados a un componente React y a los pequeños módulos puros con los que dibuja.
 
 ### Paso 1: matte de distancia de color
 
@@ -50,7 +50,7 @@ const distance = Math.sqrt((r - bg.r) ** 2 + (g - bg.g) ** 2 + (b - bg.b) ** 2)
 const alpha = clamp((distance - threshold) / feather, 0, 1)
 ```
 
-Un píxel cercano al color de fondo obtiene alpha ≈ 0 (transparente). Un píxel alejado de él obtiene alpha ≈ 1 (primer plano). El slider **Threshold** controla cuándo un píxel cuenta como primer plano; el borde suave depende del feather.
+Un píxel cercano al color de fondo obtiene alpha ≈ 0 (transparente). Un píxel alejado de él obtiene alpha ≈ 1 (primer plano). La demo fija ambos números (`threshold` y `feather` son constantes del renderer), así que sus sliders no tocan el matte: **Wrap** define cuánto se curva el texto alrededor de la silueta, **Escala** ajusta el tamaño de la figura y **Desp. V** / **Desp. H** la desplazan dentro del cuadro.
 
 ### Paso 2: perfil de wrap
 

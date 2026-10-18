@@ -26,6 +26,9 @@ concurrency:
 jobs:
   release:
     name: Tag and publish
+    # A manual run can be started from any branch. Tagging and publishing
+    # anything but main would release code that never went through dev → main.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

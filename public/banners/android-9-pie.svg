@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Android 9 Pie banner, with the version logo.">
+  <defs>
+    <linearGradient id="bg-android-9-pie" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#0B2B22"/>
+    </linearGradient>
+    <radialGradient id="glow-android-9-pie" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00875A" stop-opacity="0.22000000000000003"/>
+      <stop offset="100%" stop-color="#00875A" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="lift-android-9-pie" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#00875A" flood-opacity="0.275"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg-android-9-pie)"/>
+  <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-android-9-pie)"/>
+<g filter="url(#lift-android-9-pie)"><image x="730" y="130" width="370" height="370" preserveAspectRatio="xMidYMid meet" href="data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMaXZlbGxvXzEiCgkgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHZpZXdCb3g9IjAgMCAzNzIuNiA1MDAiCgkgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMzcyLjYgNTAwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPGc+Cgk8cGF0aCBmaWxsPSIjNzVCRTVFIiBkPSJNMTU2LjgsNTAwSDBWMTg2LjNDMCwxMTAuNyw0NS4xLDQzLjIsMTE1LDE0LjNjNjkuOC0yOC45LDE0OS41LTEzLjEsMjAzLDQwLjQKCQljNTMuNSw1My41LDY5LjMsMTMzLjEsNDAuNCwyMDNjLTI4LjksNjkuOC05Ni41LDExNS0xNzIuMSwxMTVjMCwwLDAsMCwwLDBoLTI5LjRWNTAweiBNMTU2LjgsMjE1LjdoMjkuNGMwLDAsMCwwLDAsMAoJCWMxMS45LDAsMjIuNi03LjEsMjcuMi0xOC4yYzQuNi0xMSwyLjEtMjMuNi02LjQtMzJjLTguNC04LjQtMjEtMTAuOS0zMi02LjRjLTExLDQuNi0xOC4yLDE1LjItMTguMiwyNy4yVjIxNS43eiIvPgoJPHBhdGggZmlsbD0iI0ZGRkZGRiIgZD0iTTExNy42LDUwMEgzOS4yVjE4Ni4zYzAtNTkuNywzNS42LTExMyw5MC44LTEzNS44YzU1LjEtMjIuOCwxMTgtMTAuMywxNjAuMiwzMS45CgkJYzQyLjIsNDIuMiw1NC43LDEwNS4xLDMxLjksMTYwLjJjLTIyLjgsNTUuMS03Ni4yLDkwLjgtMTM1LjgsOTAuOGMwLDAsMCwwLDAsMGgtMjkuNFYyNTVoMjkuNGMwLDAsMCwwLDAsMAoJCWMyNy45LDAsNTIuNy0xNi42LDYzLjQtNDIuNGMxMC43LTI1LjcsNC44LTU1LjEtMTQuOS03NC44Yy0xOS43LTE5LjctNDktMjUuNS03NC44LTE0LjljLTI1LjcsMTAuNy00Mi40LDM1LjUtNDIuNCw2My40VjUwMHoiLz4KPC9nPgo8L3N2Zz4K"/></g>
+  <rect x="96" y="150" width="76" height="4" rx="2" fill="#00875A"/>
+  <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="#00875A">API 28 · AUG 2018</text>
+  <text x="96" y="318" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="96" font-weight="600" letter-spacing="-3" fill="#F8FAFC">Android 9</text>
+  <text x="96" y="392" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="52" font-weight="500" letter-spacing="-1" fill="#94A3B8">Pie</text>
+  <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="#64748B">Idle apps lose camera and mic</text>
+</svg>

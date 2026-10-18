@@ -1,0 +1,25 @@
+---
+// Server-rendered parts the long-form enhancements attach to: the diagram
+// toolbar template, the section self-link template, the reading-progress bar
+// and the image viewer. Shared by
+// `EntryPage` and `DocumentPage`, which both call `mountEntryEnhancements`.
+import DiagramControls from '@/components/primitives/DiagramControls.astro'
+import EntryLightbox from '@/components/entry/EntryLightbox.astro'
+import Icon from '@/components/primitives/Icon.astro'
+import { getDictionary, type Locale } from '@/i18n'
+
+interface Props {
+  locale: Locale
+}
+const { locale } = Astro.props
+const dictionary = getDictionary(locale)
+---
+
+<DiagramControls locale={locale} />
+<template data-section-link data-label={dictionary.archive.sectionLink}>
+  <a class="heading-anchor"><Icon name="sectionLink" size={16} /></a>
+</template>
+<div class="read-progress" aria-hidden="true">
+  <span data-read-progress></span>
+</div>
+<EntryLightbox locale={locale} />

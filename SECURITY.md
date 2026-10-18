@@ -58,20 +58,37 @@ limitation rather than an oversight.
 
 ## The CSP is generated, not hand-written
 
-`script-src` is `'self'` plus a SHA-256 hash for every inline script that
-actually shipped. The hashes are computed from the built bytes after each build
+`script-src` is `'self'` plus a SHA-256 hash for every expected inline script
+that shipped. The hashes are computed from the built bytes after each build
 (`bun run csp:apply`) rather than maintained by hand, because several inline
 scripts carry content-derived data — a checked-in list would rot silently and
 break production while local checks stayed green.
+
+"Expected" is enforced, not assumed. The sealer hashes exactly three kinds of
+executable inline script: any script in `<head>`, any script that opts in with
+`data-csp-inline`, and a classic (untyped) script whose bytes equal one of
+Astro's island runtimes — the `<astro-island>` definition and the `client:*`
+loaders, read from the installed `astro` package. Every other executable inline
+script fails the build, including a bare inline module, and the failure names
+the `<article>`, `<svg>` or `<template>` it sat in. Component scripts are not
+inlined at all: `vite.build.assetsInlineLimit` keeps them as `/_astro/*.js`
+files, which `'self'` already covers. A script injected at build time is
+therefore never hashed into the policy. JSON written
+into a `<script>` goes through `serializeJsonForScript`
+(`src/lib/json-script.ts`), which escapes `<` so a value cannot close the
+element.
 
 `'unsafe-inline'` is not used for scripts. It is used for styles, because a
 static build has no per-request nonce.
 
 **Google Analytics is the only third-party origin the site contacts**, and only
 on builds where `PUBLIC_GOOGLE_ANALYTICS_ID` is set — a fork, a local build or a
-preview reaches nothing. Consent Mode denies `ad_storage`, `ad_user_data` and
-`ad_personalization`; the tag measures which entries are read, it does not
-build an advertising profile of who read them.
+preview reaches nothing. When it is set, the sealer adds the Google tag and
+collection origins to the CSP automatically, and every page loads the tag on
+idle without asking for consent: Consent Mode grants `analytics_storage` and
+denies `ad_storage`, `ad_user_data` and `ad_personalization`. The tag measures
+which entries are read; it does not build an advertising profile of who read
+them.
 
 Any other third-party request is blocked, and the demo or feature will visibly
 fail. That is the intended behaviour — treat it as the policy working, not as a
@@ -87,7 +104,8 @@ found and removed.
 - Dependabot runs weekly with a cooldown, so a malicious release has usually
   been yanked before a PR proposes it.
 - `bun run audit` gates every run at `high` severity and above.
-- CodeQL and `zizmor` run against the source and the workflows.
+- CodeQL runs against the source; `actionlint` and a pinned `zizmor` run
+  against the workflows, and `zizmor` also audits `dependabot.yml`.
 
 ## Scope
 

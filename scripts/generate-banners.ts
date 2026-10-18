@@ -16,6 +16,7 @@
  * carried a hand-drawn robot. A banner can only use marks the site already has,
  * and extending the registry is the way to add one.
  */
+import { readFileSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 
 import sharp from 'sharp'
@@ -26,6 +27,7 @@ import {
   type BannerLocale,
   type BannerSpec,
 } from '../src/data/banners'
+import { renderIcon } from '../src/lib/icons'
 import { renderArt } from './banner-art'
 
 const SVG_DIRECTORY = 'public/banners'
@@ -90,6 +92,52 @@ export const bannerFile = (
     .filter(Boolean)
     .join('-')
 
+/* Where a logo sits: the right half of the safe band (x 700..1130, y 75..555),
+   the same box a motif draws in, inset so the mark breathes. */
+const LOGO_BOX = { x: 730, y: 130, width: 370, height: 370 } as const
+
+/** The logo as an `<image>` with an inlined SVG, so the banner stays one
+    self-contained file and librsvg rasterises it for the PNG. A registry icon
+    is filled with the accent, since it has no colours of its own. */
+const renderLogo = (
+  logo: NonNullable<BannerSpec['logo']>,
+  accent: string,
+): string => {
+  const svg =
+    typeof logo === 'string'
+      ? readFileSync(logo, 'utf8')
+      : renderIcon(logo.icon, 24).replace(/currentColor/g, accent)
+  const data = Buffer.from(svg).toString('base64')
+  const { x, y, width, height } = LOGO_BOX
+  return `<image x="${x}" y="${y}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet" href="data:image/svg+xml;base64,${data}"/>`
+}
+
+/* The two display lines. A logo banner names a thing: the headline is the name
+   a reader searches for ("Android 6.0"), the subtext what it was called. A
+   motif banner sets both lines at one size. */
+interface DisplayLine {
+  readonly y: number
+  readonly size: number
+  readonly weight: number
+  readonly spacing: number
+}
+const TITLE_LAYOUT: Record<
+  'logo' | 'motif',
+  readonly [DisplayLine, DisplayLine]
+> = {
+  logo: [
+    { y: 318, size: 96, weight: 600, spacing: -3 },
+    { y: 392, size: 52, weight: 500, spacing: -1 },
+  ],
+  motif: [
+    { y: 300, size: 72, weight: 500, spacing: -2 },
+    { y: 384, size: 72, weight: 500, spacing: -2 },
+  ],
+}
+
+const displayLine = (line: DisplayLine, fill: string, text: string): string =>
+  `<text x="96" y="${line.y}" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="${line.size}" font-weight="${line.weight}" letter-spacing="${line.spacing}" fill="${fill}">${escape(text)}</text>`
+
 export const renderBanner = (
   spec: BannerSpec,
   locale: BannerLocale = 'en',
@@ -100,6 +148,7 @@ export const renderBanner = (
   const id = bannerFile(spec.slug, locale, surface).replace(/[^a-z0-9-]/g, '')
   const accent = spec.accent
   const deep = surface === 'dark' ? spec.deep : spec.pale
+  const layout = spec.logo ? TITLE_LAYOUT.logo : TITLE_LAYOUT.motif
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" fill="none" role="img" aria-label="${escape(c.alt)}">
   <defs>
@@ -117,11 +166,11 @@ export const renderBanner = (
   </defs>
   <rect width="${WIDTH}" height="${HEIGHT}" fill="url(#bg-${id})"/>
   <ellipse cx="960" cy="300" rx="360" ry="270" fill="url(#glow-${id})"/>
-<g filter="url(#lift-${id})">${renderArt(spec.art, accent, s.structure)}</g>
+<g filter="url(#lift-${id})">${spec.logo ? renderLogo(spec.logo, accent) : renderArt(spec.art, accent, s.structure)}</g>
   <rect x="96" y="150" width="76" height="4" rx="2" fill="${accent}"/>
   <text x="96" y="205" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="26" letter-spacing="4" fill="${accent}">${escape(c.kicker.toUpperCase())}</text>
-  <text x="96" y="300" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="${s.title}">${escape(c.title[0])}</text>
-  <text x="96" y="384" font-family="Switzer,'Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="500" letter-spacing="-2" fill="${s.subtitle}">${escape(c.title[1])}</text>
+  ${displayLine(layout[0], s.title, c.title[0])}
+  ${displayLine(layout[1], s.subtitle, c.title[1])}
   <text x="96" y="470" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="24" fill="${s.meta}">${escape(c.meta)}</text>
 </svg>
 `

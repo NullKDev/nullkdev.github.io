@@ -4,13 +4,13 @@ locale: es
 translationKey: timestamp-converter
 slug: conversor-timestamps
 title: Conversor de timestamps
-summary: Convertí segundos Unix, milisegundos Unix o fechas a representaciones ISO, UTC y Unix normalizadas de forma local.
+summary: Convierte segundos Unix, milisegundos Unix o fechas a representaciones ISO, UTC y Unix normalizadas de forma local.
 visibility: public
 maturity: stable
 publishedAt: 2026-07-23
 updatedAt: 2026-07-23
 topics: [developer-tools, dates, web]
-statusNote: Las fechas no ISO ambiguas siguen las reglas del navegador; preferí ISO 8601 o valores Unix numéricos.
+statusNote: Las fechas no ISO ambiguas siguen las reglas del navegador; prefiere ISO 8601 o valores Unix numéricos.
 links:
   - label: Código del sitio
     href: https://github.com/NullKDev/nullkdev.github.io

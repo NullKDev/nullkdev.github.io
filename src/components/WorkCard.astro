@@ -1,10 +1,12 @@
 ---
+import { formatDate } from '@/lib/dates'
 import { bannerStyle, getBannerSources } from '@/lib/banners'
 import type { CollectionEntry } from 'astro:content'
 import { getDictionary, type Locale } from '@/i18n'
 import { getArchiveLabel } from '@/i18n/archive'
 import { getTopicLabel, taxonomy } from '@/data/taxonomy'
 import { getEntryPath } from '@/lib/content'
+import Icon from '@/components/primitives/Icon.astro'
 import { renderIcon } from '@/lib/icons'
 
 interface Props {
@@ -74,7 +76,7 @@ const domainLabel =
   ] ?? data.domains[0]
 
 const dateLabel = (value?: Date) =>
-  value?.toLocaleDateString(locale, { month: 'short', year: 'numeric' })
+  value ? formatDate(value, locale, 'month') : undefined
 const published = dateLabel(data.publishedAt)
 
 const lifecycle = getArchiveLabel('lifecycle', data.lifecycle, locale)
@@ -126,7 +128,7 @@ const banner = getBannerSources(data.image ?? '/banners/work.svg', locale)
     {
       featured && (
         <p class="wc-featured">
-          <span aria-hidden="true">★</span>
+          <Icon name="star" size={12} class="wc-featured__mark" />
           {dictionary.archive.featured}
         </p>
       )

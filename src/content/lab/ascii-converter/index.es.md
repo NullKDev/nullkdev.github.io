@@ -4,7 +4,7 @@ locale: es
 translationKey: ascii-converter
 slug: inspector-unicode
 title: Inspector ASCII / Unicode
-summary: Inspeccioná caracteres como puntos de código decimales y notación Unicode, preservando caracteres Unicode completos.
+summary: Inspecciona caracteres como puntos de código decimales y notación Unicode, preservando caracteres Unicode completos.
 visibility: public
 maturity: stable
 publishedAt: 2026-07-23

@@ -18,13 +18,13 @@ evidence: []
 protection: { mode: public }
 ---
 
-import MatteflowDemo from '@/components/demos/MatteflowDemo'
+import MatteflowIsland from '@/components/demos/MatteflowIsland.astro'
 
 ## The demo
 
 Load any video of a person against a plain background. The demo extracts the foreground using a color-distance matte and flows article text around the moving silhouette — every frame, using pretext for line placement.
 
-<MatteflowDemo client:only="react" />
+<MatteflowIsland locale="en" />
 
 > **Best results:** videos with a person against a solid or lightly textured background (studio green/white screen, plain wall). The sliders let you tune the wrap strength, subject scale, and position.
 
@@ -32,7 +32,7 @@ Load any video of a person against a plain background. The demo extracts the for
 
 ## How it works
 
-This demo is a compressed port of [Matteflow](https://github.com/summerKK/Matteflow) by summerKK — an editorial layout prototype that demonstrates exactly why pretext exists. The original has four modules; here they're collapsed into a single React component.
+This demo is a compressed port of [Matteflow](https://github.com/summerKK/Matteflow) by summerKK — an editorial layout prototype that demonstrates exactly why pretext exists. The original has four modules; here they're ported into one React component and the small pure modules it draws with.
 
 ### Step 1: color-distance matte
 
@@ -50,7 +50,7 @@ const distance = Math.sqrt((r - bg.r) ** 2 + (g - bg.g) ** 2 + (b - bg.b) ** 2)
 const alpha = clamp((distance - threshold) / feather, 0, 1)
 ```
 
-A pixel close to the background color gets alpha ≈ 0 (transparent). A pixel far from it gets alpha ≈ 1 (foreground). The **Threshold** slider controls when a pixel counts as foreground; **Matte** would control the soft edge.
+A pixel close to the background color gets alpha ≈ 0 (transparent). A pixel far from it gets alpha ≈ 1 (foreground). The demo fixes both numbers (`threshold` and `feather` are constants in the renderer), so its sliders do not touch the matte: **Wrap** sets how strongly the text bends around the silhouette, **Scale** sizes the figure, and **V-Shift** / **H-Shift** move it inside the frame.
 
 ### Step 2: wrap profile
 

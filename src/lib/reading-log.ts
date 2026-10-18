@@ -26,7 +26,16 @@ export const getReadingLog = (): ReadingLog => {
     if (Array.isArray(parsed)) {
       return Object.fromEntries(parsed.map((id) => [String(id), 0]))
     }
-    return typeof parsed === 'object' && parsed ? (parsed as ReadingLog) : {}
+    if (typeof parsed !== 'object' || !parsed) return {}
+    // Storage is editable by anything on this origin and by the reader. Keep
+    // only finite timestamps, so a stray value cannot turn into a comparison
+    // against `NaN` or an object later on.
+    return Object.fromEntries(
+      Object.entries(parsed).filter(
+        (entry): entry is [string, number] =>
+          typeof entry[1] === 'number' && Number.isFinite(entry[1]),
+      ),
+    )
   } catch {
     return {}
   }
@@ -59,7 +68,8 @@ export const getReadState = (
   id: string | undefined,
   updatedAt: string | undefined,
 ): ReadState => {
-  if (!id || !(id in log)) return 'unread'
+  // `in` would also match inherited keys such as `constructor`.
+  if (!id || !Object.hasOwn(log, id)) return 'unread'
   const readAt = log[id]
   if (!readAt || !updatedAt) return 'read'
   const revisedAt = Date.parse(updatedAt)
