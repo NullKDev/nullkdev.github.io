@@ -235,6 +235,63 @@ citations:
   - title: Android Developers content license
     url: https://developer.android.com/license
     accessedAt: 2026-10-17
+  - title: Set up the Android 12 SDK
+    url: https://developer.android.com/about/versions/12/setup-sdk
+    accessedAt: 2026-10-18
+  - title: Compatibility framework changes (Android 12)
+    url: https://developer.android.com/about/versions/12/reference/compat-framework-changes
+    accessedAt: 2026-10-18
+  - title: Compatibility framework tools (test and debug)
+    url: https://developer.android.com/guide/app-compatibility/test-debug
+    accessedAt: 2026-10-18
+  - title: 'Android Gradle plugin: minimum versions of tools for each API level'
+    url: https://developer.android.com/build/releases/about-agp
+    accessedAt: 2026-10-18
+  - title: Manifest.permission reference
+    url: https://developer.android.com/reference/android/Manifest.permission
+    accessedAt: 2026-10-18
+  - title: PendingIntent reference (FLAG_MUTABLE)
+    url: https://developer.android.com/reference/android/app/PendingIntent
+    accessedAt: 2026-10-18
+  - title: Window reference (setHideOverlayWindows)
+    url: https://developer.android.com/reference/android/view/Window
+    accessedAt: 2026-10-18
+  - title: Request location permissions (approximate location)
+    url: https://developer.android.com/develop/sensors-and-location/location/permissions/runtime
+    accessedAt: 2026-10-18
+  - title: 'Lint check IntentFilterExportedReceiver: Unspecified android:exported in manifest'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/IntentFilterExportedReceiver.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check UnspecifiedImmutableFlag: Missing PendingIntent mutability flag'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/UnspecifiedImmutableFlag.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check NotificationTrampoline: Notification Trampolines'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/NotificationTrampoline.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check ScheduleExactAlarm: Scheduling Exact Alarms Without Required Permission'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/ScheduleExactAlarm.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check CoarseFineLocation: Cannot use ACCESS_FINE_LOCATION without ACCESS_COARSE_LOCATION'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/CoarseFineLocation.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check HighSamplingRate: High sensor sampling rate'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/HighSamplingRate.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check DataExtractionRules: Missing data extraction rules'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/DataExtractionRules.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check CustomSplashScreen: Application-defined Launch Screen'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/CustomSplashScreen.md.html
+    accessedAt: 2026-10-18
+  - title: 'Google releases Android 12 to AOSP, but no Pixel launch today (9to5Google)'
+    url: https://9to5google.com/2021/10/04/android-12-aosp/
+    accessedAt: 2026-10-18
+  - title: 'Google rolling out Android 12 to current Pixel phones today (9to5Google)'
+    url: https://9to5google.com/2021/10/19/google-android-12-pixel-launch/
+    accessedAt: 2026-10-18
+  - title: 'Android 12 is now available in stable for Google Pixel phones (XDA Developers)'
+    url: https://www.xda-developers.com/android-12-stable-rollout-google-pixel/
+    accessedAt: 2026-10-18
 ---
 
 Android 12 es la versión en la que el fondo de pantalla eligió los colores de
@@ -257,6 +314,13 @@ plano.
 | Lanzamiento                        | Despliegue en Pixel desde el 19 de octubre de 2021                                        |
 | Dispositivos de lanzamiento        | Pixel 6 y Pixel 6 Pro, anunciados el 19 de octubre de 2021, en tiendas desde el 28        |
 | Plazo de target API en Google Play | Apps nuevas desde el 1 de agosto de 2022, actualizaciones desde el 1 de noviembre de 2022 |
+| Herramientas                       | `compileSdk 31`, Android Studio Arctic Fox (2020.3.1) o posterior                         |
+
+La página de configuración del SDK de Android 12 indica Arctic Fox como la
+versión de Studio que hay que usar y fija `compileSdkVersion 31`. La tabla de
+Google con las versiones mínimas del Android Gradle Plugin por nivel de API
+empieza en API 33, así que ninguna fuente primaria indica un AGP mínimo para
+API 31.
 
 Google anunció Android 12 con la Developer Preview 1 el 18 de febrero de 2021.
 La Beta 1 llegó el 18 de mayo en Google I/O, y la Beta 4 alcanzó la estabilidad
@@ -267,7 +331,9 @@ que siguen a esta vista general.
 Google publicó el código de Android 12 en AOSP el 4 de octubre de 2021. Los
 teléfonos esperaron dos semanas más: el despliegue empezó el 19 de octubre, para
 el Pixel 3 en adelante, el mismo día en que Google anunció el Pixel 6 y el Pixel
-6 Pro. Google nombró a Samsung, OnePlus, Oppo, realme, Tecno, Vivo y Xiaomi para
+6 Pro. 9to5Google informó las dos fechas, el código sin teléfonos el 4 de
+octubre y la actualización de Pixel el 19; XDA informó el mismo despliegue en
+Pixel. Google nombró a Samsung, OnePlus, Oppo, realme, Tecno, Vivo y Xiaomi para
 más adelante en el año. El primer build, `SP1A.210812.015`, cubrió del Pixel 3
 al Pixel 5a.
 
@@ -364,41 +430,76 @@ solas y el panel de privacidad también está incluido.
 
 ## Permisos
 
-- **Ubicación aproximada.** Cuando una app pide `ACCESS_FINE_LOCATION`, el
-  diálogo ofrece "Precise" o "Approximate", junto a las opciones de una sola vez
-  de [Android 11](/es/notes/android-11/). La app debe pedir
-  `ACCESS_COARSE_LOCATION` en la misma llamada, o en algunas versiones de Android
-  12 el diálogo no aparece.
+Android 12 agregó nueve permisos que una app común puede declarar, además de los
+de dispositivos acompañantes, y cambió las reglas de cuatro anteriores:
+
+| Permiso                                    | Qué cambió en API 31                                                                                                        | Qué declarar                                                                      | Qué quitar o limitar                                                        |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `ACCESS_FINE_LOCATION`                     | El usuario puede conceder solo la ubicación aproximada; pedido solo, el pedido se ignora en algunas versiones de Android 12 | Decláralo y pídelo junto con `ACCESS_COARSE_LOCATION`                             | `android:maxSdkVersion="30"` si solo lo necesitabas para escanear Bluetooth |
+| `BLUETOOTH_SCAN`                           | Permiso nuevo en tiempo de ejecución del grupo "Nearby devices", para apps con target 31                                    | `android:usesPermissionFlags="neverForLocation"` si nunca obtienes la ubicación   | Nada                                                                        |
+| `BLUETOOTH_CONNECT`, `BLUETOOTH_ADVERTISE` | Permisos nuevos en tiempo de ejecución del mismo grupo: hablar con dispositivos vinculados, hacer visible el teléfono       | Declara solo el que usa tu función                                                | Nada                                                                        |
+| `BLUETOOTH`, `BLUETOOTH_ADMIN`             | Los reemplazan los tres anteriores en apps con target 31                                                                    | Mantenlos para dispositivos hasta Android 11                                      | `android:maxSdkVersion="30"`                                                |
+| `UWB_RANGING`                              | Permiso nuevo en tiempo de ejecución para medir distancia por banda ultraancha, del grupo "Nearby devices"                  | Decláralo y pídelo si usas UWB                                                    | Nada                                                                        |
+| `SCHEDULE_EXACT_ALARM`                     | Acceso especial nuevo, "Alarms & reminders"; obligatorio para alarmas exactas en apps con target 31                         | Decláralo para horarios que ve el usuario; revisa `canScheduleExactAlarms()`      | No lo declares para trabajo que puede correr tarde                          |
+| `HIGH_SAMPLING_RATE_SENSORS`               | Permiso normal nuevo; sin él, los sensores de movimiento quedan limitados a 200 Hz en apps con target 31                    | Decláralo solo si necesitas muestras más rápidas                                  | Nada; lint avisa que Play puede revisarlo                                   |
+| `READ_PHONE_STATE`                         | Ahora lo exigen las APIs del estado de llamada, como `getCallState()`, en apps con target 31                                | Decláralo y pídelo si lees el estado de llamada                                   | Nada                                                                        |
+| `HIDE_OVERLAY_WINDOWS`                     | Nuevo; permite ocultar las ventanas superpuestas de otras apps sobre la propia                                              | Decláralo y llama a `Window.setHideOverlayWindows(true)` en pantallas sensibles   | Nada                                                                        |
+| `UPDATE_PACKAGES_WITHOUT_USER_ACTION`      | Permiso normal nuevo para tiendas de apps                                                                                   | Decláralo y llama a `setRequireUserAction(USER_ACTION_NOT_REQUIRED)` en la sesión | Nada                                                                        |
+| `MANAGE_MEDIA`                             | Acceso especial nuevo para gestores de medios: editar o borrar medios sin diálogo de confirmación                           | Decláralo junto a `READ_EXTERNAL_STORAGE` o `MANAGE_EXTERNAL_STORAGE`             | Nada                                                                        |
+
+Un manifiesto para una app que corre en Android 11 o anterior y en 12 o
+posterior. Deja solo los bloques que tu app necesita:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Ubicación: pide las dos, el usuario puede elegir "Approximate" -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- Bluetooth: el par antiguo hasta API 30, Nearby devices desde 31 -->
+    <uses-permission
+        android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_ADMIN"
+        android:maxSdkVersion="30" />
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <!-- Alarmas exactas para una función que ve el usuario -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+</manifest>
+```
+
+Si la ubicación solo servía para escanear Bluetooth, quita
+`ACCESS_COARSE_LOCATION` y agrega `android:maxSdkVersion="30"` a
+`ACCESS_FINE_LOCATION`, como hace la guía de Bluetooth de Google.
+`neverForLocation` filtra algunas balizas BLE de los resultados del escaneo.
+
+Cuando una app pide `ACCESS_FINE_LOCATION`, el diálogo ofrece "Precise" o
+"Approximate", junto a las opciones de una sola vez de
+[Android 11](/es/notes/android-11/). Bajar de precisa a aproximada, en el
+diálogo o en los ajustes, reinicia el proceso de la app.
 
 ![Un diálogo de permiso de ubicación con dos opciones, Precise y Approximate, sobre los botones While using the app, Only this time y Deny](./assets/approximate-location-dialog.png 'El diálogo de ubicación de Android 12, con "Precise" y "Approximate". Android Developers · CC BY 2.5')
 
-- **Dispositivos cercanos.** `BLUETOOTH_SCAN`, `BLUETOOTH_CONNECT` y
-  `BLUETOOTH_ADVERTISE` son permisos nuevos en tiempo de ejecución, que el
-  usuario ve como "Nearby devices", junto con `UWB_RANGING`. Reemplazan a
-  `BLUETOOTH` y `BLUETOOTH_ADMIN` en las apps con target 31. Una app que nunca
-  deduce la ubicación de los escaneos agrega
-  `usesPermissionFlags="neverForLocation"` y prescinde de
-  `ACCESS_FINE_LOCATION`.
-- **Alarmas exactas.** Para las apps con target 31, `SCHEDULE_EXACT_ALARM` es un
-  permiso de app-op que se concede en la pantalla de acceso especial "Alarms &
-  reminders". Hay que llamar a `canScheduleExactAlarms()` antes de programar
-  una; si el usuario lo revoca, la app se detiene y sus alarmas exactas se
-  cancelan.
-- **Sensores rápidos.** Para las apps con target 31, el acelerómetro, el
-  giroscopio y el magnetómetro quedan limitados a 200 Hz con
-  `registerListener()`. Las frecuencias mayores necesitan
-  `HIGH_SAMPLING_RATE_SENSORS`, y con el micrófono apagado el límite se aplica
-  igual.
-- **Hibernación.** Para las apps con target 31, el reinicio automático de
-  permisos de Android 11 crece: una app que el usuario no abre en unos meses
-  también pierde sus jobs, alarmas, mensajes push y caché. El interruptor es
-  "Remove permissions and free up space" en App info.
-- **Actualizaciones sin confirmación.** Una tienda de apps que declara
-  `UPDATE_PACKAGES_WITHOUT_USER_ACTION`, un permiso normal que se otorga al
-  instalar, puede llamar a `setRequireUserAction(USER_ACTION_NOT_REQUIRED)` en
-  una sesión de `PackageInstaller` y actualizar apps sin un diálogo de
-  confirmación. Solo funciona con las apps que ella instaló, o consigo misma, y
-  en Android 12 solo si la app actualizada tiene target API 29 o superior.
+`SCHEDULE_EXACT_ALARM` se concede en la pantalla de acceso especial "Alarms &
+reminders". Si el usuario lo revoca, la app se detiene y sus alarmas exactas se
+cancelan. Con el micrófono apagado, el límite de 200 Hz se aplica aunque la app
+tenga `HIGH_SAMPLING_RATE_SENSORS`.
+
+Una tienda con `UPDATE_PACKAGES_WITHOUT_USER_ACTION` puede actualizar apps sin
+diálogo de confirmación solo si ella las instaló, o consigo misma, y en
+Android 12 solo si la app actualizada tiene target API 29 o superior.
+
+La hibernación es un cambio de target y está en
+[la tabla de target](#apps-con-target-api-31). En las apps con target 31, el
+reinicio automático de permisos de Android 11 crece: una app que el usuario no
+abre en unos meses también pierde sus jobs, alarmas, mensajes push y caché. El
+interruptor es "Remove permissions and free up space" en App info.
 
 ![La pantalla Location usage del panel de privacidad: una línea de tiempo de las apps que usaron la ubicación hoy y ayer, con un botón Manage permission](./assets/privacy-dashboard.png 'El panel de privacidad de Android 12, con el uso de la ubicación en 24 horas. Android Developers · CC BY 2.5')
 
@@ -406,38 +507,47 @@ solas y el panel de privacidad también está incluido.
 
 ### Todas las apps en Android 12
 
-| Cambio                                                                     | Qué hacer                                                                                |
-| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| El sistema muestra su propia pantalla de inicio                            | Migrar la actividad de splash propia a la API `SplashScreen`                             |
-| El usuario puede elegir ubicación aproximada                               | Pedir `ACCESS_FINE_LOCATION` y `ACCESS_COARSE_LOCATION` juntos                           |
-| Los interruptores de cámara y micrófono pueden bloquear la app en silencio | Consultar `SensorPrivacyManager.supportsSensorToggle()` y esperar datos vacíos           |
-| Los enlaces web genéricos abren la app solo en dominios aprobados          | Verificar el dominio con Android App Links (`https`, `BROWSABLE`)                        |
-| Back en la actividad raíz del launcher manda la tarea a segundo plano      | Llamar a `super.onBackPressed()` en lugar de `finish()`                                  |
-| Se bloquean los toques no confiables a través de superposiciones           | Mantener las superposiciones en 0.8 de opacidad combinada o menos, o fuera del camino    |
-| `ACTION_CLOSE_SYSTEM_DIALOGS` está obsoleto y ya no funciona               | Quitarlo; los servicios de accesibilidad usan `GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE` |
-| Las apps pueden caer en el bucket restringido de App Standby               | Revisar si `getAppStandbyBucket()` devuelve `STANDBY_BUCKET_RESTRICTED`                  |
-| Desaparecen AES de BouncyCastle y las claves de 512 bits                   | Usar tamaños de clave de Conscrypt y un IV de 12 bytes para GCM                          |
-| `Display.getRealSize()` y `getRealMetrics()` están obsoletos               | Usar `WindowMetrics`                                                                     |
+| Cambio                                                                     | Qué hacer                                                                                | Cómo comprobarlo                                       |
+| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| El sistema muestra su propia pantalla de inicio                            | Migrar la actividad de splash propia a la API `SplashScreen`                             | Lint `CustomSplashScreen`                              |
+| El usuario puede elegir ubicación aproximada                               | Pedir `ACCESS_FINE_LOCATION` y `ACCESS_COARSE_LOCATION` juntos                           | Lint `CoarseFineLocation`                              |
+| Los interruptores de cámara y micrófono pueden bloquear la app en silencio | Consultar `SensorPrivacyManager.supportsSensorToggle()` y esperar datos vacíos           |                                                        |
+| Los enlaces web genéricos abren la app solo en dominios aprobados          | Verificar el dominio con Android App Links (`https`, `BROWSABLE`)                        |                                                        |
+| Back en la actividad raíz del launcher manda la tarea a segundo plano      | Llamar a `super.onBackPressed()` en lugar de `finish()`                                  |                                                        |
+| Se bloquean los toques no confiables a través de superposiciones           | Mantener las superposiciones en 0.8 de opacidad combinada o menos, o fuera del camino    | Compat `BLOCK_UNTRUSTED_TOUCHES` (158002302)           |
+| `ACTION_CLOSE_SYSTEM_DIALOGS` está obsoleto y ya no funciona               | Quitarlo; los servicios de accesibilidad usan `GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE` | Compat `DROP_CLOSE_SYSTEM_DIALOGS` (174664120)         |
+| Las apps pueden caer en el bucket restringido de App Standby               | Revisar si `getAppStandbyBucket()` devuelve `STANDBY_BUCKET_RESTRICTED`                  | `adb shell am set-standby-bucket <package> restricted` |
+| Desaparecen AES de BouncyCastle y las claves de 512 bits                   | Usar tamaños de clave de Conscrypt y un IV de 12 bytes para GCM                          |                                                        |
+| `Display.getRealSize()` y `getRealMetrics()` están obsoletos               | Usar `WindowMetrics`                                                                     |                                                        |
 
 ### Apps con target API 31
 
-| Cambio                                                                                | Qué hacer                                                                                                  |
-| ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Los componentes con intent filter deben declarar `android:exported`                   | `true` para la actividad del launcher y lo que llamen otras apps, `false` en el resto                      |
-| Todo `PendingIntent` debe indicar su mutabilidad                                      | Pasar `FLAG_IMMUTABLE`, o `FLAG_MUTABLE` solo si el intent debe completarse después                        |
-| Los servicios en primer plano no pueden iniciarse desde segundo plano                 | Usar trabajo acelerado de WorkManager, o una alarma exacta para una acción del usuario                     |
-| Se bloquean los trampolines de notificación                                           | Apuntar `setContentIntent()` directamente a la actividad                                                   |
-| Las alarmas exactas necesitan `SCHEDULE_EXACT_ALARM`                                  | Declararlo, revisar `canScheduleExactAlarms()` y usar alarmas exactas solo para horarios que ve el usuario |
-| Bluetooth necesita los nuevos permisos en tiempo de ejecución                         | Declarar y pedir `BLUETOOTH_SCAN`, `BLUETOOTH_CONNECT` o `BLUETOOTH_ADVERTISE`                             |
-| Las vistas de notificación propias van en una plantilla del sistema, de 48dp plegadas | Probarlas en el panel y ofrecer una vista expandida                                                        |
-| Las reglas de backup pasan a `android:dataExtractionRules`                            | Escribir reglas separadas en `<cloud-backup>` y `<device-transfer>`                                        |
-| `adb backup` deja fuera los datos de la app                                           | Probar los backups con un build depurable                                                                  |
-| WebView trata las cookies sin `SameSite` como `Lax`                                   | Poner `SameSite=None; Secure` en las cookies entre sitios                                                  |
-| Las bibliotecas nativas del fabricante quedan ocultas                                 | Declarar cada una con `<uses-native-library>`                                                              |
+| Cambio                                                                                | Qué hacer                                                                                                  | Cómo comprobarlo                                                                                  |
+| ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Los componentes con intent filter deben declarar `android:exported`                   | `true` para la actividad del launcher y lo que llamen otras apps, `false` en el resto                      | Lint `IntentFilterExportedReceiver`; compat `MISSING_EXPORTED_FLAG` (150232615)                   |
+| Todo `PendingIntent` debe indicar su mutabilidad                                      | Pasar `FLAG_IMMUTABLE`, o `FLAG_MUTABLE` solo si el intent debe completarse después                        | Lint `UnspecifiedImmutableFlag`; compat `PENDING_INTENT_EXPLICIT_MUTABILITY_REQUIRED` (160794467) |
+| Las APIs de ubicación rechazan un `PendingIntent` inmutable                           | Pasar `FLAG_MUTABLE` a los que entregas a pedidos de ubicación                                             | Compat `BLOCK_IMMUTABLE_PENDING_INTENTS` (171317480)                                              |
+| Los servicios en primer plano no pueden iniciarse desde segundo plano                 | Usar trabajo acelerado de WorkManager, o una alarma exacta para una acción del usuario                     | Compat `FGS_BG_START_RESTRICTION_CHANGE_ID` (170668199)                                           |
+| Se bloquean los trampolines de notificación                                           | Apuntar `setContentIntent()` directamente a la actividad                                                   | Lint `NotificationTrampoline`; compat `NOTIFICATION_TRAMPOLINE_BLOCK` (167676448)                 |
+| Las alarmas exactas necesitan `SCHEDULE_EXACT_ALARM`                                  | Declararlo, revisar `canScheduleExactAlarms()` y usar alarmas exactas solo para horarios que ve el usuario | Lint `ScheduleExactAlarm`; compat `REQUIRE_EXACT_ALARM_PERMISSION` (171306433)                    |
+| Las alarmas inexactas reciben una ventana de al menos unos minutos                    | Usar una alarma exacta cuando importa una ventana más corta                                                | Compat `ENFORCE_MINIMUM_WINDOW_ON_INEXACT_ALARMS` (185199076)                                     |
+| Bluetooth necesita los nuevos permisos en tiempo de ejecución                         | Declarar y pedir `BLUETOOTH_SCAN`, `BLUETOOTH_CONNECT` o `BLUETOOTH_ADVERTISE`                             |                                                                                                   |
+| Los sensores de movimiento quedan limitados a 200 Hz                                  | Declarar `HIGH_SAMPLING_RATE_SENSORS` solo si se necesita más                                              | Lint `HighSamplingRate`; compat `CHANGE_ID_SAMPLING_RATE_SENSORS_PERMISSION` (136069189)          |
+| Las apps sin uso hibernan                                                             | Esperar la pérdida de permisos, jobs, alarmas y caché tras meses sin uso                                   |                                                                                                   |
+| Las APIs del estado de llamada necesitan `READ_PHONE_STATE`                           | Pedirlo antes de `getCallState()` o de un listener del estado de llamada                                   | Compat `ENABLE_GET_CALL_STATE_PERMISSION_PROTECTION` (157233955)                                  |
+| Enviar `ACTION_CLOSE_SYSTEM_DIALOGS` se rechaza                                       | Quitar el broadcast                                                                                        | Compat `LOCK_DOWN_CLOSE_SYSTEM_DIALOGS` (174664365)                                               |
+| Las vistas de notificación propias van en una plantilla del sistema, de 48dp plegadas | Probarlas en el panel y ofrecer una vista expandida                                                        |                                                                                                   |
+| La verificación de App Links necesita el intent filter completo                       | Agregar `autoVerify`, `VIEW`, `BROWSABLE`, `DEFAULT` y `https`                                             | Compat `RESTRICT_DOMAINS` (175408749)                                                             |
+| Las reglas de backup pasan a `android:dataExtractionRules`                            | Escribir reglas separadas en `<cloud-backup>` y `<device-transfer>`                                        | Lint `DataExtractionRules`; compat `IGNORE_FULL_BACKUP_CONTENT_IN_D2D` (180523564)                |
+| `adb backup` deja fuera los datos de la app                                           | Probar los backups con un build depurable                                                                  | Compat `RESTRICT_ADB_BACKUP` (171032338)                                                          |
+| WebView trata las cookies sin `SameSite` como `Lax`                                   | Poner `SameSite=None; Secure` en las cookies entre sitios                                                  | Flag de WebView DevTools `webview-enable-modern-cookie-same-site`                                 |
+| Las bibliotecas nativas del fabricante quedan ocultas                                 | Declarar cada una con `<uses-native-library>`                                                              | Compat `ENFORCE_NATIVE_SHARED_LIBRARY_DEPENDENCIES` (142191088)                                   |
+| Las etiquetas de atribución deben declararse                                          | Listar cada etiqueta en el manifiesto con `<attribution>`                                                  | Compat `SECURITY_EXCEPTION_ON_INVALID_ATTRIBUTION_TAG_CHANGE` (151105954)                         |
 
 Sin `android:exported`, la app no se instala en Android 12: el build falla con
 un error de fusión del manifiesto. La falta del flag de mutabilidad falla en
-tiempo de ejecución, y lint lo marca como `UnspecifiedImmutableFlag`.
+tiempo de ejecución. La lista de compat también incluye cambios de telefonía,
+GNSS, el proveedor de medios y Android TV que pocas apps encuentran.
 
 La regla de los servicios en primer plano lanza
 `ForegroundServiceStartNotAllowedException`. Entre las excepciones están un
@@ -456,6 +566,58 @@ flowchart TD
 
 Llamar a `startForegroundService()` de todos modos en la rama "no" es lo que
 lanza la excepción.
+
+## Migrar a API 31
+
+De `targetSdk 30` a 31, en este orden:
+
+1. **Actualiza las herramientas.** Pon `compileSdk 31` y usa Android Studio
+   Arctic Fox o posterior. Si lo saltas, las constantes nuevas (`FLAG_MUTABLE`,
+   `BLUETOOTH_SCAN`) no compilan. Comprueba: el proyecto compila y lint no
+   muestra errores nuevos.
+2. **Declara `android:exported`** en cada actividad, servicio y receiver con
+   intent filter, incluidos los que llegan de bibliotecas. Si lo saltas, el
+   build falla en la fusión del manifiesto, o con herramientas antiguas sale un
+   APK que no se instala. Comprueba: lint `IntentFilterExportedReceiver` y el
+   manifiesto fusionado.
+3. **Indica la mutabilidad de cada `PendingIntent`.** `FLAG_IMMUTABLE` por
+   defecto, `FLAG_MUTABLE` para respuestas en línea, burbujas y pedidos de
+   ubicación. Si lo saltas, la app falla en tiempo de ejecución. Comprueba:
+   lint `UnspecifiedImmutableFlag`.
+4. **Mueve los inicios en segundo plano de servicios en primer plano** a
+   trabajo acelerado de WorkManager, o mantenlos solo con una excepción. Si lo
+   saltas, el inicio lanza `ForegroundServiceStartNotAllowedException`.
+   Comprueba: dispara cada camino de inicio con la app en segundo plano.
+5. **Quita los trampolines de notificación.** Apunta cada notificación y
+   acción directamente a su actividad. Si lo saltas, la actividad no se abre.
+   Comprueba: lint `NotificationTrampoline`, luego toca cada notificación y lee
+   la sección "NotifInteractionLog" de
+   `adb shell dumpsys activity service com.android.systemui/.dump.SystemUIAuxiliaryDumpService`.
+6. **Actualiza los permisos** como en [la tabla](#permisos): el trío de
+   Bluetooth con `maxSdkVersion="30"` en el par antiguo, ubicación precisa y
+   aproximada juntas, y `SCHEDULE_EXACT_ALARM` con una comprobación de
+   `canScheduleExactAlarms()`. Si lo saltas, se niegan los escaneos y
+   conexiones Bluetooth y no se pueden programar alarmas exactas. Comprueba:
+   lint `CoarseFineLocation` y `ScheduleExactAlarm`, y luego cada flujo de
+   Bluetooth y de alarmas en Android 12.
+7. **Escribe `android:dataExtractionRules`** con reglas separadas para la nube
+   y para la transferencia entre dispositivos. Si lo saltas, las
+   transferencias entre dispositivos ignoran tus reglas de exclusión antiguas.
+   Comprueba: lint `DataExtractionRules`.
+8. **Revisa las filas menores** de la tabla de target que te apliquen:
+   notificaciones personalizadas, App Links, cookies de WebView, bibliotecas
+   del fabricante, sensores, etiquetas de atribución y estado de llamada.
+9. **Prueba el resultado** en un dispositivo o emulador con Android 12 y
+   `targetSdk 31`. Para aislar un cambio, cámbialo en una build depurable en
+   Developer options > "App Compatibility Changes", o con
+   `adb shell am compat disable <change ID> <package>`.
+
+Opcional ya que estás: reemplaza la actividad de splash propia por la API
+`SplashScreen`, o el usuario verá dos pantallas de inicio. Lint
+`CustomSplashScreen` la encuentra.
+
+Si saltas varios niveles a la vez: haz los pasos de cada versión en orden,
+desde [Android 11](/es/notes/android-11/) si tu target es 29 o menos.
 
 ## Qué perduró
 

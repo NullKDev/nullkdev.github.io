@@ -226,6 +226,42 @@ citations:
   - title: Android 11 Beta 3 is now available for the Pixel 4a (9to5Google)
     url: https://9to5google.com/2020/08/24/android-11-beta-pixel-4a/
     accessedAt: 2026-10-18
+  - title: Compatibility framework changes (Android 11)
+    url: https://developer.android.com/about/versions/11/reference/compat-framework-changes
+    accessedAt: 2026-10-18
+  - title: Compatibility framework tools (test and debug)
+    url: https://developer.android.com/guide/app-compatibility/test-debug
+    accessedAt: 2026-10-18
+  - title: Set up the Android 11 SDK
+    url: https://developer.android.com/about/versions/11/setup-sdk
+    accessedAt: 2026-10-18
+  - title: Preparing your Gradle build for package visibility in Android 11 (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2020/07/preparing-your-build-for-package-visibility-in-android-11.html
+    accessedAt: 2026-10-18
+  - title: Test package visibility behavior
+    url: https://developer.android.com/training/package-visibility/testing
+    accessedAt: 2026-10-18
+  - title: Access media files from shared storage
+    url: https://developer.android.com/training/data-storage/shared/media
+    accessedAt: 2026-10-18
+  - title: Merge multiple manifest files
+    url: https://developer.android.com/build/manage-manifests
+    accessedAt: 2026-10-18
+  - title: 'Lint check QueryPermissionsNeeded: Using APIs affected by query permissions'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/QueryPermissionsNeeded.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check QueryAllPackagesPermission: Using the QUERY_ALL_PACKAGES permission'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/QueryAllPackagesPermission.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check ScopedStorage: Affected by scoped storage'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/ScopedStorage.md.html
+    accessedAt: 2026-10-18
+  - title: Android 11 starts rolling out today (Android Police)
+    url: https://www.androidpolice.com/2020/09/08/android-11-starts-rolling-out-today-with-improvements-to-notifications-privacy-5g-and-more/
+    accessedAt: 2026-10-18
+  - title: 'Android 11 review: An incremental update that needs some polish (Engadget)'
+    url: https://www.engadget.com/android-11-review-screen-recording-messaging-bubbles-170001960.html
+    accessedAt: 2026-10-18
 ---
 
 Android 11 es la versión en la que un permiso podía durar una sola sesión. Los
@@ -245,9 +281,18 @@ target API 30.
 | Lanzamiento                        | Despliegue en Pixel desde el 8 de septiembre de 2020                                                          |
 | Dispositivos de lanzamiento        | vivo V20, a la venta el 30 de septiembre de 2020; Pixel 5 y Pixel 4a (5G) de Google, anunciados ese mismo día |
 | Plazo de target API en Google Play | Apps nuevas desde agosto de 2021, actualizaciones desde noviembre de 2021                                     |
+| Herramientas                       | `compileSdkVersion 30`, Android Gradle Plugin 4.1 o una versión anterior parcheada (abajo)                    |
+
+La página del SDK de Android 11 recomienda Android Studio 4.2 o superior y dice
+que desde 3.3 se puede compilar, con posibles fallos de sincronización de
+Gradle. Las versiones anteriores del Android Gradle Plugin no saben fusionar el
+nuevo elemento `<queries>`, así que Google publicó 3.3.3, 3.4.3, 3.5.4, 3.6.4 y
+4.0.1 con soporte para él; 4.1 no necesita parche. La tabla de versiones mínimas
+de AGP de Google empieza en API 33.
 
 Google lanzó Android 11 y publicó su código en AOSP el 8 de septiembre de 2020,
-empezando por los Pixel 2, 3, 3a, 4 y 4a. El anuncio de Google también nombró
+empezando por los Pixel 2, 3, 3a, 4 y 4a: todos los Pixel salvo los originales
+de 2016, como señaló Android Police. El anuncio de Google también nombró
 teléfonos de OnePlus, Xiaomi, OPPO y realme. Los primeros teléfonos vendidos con
 Android 11 fueron los vivo V20, que salieron a la venta en el sudeste asiático
 el 30 de septiembre. Google anunció los suyos, el Pixel 5 y el Pixel 4a (5G), ese
@@ -283,7 +328,8 @@ build para Pixel).
   carrusel que se desliza y retoma sesiones recientes, con un selector de salida
   para parlantes y auriculares.
 - **Grabación de pantalla.** Un grabador integrado en Quick Settings, con audio
-  del micrófono, del dispositivo o de ambos.
+  del micrófono, del dispositivo o de ambos. Fue lo que más gustó en la reseña
+  de Engadget, porque reemplazaba a un grabador de terceros.
 - **Depuración inalámbrica.** `adb` se conecta por Wi-Fi sin cable USB, tras
   emparejar con un código (`adb pair ipaddr:port`) o con un código QR desde
   Android Studio.
@@ -326,7 +372,8 @@ build para Pixel).
   solo registrarlo.
 - **Etiquetado de punteros del heap.** En las apps con target 30, los punteros
   del heap llevan una etiqueta en su byte más alto, como preparación para la
-  Memory Tagging Extension de Arm.
+  Memory Tagging Extension de Arm. Qué revisar está en
+  [la tabla de target](#apps-con-target-api-30).
 - **Mainline.** Google duplicó con creces la cantidad de módulos del sistema que
   puede actualizar por Google Play system updates, con 12 nuevos.
 - **Identificadores protegidos.** `getIccId()` devuelve una cadena vacía. Las
@@ -344,6 +391,71 @@ build para Pixel).
 
 ## Permisos
 
+Android 11 agregó dos permisos que una app puede declarar,
+`MANAGE_EXTERNAL_STORAGE` y `QUERY_ALL_PACKAGES`, y cambió cómo se conceden
+otros o qué cubren:
+
+| Permiso                                  | Qué cambió en API 30                                                                                                            | Qué declarar                                                                           | Qué quitar o limitar                                                           |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Cámara, micrófono y ubicación            | El diálogo suma "Only this time"; el permiso termina poco después de que la app deja el primer plano                            | Nada nuevo                                                                             | Nada                                                                           |
+| Cualquier permiso en tiempo de ejecución | Dos toques en "Deny" equivalen a no volver a preguntar; las apps con target 30 pierden sus permisos si no se usan durante meses | Nada nuevo; verifica el permiso antes de cada acceso                                   | Nada                                                                           |
+| `ACCESS_BACKGROUND_LOCATION`             | Las apps con target 30 lo piden solo, después de la ubicación en primer plano; el usuario lo concede en Ajustes                 | Pídelo solo cuando `ACCESS_FINE_LOCATION` o `ACCESS_COARSE_LOCATION` ya está concedido | Quítalo si ninguna función necesita ubicación en segundo plano                 |
+| `READ_PHONE_NUMBERS`                     | Necesario en lugar de `READ_PHONE_STATE` para `getLine1Number()` y `getMsisdn()` en apps con target 30                          | Decláralo si lees el número de teléfono                                                | Nada                                                                           |
+| `READ_PHONE_STATE`                       | Ya no cubre los métodos del número de teléfono en apps con target 30                                                            | Mantenlo para otros métodos de telefonía                                               | `android:maxSdkVersion="29"` si solo lo usabas para el número                  |
+| `READ_EXTERNAL_STORAGE`                  | Su grupo pasa a llamarse "Files & Media"; con scoped storage el diálogo pide fotos y contenido multimedia                       | Mantenlo para leer contenido multimedia de otras apps                                  | Nada aquí; Android 13 lo limita                                                |
+| `WRITE_EXTERNAL_STORAGE`                 | No da acceso adicional a las apps con target 30                                                                                 | Mantenlo solo para Android 10 y anteriores                                             | `android:maxSdkVersion="29"`                                                   |
+| `MANAGE_EXTERNAL_STORAGE`                | Nuevo "All files access", que el usuario activa en Ajustes                                                                      | Solo si gestionar archivos es la función principal de la app; Google Play lo revisa    | Nunca como forma de evitar el scoped storage                                   |
+| `QUERY_ALL_PACKAGES`                     | Nuevo; devuelve todas las apps instaladas a las apps con target 30                                                              | Mejor `<queries>`; decláralo solo si la función principal necesita todas las apps      | `tools:node="remove"` sobre la copia que fusiona un SDK; Google Play lo revisa |
+| `SYSTEM_ALERT_WINDOW`                    | El intent de ajustes ignora tu paquete; las apps de filtrado de llamadas y las que capturan la pantalla lo reciben al pedirlo   | Sigue pidiéndolo; indica al usuario que busque tu app en la lista                      | Nada                                                                           |
+| `WRITE_APN_SETTINGS`                     | Privilegiado; las apps con target 30 lo necesitan para leer la base de datos de APN                                             | Solo las apps del sistema pueden tenerlo                                               | Deja de leer la base de datos de APN                                           |
+
+Un manifiesto para una app que corre en Android 10 o anterior y en 11 o
+posterior. Conserva solo los bloques que tu app necesita:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Número de teléfono: READ_PHONE_STATE hasta API 29, READ_PHONE_NUMBERS desde 30.
+         Quita maxSdkVersion si llamas a otros métodos de telefonía. -->
+    <uses-permission
+        android:name="android.permission.READ_PHONE_STATE"
+        android:maxSdkVersion="29" />
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
+
+    <!-- Almacenamiento: escribir no da acceso adicional desde API 30 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+
+    <!-- Ubicación: el segundo plano se pide aparte -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!-- Visibilidad de paquetes: nombra con qué hablas y bloquea la lista completa fusionada -->
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:node="remove" />
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+
+    <!-- El flag de almacenamiento antiguo solo aplica en Android 10 -->
+    <application android:requestLegacyExternalStorage="true">
+        <service
+            android:name=".CallService"
+            android:foregroundServiceType="camera|microphone" />
+    </application>
+</manifest>
+```
+
+La página de almacenamiento de Google recomienda mantener
+`requestLegacyExternalStorage` para los dispositivos con Android 10; Android 11
+lo ignora en las apps con target 30.
+
 Tres cambios alcanzan a todas las apps, sin importar su target:
 
 - **Permisos de una sola vez.** Los diálogos de cámara, micrófono y ubicación
@@ -360,20 +472,11 @@ Tres cambios alcanzan a todas las apps, sin importar su target:
 
 ![Un diálogo de permiso de ubicación con tres botones: While using the app, Only this time y Deny](./assets/one-time-permission-dialog.png 'El diálogo de ubicación en Android 11, con la nueva opción "Only this time". Android Developers · CC BY 2.5')
 
-Para las apps con target API 30:
-
-- **Restablecimiento automático.** Si el usuario no abre la app durante unos
-  meses, Android restablece sus permisos en tiempo de ejecución y le avisa. El
-  interruptor por app es "Remove permissions if app isn't used", en App info >
-  Permissions.
-- **Ubicación en segundo plano.** Un pedido de ubicación en primer y segundo
-  plano a la vez se ignora. La app pide primero la ubicación en primer plano,
-  luego `ACCESS_BACKGROUND_LOCATION`, y el usuario activa "Allow all the time"
-  en Ajustes.
-- **Números de teléfono.** `getLine1Number()` requiere `READ_PHONE_NUMBERS` en
-  lugar de `READ_PHONE_STATE`.
-- **Nuevos.** `MANAGE_EXTERNAL_STORAGE` ("All files access") y
-  `QUERY_ALL_PACKAGES`, ambos explicados más abajo.
+Para las apps con target API 30, el restablecimiento automático de permisos, el
+pedido de ubicación en segundo plano en dos pasos y el permiso del número de
+teléfono son filas de [la tabla de target](#apps-con-target-api-30). El
+interruptor por app del restablecimiento es "Remove permissions if app isn't
+used", en App info > Permissions.
 
 ```mermaid title="Ubicación en segundo plano para una app con target API 30"
 flowchart TD
@@ -398,31 +501,48 @@ apps de filtrado de llamadas y las que capturan la pantalla reciben
 
 ### Todas las apps en Android 11
 
-| Cambio                                                                                            | Qué hacer                                                                             |
-| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Permisos de una sola vez y la regla de los dos rechazos                                           | Verifica el permiso antes de cada acceso; espera un rechazo sin diálogo               |
-| Los servicios en primer plano iniciados desde segundo plano pierden cámara, micrófono y ubicación | Inícialos mientras la app está visible                                                |
-| Scudo es el asignador nativo y fdsan aborta                                                       | Corrige los errores de memoria y de descriptores de archivo en el código nativo       |
-| `getIccId()` devuelve una cadena vacía                                                            | Usa `getSubscriptionId()`                                                             |
-| Las estadísticas de uso requieren un usuario desbloqueado                                         | Llama a `UsageStatsManager` después de que `isUserUnlocked()` devuelva true           |
-| Compartir una URI de contenido                                                                    | Agrega `FLAG_GRANT_READ_URI_PERMISSION` o `FLAG_GRANT_WRITE_URI_PERMISSION` al intent |
-| Se eliminó la biblioteca compartida de Maps v1                                                    | Pasa al Maps SDK for Android y quita su `<uses-library>`                              |
-| Las apps no pueden leer las carpetas de otras apps en `Android/data`                              | Comparte archivos con un `FileProvider` o con el Storage Access Framework             |
+| Cambio                                                                                                                                   | Qué hacer                                                                             | Cómo comprobarlo                                                                                                                                           |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Permisos de una sola vez y la regla de los dos rechazos                                                                                  | Verifica el permiso antes de cada acceso; espera un rechazo sin diálogo               | `adb shell dumpsys package <package>` muestra `USER_FIXED`; `adb shell pm clear-permission-flags <package> <permission> user-set user-fixed` lo restablece |
+| Los servicios en primer plano iniciados desde segundo plano pierden cámara y micrófono, y la ubicación si no hay acceso en segundo plano | Inícialos mientras la app está visible                                                |                                                                                                                                                            |
+| El intent de ajustes de superposición ignora el paquete                                                                                  | Indica al usuario que elija tu app en la lista                                        | Compat `CHANGE_RESTRICT_SAW_INTENT` (135920175), solo se registra                                                                                          |
+| Scudo es el asignador nativo y fdsan aborta                                                                                              | Corrige los errores de memoria y de descriptores de archivo en el código nativo       |                                                                                                                                                            |
+| `getIccId()` devuelve una cadena vacía                                                                                                   | Usa `getSubscriptionId()`                                                             |                                                                                                                                                            |
+| Las estadísticas de uso requieren un usuario desbloqueado                                                                                | Llama a `UsageStatsManager` después de que `isUserUnlocked()` devuelva true           |                                                                                                                                                            |
+| Compartir una URI de contenido                                                                                                           | Agrega `FLAG_GRANT_READ_URI_PERMISSION` o `FLAG_GRANT_WRITE_URI_PERMISSION` al intent |                                                                                                                                                            |
+| Se eliminó la biblioteca compartida de Maps v1                                                                                           | Pasa al Maps SDK for Android y quita su `<uses-library>`                              |                                                                                                                                                            |
+| Las apps no pueden leer las carpetas de otras apps en `Android/data`                                                                     | Comparte archivos con un `FileProvider` o con el Storage Access Framework             |                                                                                                                                                            |
 
 ### Apps con target API 30
 
-| Cambio                                                                                    | Qué hacer                                                                                                     |
-| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| El scoped storage es obligatorio; `requestLegacyExternalStorage` se ignora                | Usa `MediaStore` y el Storage Access Framework; migra los archivos antiguos antes de subir `targetSdkVersion` |
-| `WRITE_EXTERNAL_STORAGE` no da acceso adicional                                           | Escribe en tus propios directorios o en las colecciones de `MediaStore`                                       |
-| Las apps instaladas se filtran en `getInstalledApplications()` y llamadas similares       | Declara las apps o intents que necesitas en `<queries>`                                                       |
-| Cámara o micrófono en un servicio en primer plano                                         | Agrega `camera` o `microphone` a `android:foregroundServiceType`                                              |
-| Se bloquean los toasts personalizados desde segundo plano                                 | Usa un toast de texto o una notificación; `Toast.addCallback()` avisa cuándo se muestra y se oculta           |
-| Se ignora un pedido conjunto de ubicación en primer y segundo plano                       | Pídelas en dos pasos                                                                                          |
-| No se instalan APKs firmados solo con v1                                                  | Firma con APK Signature Scheme v2 o superior, y mantén v1 para dispositivos antiguos                          |
-| Un `resources.arsc` comprimido o sin alinear impide la instalación                        | Guárdalo sin comprimir y alineado a 4 bytes                                                                   |
-| Los intents implícitos `IMAGE_CAPTURE` y `VIDEO_CAPTURE` solo van a la cámara del sistema | Indica el paquete para usar una cámara de terceros                                                            |
-| Firebase JobDispatcher y `GcmNetworkManager` dejan de funcionar en Android 6.0+           | Pasa a WorkManager                                                                                            |
+| Cambio                                                                                                                                              | Qué hacer                                                                                                     | Cómo comprobarlo                                                                                                               |
+| --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| El scoped storage es obligatorio; `requestLegacyExternalStorage` se ignora                                                                          | Usa `MediaStore` y el Storage Access Framework; migra los archivos antiguos antes de subir `targetSdkVersion` | Lint `ScopedStorage`; compat `DEFAULT_SCOPED_STORAGE` (149924527) y `FORCE_ENABLE_SCOPED_STORAGE` (132649864)                  |
+| `WRITE_EXTERNAL_STORAGE` no da acceso adicional                                                                                                     | Escribe en tus propios directorios o en las colecciones de `MediaStore`                                       | Lint `ScopedStorage`                                                                                                           |
+| Los selectores del Storage Access Framework rechazan las raíces de almacenamiento, la carpeta Download como árbol, y `Android/data` y `Android/obb` | No pidas al usuario que elija esas ubicaciones                                                                | Compat `RESTRICT_STORAGE_ACCESS_FRAMEWORK` (141600225)                                                                         |
+| Los directorios de datos privados de otras apps quedan cerrados, aunque sean legibles por todos                                                     | Comparte con un `ContentProvider` o un `FileProvider`                                                         | Compat `APP_DATA_DIRECTORY_ISOLATION` (143937733)                                                                              |
+| Las apps instaladas se filtran en `getInstalledApplications()` y llamadas similares                                                                 | Declara las apps o intents que necesitas en `<queries>`, incluidos TTS y reconocimiento de voz                | Lint `QueryPermissionsNeeded`; compat `FILTER_APPLICATION_QUERY` (135549675); `adb shell pm log-visibility --enable <package>` |
+| Las apps sin uso pierden sus permisos en tiempo de ejecución                                                                                        | Verifica los permisos cuando se usa cada función, no una vez al abrir                                         | Los pasos de `adb` de la página de hibernación de apps de Google                                                               |
+| Se ignora un pedido conjunto de ubicación en primer y segundo plano                                                                                 | Pide la ubicación en segundo plano sola y luego lleva al usuario a Ajustes                                    | Compat `BACKGROUND_RATIONALE_CHANGE_ID` (147316723)                                                                            |
+| `getLine1Number()` requiere `READ_PHONE_NUMBERS`                                                                                                    | Decláralo; limita `READ_PHONE_STATE` si el número era su único uso                                            |                                                                                                                                |
+| Cámara o micrófono en un servicio en primer plano                                                                                                   | Agrega `camera` o `microphone` a `android:foregroundServiceType`                                              | Compat `CAMERA_MICROPHONE_CAPABILITY_CHANGE_ID` (136219221)                                                                    |
+| Se bloquean los toasts personalizados desde segundo plano                                                                                           | Usa un toast de texto o una notificación; `Toast.addCallback()` avisa cuándo se muestra y se oculta           | Compat `CHANGE_BACKGROUND_CUSTOM_TOAST_BLOCK` (128611929); logcat muestra "Blocking custom toast"                              |
+| El sistema dibuja los toasts de texto; `setGravity()` y `setMargin()` no hacen nada                                                                 | No posiciones los toasts de texto                                                                             | Compat `CHANGE_TEXT_TOASTS_IN_THE_SYSTEM` (147798919)                                                                          |
+| Los punteros del heap llevan una etiqueta en el byte más alto                                                                                       | Corrige el código nativo que modifica bits de los punteros                                                    | Compat `NATIVE_HEAP_POINTER_TAGGING` (135754954)                                                                               |
+| No se instalan APKs firmados solo con v1                                                                                                            | Firma con APK Signature Scheme v2 o superior, y mantén v1 para dispositivos antiguos                          | Android Studio o `apksigner`                                                                                                   |
+| Un `resources.arsc` comprimido o sin alinear impide la instalación                                                                                  | Guárdalo sin comprimir y alineado a 4 bytes                                                                   | Compat `RESOURCES_ARSC_COMPRESSED` (132742131)                                                                                 |
+| Los intents implícitos `IMAGE_CAPTURE` y `VIDEO_CAPTURE` solo van a la cámara del sistema                                                           | Indica el paquete para usar una cámara de terceros                                                            |                                                                                                                                |
+| Firebase JobDispatcher y `GcmNetworkManager` dejan de funcionar en Android 6.0+                                                                     | Pasa a WorkManager                                                                                            |                                                                                                                                |
+| `Editor.clear()` llama a `onSharedPreferenceChanged()` con una clave null                                                                           | Maneja una clave null en el listener                                                                          | Compat `CALLBACK_ON_CLEAR_CHANGE` (119147584)                                                                                  |
+| Se ignora el flag del botón de accesibilidad puesto en tiempo de ejecución                                                                          | Declara `flagRequestAccessibilityButton` en el archivo de metadatos del servicio                              | Compat `REQUEST_ACCESSIBILITY_BUTTON_CHANGE` (136293963)                                                                       |
+| Leer la base de datos de APN requiere `WRITE_APN_SETTINGS`                                                                                          | Deja de leerla; solo las apps privilegiadas tienen ese permiso                                                | Compat `APN_READING_PERMISSION_CHANGE_ID` (124107808)                                                                          |
+| Se bloquean las interfaces no SDK de la lista max-target-q                                                                                          | Pasa a APIs públicas                                                                                          | Compat `HIDE_MAXTARGETSDK_Q_HIDDEN_APIS` (149994052)                                                                           |
+
+La lista de compat de Google marca `DEFAULT_SCOPED_STORAGE` como "Enabled for
+all apps", mientras que su página de almacenamiento liga la aplicación al target
+de la app. Para probar sin scoped storage hay que desactivar los dos cambios de
+scoped storage. La lista también incluye cambios de administración de
+dispositivos, telefonía y validación del manifiesto que pocas apps encuentran.
 
 El scoped storage llegó en [Android 10](/es/notes/android-10/), donde una app
 todavía podía evitarlo. Desde API 30 ya no hay salida, pero Android 11 devolvió
@@ -440,9 +560,59 @@ siguen cerradas.
 La visibilidad de paquetes funciona igual. Una app que usa un motor de texto a
 voz o un servicio de reconocimiento de voz, por ejemplo, debe declarar ese
 intent en `<queries>`. Para la app poco común que necesita la lista completa
-existe `QUERY_ALL_PACKAGES`. Google Play revisa ambos permisos: All files access
-desde mayo de 2021, y `QUERY_ALL_PACKAGES` mediante su formulario de declaración
-de permisos.
+existe `QUERY_ALL_PACKAGES`, y lint `QueryAllPackagesPermission` lo señala.
+Google Play revisa ambos permisos: All files access desde mayo de 2021, y
+`QUERY_ALL_PACKAGES` mediante su formulario de declaración de permisos.
+
+## Migrar a API 30
+
+De `targetSdk 29` a 30, en este orden:
+
+1. **Actualiza las herramientas.** Pon `compileSdkVersion 30` y usa AGP 4.1, o
+   las versiones parcheadas de 3.3.3 a 4.0.1. Si lo saltas, una biblioteca que
+   declara `<queries>` rompe la fusión del manifiesto con "unexpected element
+   `<queries>`". Comprueba: el proyecto compila y el manifiesto fusionado
+   muestra tus queries.
+2. **Mueve los archivos antes de subir el target.** Copia los datos de las
+   rutas del almacenamiento compartido a directorios propios de la app o a
+   `MediaStore`, y limita `WRITE_EXTERNAL_STORAGE` con `maxSdkVersion="29"`.
+   Si lo saltas, los archivos que la app escribió con el modelo antiguo quedan
+   inaccesibles. Comprueba: lint `ScopedStorage` y luego la app con
+   `DEFAULT_SCOPED_STORAGE` y `FORCE_ENABLE_SCOPED_STORAGE` activados.
+3. **Declara la visibilidad de paquetes.** Lista en `<queries>` los paquetes e
+   intents que consultas o inicias. Si lo saltas, las llamadas a
+   `PackageManager` actúan como si esas apps no estuvieran instaladas.
+   Comprueba: lint `QueryPermissionsNeeded`, luego
+   `adb shell pm log-visibility --enable <package>` y busca `AppsFilter` en
+   logcat.
+4. **Separa los pedidos de ubicación.** Pide la ubicación en primer plano,
+   luego `ACCESS_BACKGROUND_LOCATION` sola, y después lleva al usuario a
+   Ajustes. Si lo saltas, un pedido conjunto no concede ninguna. Comprueba:
+   cada flujo de ubicación en Android 11.
+5. **Indica el tipo de tus servicios en primer plano.** Agrega `camera` o
+   `microphone` a `android:foregroundServiceType`. Si lo saltas, el servicio
+   pierde el acceso a la cámara o al micrófono. Comprueba: la función responde
+   con la app en segundo plano, o cambia
+   `CAMERA_MICROPHONE_CAPABILITY_CHANGE_ID`.
+6. **Corrige el permiso del número de teléfono.** Pide `READ_PHONE_NUMBERS`
+   para `getLine1Number()`. Si lo saltas, `READ_PHONE_STATE` solo ya no lo
+   cubre.
+7. **Revisa el empaquetado.** Firma con APK Signature Scheme v2 o superior y
+   deja `resources.arsc` sin comprimir y alineado. Si lo saltas, Android 11 no
+   instala la app. Comprueba: instala la build de release en un dispositivo con
+   Android 11.
+8. **Revisa las filas menores** de la tabla de target que te apliquen: toasts,
+   intents de cámara, JobDispatcher, preferencias compartidas, el botón de
+   accesibilidad, acceso a APN e interfaces no SDK.
+9. **Prueba el resultado** en un dispositivo o emulador con Android 11 y
+   `targetSdk 30`. Para aislar un cambio, cámbialo en una build depurable en
+   Developer options > "App Compatibility Changes", o con
+   `adb shell am compat disable <change ID> <package>`. Para volver a ver un
+   diálogo de permiso tras dos rechazos, borra sus flags con
+   `adb shell pm clear-permission-flags`.
+
+Si saltas varios niveles a la vez: haz los pasos de cada versión en orden,
+desde [Android 10](/es/notes/android-10/) si tu target es 28 o menos.
 
 ## Qué perduró
 

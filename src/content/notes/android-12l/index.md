@@ -4,7 +4,7 @@ locale: en
 translationKey: android-12l
 slug: android-12l
 title: 'Android 12L: built for tablets and foldables'
-summary: API 32, March 2022. A feature drop for Android 12 that gave tablets and foldables a taskbar, drag-and-drop split screen and two-column system UI, with no breaking changes.
+summary: API 32, March 2022. A feature drop for Android 12 that gave tablets and foldables a taskbar, drag-and-drop split screen and two-column system UI, and changed little for apps.
 visibility: public
 maturity: stable
 publishedAt: 2026-10-17
@@ -160,12 +160,55 @@ citations:
   - title: "Pixel 6 can't install Android 12L after latest February update (9to5Google)"
     url: https://9to5google.com/2022/02/24/android-12l-pixel-6-install/
     accessedAt: 2026-10-18
+  - title: Compatibility framework changes (Android 12)
+    url: https://developer.android.com/about/versions/12/reference/compat-framework-changes
+    accessedAt: 2026-10-18
+  - title: ActivityResultItem.java at android-12.1.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-12.1.0_r1/core/java/android/app/servertransaction/ActivityResultItem.java
+    accessedAt: 2026-10-18
+  - title: ProcessList.java at android-12.1.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-12.1.0_r1/services/core/java/com/android/server/am/ProcessList.java
+    accessedAt: 2026-10-18
+  - title: PermissionManager.java at android-12.1.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-12.1.0_r1/core/java/android/permission/PermissionManager.java
+    accessedAt: 2026-10-18
+  - title: PackageManagerService.java at android-12.1.0_r1 (AOSP)
+    url: https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-12.1.0_r1/services/core/java/com/android/server/pm/PackageManagerService.java
+    accessedAt: 2026-10-18
+  - title: Tagged pointers (AOSP)
+    url: https://source.android.com/docs/security/test/tagged-pointers
+    accessedAt: 2026-10-18
+  - title: Media projection
+    url: https://developer.android.com/media/grow/media-projection
+    accessedAt: 2026-10-18
+  - title: Set up the 12L SDK (archived 12 March 2022)
+    url: https://web.archive.org/web/20220312101815/https://developer.android.com/about/versions/12/12L/setup-sdk
+    accessedAt: 2026-10-18
+  - title: 'Lint check: LockedOrientationActivity'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/LockedOrientationActivity.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check: SourceLockedOrientationActivity'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/SourceLockedOrientationActivity.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check: NonResizeableActivity'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/NonResizeableActivity.md.html
+    accessedAt: 2026-10-18
+  - title: "Google's Android 12L officially launches, will come to select devices this year (TechCrunch)"
+    url: https://techcrunch.com/2022/03/07/googles-android-12l-officially-launches-will-come-to-select-devices-this-year/
+    accessedAt: 2026-10-18
+  - title: Android 12L rolling out to Google Pixel phones starting today (XDA)
+    url: https://www.xda-developers.com/android-12l-rollout/
+    accessedAt: 2026-10-18
+  - title: "Android 12L Explained: Google's next-gen OS for tablets and foldables (Android Police)"
+    url: https://www.androidpolice.com/android-12l-explained-what-is-it-and-which-devices-support-it/
+    accessedAt: 2026-10-18
 ---
 
 Android 12L is the release Google made for large screens. It gave tablets,
 foldables and ChromeOS devices a taskbar, drag-and-drop split screen and a
-two-column system UI. For developers it brought a new API level, 32,
-without a single breaking change, so nothing forced an app to target it.
+two-column system UI. For developers it brought a new API level, 32, that
+Google said broke nothing and Play never required; targeting it switches on
+only four small changes.
 
 12L is a feature drop for [Android 12](/notes/android-12/), not a new version
 of it. Everything Android 12 changed for apps still applies, and that note
@@ -175,21 +218,27 @@ covers it.
 
 ## At a glance
 
-|                                 |                                                                                   |
-| ------------------------------- | --------------------------------------------------------------------------------- |
-| Version                         | Android 12L                                                                       |
-| API level                       | 32                                                                                |
-| Name                            | 12L, public. Internally "S V2" (`Sv2` in the SDK Manager); see below              |
-| `Build.VERSION_CODES`           | `S_V2`                                                                            |
-| Release                         | Pixel rollout began 7 March 2022                                                  |
-| Launch devices                  | Pixel 3a to Pixel 5a first; Pixel 6 and 6 Pro from the April 2022 build           |
-| Google Play target-API deadline | None. Google said apps would not have to target 12L, and Play moved from 31 to 33 |
+|                                 |                                                                                             |
+| ------------------------------- | ------------------------------------------------------------------------------------------- |
+| Version                         | Android 12L                                                                                 |
+| API level                       | 32                                                                                          |
+| Name                            | 12L, public. Internally "S V2" (`Sv2` in the SDK Manager); see below                        |
+| `Build.VERSION_CODES`           | `S_V2`                                                                                      |
+| Release                         | Pixel rollout began 7 March 2022                                                            |
+| Launch devices                  | Pixel 3a to Pixel 5a first; Pixel 6 and 6 Pro from the April 2022 build                     |
+| Google Play target-API deadline | None. Google said apps would not have to target 12L, and Play moved from 31 to 33           |
+| Toolchain                       | `compileSdkVersion 32`, Android Studio Chipmunk (2021.2.1) or higher; no minimum AGP stated |
 
 Google announced 12L on 7 March 2022 and released it to AOSP that week. The
 first build, `SP2A.220305.012`, went to the Pixel 3a, 4, 4a, 4a (5G), 5 and 5a.
 The Pixel 6 and 6 Pro got their first 12L build, `SP2A.220405.004`, with the
-April update. For other makers, Google said 12L would reach tablets and foldables from Samsung, Lenovo and Microsoft "later
-this year".
+April update. For other makers, Google said 12L would reach tablets and
+foldables from Samsung, Lenovo and Microsoft "later this year". Samsung shipped
+it as One UI 4.1.1 on the Galaxy Tab S8 and Tab S7 series and on its Fold
+phones.
+
+The toolchain row comes from Google's 12L SDK setup page, unchanged since March 2022. Google's table of minimum Android Studio and AGP versions per API level
+starts at API 33, so no primary source names a minimum AGP for API 32.
 
 Before that came Developer Preview 1 on 27 October 2021, Beta 1 on
 8 December 2021 with the final API 32, Beta 2 on 12 January 2022 and Beta 3
@@ -244,32 +293,95 @@ with unknown severity. Builds from AOSP default to security patch level 2022-03-
 
 ## Permissions
 
-One new permission, and apps from the Play Store cannot get it.
-`LAUNCH_MULTI_PANE_SETTINGS_DEEP_LINK` is `signature|preinstalled`. It lets a
-system or preinstalled app open its own screen inside the two-pane Settings app
-with `Settings.ACTION_SETTINGS_EMBED_DEEP_LINK_ACTIVITY`. No runtime permission
-changed.
+API 32 added one permission, and apps from the Play Store cannot get it. No
+runtime permission changed, and nothing was deprecated or removed.
+
+| Permission                             | What changed in API 32                                                                                                             | What to declare                                    | What to remove or limit |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- | ----------------------- |
+| `LAUNCH_MULTI_PANE_SETTINGS_DEEP_LINK` | New, `signature\|preinstalled`; opens an app's own screen inside two-pane Settings with `ACTION_SETTINGS_EMBED_DEEP_LINK_ACTIVITY` | Only in a system or preinstalled app that needs it | Nothing                 |
+
+An app installed from Play needs no manifest change for 12L. A preinstalled
+app that deep-links into two-pane Settings declares the permission; older
+versions ignore a permission they do not know:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- System or preinstalled apps only; API 32 and higher -->
+    <uses-permission
+        android:name="android.permission.LAUNCH_MULTI_PANE_SETTINGS_DEEP_LINK" />
+</manifest>
+```
 
 ## What changed for your app
 
-Google promised no breaking changes, and 12L has no behaviour-change page of
-its own: its overview links to Android 12's. What changed reaches every app on a
-large screen, whatever it targets:
+Google said it was "careful not to introduce any breaking changes", and 12L
+has no behaviour-change page of its own. Most of what changed reaches every
+app on a large screen, whatever it targets. Google's Android 12 compatibility
+list still holds four changes that switch on only for apps targeting 32.
 
-| Change                                                                                            | What to do                                                                                                                  |
-| ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| The taskbar is reported as an inset, and it can appear or hide at any time                        | Read insets with `ViewCompat.setOnApplyWindowInsetsListener()`; the taskbar counts in `navigationBars()` and `systemBars()` |
-| Any app can be dragged into split screen (since Android 12)                                       | Test split screen with windows of several sizes, even with `resizeableActivity="false"`                                     |
-| A virtual display from `MediaProjection` is scaled to fit its surface, like `centerInside`        | Check screen recording and casting, also when the device folds                                                              |
-| Device makers can customise letterboxing: position left or right, and a redesigned restart button | Use responsive layouts for screens wider than 600dp, and test in compatibility mode                                         |
-| From 12L, some large screens ignore an app's fixed orientation and letterbox it                   | Support both orientations, or test what users see                                                                           |
-| Play checks apps against its large screen quality guidelines                                      | An app that fails shows large screen users a notice on its listing, and Play adds large-screen ratings                      |
+### All apps on Android 12L
+
+| Change                                                                                 | What to do                                                                                                         | How to check                                                           |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| The taskbar is an inset that can appear or hide at any time                            | Read insets with `ViewCompat.setOnApplyWindowInsetsListener()`; it counts in `navigationBars()` and `systemBars()` |                                                                        |
+| Split screen is one drag from the taskbar or a tap on "Split"                          | Test split screen with windows of several sizes, even with `resizeableActivity="false"`                            | Lint `NonResizeableActivity`                                           |
+| A `MediaProjection` virtual display is scaled to fit its surface, like `centerInside`  | Check screen recording and casting, also when the device folds                                                     |                                                                        |
+| Device makers can place letterboxed apps left or right, and restyle the restart button | Use responsive layouts above 600dp; test in compatibility mode                                                     |                                                                        |
+| Large screens can ignore a fixed orientation and letterbox the app (since Android 12)  | Support both orientations, or test what users see                                                                  | Lint `LockedOrientationActivity` and `SourceLockedOrientationActivity` |
+| Play checks apps against its large screen quality guidelines                           | Meet them, or large screen users see a notice on your listing; Play adds large-screen ratings                      |                                                                        |
 
 ![A portrait news app letterboxed in the middle of a landscape tablet screen, with a taskbar of six app icons along the bottom](./assets/letterboxed-app-taskbar.png 'A portrait app in compatibility mode, with the taskbar below it. Android Developers · CC BY 2.5')
 
-To build against 12L, set `compileSdkVersion` and `targetSdkVersion` to 32.
-Use `WindowMetrics` from Jetpack WindowManager instead of
-`Display.getRealSize()` to size your layout.
+### Apps targeting API 32
+
+| Change                                                        | What to do                                                                                   | How to check                                                                |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| An activity result arrives just before `onResume()`           | Do not assume `onResume()` ran before `onActivityResult()`; retest flows that return results | Compat `CALL_ACTIVITY_RESULT_BEFORE_RESUME` (78294732)                      |
+| Non-text autofill suggestions need `OnReceiveContentListener` | Implement it; the `commitContent()` fallback is off                                          | Compat `AUTOFILL_NON_TEXT_REQUIRES_ON_RECEIVE_CONTENT_LISTENER` (163400105) |
+| Native heap pointers are tagged in app zygote processes       | Never change the top byte of a heap pointer in code that runs under `useAppZygote`           | Compat `NATIVE_HEAP_POINTER_TAGGING_APP_ZYGOTE` (207557677)                 |
+| Malformed permission groups block install                     | Define every permission group you use, and share one only between apps with one certificate  | Compat `CANNOT_INSTALL_WITH_BAD_PERMISSION_GROUPS` (146211400)              |
+
+Google's list labels these four "Android 12 (API level 32)". In AOSP they are
+`@EnabledAfter(targetSdkVersion = S)`, and the first and third are new in the
+12L source. Sources disagree on the last one: Google's list and the annotation
+in `PermissionManager` say it starts at target 32, but the install check in
+`PackageManagerService` already applies it from target 31.
+
+## Migrating to API 32
+
+From `targetSdk 31` to 32, in this order:
+
+1. **Update the toolchain.** Set `compileSdkVersion` and `targetSdkVersion` to
+   32 and use Android Studio Chipmunk or higher. Skipped, `S_V2` and the new
+   APIs do not compile. Verify: the project builds and lint runs.
+2. **Check activity results.** Find code that reads a result in `onResume()`
+   or expects `onResume()` before `onActivityResult()`: pickers, sign-in,
+   permission screens. Skipped, state set in the result can be overwritten or
+   read too late. Verify: run each flow that returns a result.
+3. **Accept non-text content properly.** If your editors take images from
+   keyboards or autofill through `commitContent()`, add an
+   `OnReceiveContentListener` (`ViewCompat.setOnReceiveContentListener()`).
+   Skipped, augmented autofill stops offering images to your fields.
+4. **Check native code in an app zygote.** Only if a service sets
+   `android:useAppZygote="true"`. Skipped, code that writes the top byte of a
+   heap pointer is killed when that memory is freed. Verify: run those
+   services on a 64-bit device with 12L.
+5. **Check custom permission groups.** Every `android:permissionGroup` you use
+   must be defined, by you or an app with the same certificate. Skipped, the
+   install fails.
+6. **Test large screens**, whatever you target: the taskbar inset, split
+   screen, letterboxing and orientation. Replace `Display.getRealSize()` with
+   `WindowMetrics` from Jetpack WindowManager. Verify: lint
+   `NonResizeableActivity` and `LockedOrientationActivity`, then the resizable
+   emulator on 12L.
+7. **Test the result** on a 12L device or emulator with `targetSdk 32`. To
+   isolate one change, toggle it with
+   `adb shell am compat disable <change ID> <package>`, and list what applies
+   with `adb shell dumpsys platform_compat`.
+
+Skipping several levels at once: do each version's steps in order, starting
+from [Android 12](/notes/android-12/) if you target 30 or lower.
 
 ## What lasted
 

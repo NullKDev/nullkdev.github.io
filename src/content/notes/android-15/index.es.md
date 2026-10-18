@@ -193,6 +193,39 @@ citations:
   - title: Android 15's internal code name is Vanilla Ice Cream (Android Authority)
     url: https://www.androidauthority.com/android-15-vanilla-ice-cream-3292769/
     accessedAt: 2026-10-17
+  - title: Compatibility framework changes (Android 15)
+    url: https://developer.android.com/about/versions/15/reference/compat-framework-changes
+    accessedAt: 2026-10-18
+  - title: Compatibility framework tools (test and debug)
+    url: https://developer.android.com/guide/app-compatibility/test-debug
+    accessedAt: 2026-10-18
+  - title: Set up the Android 15 SDK
+    url: https://developer.android.com/about/versions/15/setup-sdk
+    accessedAt: 2026-10-18
+  - title: 'Android Gradle plugin: minimum versions of tools for each API level'
+    url: https://developer.android.com/build/releases/about-agp
+    accessedAt: 2026-10-18
+  - title: Foreground service timeouts
+    url: https://developer.android.com/develop/background-work/services/fgs/timeout
+    accessedAt: 2026-10-18
+  - title: Foreground service types
+    url: https://developer.android.com/develop/background-work/services/fgs/service-types
+    accessedAt: 2026-10-18
+  - title: NotificationManager reference (setInterruptionFilter, setNotificationPolicy)
+    url: https://developer.android.com/reference/android/app/NotificationManager
+    accessedAt: 2026-10-18
+  - title: 'Lint check Aligned16KB: native library dependency not 16 KB aligned'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/Aligned16KB.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check ForegroundServicePermission'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/ForegroundServicePermission.md.html
+    accessedAt: 2026-10-18
+  - title: Android 15 is finally here in stable with a Pixel Feature Drop (Android Police)
+    url: https://www.androidpolice.com/android-15-announcement-pixel-feature-drop/
+    accessedAt: 2026-10-18
+  - title: Android 15 is officially out, but not in the way you want (Android Police)
+    url: https://www.androidpolice.com/android-15-officially-out-but-not-in-the-way-you-want/
+    accessedAt: 2026-10-18
   - title: Android Developers content license
     url: https://developer.android.com/license
     accessedAt: 2026-10-17
@@ -217,6 +250,13 @@ que oculta apps del resto del teléfono.
 | Lanzamiento                        | Código en AOSP el 3 de septiembre de 2024; despliegue en Pixel desde el 15 de octubre de 2024       |
 | Dispositivos de lanzamiento        | Ninguno al salir: la serie Pixel 9 llegó con Android 14                                             |
 | Plazo de target API en Google Play | Apps nuevas y actualizaciones desde el 31 de agosto de 2025, con prórroga al 1 de noviembre de 2025 |
+| Herramientas                       | `compileSdk 35`, Android Gradle Plugin 8.6 o posterior (Studio abajo)                               |
+
+La tabla de compatibilidad de Google indica Android Studio Koala Feature Drop y
+AGP 8.6.0 como mínimo para API 35, y numera esa versión de Studio como
+2024.2.1. La página de configuración del SDK de Android 15 pide Koala Feature
+Drop 2024.1.2 o superior y AGP 8.6.1 o superior. Usa la versión de AGP más
+alta cuando no coinciden.
 
 La primera developer preview salió el 16 de febrero de 2024. Le siguieron una
 segunda preview y cuatro betas, y la Beta 3 alcanzó la estabilidad de
@@ -323,55 +363,124 @@ informó Android Authority.
 - **Claves de contactos.** `E2eeContactKeysManager` guarda en el sistema las
   claves públicas de los contactos para apps con cifrado de extremo a extremo,
   y permite al usuario verificarlas desde la app de contactos.
+- **Comprobación de URIs de contenido.**
+  `Context.checkContentUriPermissionFull()` comprueba por completo un URI de
+  contenido, y el atributo de actividad `requireContentUriPermissionFromCaller`
+  exige permisos sobre los URIs que pasa quien la inicia.
+- **Intents inseguros.** `StrictMode.VmPolicy.Builder().detectUnsafeIntentLaunch()`
+  registra en el log los usos indebidos de intents mientras desarrollas.
+- **Para apps con target 35**, TLS 1.0 y 1.1 no están permitidos y los inicios
+  de actividad desde segundo plano son más estrictos; ambos están en
+  [la tabla de target](#apps-con-target-api-35).
 - **Plataforma.** Los permisos de firma que piden apps que no son del sistema
   pasan por una allowlist explícita. Virtual A/B versión 3 hace las
   actualizaciones más pequeñas y rápidas.
 
 ## Permisos
 
-No se agregó ni cambió ningún permiso de tiempo de ejecución. Los permisos
-nuevos son todos normales y se conceden al instalar:
+Android 15 no agregó ningún permiso de tiempo de ejecución ni reemplazó
+ninguno, así que aquí ningún permiso necesita `maxSdkVersion`. Agregó tres
+permisos normales, concedidos al instalar, y cambió lo que permiten cinco de
+los existentes:
 
-- `FOREGROUND_SERVICE_MEDIA_PROCESSING`, necesario para un foreground service
-  del nuevo tipo `mediaProcessing`.
-- `ACCESS_HIDDEN_PROFILES`, que declara un launcher para mostrar el espacio
-  privado. Además debe tener el rol de home.
-- `DETECT_SCREEN_RECORDING`, necesario para el callback de grabación de
-  pantalla.
+| Permiso                               | Qué cambió en API 35                                                                                                                    | Qué declarar                                                                    | Qué quitar o limitar                                                     |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `FOREGROUND_SERVICE_MEDIA_PROCESSING` | Permiso normal nuevo para el nuevo tipo de foreground service `mediaProcessing`                                                         | Este permiso y `android:foregroundServiceType="mediaProcessing"` en el servicio | Nada                                                                     |
+| `ACCESS_HIDDEN_PROFILES`              | Permiso normal nuevo; un launcher lo necesita, junto con el rol de home, para mostrar el espacio privado                                | Solo en un launcher                                                             | Nunca en otras apps                                                      |
+| `DETECT_SCREEN_RECORDING`             | Permiso normal nuevo, exigido por `WindowManager.addScreenRecordingCallback()`                                                          | Solo si registras ese callback                                                  | Nada                                                                     |
+| `FOREGROUND_SERVICE_DATA_SYNC`        | En apps con target 35, sus servicios comparten 6 horas cada 24                                                                          | Mantenlo para sincronizaciones que inicia el usuario                            | Pasa las sincronizaciones largas o repetidas a WorkManager               |
+| `RECEIVE_BOOT_COMPLETED`              | En apps con target 35, un receiver de arranque no puede iniciar `dataSync`, `camera`, `mediaPlayback`, `phoneCall` ni `mediaProjection` | Mantenlo para alarmas y jobs                                                    | No inicies esos tipos de servicio desde el receiver de arranque          |
+| `SYSTEM_ALERT_WINDOW`                 | En apps con target 35, permite iniciar un foreground service desde segundo plano solo con una ventana superpuesta visible               | Mantenlo si dibujas ventanas superpuestas                                       | No dependas solo de él para iniciar servicios                            |
+| `ACCESS_NOTIFICATION_POLICY`          | En apps con target 35, el acceso a la política ya no cambia el estado global de No molestar                                             | Mantenlo; tus llamadas ahora manejan una `AutomaticZenRule` de tu app           | No esperes que `INTERRUPTION_FILTER_ALL` apague las reglas de otras apps |
+| `REQUEST_DELETE_PACKAGES`             | Ahora también permite llamar a `PackageInstaller.requestArchive()`                                                                      | Solo si desinstalas o archivas otras apps                                       | Nada                                                                     |
+
+Un manifiesto para una app que corre en Android 14 y anteriores y en 15 y
+posteriores. Ninguno de estos permisos reemplaza a uno anterior, así que
+ninguno necesita un límite de versión. Deja solo los bloques que tu app
+necesita:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- Sincronización: obligatorio desde API 34; desde 35 tiene 6 horas al día -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+
+    <!-- Transcodificación: tipo nuevo en API 35, con el mismo presupuesto de 6 horas -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROCESSING" />
+
+    <!-- Solo si registras un callback de grabación de pantalla -->
+    <uses-permission android:name="android.permission.DETECT_SCREEN_RECORDING" />
+
+    <!-- Solo launchers, junto con el rol de home -->
+    <uses-permission android:name="android.permission.ACCESS_HIDDEN_PROFILES" />
+
+    <application>
+        <service
+            android:name=".SyncService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+        <!-- Inicia este con FOREGROUND_SERVICE_TYPE_MEDIA_PROCESSING
+             solo en API 35 y posteriores -->
+        <service
+            android:name=".TranscodeService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProcessing" />
+    </application>
+</manifest>
+```
 
 El acceso a fotos, que Android 14 volvió parcial con
-`READ_MEDIA_VISUAL_USER_SELECTED`, suma `MediaStore.QUERY_ARG_LATEST_SELECTION_ONLY`
-para que una app consulte solo las fotos que el usuario eligió la última vez.
-En [Android 14](/notes/android-14/) está cómo funciona el acceso parcial.
+`READ_MEDIA_VISUAL_USER_SELECTED`, suma
+`MediaStore.QUERY_ARG_LATEST_SELECTION_ONLY` para que una app consulte solo las
+fotos que el usuario eligió la última vez. No requiere ninguna declaración
+nueva. En [Android 14](/es/notes/android-14/) está cómo funciona el acceso
+parcial.
 
 ## Qué cambió para tu app
 
 ### Todas las apps en Android 15
 
-| Cambio                                                                              | Qué hacer                                                                                               |
-| ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| No se pueden instalar apps con `targetSdkVersion` menor que 24                      | Sube el target; las apps ya instaladas se quedan                                                        |
-| Una app detenida a la fuerza pierde sus pending intents y sus widgets se ven grises | Vuelve a registrar alarmas y pending intents con el `ACTION_BOOT_COMPLETED` del siguiente inicio        |
-| Los dispositivos pueden usar páginas de memoria de 16 KB                            | Recompila las bibliotecas nativas con alineación ELF de 16 KB; las apps solo Kotlin o Java ya funcionan |
-| Tu app puede instalarse otra vez dentro del espacio privado                         | No supongas que un segundo perfil es un perfil de trabajo                                               |
-| Desaparece la fuente de emoji PNG `NotoColorEmojiLegacy.ttf`                        | Dibuja los emoji con las APIs de texto de la plataforma o con COLRv1                                    |
-| Las animaciones de predictive back aparecen en las apps que se adhirieron           | Si te adheriste, revisa las animaciones de retroceso y las transiciones de fragments                    |
-| Las peticiones de red fuera de un ciclo de vida válido del proceso fallan           | Ata las peticiones a un ciclo de vida; usa WorkManager o un foreground service para trabajo largo       |
+| Cambio                                                                              | Qué hacer                                                                                               | Cómo comprobarlo                                                                |
+| ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| No se pueden instalar apps con target menor que 24                                  | Sube el target; las apps ya instaladas se quedan                                                        | `adb install --bypass-low-target-sdk-block <apk>` la instala igual para pruebas |
+| Una app detenida a la fuerza pierde sus pending intents; los widgets se ven grises  | Vuelve a registrar alarmas y pending intents con el `ACTION_BOOT_COMPLETED` del siguiente inicio        | `ApplicationStartInfo.wasForceStopped()` indica que ocurrió                     |
+| Los dispositivos pueden usar páginas de memoria de 16 KB                            | Recompila las bibliotecas nativas con alineación ELF de 16 KB; las apps solo Kotlin o Java ya funcionan | Lint `Aligned16KB`; `zipalign -c -P 16 -v 4 <apk>`                              |
+| Tu app puede instalarse otra vez dentro del espacio privado                         | No supongas que un segundo perfil es un perfil de trabajo                                               |                                                                                 |
+| Desaparece la fuente de emoji PNG `NotoColorEmojiLegacy.ttf`                        | Dibuja los emoji con las APIs de texto de la plataforma o con COLRv1                                    | Busca `NotoColorEmojiLegacy.ttf` en tu código                                   |
+| Las animaciones de predictive back aparecen en las apps que se adhirieron           | Si te adheriste, revisa las animaciones de retroceso y las transiciones de fragments                    |                                                                                 |
+| Las peticiones de red fuera de un ciclo de vida válido del proceso fallan           | Ata las peticiones a un ciclo de vida; usa WorkManager o un foreground service para trabajo largo       |                                                                                 |
+| Un track de audio directo u offload nuevo puede invalidar el tuyo                   | Maneja que tu `AudioTrack` quede invalidado cuando se alcanzan los límites de recursos                  |                                                                                 |
+| Desde Android 15 QPR1, la proyección de pantalla se detiene al bloquear la pantalla | Maneja el fin de la proyección; un chip en la barra de estado también permite detenerla                 |                                                                                 |
 
 ### Apps con target API 35
 
-| Cambio                                                                                                                                | Qué hacer                                                                                 |
-| ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Edge-to-edge es el comportamiento por defecto; `setStatusBarColor` y `setNavigationBarColor` no hacen nada                            | Maneja los window insets; los componentes de Material 3 lo hacen por ti                   |
-| Los foreground services `dataSync` tienen 6 horas cada 24                                                                             | Detenlos en `Service.onTimeout(int, int)` o pasa el trabajo a WorkManager                 |
-| Los receivers de `BOOT_COMPLETED` no pueden iniciar servicios `dataSync`, `camera`, `mediaPlayback`, `phoneCall` ni `mediaProjection` | Inícialos más tarde, a partir de una acción del usuario                                   |
-| Tener `SYSTEM_ALERT_WINDOW` ya no basta para iniciar un foreground service desde segundo plano                                        | Muestra antes una ventana superpuesta visible                                             |
-| Quien crea un `PendingIntent` bloquea por defecto los inicios de actividad desde segundo plano                                        | Acepta de forma explícita si quien lo envía debe abrir tu actividad                       |
-| TLS 1.0 y 1.1 no están permitidos                                                                                                     | Usa TLS 1.2 o superior en todos los servidores                                            |
-| Las peticiones de audio focus desde segundo plano fallan                                                                              | Pide el foco mientras la app es visible o desde un foreground service                     |
-| Las apps no pueden activar ni desactivar el No molestar global                                                                        | Aporta una `AutomaticZenRule`                                                             |
-| `elegantTextHeight` es true por defecto                                                                                               | Revisa los layouts en árabe, tailandés, tamil y los demás sistemas de escritura afectados |
-| `Arrays.asList(...).toArray()` devuelve `Object[]` y `String.format()` es más estricto                                                | Usa `toArray(new String[0])`; corrige formatos del estilo `%0`                            |
+| Cambio                                                                             | Qué hacer                                                                                         | Cómo comprobarlo                                                                |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Edge-to-edge es el comportamiento por defecto; `setStatusBarColor` no hace nada    | Maneja los window insets; los componentes de Material 3 lo hacen por ti                           | Compat `ENFORCE_EDGE_TO_EDGE` (309578419)                                       |
+| Los modos de recorte de pantalla distintos de `ALWAYS` se leen como `ALWAYS`       | Aplica padding de insets; un crash al iniciar apunta a core splashscreen anterior a 1.2.0-alpha01 |                                                                                 |
+| `Configuration.screenWidthDp` y `screenHeightDp` incluyen las barras del sistema   | Calcula el layout con `WindowInsets` o `WindowMetricsCalculator`, no con `Configuration`          |                                                                                 |
+| Los servicios `dataSync` y `mediaProcessing` tienen 6 horas cada 24                | Llama a `stopSelf()` en `Service.onTimeout(int, int)` o pasa el trabajo a WorkManager             | Compat `FGS_INTRODUCE_TIME_LIMITS` (317799821)                                  |
+| Los receivers de arranque no pueden iniciar cinco tipos de foreground service      | Inícialos más tarde, a partir de una acción del usuario                                           | Compat `FGS_BOOT_COMPLETED_RESTRICTIONS` (296558535)                            |
+| `SYSTEM_ALERT_WINDOW` solo ya no inicia servicios desde segundo plano              | Muestra antes una ventana superpuesta visible                                                     | Compat `FGS_SAW_RESTRICTIONS` (319471980)                                       |
+| Quien crea un `PendingIntent` bloquea los inicios de actividad desde segundo plano | Acepta de forma explícita si quien lo envía debe abrir tu actividad                               | Compat `DEFAULT_RESCIND_BAL_PRIVILEGES_FROM_PENDING_INTENT_CREATOR` (296478951) |
+| TLS 1.0 y 1.1 no están permitidos                                                  | Usa TLS 1.2 o superior en todos los servidores                                                    |                                                                                 |
+| Las peticiones de audio focus desde segundo plano fallan                           | Pide el foco con la app al frente o desde un foreground service                                   | La llamada devuelve `AUDIOFOCUS_REQUEST_FAILED`                                 |
+| Las apps no pueden cambiar el No molestar global                                   | Aporta una `AutomaticZenRule`                                                                     | Compat `MANAGE_GLOBAL_ZEN_VIA_IMPLICIT_RULES` (308670109)                       |
+| `elegantTextHeight` es true por defecto                                            | Revisa los layouts en árabe, tailandés, tamil y los demás sistemas de escritura listados          | Compat `DEPRECATE_UI_FONT` (279646685)                                          |
+| `TextView` ocupa más ancho con letras de forma compleja                            | Revisa los layouts ajustados; `setUseBoundsForWidth(false)` vuelve al ancho anterior              |                                                                                 |
+| `EditText` reserva la altura de línea del locale                                   | Pon `useLocalePreferredLineHeightForMinimum` en false para volver a la altura anterior            |                                                                                 |
+| `Arrays.asList(...).toArray()` devuelve `Object[]`                                 | Usa `toArray(new String[0])`                                                                      | Compat `DO_NOT_CLONE_IN_ARRAYS_AS_LIST` (202956589)                             |
+| `String.format()` valida los formatos de forma estricta                            | Corrige índices de argumento del estilo `%0`                                                      | Compat `ENABLE_STRICT_FORMATTER_VALIDATION` (270674727)                         |
+| Hebreo, ídish e indonesio conservan sus códigos ISO 639-1                          | Espera `he`, `yi` e `id`, no `iw`, `ji` e `in`                                                    | Compat `USE_NEW_ISO_LOCALE_CODES` (291868760)                                   |
+| `Random.ints()` ya no coincide con `Random.nextInt()`                              | No dependas de que las dos secuencias sean iguales                                                | Compat `STREAM_INT_DIFFERS_FROM_NEXT_INT` (308103782)                           |
+| Los callbacks de red incluyen las redes locales por defecto                        | Revisa los callbacks que suponían solo redes con internet                                         | Compat `ENABLE_MATCH_LOCAL_NETWORK` (319212206)                                 |
+
+La lista de compatibilidad también incluye cambios en sesiones de cámara, en
+el propietario del dispositivo y en el análisis de `Content-Disposition` que
+afectan a pocas apps. Todo cambio con ID se puede activar o desactivar en una
+compilación depurable.
 
 El cambio a edge-to-edge es el que más apps notaron. Las barras se vuelven
 transparentes (la navegación de tres botones conserva un velo del 80 %) y lo
@@ -393,10 +502,66 @@ flowchart TD
   again -- el usuario trae la app al frente --> reset[El contador se reinicia]
 ```
 
-Como `List.removeFirst()` y `removeLast()` pasan a resolverse con los nuevos
-métodos de `SequencedCollection` al compilar contra API 35, el código con un
-`minSdk` menor falla con `NoSuchMethodError` en Android 14 y anteriores. El
-check `NewApi` de Lint lo detecta; `removeAt(0)` lo evita.
+Los cinco tipos bloqueados en el arranque son `dataSync`, `camera`,
+`mediaPlayback`, `phoneCall` y `mediaProjection`; `microphone` lo está desde
+Android 14.
+
+## Migrar a API 35
+
+De `targetSdk 34` a 35, en este orden:
+
+1. **Actualiza las herramientas.** Pon `compileSdk 35`, usa AGP 8.6 o
+   posterior y Android Studio Koala Feature Drop o posterior. Si lo saltas,
+   las constantes nuevas (`FOREGROUND_SERVICE_TYPE_MEDIA_PROCESSING`) no
+   compilan. Compilar contra 35 hace además que `list.removeFirst()` y
+   `removeLast()` de Kotlin se resuelvan con los nuevos métodos de `List`, que
+   fallan con `NoSuchMethodError` en Android 14 y anteriores. Comprueba: lint
+   `NewApi` no reporta errores, y quita cualquier `@SuppressLint("NewApi")` que
+   los oculte; usa `removeAt(0)` en su lugar.
+2. **Maneja los insets en todas las pantallas.** Aplica padding con
+   `WindowInsets`, agrega `android:fitsSystemWindows="true"` a un
+   `AppBarLayout` y `clipToPadding="false"` a un `RecyclerView` con padding.
+   Si lo saltas, barras, botones y elementos de lista quedan debajo de la
+   barra de estado y la de navegación. Comprueba: en un dispositivo con
+   Android 15, abre cada pantalla, incluidas la de bienvenida y los ajustes,
+   con navegación por gestos y con tres botones.
+3. **Acota tus foreground services.** Implementa `Service.onTimeout(int, int)`
+   en los servicios `dataSync` y `mediaProcessing`, pasa a una acción del
+   usuario los inicios en el arranque de los cinco tipos bloqueados y muestra
+   una ventana superpuesta antes de iniciar con `SYSTEM_ALERT_WINDOW`. Si lo
+   saltas, los servicios fallan o lanzan
+   `ForegroundServiceStartNotAllowedException`. Comprueba:
+   `adb shell am compat enable FGS_INTRODUCE_TIME_LIMITS <package>`, acorta el
+   límite con
+   `adb shell device_config put activity_manager data_sync_fgs_timeout_duration <ms>`
+   y envía `adb shell am broadcast -a android.intent.action.BOOT_COMPLETED <package>`
+   con `FGS_BOOT_COMPLETED_RESTRICTIONS` activado. Lint
+   `ForegroundServicePermission` detecta un permiso de tipo que falta.
+4. **Revisa los inicios desde segundo plano.** Donde otra app o el sistema
+   deban abrir tu actividad con tu `PendingIntent`, concédelo de forma
+   explícita. Si lo saltas, esos inicios se bloquean. Comprueba: recorre el
+   flujo con el target ya subido.
+5. **Revisa red y audio.** Cada servidor debe usar TLS 1.2 o superior, y el
+   audio focus se pide con la app al frente o desde un foreground service. Si
+   lo saltas, las conexiones fallan y las peticiones de foco devuelven
+   `AUDIOFOCUS_REQUEST_FAILED`. Comprueba: ejecuta cada llamada al servidor y
+   cada ruta de reproducción en Android 15.
+6. **Recorre las filas menores** de la tabla de target que te apliquen:
+   `elegantTextHeight`, anchos de texto, `String.format()`, `Arrays.asList()`,
+   códigos de idioma, `Random.ints()`, callbacks de redes locales y No
+   molestar.
+7. **Revisa las páginas de 16 KB.** Google Play exige que las apps con target
+   35 o superior soporten páginas de 16 KB en dispositivos de 64 bits. Si lo
+   saltas, Play rechazará las actualizaciones desde el 1 de febrero de 2027.
+   Comprueba: lint `Aligned16KB`, `zipalign -c -P 16 -v 4 <apk>` y un emulador
+   de 16 KB donde `adb shell getconf PAGE_SIZE` imprima `16384`.
+8. **Prueba el resultado** en un dispositivo o emulador con Android 15 y
+   `targetSdk 35`. Para aislar un cambio, actívalo o desactívalo en una
+   compilación depurable desde Opciones de desarrollador > "App Compatibility
+   Changes", o con `adb shell am compat disable <change ID> <package>`.
+
+Si saltas varios niveles a la vez: sigue los pasos de cada versión en orden,
+empezando por [Android 14](/es/notes/android-14/) si tu target es 33 o menor.
 
 ## Qué perduró
 

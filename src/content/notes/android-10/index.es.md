@@ -223,6 +223,51 @@ citations:
   - title: 'Android Q Beta 6: Gesture nav bar hidden on home screen (9to5Google)'
     url: https://9to5google.com/2019/08/07/android-q-beta-6-gesture-navigation-hidden-home-screen/
     accessedAt: 2026-10-18
+  - title: Set up the Android 10 SDK
+    url: https://developer.android.com/about/versions/10/setup-sdk
+    accessedAt: 2026-10-18
+  - title: 'Android Gradle plugin: minimum versions of tools for each API level'
+    url: https://developer.android.com/build/releases/about-agp
+    accessedAt: 2026-10-18
+  - title: Access media files from shared storage
+    url: https://developer.android.com/training/data-storage/shared/media
+    accessedAt: 2026-10-18
+  - title: Data and file storage overview
+    url: https://developer.android.com/training/data-storage
+    accessedAt: 2026-10-18
+  - title: Request location permissions
+    url: https://developer.android.com/develop/sensors-and-location/location/permissions
+    accessedAt: 2026-10-18
+  - title: Detect when users start or end an activity (Transition API)
+    url: https://developer.android.com/develop/sensors-and-location/location/transitions
+    accessedAt: 2026-10-18
+  - title: Compatibility framework tools
+    url: https://developer.android.com/guide/app-compatibility/test-debug
+    accessedAt: 2026-10-18
+  - title: 'Lint check HardwareIds: Hardware Id Usage'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/HardwareIds.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check ScopedStorage: Affected by scoped storage'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/ScopedStorage.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check InsecureLegacyExternalStorage: requestLegacyExternalStorage opts the app out of scoped storage'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/InsecureLegacyExternalStorage.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check BlockedPrivateApi: Using Blocked Private API'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/BlockedPrivateApi.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check SoonBlockedPrivateApi: Using Soon-to-Be Blocked Private API'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/SoonBlockedPrivateApi.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check DiscouragedPrivateApi: Using Discouraged Private API'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/DiscouragedPrivateApi.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check ProtectedPermissions: Using system app permission'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/ProtectedPermissions.md.html
+    accessedAt: 2026-10-18
+  - title: 'Recapping What Happened in Android 10 (CommonsWare, Elements of Android R)'
+    url: https://commonsware.com/R/pages/chap-scoped-001.html
+    accessedAt: 2026-10-18
 ---
 
 Android 10 es la versión en la que Android dejó de ponerles nombres de postres
@@ -246,6 +291,13 @@ gestos y un tema oscuro para todo el sistema.
 | Lanzamiento                        | Despliegue en Pixel y código en AOSP, 3 de septiembre de 2019                                                          |
 | Dispositivos de lanzamiento        | OnePlus 7T, anunciado el 26 de septiembre de 2019; Pixel 4 y Pixel 4 XL de Google, anunciados el 15 de octubre de 2019 |
 | Plazo de target API en Google Play | Apps nuevas desde el 3 de agosto de 2020, actualizaciones desde el 2 de noviembre de 2020                              |
+| Herramientas                       | `compileSdkVersion 29`, Android Studio 3.3 o posterior (ver abajo)                                                     |
+
+La página de configuración del SDK de Android 10 dice que las apps compilan y
+se prueban con Android Studio 3.3 o superior, aunque algunos usuarios "may
+encounter Gradle sync failures". El anuncio del lanzamiento pedía Android
+Studio 3.5 o superior. Ninguna página de Google indica un Android Gradle Plugin
+mínimo para API 29; su tabla de compatibilidad empieza en API 33.
 
 Google publicó el SDK final de API 29 con la Beta 4 el 5 de junio de 2019 y ese
 mismo día abrió Play a las apps con target API 29. El 3 de septiembre liberó el
@@ -333,9 +385,9 @@ marzo al 7 de agosto de 2019, son las partes que siguen a esta vista general.
   asignador Scudo y ShadowCallStack. Smart Lock solo puede extender un
   desbloqueo, nunca desbloquear un teléfono bloqueado, y como máximo durante
   cuatro horas.
-- **Otros cambios.** WPA3 y Wi-Fi Enhanced Open, autenticación facial en
-  `BiometricPrompt`, sin acceso al portapapeles para apps sin foco y sin acceso
-  a `/proc/net`.
+- **Otros cambios.** WPA3 y Wi-Fi Enhanced Open, y autenticación facial en
+  `BiometricPrompt`. Los nuevos límites del portapapeles y de `/proc/net` están
+  en "Qué cambió para tu app".
 
 ## Permisos
 
@@ -352,66 +404,163 @@ flowchart TD
   bg -- no --> none[Sin ubicación]
 ```
 
-- **Nuevo: `ACCESS_BACKGROUND_LOCATION`.** Las apps con target API 29 lo
-  declaran para leer la ubicación en segundo plano y para usar geovallas. En las
-  apps con target API 28 o menor, el sistema lo agrega cada vez que declaran o
-  piden un permiso de ubicación en primer plano.
-- **Nuevo: `ACTIVITY_RECOGNITION`.** Un permiso en tiempo de ejecución para
-  contar pasos y detectar actividad física, necesario para los sensores step
-  counter y step detector.
-- **Nuevo: `USE_FULL_SCREEN_INTENT`.** Un permiso normal, otorgado al instalar,
-  que las apps con target API 29 necesitan para notificaciones con intent a
-  pantalla completa.
-- **Ubicación precisa para escaneos.** Las apps con target API 29 necesitan
-  `ACCESS_FINE_LOCATION` para las APIs de escaneo de Wi-Fi, Wi-Fi Aware,
-  Bluetooth y telefonía. La ubicación aproximada ya no basta.
-- **Solo firma.** `READ_FRAME_BUFFER`, `CAPTURE_VIDEO_OUTPUT` y
-  `CAPTURE_SECURE_VIDEO_OUTPUT` pasaron a ser permisos de firma. Capturar la
-  pantalla pasa por `MediaProjection`, que le pregunta al usuario.
-- **Apps antiguas.** Las apps con target API 22 o menor muestran una pantalla de
-  revisión de permisos la primera vez que corren en Android 10.
-- **Edición Go: sin superposiciones.** En dispositivos con Android 10 (Go
-  edition), las apps no pueden obtener `SYSTEM_ALERT_WINDOW`, porque las
-  ventanas superpuestas consumen demasiada memoria.
-  `Settings.canDrawOverlays()` devuelve `false`. Las apps que ya lo tenían antes
-  de la actualización lo conservan.
-- **Metadatos de cámara.** Los campos específicos del dispositivo de
-  `getCameraCharacteristics()` requieren `CAMERA`.
+Android 10 agregó cuatro permisos que una app puede declarar y cambió lo que
+dan varios de los anteriores:
+
+| Permiso                                                                    | Qué cambió en API 29                                                                                                                                            | Qué declarar                                                                                                               | Qué quitar o limitar                                     |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `ACCESS_BACKGROUND_LOCATION`                                               | Permiso nuevo en tiempo de ejecución para la ubicación sin actividad visible ni servicio en primer plano de tipo `location`; también lo necesitan las geovallas | Decláralo solo para una función que necesite la ubicación en segundo plano; pídelo después de la ubicación en primer plano | Nada; en apps con target 28 o menor lo agrega el sistema |
+| `ACCESS_FINE_LOCATION`                                                     | Necesario para las APIs de escaneo de Wi-Fi, Wi-Fi Aware, Wi-Fi Direct, Bluetooth y telefonía; `ACCESS_COARSE_LOCATION` ya no basta                             | Decláralo y pídelo si escaneas                                                                                             | Nada; `WifiNetworkSuggestion` no pide ubicación          |
+| `ACCESS_MEDIA_LOCATION`                                                    | Permiso nuevo en tiempo de ejecución; sin él, la ubicación en los datos EXIF de las fotos llega oculta                                                          | Decláralo y pídelo si lees dónde se tomó una foto                                                                          | Nada                                                     |
+| `ACTIVITY_RECOGNITION`                                                     | Permiso nuevo en tiempo de ejecución para los sensores step counter y step detector y para el reconocimiento de actividad de Play services                      | Decláralo y pídelo                                                                                                         | Nada                                                     |
+| `com.google.android.gms.permission.ACTIVITY_RECOGNITION` (Play services)   | Las apps con target 28 o menor que solo declaran este reciben el permiso de la plataforma automáticamente                                                       | Mantenlo; la guía de la Transition API de Google todavía lo declara                                                        | Nada                                                     |
+| `USE_FULL_SCREEN_INTENT`                                                   | Permiso normal nuevo, otorgado al instalar; sin él, el sistema ignora un intent a pantalla completa                                                             | Decláralo si llamas a `setFullScreenIntent()`                                                                              | Nada                                                     |
+| `READ_EXTERNAL_STORAGE`                                                    | No hace falta para los archivos propios de la app ni para los medios que creó                                                                                   | Decláralo solo para leer medios de otras apps                                                                              | Nada todavía; Android 13 lo limita                       |
+| `WRITE_EXTERNAL_STORAGE`                                                   | Con el almacenamiento acotado no da escritura fuera de los archivos propios de la app                                                                           | Mantenlo para Android 9 y anteriores, y para el modo de almacenamiento heredado                                            | `android:maxSdkVersion="29"`                             |
+| `READ_PHONE_STATE`                                                         | Ya no da el IMEI, el número de serie ni identificadores parecidos; esos piden `READ_PRIVILEGED_PHONE_STATE`, que una app de Play no puede tener                 | Mantenlo solo para otros datos del teléfono                                                                                | Quítalo si los identificadores eran su único uso         |
+| `READ_FRAME_BUFFER`, `CAPTURE_VIDEO_OUTPUT`, `CAPTURE_SECURE_VIDEO_OUTPUT` | Solo de firma                                                                                                                                                   | Usa `MediaProjection`, que le pregunta al usuario                                                                          | Quítalos; una app normal nunca los obtiene               |
+| `SYSTEM_ALERT_WINDOW`                                                      | No se puede otorgar en Android 10 (Go edition); las apps que lo tenían antes de la actualización lo conservan                                                   | Revisa `Settings.canDrawOverlays()` antes de dibujar                                                                       | Nada                                                     |
+| `CAMERA`                                                                   | Ahora hace falta para los campos específicos del dispositivo de `getCameraCharacteristics()`                                                                    | Pídelo antes de leer esos metadatos                                                                                        | Nada                                                     |
+
+Un manifiesto para una app que corre en Android 9 y anteriores y en 10 y
+posteriores. Conserva solo los bloques que tu app necesita:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Ubicación: primer plano en todas las versiones; el segundo plano
+         solo se pide en API 29 y superiores -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <!-- Almacenamiento: escritura solo donde no aplica el almacenamiento acotado -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+    <!-- Ubicación sin ocultar en las fotos, desde API 29 -->
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+    <!-- Reconocimiento de actividad: el permiso de Play services y el de la plataforma -->
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <!-- Llamadas y alarmas con notificaciones a pantalla completa -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+
+    <application>
+        <!-- Ubicación mientras está en uso, desde un servicio en primer plano -->
+        <service
+            android:name=".NavigationService"
+            android:foregroundServiceType="location" />
+    </application>
+</manifest>
+```
+
+Lint `ProtectedPermissions` marca en un manifiesto los permisos de firma, como
+los tres de captura de pantalla. La guía de medios de Google usa
+`maxSdkVersion="29"` en `WRITE_EXTERNAL_STORAGE`, así que el permiso sigue
+cubriendo a una app en modo de almacenamiento heredado en Android 10.
+
+Los permisos de ubicación sobreviven a la actualización desde Android 9. Una
+app con target 29 que declara `ACCESS_BACKGROUND_LOCATION` conserva el acceso
+en primer y en segundo plano; una que no lo declara conserva solo el de primer
+plano. Si subes el target a 29 con la app ya instalada en Android 10, se revoca
+el permiso de segundo plano. La primera vez que una app lee la ubicación en
+segundo plano, el sistema se lo recuerda al usuario con una notificación.
+
+Las apps con target API 22 o menor muestran una pantalla de revisión de
+permisos la primera vez que corren en Android 10. Las apps ya no pueden
+consultar cómo se agrupan los permisos en la interfaz.
 
 ## Qué cambió para tu app
 
 ### Todas las apps en Android 10
 
-| Cambio                                                          | Qué hacer                                                                                                                             |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| Se bloquea el inicio de actividades en segundo plano            | Usa una notificación, o un intent a pantalla completa para eventos urgentes como llamadas y alarmas                                   |
-| El usuario puede activar la navegación por gestos               | Dibuja de borde a borde. Aleja de los bordes la UI deslizable, o excluye hasta 200dp por borde con `setSystemGestureExclusionRects()` |
-| La ubicación en segundo plano se otorga aparte                  | Revisa el permiso antes de cada acceso. El usuario puede bajar la app a "mientras está en uso"                                        |
-| El IMEI, el número de serie y similares quedan restringidos     | Usa identificadores restablecibles, como el ID de publicidad, para analítica y anuncios                                               |
-| TLS 1.3 viene activado y los certificados SHA-1 fallan          | Prueba tus servidores. Usa `SSLContext.getInstance("TLSv1.2")` solo si debes apagar 1.3                                               |
-| Las bibliotecas de Bionic pasaron a `/apex`, detrás de symlinks | Si revisas rutas de bibliotecas en `/proc/self/maps`, acepta `/apex/...`                                                              |
-| `setSSLSocketFactory(null)` lanza `IllegalArgumentException`    | Pasa la factoría por defecto de forma explícita                                                                                       |
-| `android.preference` queda obsoleto                             | Migra a la biblioteca de preferencias de AndroidX                                                                                     |
-| Android Beam queda obsoleto                                     | Usa otra vía para compartir entre dispositivos. Las demás APIs de NFC siguen funcionando                                              |
+| Cambio                                                                               | Qué hacer                                                                                                                             | Cómo comprobarlo   |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| Se bloquea el inicio de actividades en segundo plano                                 | Usa una notificación, o un intent a pantalla completa para eventos urgentes como llamadas y alarmas                                   |                    |
+| El usuario puede activar la navegación por gestos                                    | Dibuja de borde a borde. Aleja de los bordes la UI deslizable, o excluye hasta 200dp por borde con `setSystemGestureExclusionRects()` |                    |
+| La ubicación en segundo plano se otorga aparte                                       | Revisa el permiso antes de cada acceso. El usuario puede bajar la app a "mientras está en uso"                                        |                    |
+| El IMEI, el número de serie y similares quedan restringidos                          | Usa identificadores restablecibles, como el ID de publicidad, para analítica y anuncios                                               | Lint `HardwareIds` |
+| Las direcciones MAC de Wi-Fi son aleatorias                                          | No uses una dirección MAC como identificador del dispositivo                                                                          |                    |
+| Solo la app con foco o el teclado por defecto leen el portapapeles                   | Léelo mientras tu app tiene el foco                                                                                                   |                    |
+| No se puede leer `/proc/net`                                                         | Usa `NetworkStatsManager` o `ConnectivityManager`                                                                                     |                    |
+| Las búsquedas de contactos ya no se ordenan por frecuencia de contacto               | No dependas de ese orden                                                                                                              |                    |
+| TLS 1.3 viene activado y los certificados SHA-1 fallan                               | Prueba tus servidores. Usa `SSLContext.getInstance("TLSv1.2")` solo si debes apagar 1.3                                               |                    |
+| Las bibliotecas de Bionic pasaron a `/apex`, detrás de symlinks                      | Si revisas rutas de bibliotecas en `/proc/self/maps`, acepta `/apex/...`                                                              |                    |
+| `setSSLSocketFactory(null)` lanza `IllegalArgumentException`                         | Pasa la factoría por defecto de forma explícita                                                                                       |                    |
+| Dos broadcasts de Wi-Fi Direct dejan de ser sticky                                   | Lee el estado actual con el método `get()` correspondiente al iniciar                                                                 |                    |
+| `split()` ya no devuelve una cadena vacía inicial con una coincidencia de ancho cero | Revisa el código que esperaba ese primer elemento vacío                                                                               |                    |
+| `android.preference` queda obsoleto                                                  | Migra a la biblioteca de preferencias de AndroidX                                                                                     |                    |
+| Android Beam queda obsoleto                                                          | Usa otra vía para compartir entre dispositivos. Las demás APIs de NFC siguen funcionando                                              |                    |
 
 ### Apps con target API 29
 
-| Cambio                                                           | Qué hacer                                                                                                                              |
-| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Almacenamiento acotado por defecto                               | Guarda tus archivos en `getExternalFilesDir()`, usa `MediaStore` para medios compartidos y el selector del sistema para otros archivos |
-| Se requiere `ACCESS_BACKGROUND_LOCATION`                         | Decláralo, y pídelo solo para una función que de verdad lo necesite                                                                    |
-| Los identificadores no restablecibles lanzan `SecurityException` | Elimina `getImei()`, `getDeviceId()`, `Build.getSerial()` y llamadas similares                                                         |
-| Los escaneos de Wi-Fi y Bluetooth piden ubicación precisa        | Pide `ACCESS_FINE_LOCATION`                                                                                                            |
-| `setWifiEnabled()` devuelve `false`                              | Abre el panel de ajustes de Wi-Fi                                                                                                      |
-| Los intents a pantalla completa piden `USE_FULL_SCREEN_INTENT`   | Decláralo en el manifiesto                                                                                                             |
-| No se permite `execve()` sobre archivos del directorio de la app | Incluye el código nativo dentro del APK                                                                                                |
-| No hay acceso directo a `/dev/ashmem`                            | Usa `ASharedMemory` del NDK                                                                                                            |
-| SELinux bloquea las text relocations                             | Recompila las bibliotecas nativas sin ellas                                                                                            |
+| Cambio                                                                                | Qué hacer                                                                                                                              | Cómo comprobarlo                                                                 |
+| ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Almacenamiento acotado por defecto                                                    | Guarda tus archivos en `getExternalFilesDir()`, usa `MediaStore` para medios compartidos y el selector del sistema para otros archivos | Lint `ScopedStorage`                                                             |
+| `requestLegacyExternalStorage="true"` conserva el modelo anterior en Android 10       | Úsalo solo como puente; Android 11 lo ignora cuando apuntas a 30                                                                       | Lint `InsecureLegacyExternalStorage`                                             |
+| La ubicación de las fotos llega oculta                                                | Pide `ACCESS_MEDIA_LOCATION` y abre la foto con `MediaStore.setRequireOriginal()`                                                      |                                                                                  |
+| Se requiere `ACCESS_BACKGROUND_LOCATION`, también para geovallas                      | Decláralo, y pídelo solo para una función que de verdad lo necesite                                                                    |                                                                                  |
+| Subir el target en un dispositivo con Android 10 revoca la ubicación en segundo plano | Vuelve a pedirla, en contexto, después de la actualización                                                                             |                                                                                  |
+| Los servicios de ubicación en primer plano declaran un tipo                           | Pon `android:foregroundServiceType="location"` en el `<service>`                                                                       |                                                                                  |
+| Los identificadores no restablecibles lanzan `SecurityException`                      | Elimina `getImei()`, `getDeviceId()`, `Build.getSerial()` y llamadas similares                                                         | Lint `HardwareIds`                                                               |
+| Los escaneos de Wi-Fi, Bluetooth y telefonía piden ubicación precisa                  | Pide `ACCESS_FINE_LOCATION`                                                                                                            |                                                                                  |
+| `setWifiEnabled()` devuelve `false`                                                   | Abre el panel de ajustes de Wi-Fi                                                                                                      |                                                                                  |
+| `getConfiguredNetworks()` llega vacío y `addNetwork()` devuelve -1                    | Usa `WifiNetworkSpecifier` o `WifiNetworkSuggestion`                                                                                   |                                                                                  |
+| El número de serie de un dispositivo USB pide permiso al usuario                      | Pide acceso al dispositivo antes de leerlo                                                                                             |                                                                                  |
+| Los intents a pantalla completa piden `USE_FULL_SCREEN_INTENT`                        | Decláralo en el manifiesto                                                                                                             | Logcat: "Use of fullScreenIntent requires the USE_FULL_SCREEN_INTENT permission" |
+| Listas actualizadas de interfaces no SDK bloqueadas                                   | Pasa a APIs públicas, o pide una nueva                                                                                                 | Lint `BlockedPrivateApi`, `SoonBlockedPrivateApi`, `DiscouragedPrivateApi`       |
+| No se permite `execve()` sobre archivos del directorio de la app                      | Incluye el código nativo dentro del APK                                                                                                |                                                                                  |
+| No hay acceso directo a `/dev/ashmem`                                                 | Usa `ASharedMemory` del NDK                                                                                                            |                                                                                  |
+| SELinux bloquea las text relocations                                                  | Recompila las bibliotecas nativas sin ellas                                                                                            |                                                                                  |
 
-El almacenamiento acotado tenía una salida. Una app con target API 29 puede
-poner `android:requestLegacyExternalStorage="true"` y conservar el modelo de
-almacenamiento anterior en Android 10. Su valor por defecto es `false` para las
-apps con target API 29 y `true` por debajo.
+La salida del almacenamiento acotado, `android:requestLegacyExternalStorage`,
+vale `false` por defecto en las apps con target API 29 y `true` por debajo.
+
+## Migrar a API 29
+
+De `targetSdkVersion 28` a 29, en este orden:
+
+1. **Actualiza las herramientas.** Pon `compileSdkVersion 29` y usa Android
+   Studio 3.5 o posterior. Si lo saltas, `ACCESS_BACKGROUND_LOCATION` y las
+   demás constantes nuevas no compilan. Comprueba: el proyecto compila y lint
+   no muestra errores nuevos.
+2. **Cambia el acceso a archivos.** Guarda tus archivos en
+   `getExternalFilesDir()`, escribe los medios compartidos con `MediaStore` y
+   abre otros archivos con el Storage Access Framework. Deja de usar
+   `getExternalStorageDirectory()` y `getExternalStoragePublicDirectory()`,
+   que Android 10 marcó como obsoletos. `requestLegacyExternalStorage="true"`
+   da tiempo solo en Android 10. Si lo saltas, leer y escribir fuera de tus
+   archivos falla. Comprueba: lint `ScopedStorage` y una instalación nueva en un
+   dispositivo con Android 10 sin el flag heredado.
+3. **Separa la ubicación.** Declara `ACCESS_BACKGROUND_LOCATION` solo si una
+   función lo necesita y pídelo después de la ubicación en primer plano; pon
+   `foregroundServiceType="location"` en los servicios de ubicación en primer
+   plano. Si lo saltas, la ubicación en segundo plano y las geovallas dejan de
+   funcionar. Comprueba: en Android 10, responde "Allow only while using the
+   app" y prueba cada función de ubicación con la app en segundo plano.
+4. **Deja los identificadores de hardware.** Reemplaza el IMEI, el número de
+   serie y similares por identificadores restablecibles. Si lo saltas, esas
+   llamadas lanzan `SecurityException`. Comprueba: lint `HardwareIds`.
+5. **Corrige el código de Wi-Fi, Bluetooth y telefonía.** Pide
+   `ACCESS_FINE_LOCATION` para escanear, abre el panel de Wi-Fi en lugar de
+   `setWifiEnabled()` y agrega redes como sugerencias. Si lo saltas, los
+   escaneos y los cambios de red dejan de funcionar. Comprueba: cada flujo de
+   conectividad en Android 10.
+6. **Declara `USE_FULL_SCREEN_INTENT`** si muestras llamadas entrantes o
+   alarmas. Si lo saltas, el sistema ignora el intent a pantalla completa.
+   Comprueba: ningún aviso de `fullScreenIntent` en logcat.
+7. **Revisa el código nativo y la reflexión.** Sin `execve()` desde el
+   directorio de la app, sin text relocations, `ASharedMemory` en lugar de
+   `/dev/ashmem` y APIs públicas en lugar de interfaces no SDK. Si lo saltas,
+   esto falla en tiempo de ejecución. Comprueba: lint `BlockedPrivateApi` y
+   `SoonBlockedPrivateApi`, y prueba las funciones nativas en Android 10.
+8. **Prueba el resultado** en un dispositivo o emulador con Android 10 y
+   `targetSdkVersion 29`. El framework de compatibilidad que activa cambios
+   sueltos llegó en Android 11, así que aquí se prueba el target completo de
+   una vez.
+
+Si saltas varios niveles a la vez: haz los pasos de cada versión en orden,
+desde [Android 9](/es/notes/android-9-pie/) si tu target es 27 o menos.
 
 ## Qué perduró
 

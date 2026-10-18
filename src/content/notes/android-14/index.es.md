@@ -54,31 +54,31 @@ citations:
     accessedAt: 2026-10-17
   - title: Android 14 features and APIs
     url: https://developer.android.com/about/versions/14/features
-    accessedAt: 2026-10-17
+    accessedAt: 2026-10-18
   - title: 'Behavior changes: all apps (Android 14)'
     url: https://developer.android.com/about/versions/14/behavior-changes-all
-    accessedAt: 2026-10-17
+    accessedAt: 2026-10-18
   - title: 'Behavior changes: apps targeting Android 14'
     url: https://developer.android.com/about/versions/14/behavior-changes-14
-    accessedAt: 2026-10-17
+    accessedAt: 2026-10-18
   - title: Foreground service types are required (Android 14)
     url: https://developer.android.com/about/versions/14/changes/fgs-types-required
-    accessedAt: 2026-10-17
+    accessedAt: 2026-10-18
   - title: Foreground service types
     url: https://developer.android.com/develop/background-work/services/fgs/service-types
     accessedAt: 2026-10-17
   - title: Grant partial access to photos and videos
     url: https://developer.android.com/about/versions/14/changes/partial-photo-video-access
-    accessedAt: 2026-10-17
+    accessedAt: 2026-10-18
   - title: Schedule exact alarms are denied by default
     url: https://developer.android.com/about/versions/14/changes/schedule-exact-alarms
-    accessedAt: 2026-10-17
+    accessedAt: 2026-10-18
   - title: Data safety information is more visible
     url: https://developer.android.com/about/versions/14/changes/data-safety
-    accessedAt: 2026-10-17
+    accessedAt: 2026-10-18
   - title: Detect when users take device screenshots
     url: https://developer.android.com/about/versions/14/features/screenshot-detection
-    accessedAt: 2026-10-17
+    accessedAt: 2026-10-18
   - title: View.setAccessibilityDataSensitive reference
     url: https://developer.android.com/reference/android/view/View#setAccessibilityDataSensitive(int)
     accessedAt: 2026-10-17
@@ -87,7 +87,7 @@ citations:
     accessedAt: 2026-10-17
   - title: 'Behavior changes: all apps (Android 15)'
     url: https://developer.android.com/about/versions/15/behavior-changes-all
-    accessedAt: 2026-10-17
+    accessedAt: 2026-10-18
   - title: 'Behavior changes: apps targeting Android 15'
     url: https://developer.android.com/about/versions/15/behavior-changes-15
     accessedAt: 2026-10-17
@@ -190,6 +190,63 @@ citations:
   - title: Google rolling out Android 14 Beta 5 to Pixel (9to5Google)
     url: https://9to5google.com/2023/08/10/android-14-beta-5-pixel/
     accessedAt: 2026-10-18
+  - title: Compatibility framework changes (Android 14)
+    url: https://developer.android.com/about/versions/14/reference/compat-framework-changes
+    accessedAt: 2026-10-18
+  - title: Compatibility framework tools (test and debug)
+    url: https://developer.android.com/guide/app-compatibility/test-debug
+    accessedAt: 2026-10-18
+  - title: Set up the Android 14 SDK
+    url: https://developer.android.com/about/versions/14/setup-sdk
+    accessedAt: 2026-10-18
+  - title: 'Android Gradle plugin: minimum versions of tools for each API level'
+    url: https://developer.android.com/build/releases/about-agp
+    accessedAt: 2026-10-18
+  - title: User-initiated data transfer jobs
+    url: https://developer.android.com/develop/background-work/background-tasks/uidt
+    accessedAt: 2026-10-18
+  - title: Broadcasts overview (Android 14 queueing)
+    url: https://developer.android.com/develop/background-work/background-tasks/broadcasts
+    accessedAt: 2026-10-18
+  - title: Get started with Health Connect
+    url: https://developer.android.com/health-and-fitness/guides/health-connect/develop/get-started
+    accessedAt: 2026-10-18
+  - title: Limits on full-screen intent notifications (AOSP)
+    url: https://source.android.com/docs/core/permissions/fsi-limits
+    accessedAt: 2026-10-18
+  - title: 'Lint check ForegroundServiceType: Missing foregroundServiceType attribute in manifest'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/ForegroundServiceType.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check ForegroundServicePermission: Missing permissions required by foregroundServiceType'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/ForegroundServicePermission.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check SelectedPhotoAccess: Behavior change when requesting photo library access'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/SelectedPhotoAccess.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check ScheduleExactAlarm: Scheduling Exact Alarms Without Required Permission'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/ScheduleExactAlarm.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check UnsafeImplicitIntentLaunch: Implicit intent matches an internal non-exported component'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/UnsafeImplicitIntentLaunch.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check MutableImplicitPendingIntent: Mutable Implicit PendingIntent is disallowed'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/MutableImplicitPendingIntent.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check UnspecifiedRegisterReceiverFlag: Missing registerReceiver() exported flag'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/UnspecifiedRegisterReceiverFlag.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check StartActivityAndCollapseDeprecated: TileService.startActivityAndCollapse(Intent) is deprecated'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/StartActivityAndCollapseDeprecated.md.html
+    accessedAt: 2026-10-18
+  - title: Android 14 with October security patch rolling out for Pixel (9to5Google)
+    url: https://9to5google.com/2023/10/04/android-14-october-pixel-update/
+    accessedAt: 2026-10-18
+  - title: Pixel devices receive the October 2023 security patch with Android 14 (Android Central)
+    url: https://www.androidcentral.com/apps-software/google-pixel-android-14-october-2023-update
+    accessedAt: 2026-10-18
+  - title: Android 14 blocks apps targeting old Android versions (Jason Bayton)
+    url: https://bayton.org/android/android-14-minimum-sdk/
+    accessedAt: 2026-10-18
 ---
 
 Android 14 es la versión que obligó a las apps a decir por qué se ejecutan.
@@ -211,6 +268,13 @@ apps con target menor a API 23 ya no se pueden instalar.
 | Lanzamiento                        | Despliegue en Pixel desde el 4 de octubre de 2023                                        |
 | Dispositivos de lanzamiento        | Pixel 8 y Pixel 8 Pro, anunciados el 4 de octubre de 2023, a la venta desde el 12        |
 | Plazo de target API en Google Play | Apps nuevas y actualizaciones desde el 31 de agosto de 2024 (prórroga al 1 de noviembre) |
+| Herramientas                       | `compileSdk 34`, Android Gradle Plugin 8.1.1 o posterior (Studio, abajo)                 |
+
+La tabla de compatibilidad de Google pone Android Studio Hedgehog (2023.1.1) y
+AGP 8.1.1 como mínimo para API 34. La página de configuración del SDK de
+Android 14, escrita en el lanzamiento, recomienda Flamingo (2022.2.1) o
+posterior y escribe `compileSdk 34` para AGP 7.0 o posterior. Cuando las dos
+no coinciden, vale la tabla más reciente.
 
 Google anunció Android 14 con la Developer Preview 1 el 8 de febrero de 2023.
 La Beta 1 abrió el programa Android Beta el 12 de abril, y la Beta 3 alcanzó la
@@ -219,11 +283,12 @@ las apps ya cerrados. Las dos developer previews y las cinco betas son las
 partes que siguen a esta vista general.
 
 Google lanzó Android 14 y publicó su código en AOSP el 4 de octubre de 2023. El
-primer build para Pixel (`UP1A.231005.007`) cubrió desde el Pixel 4a (5G) hasta
-el Pixel Fold y el Pixel Tablet. El anuncio de Google nombró a Samsung, iQOO,
-Nothing, OnePlus, Oppo, Realme, Sharp, Sony, Tecno, vivo y Xiaomi para más
-adelante en el año. Los Pixel 8 y 8 Pro se anunciaron el mismo día, y AOSP
-lista builds de Android 14 hechos para ellos.
+primer build para Pixel (`UP1A.231005.007`), con el parche de seguridad de
+octubre de 2023, cubrió desde el Pixel 4a (5G) hasta el Pixel Fold y el Pixel
+Tablet. El anuncio de Google nombró a Samsung, iQOO, Nothing, OnePlus, Oppo,
+Realme, Sharp, Sony, Tecno, vivo y Xiaomi para más adelante en el año. Los
+Pixel 8 y 8 Pro se anunciaron el mismo día, y AOSP lista builds de Android 14
+hechos para ellos.
 
 Google dejó el nombre de postre dentro del código. Un cambio publicado en AOSP
 en abril de 2022 llamó a la versión Upside Down Cake, y `Build.java` define
@@ -243,9 +308,10 @@ empiezan con U. Los anuncios de Google solo dicen Android 14.
 - **Ultra HDR.** Fotos HDR de 10 bits en un formato que sigue funcionando como
   un JPEG normal. Una app activa la visualización HDR por ventana.
 - **Health Connect en la plataforma.** El almacén de datos de salud deja de ser
-  una app de Play Store, pasa al sistema, se actualiza con las actualizaciones
-  del sistema de Google Play y aparece en Ajustes. Sumó rutas de ejercicio, y otra app
-  solo puede leer una ruta si el usuario la autoriza.
+  una app de Play Store y pasa al sistema como módulo del framework, se
+  actualiza con las actualizaciones del sistema de Google Play y aparece en
+  Ajustes. Sumó rutas de ejercicio, y otra app solo puede leer una ruta si el
+  usuario la autoriza.
 - **Credential Manager.** Una API de plataforma (`android.credentials`) para
   contraseñas, passkeys e inicio de sesión federado. La librería de Jetpack la
   lleva hasta Android 4.4 mediante Google Play services.
@@ -263,6 +329,10 @@ empiezan con U. Los anuncios de Google solo dicen Android 14.
   a la animación de volver al inicio de Android 13, con callbacks nuevos para
   transiciones propias. Las animaciones del sistema siguieron detrás de una
   opción de desarrollador.
+- **Trabajo en segundo plano.** Llegan los jobs de transferencia de datos
+  iniciados por el usuario: un job de JobScheduler que el usuario inicia, como
+  una descarga grande, que muestra una notificación y puede durar más que un
+  job normal.
 - **APIs para desarrollo.** Acciones propias en el sharesheet, `PathIterator` y
   `Path.interpolate()`, mallas personalizadas con shaders AGSL,
   `HardwareBufferRenderer`, audio USB sin pérdida y unas 300 clases de
@@ -284,13 +354,14 @@ En todo dispositivo con Android 14:
 - **Target mínimo para instalar.** Una app con `targetSdkVersion` menor a 23
   falla al instalarse con `INSTALL_FAILED_DEPRECATED_SDK_VERSION`. Google
   explicó que el malware apunta a 22 para esquivar los permisos en tiempo de
-  ejecución de [Android 6.0](/notes/android-6-marshmallow/). Las apps ya
+  ejecución de [Android 6.0](/es/notes/android-6-marshmallow/). Las apps ya
   instaladas antes de actualizar se quedan, y
-  `adb install --bypass-low-target-sdk-block` instala una para pruebas.
+  `adb install --bypass-low-target-sdk-block` instala una para pruebas; no hay
+  otra forma de saltar el bloqueo.
 - **Servicios de accesibilidad.** Una vista puede llamar a
   `setAccessibilityDataSensitive()` para que solo los servicios que declaran
-  `isAccessibilityTool` la lean o actúen sobre ella. El malware abusa con frecuencia de
-  los servicios de accesibilidad.
+  `isAccessibilityTool` la lean o actúen sobre ella. El malware abusa con
+  frecuencia de los servicios de accesibilidad.
 - **Dueños de archivos multimedia.** `MediaStore` oculta `OWNER_PACKAGE_NAME`,
   salvo que la app dueña sea siempre visible o quien consulta tenga
   `QUERY_ALL_PACKAGES`.
@@ -303,88 +374,141 @@ En todo dispositivo con Android 14:
   en equipos con instrucciones criptográficas, y la atestación de claves admite
   dos IMEI.
 
-Para apps con target API 34:
-
-- **Intents implícitos** solo llegan a componentes exportados. Un
-  `PendingIntent` mutable creado con un intent sin componente ni paquete lanza
-  una excepción.
-- **Receivers en tiempo de ejecución** deben pasar `RECEIVER_EXPORTED` o
-  `RECEIVER_NOT_EXPORTED` a `registerReceiver()`, salvo los que solo reciben
-  broadcasts del sistema.
-- **Carga dinámica de código.** Todo DEX, JAR o APK que una app carga en
-  ejecución debe ser de solo lectura, o el sistema lanza una excepción.
-- **Zip path traversal.** `ZipFile(String)` y `ZipInputStream.getNextEntry()`
-  lanzan `ZipException` con nombres de entrada que contienen `..` o empiezan
-  con `/`.
-- **Activities desde segundo plano.** Quien envía un `PendingIntent` o se
-  vincula a un servicio debe aceptar explícitamente compartir su permiso para
-  abrir activities desde segundo plano.
-- **Captura de pantalla.** Cada sesión de `MediaProjection` necesita un nuevo
-  consentimiento; reutilizar el intent de consentimiento o llamar dos veces a
-  `createVirtualDisplay()` lanza una excepción.
+Para apps con target API 34 se endurecieron los intents implícitos, los
+receivers en tiempo de ejecución, la carga dinámica de código, los nombres de
+entradas zip, el inicio de activities desde segundo plano y la captura de
+pantalla. Cada uno es una fila de
+[la tabla por target](#apps-con-target-api-34).
 
 ## Permisos
 
-- **Fotos y videos elegidos.** Cuando una app con target API 34 pide
-  `READ_MEDIA_IMAGES` o `READ_MEDIA_VIDEO`, el diálogo ofrece "Select photos
-  and videos", "Allow all" y "Don't allow". El nuevo permiso
-  `READ_MEDIA_VISUAL_USER_SELECTED` indica el acceso parcial y deja que la app
-  vuelva a abrir el selector. Una app que no lo declara corre en un modo de
-  compatibilidad que controla el sistema. Los permisos de multimedia en sí
-  nacieron en [Android 13](/notes/android-13/).
-- **Permisos de servicios en primer plano.** Cada tipo de servicio en primer
-  plano tiene su propio permiso, como `FOREGROUND_SERVICE_CAMERA`. Son
-  permisos normales, otorgados al instalar; el usuario no puede revocarlos.
-- **Alarmas exactas.** `SCHEDULE_EXACT_ALARM` ya no se otorga de antemano a la
-  mayoría de las instalaciones nuevas de apps con target API 33 o mayor. El
-  usuario activa "Alarms & reminders" en Ajustes. Las apps de calendario y
-  despertador pueden usar `USE_EXACT_ALARM`, que Play solo permite para ellas.
-  Las apps que tenían el permiso antes de actualizar lo conservan.
-- **Intents de pantalla completa.** Para apps con target API 34,
-  `USE_FULL_SCREEN_INTENT` queda para apps de llamadas y alarmas, y Google Play
-  se lo quita al resto desde el 31 de mayo de 2024. `canUseFullScreenIntent()`
-  lo comprueba y `ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT` abre su página de
-  ajustes.
-- **Datos compartidos en el diálogo de ubicación.** Si una app declaró en el
-  formulario de Seguridad de los datos de Play que comparte la ubicación con
-  terceros, el diálogo de ubicación lo muestra. Si una app empieza a compartir
-  la ubicación con terceros o para anuncios, el usuario recibe una notificación
-  dentro de 30 días.
-- **La detección de capturas** necesita `DETECT_SCREEN_CAPTURE`, un permiso que
-  se otorga al instalar.
+Android 14 sumó permisos para el acceso parcial a fotos, los servicios en
+primer plano con tipo, la detección de capturas y los jobs iniciados por el
+usuario, y endureció cinco que ya existían:
+
+| Permiso                                  | Qué cambió en API 34                                                                                                    | Qué declarar                                                                                                                          | Qué quitar o limitar                                                                     |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `READ_MEDIA_VISUAL_USER_SELECTED`        | Nuevo; le indica a la app que el usuario compartió solo algunas fotos y videos, y le deja reabrir la selección          | Declararlo junto a `READ_MEDIA_IMAGES` y `READ_MEDIA_VIDEO` si mantienes tu propio selector de galería                                | Ninguno de los tres si el photo picker te alcanza                                        |
+| `READ_MEDIA_IMAGES` · `READ_MEDIA_VIDEO` | Para apps con target 34, el diálogo suma "Select photos and videos", así que el permiso puede ser parcial               | Mantener los dos, como desde API 33                                                                                                   | `READ_EXTERNAL_STORAGE` sigue con `android:maxSdkVersion="32"`                           |
+| `FOREGROUND_SERVICE_*`                   | Nuevos, uno por tipo de servicio, como `FOREGROUND_SERVICE_CAMERA`; normales, otorgados al instalar                     | El de cada tipo en `android:foregroundServiceType`, más `FOREGROUND_SERVICE`                                                          | Los tipos que no usas; `shortService` no necesita permiso de tipo                        |
+| `DETECT_SCREEN_CAPTURE`                  | Nuevo, se otorga al instalar; lo necesitan los callbacks de detección de capturas                                       | Declararlo si registras un `Activity.ScreenCaptureCallback`                                                                           | Nada                                                                                     |
+| `RUN_USER_INITIATED_JOBS`                | Nuevo; lo necesitan los jobs de transferencia de datos iniciados por el usuario                                         | Declararlo si creas jobs con `setUserInitiated(true)`                                                                                 | Nada                                                                                     |
+| `SCHEDULE_EXACT_ALARM`                   | Denegado por defecto en la mayoría de las instalaciones nuevas de apps con target 33 o mayor; se conserva al actualizar | Mantenerlo; comprobar `canScheduleExactAlarms()` y llevar al usuario a `ACTION_REQUEST_SCHEDULE_EXACT_ALARM`                          | Quitarlo si bastan las alarmas inexactas o WorkManager                                   |
+| `USE_FULL_SCREEN_INTENT`                 | Para apps con target 34, solo apps de llamadas y alarmas; Google Play se lo quita al resto desde el 31 de mayo de 2024  | Declararlo solo para llamadas o alarmas; comprobar `canUseFullScreenIntent()`                                                         | Quitarlo de cualquier otra app                                                           |
+| `ACCESS_NETWORK_STATE` · `INTERNET`      | Para apps con target 34, necesarios para programar un job con restricción de red                                        | Declarar ambos si un job llama a `setRequiredNetworkType()` o `setRequiredNetwork()`                                                  | Nada                                                                                     |
+| `BLUETOOTH_CONNECT`                      | Para apps con target 34, se exige en `BluetoothAdapter.getProfileConnectionState()`                                     | Declararlo y comprobar que está otorgado antes de la llamada                                                                          | Nada                                                                                     |
+| Permisos de Health Connect               | Health Connect es parte de la plataforma; su pantalla de permisos enlaza a tu justificación de otra forma               | Un `<activity-alias>` para `VIEW_PERMISSION_USAGE` con la categoría `HEALTH_PERMISSIONS`, protegido con `START_VIEW_PERMISSION_USAGE` | Mantener la activity de `ACTION_SHOW_PERMISSIONS_RATIONALE` para Android 13 y anteriores |
+
+`SCHEDULE_EXACT_ALARM` también sigue denegado cuando los datos de la app se
+restauran en un dispositivo con Android 14. Las apps de calendario y
+despertador usan `USE_EXACT_ALARM`, que llegó en
+[Android 13](/es/notes/android-13/) y que Play solo permite para ellas. Una
+alarma exacta con un `OnAlarmListener` no necesita ninguno de los dos.
+
+Un manifest para una app que corre en Android 13 o anterior y en 14 o
+posterior. Deja solo los bloques que tu app necesita:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Fotos y videos: el permiso viejo hasta API 32, los de multimedia
+         desde 33, acceso parcial desde 34 -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
+
+    <!-- Servicio en primer plano: el permiso general más uno por tipo -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+
+    <!-- Jobs con restricción de red -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Solo apps de llamadas o alarmas -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+
+    <application>
+        <service
+            android:name=".PlaybackService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="false" />
+    </application>
+</manifest>
+```
+
+Una app que solo agrega fotos o archivos al almacenamiento compartido no
+necesita ningún permiso de lectura; la guía de Google limita
+`READ_EXTERNAL_STORAGE` a `maxSdkVersion="28"` en ese caso.
 
 ![Cuatro pantallas de teléfono: una app de chat, el diálogo con Select photos and videos, Allow all y Don't allow, un selector con cinco fotos marcadas y la app de chat mostrando solo esas fotos](./assets/selected-photos-access.png 'Selected Photos Access en Android 14: el usuario elige qué fotos y videos puede ver la app. Android Developers · CC BY 2.5')
+
+El acceso parcial cambia durante la vida de la app: el usuario puede cambiarlo
+en Ajustes sin cerrarla, así que conviene volver a comprobarlo entre `onStart`
+y `onResume`. Una app con target 33 que declara
+`READ_MEDIA_VISUAL_USER_SELECTED` también recibe el diálogo de acceso parcial;
+una con target 34 que no lo declara corre en un modo de compatibilidad que
+controla el sistema. En un dispositivo que se actualiza desde Android 13, las
+apps conservan el acceso completo que tenían.
+
+El diálogo de ubicación también cambió. Si una app declaró en el formulario de
+Seguridad de los datos de Play que comparte la ubicación con terceros, el
+diálogo lo muestra. Si una app empieza a compartir la ubicación con terceros o
+para anuncios, el usuario recibe una notificación dentro de 30 días.
 
 ## Qué cambió para tu app
 
 ### Todas las apps en Android 14
 
-| Cambio                                                                                    | Qué hacer                                                                                               |
-| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| Las apps con target menor a 23 no se pueden instalar                                      | Subir `targetSdkVersion` al menos a 23                                                                  |
-| `SCHEDULE_EXACT_ALARM` denegado por defecto en instalaciones nuevas (target 33+)          | Llamar antes a `canScheduleExactAlarms()`; usar alarmas inexactas o WorkManager cuando se pueda         |
-| Las apps en caché se congelan poco después de salir de pantalla                           | Hacer el trabajo en segundo plano con servicios, JobScheduler o WorkManager                             |
-| Los broadcasts registrados por contexto se encolan mientras la app está en caché          | No esperarlos a tiempo; algunos, como `BATTERY_CHANGED`, pueden fusionarse                              |
-| `killBackgroundProcesses()` solo cierra procesos propios                                  | Dejar de intentar manejar los procesos de otras apps                                                    |
-| Las notificaciones fijas (`setOngoing(true)`) se pueden descartar                         | Guardar el estado en la app, no en la notificación; llamadas, multimedia y pantalla bloqueada se salvan |
-| Escala de fuente hasta 200%, no lineal                                                    | Usar `sp` para texto y `lineHeight`; convertir con `TypedValue.applyDimension()`                        |
-| `mlock()` limitado a 64 KB por proceso (antes 64 MB)                                      | Revisar el código nativo que bloquea memoria                                                            |
-| El primer cliente GATT que pide MTU solicita 517 bytes; los pedidos siguientes se ignoran | Hacer que el periférico responda con un tamaño que soporte                                              |
+| Cambio                                                                                    | Qué hacer                                                                                               | Cómo comprobarlo                                                       |
+| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Las apps con target menor a 23 no se pueden instalar                                      | Subir `targetSdkVersion` al menos a 23                                                                  | `adb install --bypass-low-target-sdk-block <archivo>.apk` para pruebas |
+| `SCHEDULE_EXACT_ALARM` denegado por defecto en instalaciones nuevas (target 33+)          | Llamar antes a `canScheduleExactAlarms()`; usar alarmas inexactas o WorkManager cuando se pueda         | Lint `ScheduleExactAlarm`                                              |
+| Las alarmas exactas con `OnAlarmListener` se descartan cuando la app está en caché        | No depender de esas alarmas una vez que la app sale de pantalla                                         | Compat `EXACT_LISTENER_ALARMS_DROPPED_ON_CACHED` (265195908)           |
+| Las apps en caché se congelan poco después de salir de pantalla                           | Hacer el trabajo en segundo plano con servicios, JobScheduler o WorkManager                             |                                                                        |
+| Los broadcasts registrados por contexto se encolan mientras la app está en caché          | No esperarlos a tiempo; los menos importantes, como `ACTION_SCREEN_ON`, esperan y algunos se fusionan   |                                                                        |
+| Los jobs que vencen su tiempo una y otra vez pueden mandar la app al bucket restringido   | Volver rápido de `onStartJob` y `onStopJob`; registrar `getAppStandbyBucket()`                          |                                                                        |
+| `killBackgroundProcesses()` solo cierra procesos propios                                  | Dejar de intentar manejar los procesos de otras apps                                                    |                                                                        |
+| Las notificaciones fijas (`setOngoing(true)`) se pueden descartar                         | Guardar el estado en la app, no en la notificación; llamadas, multimedia y pantalla bloqueada se salvan |                                                                        |
+| Escala de fuente hasta 200%, no lineal                                                    | Usar `sp` para texto y `lineHeight`; convertir con `TypedValue.applyDimension()`                        |                                                                        |
+| `mlock()` limitado a 64 KB por proceso (antes 64 MB)                                      | Revisar el código nativo que bloquea memoria                                                            |                                                                        |
+| El primer cliente GATT que pide MTU solicita 517 bytes; los pedidos siguientes se ignoran | Hacer que el periférico responda con un tamaño que soporte; restar 5 bytes de cabeceras                 |                                                                        |
+| `MediaStore` oculta `OWNER_PACKAGE_NAME`                                                  | No depender de saber qué app guardó un archivo                                                          |                                                                        |
 
 ### Apps con target API 34
 
-Los cambios de seguridad para este target están en
-[Seguridad y privacidad](#seguridad-y-privacidad).
+| Cambio                                                                                        | Qué hacer                                                                                                                | Cómo comprobarlo                                                                                                 |
+| --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| Todo servicio en primer plano necesita `android:foregroundServiceType`                        | Declarar el tipo y su permiso `FOREGROUND_SERVICE_*`; pasar el tipo a `startForeground()`                                | Lint `ForegroundServiceType` y `ForegroundServicePermission`; compat `FGS_TYPE_PERMISSION_CHANGE_ID` (254662522) |
+| `FOREGROUND_SERVICE_TYPE_NONE` lanza una excepción                                            | Elegir un tipo real                                                                                                      | Compat `FGS_TYPE_NONE_DISABLED_CHANGE_ID` (255038118)                                                            |
+| Acceso parcial a fotos y videos                                                               | Usar el photo picker, o declarar `READ_MEDIA_VISUAL_USER_SELECTED` y manejar el acceso parcial                           | Lint `SelectedPhotoAccess`                                                                                       |
+| Los intents implícitos solo llegan a componentes exportados                                   | Hacer explícitos los intents internos con `setPackage()`, o exportar el componente                                       | Lint `UnsafeImplicitIntentLaunch`; compat `IMPLICIT_INTENTS_ONLY_MATCH_EXPORTED_COMPONENTS` (229362273)          |
+| Un `PendingIntent` mutable sin componente ni paquete lanza una excepción                      | Fijar el componente o el paquete en el intent                                                                            | Lint `MutableImplicitPendingIntent`                                                                              |
+| `registerReceiver()` necesita un flag de exportación                                          | Pasar `RECEIVER_EXPORTED` o `RECEIVER_NOT_EXPORTED`; no hace falta si solo recibe broadcasts del sistema                 | Lint `UnspecifiedRegisterReceiverFlag`                                                                           |
+| Los DEX, JAR o APK cargados en ejecución deben ser de solo lectura                            | Llamar a `setReadOnly()` antes de escribir el archivo; recrear los que ya están en disco                                 | Compat `ENFORCE_READ_ONLY_JAVA_DCL` (218865702)                                                                  |
+| Las entradas zip con `..` o `/` inicial lanzan `ZipException`                                 | Rechazar esas entradas; `ZipPathValidator.clearCallback()` desactiva la validación                                       |                                                                                                                  |
+| Quien envía un `PendingIntent` ya no presta su permiso para abrir activities en segundo plano | Aceptarlo con `setPendingIntentBackgroundActivityStartMode(MODE_BACKGROUND_ACTIVITY_START_ALLOWED)`                      | Compat `DEFAULT_RESCIND_BAL_PRIVILEGES_FROM_PENDING_INTENT_SENDER` (244637991)                                   |
+| Una app visible que se vincula a un servicio ya no le presta ese permiso                      | Agregar `BIND_ALLOW_ACTIVITY_STARTS` a `bindService()` si el servicio debe abrir una activity                            |                                                                                                                  |
+| Cada sesión de `MediaProjection` necesita un consentimiento nuevo                             | Pedirlo antes de cada `createVirtualDisplay()`; registrar `Callback.onStop`; redimensionar ante cambios de configuración | Compat `MEDIA_PROJECTION_PREVENTS_REUSING_CONSENT` (266201607)                                                   |
+| `USE_FULL_SCREEN_INTENT` solo para apps de llamadas y alarmas                                 | Comprobar `canUseFullScreenIntent()`; abrir `ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT` si hace falta                     |                                                                                                                  |
+| JobScheduler da ANR si `onStartJob` u `onStopJob` bloquean                                    | Sacar el trabajo del hilo principal, o usar WorkManager                                                                  |                                                                                                                  |
+| Las restricciones de red en JobScheduler exigen `ACCESS_NETWORK_STATE`                        | Declararlo junto con `INTERNET`, o programar el job lanza `SecurityException`                                            | Compat `REQUIRE_NETWORK_PERMISSIONS_FOR_CONNECTIVITY_JOBS` (271850009)                                           |
+| `BluetoothAdapter.getProfileConnectionState()` exige `BLUETOOTH_CONNECT`                      | Declararlo y pedirlo antes de la llamada                                                                                 |                                                                                                                  |
+| `TileService.startActivityAndCollapse(Intent)` lanza una excepción                            | Pasar un `PendingIntent`                                                                                                 | Lint `StartActivityAndCollapseDeprecated`                                                                        |
+| `AccountManager` exige declarar la visibilidad de paquetes                                    | Declarar en `<queries>` los paquetes que consultas                                                                       | Compat `ENFORCE_PACKAGE_VISIBILITY_FILTERING` (154726397)                                                        |
+| Las referencias de grupo inválidas en expresiones regulares lanzan excepción (OpenJDK 17)     | Probar el código que usa `java.util.regex.Matcher`                                                                       | Compat `DISALLOW_INVALID_GROUP_REFERENCE`                                                                        |
+| `UUID.fromString()` valida de forma estricta (OpenJDK 17)                                     | Probar la deserialización; una entrada inválida lanza `IllegalArgumentException`                                         | Compat `ENABLE_STRICT_VALIDATION`                                                                                |
+| ProGuard puede quitar `computeValue` de las subclases de `ClassValue`                         | Probar los builds de release reducidos que usan librerías de Kotlin que dependen de `ClassValue`                         |                                                                                                                  |
 
-| Cambio                                                                   | Qué hacer                                                                                      |
-| ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
-| Todo servicio en primer plano necesita `android:foregroundServiceType`   | Declarar el tipo y su permiso `FOREGROUND_SERVICE_*`, y pasar el tipo a `startForeground()`    |
-| Acceso parcial a fotos y videos                                          | Usar el photo picker, o declarar `READ_MEDIA_VISUAL_USER_SELECTED` y manejar el acceso parcial |
-| JobScheduler da ANR si `onStartJob` u `onStopJob` bloquean               | Sacar el trabajo del hilo principal, o usar WorkManager                                        |
-| Las restricciones de red en JobScheduler exigen `ACCESS_NETWORK_STATE`   | Declararlo, o programar el job lanza `SecurityException`                                       |
-| `BluetoothAdapter.getProfileConnectionState()` exige `BLUETOOTH_CONNECT` | Declararlo y pedirlo antes de la llamada                                                       |
-| `TileService.startActivityAndCollapse(Intent)` lanza una excepción       | Pasar un `PendingIntent`                                                                       |
-| Expresiones regulares y `UUID.fromString()` más estrictos (OpenJDK 17)   | Probar el código que parsea; ambos lanzan `IllegalArgumentException` con entradas inválidas    |
+La lista de compat también tiene cambios que pocas apps encuentran: las APIs de
+sincronización comprueban el acceso a la autoridad, el descubrimiento de
+servicios de red pasa a un backend mDNS de la plataforma, y JobScheduler
+rechaza estimaciones de red negativas y jobs de transferencia de datos que no
+implementan toda su API. La página de cambios de comportamiento nombra los
+flags de regex y UUID sin un ID de cambio.
 
 La regla de los servicios en primer plano es la que más apps encuentran. Si
 falta el tipo, se lanza `MissingForegroundServiceTypeException`; si falta el
@@ -407,6 +531,58 @@ necesita otro permiso. Un servicio `specialUse` explica su caso de uso en una
 `<property>` del manifest, y Google Play lo revisa. Para trabajo que no encaja
 en ningún tipo, Google recomienda WorkManager o los jobs de transferencia de
 datos iniciados por el usuario.
+
+## Migrar a API 34
+
+De `targetSdk 33` a 34, en este orden:
+
+1. **Actualizar las herramientas.** Fijar `compileSdk 34` y usar AGP 8.1.1 o
+   posterior con Android Studio Hedgehog o posterior. Si se omite, las
+   constantes nuevas (`FOREGROUND_SERVICE_TYPE_HEALTH`,
+   `READ_MEDIA_VISUAL_USER_SELECTED`) no compilan. Verificar: el proyecto
+   compila y lint no muestra errores nuevos.
+2. **Dar tipo a cada servicio en primer plano.** Agregar
+   `android:foregroundServiceType`, su permiso `FOREGROUND_SERVICE_*` y pedir
+   los requisitos en tiempo de ejecución, como `CAMERA`, antes de
+   `startForeground()`. Si se omite, el servicio lanza una excepción y la app
+   puede cerrarse. Verificar: lint `ForegroundServiceType` y
+   `ForegroundServicePermission`, y luego iniciar cada servicio en Android 14,
+   una vez con su permiso en tiempo de ejecución denegado.
+3. **Manejar el acceso parcial a fotos.** Pasar al photo picker, o declarar
+   `READ_MEDIA_VISUAL_USER_SELECTED` y ofrecer una forma de cambiar la
+   selección. Si se omite, el sistema corre tu selector en modo de
+   compatibilidad. Verificar: lint `SelectedPhotoAccess`, y luego elegir
+   "Select photos and videos" en un dispositivo con Android 14.
+4. **Cerrar los caminos implícitos.** Hacer explícitos los intents hacia tus
+   componentes no exportados, fijar un paquete en los `PendingIntent`
+   mutables y pasar un flag de exportación a `registerReceiver()`. Si se
+   omite, quien llama recibe `ActivityNotFoundException` y los otros dos
+   lanzan excepciones. Verificar: lint `UnsafeImplicitIntentLaunch`,
+   `MutableImplicitPendingIntent` y `UnspecifiedRegisterReceiverFlag`.
+5. **Corregir los inicios en segundo plano y la captura de pantalla.** Aceptar
+   el permiso donde un `PendingIntent` o un servicio vinculado debe abrir una
+   activity, y pedir consentimiento antes de cada sesión de `MediaProjection`.
+   Si se omite, las activities no se abren y la captura lanza
+   `SecurityException`. Verificar: recorrer esos flujos en Android 14.
+6. **Revisar los jobs.** Volver rápido de `onStartJob` y `onStopJob`, y
+   declarar `ACCESS_NETWORK_STATE` para las restricciones de red. Si se omite,
+   los jobs dan ANR o no se programan. Verificar: ejecutar cada job al instante
+   con `adb shell cmd jobscheduler run -f <paquete> <ID del job>`.
+7. **Recorrer las filas menores** de la tabla por target que te apliquen:
+   intents de pantalla completa, código dinámico de solo lectura, entradas
+   zip, Bluetooth, tiles, `AccountManager`, parseo de regex y UUID.
+8. **Probar el resultado** en un dispositivo o emulador con Android 14 y
+   `targetSdk 34`. Para aislar un cambio, activarlo o desactivarlo en un build
+   depurable en Opciones de desarrollador > "App Compatibility Changes", o con
+   `adb shell am compat disable <ID del cambio> <paquete>`.
+
+Sea cual sea tu target, revisa también la tabla de todas las apps: las
+alarmas exactas están denegadas por defecto y un `targetSdk` menor a 23 ya no
+se instala.
+
+Si saltas varios niveles a la vez: sigue los pasos de cada versión en orden,
+desde [Android 13](/es/notes/android-13/#migrar-a-api-33) si tu target es 32 o
+menos.
 
 ## Qué perduró
 
