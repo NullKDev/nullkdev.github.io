@@ -6,6 +6,7 @@ import EntryContentsCompact from '@/components/entry/EntryContentsCompact.astro'
 import EntryOutline from '@/components/entry/EntryOutline.astro'
 import EntryReadingTools from '@/components/entry/EntryReadingTools.astro'
 import EvidenceList from '@/components/entry/EvidenceList.astro'
+import PartCard from '@/components/entry/PartCard.astro'
 import RecordBlockHead from '@/components/entry/RecordBlockHead.astro'
 import RelationshipList from '@/components/entry/RelationshipList.astro'
 import Icon from '@/components/primitives/Icon.astro'
@@ -23,6 +24,7 @@ import {
   getAdjacentEntries,
   getArchiveEntries,
   getCounterpartEntry,
+  getDocumentPath,
   getDocumentsForEntry,
   getEntryAlternatePath,
   getEntryCounterpartPath,
@@ -112,12 +114,10 @@ const toPart = (
   minutes: getReadingMinutes([document.body]),
   headings: partHeadings,
 })
-const tableOfContents = buildEntryOutline(
-  headings,
-  renderedDocuments.map(({ document, rendered }) =>
-    toPart(document, rendered.headings),
-  ),
+const parts = renderedDocuments.map(({ document, rendered }) =>
+  toPart(document, rendered.headings),
 )
+const tableOfContents = buildEntryOutline(headings, parts)
 
 // The translation's outline, so the language switch can land on the same
 // section (heading i → heading i). Only kept when both outlines match; see
@@ -445,20 +445,27 @@ const jsonLd = buildEntryArticleLd({
       <article class="prose">
         <Content />
         {
-          renderedDocuments.map(({ document, rendered }) => {
+          renderedDocuments.map(({ document, rendered }, index) => {
             const DocumentContent = rendered.Content
+            const part = parts[index]
             return (
-              <section class="subpost" id={getPartAnchor(document.data.order)}>
-                {documents.length > 1 && (
-                  <p class="subpost-index">
-                    {formatPartOf(
-                      dictionary.archive.partOf,
-                      document.data.order,
-                      documents.length,
-                    )}
-                  </p>
-                )}
-                <h2>{document.data.title}</h2>
+              <section class="subpost" id={part.slug}>
+                <PartCard
+                  title={part.title}
+                  summary={document.data.summary}
+                  href={getDocumentPath(entry, document)}
+                  minutes={part.minutes}
+                  position={
+                    documents.length > 1
+                      ? formatPartOf(
+                          dictionary.archive.partOf,
+                          document.data.order,
+                          documents.length,
+                        )
+                      : undefined
+                  }
+                  locale={locale}
+                />
                 <DocumentContent />
               </section>
             )

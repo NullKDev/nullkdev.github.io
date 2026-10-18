@@ -49,6 +49,13 @@ Add a lifecycle value to the map, not a new colour to a component.
   the page. Subpost parts are `<details>` groups that open while being read.
 - **Phone contents (<1024px).** One collapsed `<details>` before the first
   paragraph, top rung only. Below 1024px the index never sits beside the text.
+- **Part card.** Each subpost inlined in its entry opens with
+  `entry/PartCard.astro`: "Part N of M · X min" (no count for a single part),
+  the title as the part's first `h2` but set larger than its own `h2`s
+  (chapter > section), the `summary` as a standfirst, and "Read on its own →"
+  to the part's own URL, its accessible name carrying the title. Raised
+  surface, 2px accent line on top; it replaces the old hairline and kicker.
+  Minutes come from the same `toPart` values the outline shows.
 - **Section links.** Each anchored `h2`/`h3` gets a registry `sectionLink`
   self-link, hidden until hover or focus; the heading stays named by its text.
 - **Print.** Chrome, indexes, banner and controls are hidden; black on white in

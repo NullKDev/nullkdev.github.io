@@ -194,6 +194,7 @@ export const es = {
     pager: 'Más entradas',
     series: 'Serie',
     partOf: 'Parte {order} de {total}',
+    readPartAlone: 'Leer por separado',
     supersededBy: 'Esta nota fue reemplazada por',
     archivedNote:
       'Esta nota está archivada: se conserva como registro de su momento y ya no se actualiza, así que algunos datos pueden estar desactualizados.',

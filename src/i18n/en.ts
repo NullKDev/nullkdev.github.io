@@ -191,6 +191,7 @@ export const en = {
     pager: 'More entries',
     series: 'Series',
     partOf: 'Part {order} of {total}',
+    readPartAlone: 'Read on its own',
     supersededBy: 'This note was replaced by',
     archivedNote:
       'This note is archived: it is kept as a record of its time and is no longer updated, so some details may be out of date.',

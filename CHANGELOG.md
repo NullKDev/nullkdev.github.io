@@ -53,6 +53,11 @@ este repo usa de verdad — no las genéricas del estándar.
 
 ### Agregado
 
+- Cada subpost dentro de su nota abre con una tarjeta de parte: «Parte N de M ·
+  minutos», el título más grande que las secciones que le siguen, su resumen y
+  un enlace «Leer por separado». Una nota de varias partes se lee como
+  capítulos en lugar de una sola columna sin cortes.
+
 - Serie «Android, versión por versión»: una nota investigada por cada versión
   desde la 4.4 KitKat hasta la 17, con nombre, nivel de API, seguridad, permisos y
   qué cambia para tu app, en inglés y español: 18 notas más una nota principal
