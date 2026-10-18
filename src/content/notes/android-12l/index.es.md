@@ -20,7 +20,19 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: developer-preview-1
+    slug: developer-preview-1
+    order: 1
+  - documentId: beta-1
+    slug: beta-1
+    order: 2
+  - documentId: beta-2
+    slug: beta-2
+    order: 3
+  - documentId: beta-3
+    slug: beta-3
+    order: 4
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -130,6 +142,24 @@ citations:
   - title: Android developers content license
     url: https://developer.android.com/license
     accessedAt: 2026-10-17
+  - title: 12L release notes (archived 12 February 2022)
+    url: https://web.archive.org/web/20220212090725/https://developer.android.com/about/versions/12/12L/release-notes
+    accessedAt: 2026-10-18
+  - title: 12L Preview program overview (archived 9 February 2022)
+    url: https://web.archive.org/web/20220209212740/https://developer.android.com/about/versions/12/12L/overview
+    accessedAt: 2026-10-18
+  - title: Google releases Android 12L Beta 1 for Pixel phones (9to5Google)
+    url: https://9to5google.com/2021/12/08/android-12l-beta-1-launch/
+    accessedAt: 2026-10-18
+  - title: Google rolling out Android 12L Beta 2 for Pixel phones (9to5Google)
+    url: https://9to5google.com/2022/01/12/android-12l-beta-2-launch/
+    accessedAt: 2026-10-18
+  - title: Android 12L Beta 3 rolling out, including for Pixel 6 and 6 Pro (9to5Google)
+    url: https://9to5google.com/2022/02/09/android-12l-beta-3-launch/
+    accessedAt: 2026-10-18
+  - title: "Pixel 6 can't install Android 12L after latest February update (9to5Google)"
+    url: https://9to5google.com/2022/02/24/android-12l-pixel-6-install/
+    accessedAt: 2026-10-18
 ---
 
 Android 12L es la versión que Google hizo para pantallas grandes. Dio a tablets,
@@ -162,9 +192,10 @@ La primera compilación, `SP2A.220305.012`, llegó a los Pixel 3a, 4, 4a, 4a (5G
 `SP2A.220405.004`, con la actualización de abril. Para otros fabricantes, Google dijo que 12L llegaría a tablets
 y plegables de Samsung, Lenovo y Microsoft más adelante ese año.
 
-Antes, una vista previa para desarrolladores salió el 27 de
-octubre de 2021, la Beta 1 el 8 de diciembre de 2021 con la API 32 definitiva, y
-Lenovo ofreció compilaciones de prueba para su Tab P12 Pro.
+Antes llegaron la Developer Preview 1 el 27 de octubre de 2021, la Beta 1 el
+8 de diciembre de 2021 con la API 32 definitiva, la Beta 2 el 12 de enero de
+2022 y la Beta 3 el 9 de febrero de 2022. Cada una tiene su propia parte más
+abajo.
 
 **El nombre.** Google usó "12L" en público y nunca un postre. El código dice
 `S_V2`, su comentario dice "S V2", las ramas de AOSP se llaman `android-s-v2-*`

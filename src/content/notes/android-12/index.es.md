@@ -20,7 +20,31 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: developer-preview-1
+    slug: developer-preview-1
+    order: 1
+  - documentId: developer-preview-2
+    slug: developer-preview-2
+    order: 2
+  - documentId: developer-preview-3
+    slug: developer-preview-3
+    order: 3
+  - documentId: beta-1
+    slug: beta-1
+    order: 4
+  - documentId: beta-2
+    slug: beta-2
+    order: 5
+  - documentId: beta-3
+    slug: beta-3
+    order: 6
+  - documentId: beta-4
+    slug: beta-4
+    order: 7
+  - documentId: beta-5
+    slug: beta-5
+    order: 8
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -142,6 +166,57 @@ citations:
   - title: Android 12 Beta 4 and Platform Stability
     url: https://android-developers.googleblog.com/2021/08/android-12-beta-4-and-platform-stability.html
     accessedAt: 2026-10-17
+  - title: 'Android 12 Developer Preview 2'
+    url: https://android-developers.googleblog.com/2021/03/android-12-developer-preview-2.html
+    accessedAt: 2026-10-18
+  - title: 'Android 12 Developer Preview 3'
+    url: https://android-developers.googleblog.com/2021/04/android-12-developer-preview-3.html
+    accessedAt: 2026-10-18
+  - title: 'Android 12 Beta 2 Update'
+    url: https://android-developers.googleblog.com/2021/06/android-12-beta-2-update.html
+    accessedAt: 2026-10-18
+  - title: 'Android 12 Beta 3 and final APIs'
+    url: https://android-developers.googleblog.com/2021/07/android-12-beta-3.html
+    accessedAt: 2026-10-18
+  - title: 'Android 12 Beta 5 update, official release is next!'
+    url: https://android-developers.googleblog.com/2021/08/android12beta5.html
+    accessedAt: 2026-10-18
+  - title: 'Android 12 release notes, Developer Preview 1 and 1.1 (archived 15 March 2021)'
+    url: https://web.archive.org/web/20210315183111/https://developer.android.com/about/versions/12/release-notes
+    accessedAt: 2026-10-18
+  - title: 'Android 12 release notes, Developer Preview 2 to 2.2 (archived 14 April 2021)'
+    url: https://web.archive.org/web/20210414205949/https://developer.android.com/about/versions/12/release-notes
+    accessedAt: 2026-10-18
+  - title: 'Android 12 release notes, Developer Preview 3 (archived 18 May 2021)'
+    url: https://web.archive.org/web/20210518025512/https://developer.android.com/about/versions/12/release-notes
+    accessedAt: 2026-10-18
+  - title: 'Android 12 release notes, Beta 1 to Beta 5 (archived 24 September 2021)'
+    url: https://web.archive.org/web/20210924193654/https://developer.android.com/about/versions/12/release-notes
+    accessedAt: 2026-10-18
+  - title: 'Google launches Android 12 Developer Preview for Pixel phones (9to5Google)'
+    url: https://9to5google.com/2021/02/18/android-12-developer-preview-1-launch/
+    accessedAt: 2026-10-18
+  - title: 'Android 12 Developer Preview 2 hands-on (9to5Google)'
+    url: https://9to5google.com/2021/03/17/android-12-developer-preview-2-hands-on-top-new-features-video/
+    accessedAt: 2026-10-18
+  - title: 'Google rolling out Android 12 Developer Preview 3 for Pixel (9to5Google)'
+    url: https://9to5google.com/2021/04/21/android-12-dp3-launch/
+    accessedAt: 2026-10-18
+  - title: 'Google releases Android 12 Beta 1 for Pixel phones (9to5Google)'
+    url: https://9to5google.com/2021/05/18/android-12-beta-1-launch/
+    accessedAt: 2026-10-18
+  - title: 'Google rolling out Android 12 Beta 2 for Pixel phones (9to5Google)'
+    url: https://9to5google.com/2021/06/09/android-12-beta-2/
+    accessedAt: 2026-10-18
+  - title: 'Google releases Android 12 Beta 3 for Pixel phones (9to5Google)'
+    url: https://9to5google.com/2021/07/14/android-12-beta-3/
+    accessedAt: 2026-10-18
+  - title: 'Android 12 Beta 4 (9to5Google)'
+    url: https://9to5google.com/2021/08/11/android-12-beta-4/
+    accessedAt: 2026-10-18
+  - title: 'Google rolling out Android 12 Beta 5 release candidate for Pixel (9to5Google)'
+    url: https://9to5google.com/2021/09/08/android-12-beta-5-release-candidate/
+    accessedAt: 2026-10-18
   - title: ScrollCaptureCallback reference
     url: https://developer.android.com/reference/android/view/ScrollCaptureCallback
     accessedAt: 2026-10-17
@@ -186,7 +261,8 @@ plano.
 Google anunció Android 12 con la Developer Preview 1 el 18 de febrero de 2021.
 La Beta 1 llegó el 18 de mayo en Google I/O, y la Beta 4 alcanzó la estabilidad
 de plataforma el 11 de agosto, con las APIs y el comportamiento hacia las apps
-ya congelados.
+ya congelados. Las tres developer previews y las cinco betas son las partes
+que siguen a esta vista general.
 
 Google publicó el código de Android 12 en AOSP el 4 de octubre de 2021. Los
 teléfonos esperaron dos semanas más: el despliegue empezó el 19 de octubre, para

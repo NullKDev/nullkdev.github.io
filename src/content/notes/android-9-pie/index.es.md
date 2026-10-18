@@ -23,7 +23,22 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: developer-preview-1
+    slug: developer-preview-1
+    order: 1
+  - documentId: beta-1
+    slug: beta-1
+    order: 2
+  - documentId: beta-2
+    slug: beta-2
+    order: 3
+  - documentId: beta-3
+    slug: beta-3
+    order: 4
+  - documentId: beta-4
+    slug: beta-4
+    order: 5
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -154,6 +169,39 @@ citations:
   - title: 'File:Android Pie.png (Wikimedia Commons)'
     url: https://commons.wikimedia.org/wiki/File:Android_Pie.png
     accessedAt: 2026-10-17
+  - title: 'Android P Beta 2 and final APIs!'
+    url: https://android-developers.googleblog.com/2018/06/android-p-beta-2-and-final-apis.html
+    accessedAt: 2026-10-18
+  - title: An Update on non-SDK restrictions in Android P
+    url: https://android-developers.googleblog.com/2018/06/an-update-on-non-sdk-restrictions-in.html
+    accessedAt: 2026-10-18
+  - title: Android P Beta 3 is now available
+    url: https://android-developers.googleblog.com/2018/07/android-p-beta-3-is-now-available.html
+    accessedAt: 2026-10-18
+  - title: 'Final preview update, official Android P coming soon!'
+    url: https://android-developers.googleblog.com/2018/07/final-preview-update-official-android-p.html
+    accessedAt: 2026-10-18
+  - title: android-p-preview-1 to android-p-preview-5 tags, platform/build (AOSP)
+    url: https://android.googlesource.com/platform/build/+refs
+    accessedAt: 2026-10-18
+  - title: android-p-preview-3 tag, platform/build (AOSP)
+    url: https://android.googlesource.com/platform/build/+/refs/tags/android-p-preview-3
+    accessedAt: 2026-10-18
+  - title: 'First Android P Developer Preview Released and Now Available! (Droid Life)'
+    url: https://www.droid-life.com/2018/03/07/first-android-p-developer-preview-released-and-now-available/
+    accessedAt: 2026-10-18
+  - title: How to enroll in the Android P Beta Program (9to5Google)
+    url: https://9to5google.com/2018/05/08/how-to-enroll-android-p-beta-program-android-basics/
+    accessedAt: 2026-10-18
+  - title: Android P Developer Preview 3 rolling out w/ final APIs, SDK, Play Store publishing (9to5Google)
+    url: https://9to5google.com/2018/06/06/android-p-developer-preview-3-rolling-out-w-final-apis-sdk-play-store-publishing/
+    accessedAt: 2026-10-18
+  - title: Android P Developer Preview 4 rolling out to Pixel and Pixel 2 (9to5Google)
+    url: https://9to5google.com/2018/07/02/android-p-developer-preview-4-rolling-out/
+    accessedAt: 2026-10-18
+  - title: Android P Developer Preview 5 rolling out to Pixel and Pixel 2, final beta before launch (9to5Google)
+    url: https://9to5google.com/2018/07/25/android-p-developer-preview-5/
+    accessedAt: 2026-10-18
 ---
 
 Android 9 Pie es la versión que dejó a las apps inactivas sin cámara, sin
@@ -177,7 +225,7 @@ Google usó en público.
 | Dispositivos de lanzamiento        | Pixel, Pixel XL, Pixel 2 y Pixel 2 XL por actualización; Pixel 3 y Pixel 3 XL llegaron con él |
 | Plazo de target API en Google Play | Apps nuevas desde agosto de 2019, actualizaciones desde noviembre de 2019                     |
 
-La primera vista previa para desarrolladores salió el 7 de marzo de 2018. La
+La primera vista previa para desarrolladores salió el 7 de marzo de 2018; los cinco hitos de la preview son las partes debajo de este resumen. La
 beta llegó el 8 de mayo, durante Google I/O, y gracias a Project Treble también
 funcionó en teléfonos de Essential, Nokia, Oppo, Sony, Vivo y Xiaomi.
 

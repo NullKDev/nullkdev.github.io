@@ -20,7 +20,28 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: developer-preview-1
+    slug: developer-preview-1
+    order: 1
+  - documentId: developer-preview-2
+    slug: developer-preview-2
+    order: 2
+  - documentId: developer-preview-3
+    slug: developer-preview-3
+    order: 3
+  - documentId: developer-preview-4
+    slug: developer-preview-4
+    order: 4
+  - documentId: beta-1
+    slug: beta-1
+    order: 5
+  - documentId: beta-2
+    slug: beta-2
+    order: 6
+  - documentId: beta-3
+    slug: beta-3
+    order: 7
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -160,6 +181,51 @@ citations:
   - title: Android Developers content license
     url: https://developer.android.com/license
     accessedAt: 2026-10-17
+  - title: 'Android 11: Developer Preview 2 (Android Developers Blog)'
+    url: https://android-developers.googleblog.com/2020/03/android-11-developer-preview-2.html
+    accessedAt: 2026-10-18
+  - title: 'Android 11: Developer Preview 3 (Android Developers Blog)'
+    url: https://android-developers.googleblog.com/2020/04/android-11-developer-preview-3.html
+    accessedAt: 2026-10-18
+  - title: Android 11 Beta 2 and Platform Stability (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2020/07/android-11-beta-2-and-platform-stability.html
+    accessedAt: 2026-10-18
+  - title: Android 11 final Beta update, official release coming soon! (Android Developers Blog)
+    url: https://android-developers.googleblog.com/2020/08/android-11-final-beta-update.html
+    accessedAt: 2026-10-18
+  - title: Android 11 preview release notes (developer.android.com, archived 18 August 2020)
+    url: https://web.archive.org/web/20200818230453/https://developer.android.com/preview/release-notes
+    accessedAt: 2026-10-18
+  - title: Google launches Android 11 Developer Preview for Pixel (9to5Google)
+    url: https://9to5google.com/2020/02/19/android-11-developer-preview-launch/
+    accessedAt: 2026-10-18
+  - title: 'Android 11 timeline: Three developer previews, first beta in May, and Q3 launch (9to5Google)'
+    url: https://9to5google.com/2020/02/19/android-11-launch-timeline/
+    accessedAt: 2026-10-18
+  - title: Google releases Android 11 DP2 with app resume on reboot and OTA from DP1 (9to5Google)
+    url: https://9to5google.com/2020/03/18/android-11-dp2-launch/
+    accessedAt: 2026-10-18
+  - title: Google releases Android 11 DP3 ahead of first Android Beta (9to5Google)
+    url: https://9to5google.com/2020/04/23/android-11-dp3-launch/
+    accessedAt: 2026-10-18
+  - title: Google releases Android 11 DP4, first beta now next month (9to5Google)
+    url: https://9to5google.com/2020/05/06/android-11-dp4/
+    accessedAt: 2026-10-18
+  - title: Google delays next week's Android 11 Beta release and virtual launch event (9to5Google)
+    url: https://9to5google.com/2020/05/29/android-11-beta-delay/
+    accessedAt: 2026-10-18
+  - title: Google launches Android 11 Beta 1 for Pixel phones (9to5Google)
+    url: https://9to5google.com/2020/06/10/android-11-beta-launch/
+    accessedAt: 2026-10-18
+  - title: Google releases Android 11 Beta 2 for Pixel phones (9to5Google)
+    url: https://9to5google.com/2020/07/08/android-11-beta-2/
+    accessedAt: 2026-10-18
+  - title: Google releases Android 11 Beta 3 ahead of public launch (9to5Google)
+    url: https://9to5google.com/2020/08/06/android-11-beta-3/
+    accessedAt: 2026-10-18
+  - title: Android 11 Beta 3 is now available for the Pixel 4a (9to5Google)
+    url: https://9to5google.com/2020/08/24/android-11-beta-pixel-4a/
+    accessedAt: 2026-10-18
 ---
 
 Android 11 es la versión en la que un permiso podía durar una sola sesión. Los
@@ -192,7 +258,8 @@ para desarrolladores salió el 19 de febrero de 2020. En mayo, Google agregó un
 cuarta versión preliminar y retrasó la Beta 1 y todas las etapas siguientes
 cerca de un mes. Luego postergó el evento del 3 de junio para dar espacio a las
 conversaciones sobre justicia racial en Estados Unidos, y publicó la Beta 1 el
-10 de junio, sin evento.
+10 de junio, sin evento. Cada preview y cada beta tiene su propia parte después
+de esta vista general.
 
 Dave Burke, vicepresidente de ingeniería de Android, contó en el podcast All
 About Android en julio de 2020 que su equipo llamaba a la versión "RVC", por Red

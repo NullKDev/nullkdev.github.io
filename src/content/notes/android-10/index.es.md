@@ -20,7 +20,25 @@ links:
     kind: publication
 references: []
 evidence: []
-documents: []
+documents:
+  - documentId: beta-1
+    slug: beta-1
+    order: 1
+  - documentId: beta-2
+    slug: beta-2
+    order: 2
+  - documentId: beta-3
+    slug: beta-3
+    order: 3
+  - documentId: beta-4
+    slug: beta-4
+    order: 4
+  - documentId: beta-5
+    slug: beta-5
+    order: 5
+  - documentId: beta-6
+    slug: beta-6
+    order: 6
 protection: { mode: public }
 kind: article
 lifecycle: current
@@ -175,6 +193,36 @@ citations:
   - title: Essential Phone and Redmi K20 Pro get day-one Android 10 updates (9to5Google)
     url: https://9to5google.com/2019/09/13/android-10-essential-phone-redmi-k20-pro/
     accessedAt: 2026-10-17
+  - title: 'What’s New in Android: Q Beta 3 & More'
+    url: https://android-developers.googleblog.com/2019/05/whats-new-in-android-q-beta-3-more.html
+    accessedAt: 2026-10-18
+  - title: 'Android Q Scoped Storage: Best Practices and Updates'
+    url: https://android-developers.googleblog.com/2019/04/android-q-scoped-storage-best-practices.html
+    accessedAt: 2026-10-18
+  - title: 'Android Q Beta 5 Update'
+    url: https://android-developers.googleblog.com/2019/07/android-q-beta-5-update.html
+    accessedAt: 2026-10-18
+  - title: 'Android Q Beta support and release notes (archived August 2019)'
+    url: https://web.archive.org/web/20190819192719/https://developer.android.com/preview/release-notes
+    accessedAt: 2026-10-18
+  - title: 'Android Q beta removes all mention of dark mode (9to5Google)'
+    url: https://9to5google.com/2019/03/13/android-q-beta-1-dark-mode/
+    accessedAt: 2026-10-18
+  - title: 'Android Q Beta 2: How to try out ‘Bubbles’ using ADB (9to5Google)'
+    url: https://9to5google.com/2019/04/03/android-q-beta-2-bubbles/
+    accessedAt: 2026-10-18
+  - title: 'Android Q Beta 3: Gesture navigation gets revamped (again) (9to5Google)'
+    url: https://9to5google.com/2019/05/07/android-q-beta-3-gesture-navigation/
+    accessedAt: 2026-10-18
+  - title: 'Android Q Beta 4 adds new accent colors (9to5Google)'
+    url: https://9to5google.com/2019/06/05/android-q-beta-4-accent-colors/
+    accessedAt: 2026-10-18
+  - title: 'Android Q Beta 5 adds gesture handles for Google Assistant (9to5Google)'
+    url: https://9to5google.com/2019/07/10/android-q-beta-5-assistant-gesture-handles/
+    accessedAt: 2026-10-18
+  - title: 'Android Q Beta 6: Gesture nav bar hidden on home screen (9to5Google)'
+    url: https://9to5google.com/2019/08/07/android-q-beta-6-gesture-navigation-hidden-home-screen/
+    accessedAt: 2026-10-18
 ---
 
 Android 10 es la versión en la que Android dejó de ponerles nombres de postres
@@ -208,7 +256,8 @@ OnePlus presentó el 7T como el primer teléfono nuevo con Android 10 y las apps
 de Google de fábrica; el Pixel 4 fue el primer teléfono de Google que salió con
 esta versión. El boletín de seguridad de febrero de 2023 es el último que
 incluye Android 10 entre las versiones de AOSP corregidas; desde marzo de 2023
-los boletines empiezan en Android 11.
+los boletines empiezan en Android 11. Las seis betas de Android Q, del 13 de
+marzo al 7 de agosto de 2019, son las partes que siguen a esta vista general.
 
 ## Qué trajo
 
