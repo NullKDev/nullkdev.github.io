@@ -262,6 +262,9 @@ its `<figcaption>`, at build time, by `scripts/hast-figures.mjs`:
 ![Android 6.0 Marshmallow logo](./assets/android-marshmallow-logo.svg 'Android 6.0 Marshmallow logo. Wikimedia Commons · Public domain (PD-logo) · Trademark of Google LLC')
 ```
 
+- **Plain `.md` only.** The step reads hast `img` elements; in `.mdx` the MDX
+  pipeline turns local images into JSX nodes first, so a titled image there is
+  not known to be captioned. In an `.mdx` note use `Figure.astro` instead.
 - **Alt describes, title credits.** The alt text is what a reader who cannot
   see the image needs; the title is the visible caption and ends with
   `Source · Licence` (see `docs/writing-notes.md`). Never put the credit in
