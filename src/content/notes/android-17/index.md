@@ -174,6 +174,48 @@ citations:
   - title: Android 17 Beta 4 rolling out for Pixel as last scheduled release (9to5Google)
     url: https://9to5google.com/2026/04/16/android-17-beta-4-pixel/
     accessedAt: 2026-10-18
+  - title: Set up the Android 17 SDK
+    url: https://developer.android.com/about/versions/17/setup-sdk
+    accessedAt: 2026-10-18
+  - title: 'Android Gradle plugin: minimum versions of tools for each API level'
+    url: https://developer.android.com/build/releases/about-agp
+    accessedAt: 2026-10-18
+  - title: Manifest.permission reference
+    url: https://developer.android.com/reference/android/Manifest.permission
+    accessedAt: 2026-10-18
+  - title: PackageManager reference (FEATURE_NEURAL_PROCESSING_UNIT)
+    url: https://developer.android.com/reference/android/content/pm/PackageManager
+    accessedAt: 2026-10-18
+  - title: '<uses-permission> manifest element (maxSdkVersion)'
+    url: https://developer.android.com/guide/topics/manifest/uses-permission-element
+    accessedAt: 2026-10-18
+  - title: Local network permission
+    url: https://developer.android.com/privacy-and-security/local-network-permission
+    accessedAt: 2026-10-18
+  - title: Restrictions on orientation and resizability are ignored (Android 17)
+    url: https://developer.android.com/about/versions/17/changes/ff-restrictions-ignored
+    accessedAt: 2026-10-18
+  - title: 'Lint check LockedOrientationActivity: Incompatible screenOrientation value'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/LockedOrientationActivity.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check SourceLockedOrientationActivity: Incompatible setRequestedOrientation value'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/SourceLockedOrientationActivity.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check NonResizeableActivity: Activity is set to be non-resizeable'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/NonResizeableActivity.md.html
+    accessedAt: 2026-10-18
+  - title: 'Lint check UnsafeDynamicallyLoadedCode: load used to dynamically load code'
+    url: https://googlesamples.github.io/android-custom-lint-rules/checks/UnsafeDynamicallyLoadedCode.md.html
+    accessedAt: 2026-10-18
+  - title: Google launches Android 17, rolling out now to Pixel (9to5Google)
+    url: https://9to5google.com/2026/06/16/google-android-17-pixel-launch/
+    accessedAt: 2026-10-18
+  - title: "Android 17 is finally here — here's what's new and who's getting it (Android Central)"
+    url: https://www.androidcentral.com/apps-software/android-os/android-17-is-finally-here
+    accessedAt: 2026-10-18
+  - title: "Google launches 'bubble' multi-tasking and foldable gaming mode with Android 17 (Engadget)"
+    url: https://www.engadget.com/2195087/google-android-17-rollout/
+    accessedAt: 2026-10-18
 ---
 
 Android 17 is the release that made adaptive layouts mandatory and gave every
@@ -196,9 +238,19 @@ stability; [what breaks on targetSdk 37](/notes/android-17/stable/); and
 | API level                       | 37 (37.1 from QPR1; 37.2 in the QPR2 beta)                                                             |
 | Name                            | Cinnamon Bun, internal; visible in the SDK constant. Public name: Android 17                           |
 | `Build.VERSION_CODES`           | `CINNAMON_BUN` (`VERSION_CODES_FULL.CINNAMON_BUN_1` for QPR1)                                          |
-| Release                         | Pixel rollout began 16 June 2026                                                                       |
+| Release                         | Stable. Source in AOSP and Pixel rollout from 16 June 2026                                             |
 | Launch devices                  | Pixel 6 and newer by update; Samsung Galaxy Z Fold8 Ultra, Z Fold8 and Z Flip8, announced 22 July 2026 |
 | Google Play target-API deadline | Not announced as of October 2026                                                                       |
+| Toolchain                       | `compileSdk 37`, Android Gradle Plugin 9.1.1 and Android Studio Panda 3 or later (see below)           |
+
+Google's compatibility table lists Android Studio Panda 3 (2025.3.3 Patch 1)
+and AGP 9.1.1 as the minimum for API 37.0. The Android 17 SDK setup page asks
+for Android Studio Meerkat (2024.3.1) or higher and AGP 8.9.0-rc01 or higher.
+Use the newer table when the two disagree.
+
+Android 17 is a stable release, not a beta. Google's launch post, the
+9to5Google and Android Central launch reports and Engadget all date it to
+16 June 2026, the day the Pixel rollout began.
 
 Google released Android 17 on 16 June 2026 for the Pixel 6 and newer, and published the source to AOSP the same day. The first
 release build is `CP2A.260605.016`, tag `android-17.0.0_r1`, with the June 2026
@@ -258,76 +310,172 @@ The full API list at platform stability is in the
 - **Post-quantum cryptography.** Android Keystore can generate ML-DSA keys in
   secure hardware through the standard JCA APIs, and APK Signature Scheme v3.2
   pairs a classical signature with an ML-DSA one.
-- **Encrypted Client Hello.** For apps targeting 37, TLS uses ECH when the
-  networking library and the server both support it. `<domainEncryption>` in
-  the network security config turns it on or off per domain.
-- **Certificate Transparency** is on by default for apps targeting 37; on
-  Android 16 it was opt-in.
-- **Safer native code loading.** For apps targeting 37, `System.load()` throws
-  `UnsatisfiedLinkError` unless the file is read-only, extending the Android 14
-  rule for DEX and JAR files.
 - **SMS OTP.** WebOTP messages are held for three hours from every app that is
   not the verified recipient. For apps targeting 37, the hold covers standard
   OTP messages too.
-- **Activity security.** For apps targeting 37, background activity launch
-  restrictions extend to
-  `IntentSender`, and `MODE_BACKGROUND_ACTIVITY_START_ALLOWED` gives way to
-  granular modes such as `MODE_BACKGROUND_ACTIVITY_START_ALLOW_IF_VISIBLE`.
 - **Theft protection.** Find Hub's "Mark as lost" can require biometrics on
   top of the PIN, so a thief who saw the PIN cannot turn off tracking. Remote
   Lock and Theft Detection Lock are on by default on new, reset or upgraded
   Android 17 devices.
-- **Passwords on physical keyboards.** For apps targeting 37, the last typed
-  character is no longer shown when the user types on a physical keyboard;
-  touch and physical input have separate settings.
-- **Keystore and profiles.** Non-system apps targeting 37 can own at most
-  50,000 Keystore keys, and loopback traffic between profiles is blocked by
-  default.
+- **Profiles.** Loopback traffic between profiles is blocked by default, for
+  every app.
+- **Hardening for apps targeting 37.** Encrypted Client Hello, Certificate
+  Transparency on by default, read-only native libraries for `System.load()`,
+  background activity launch limits on `IntentSender`, hidden passwords on
+  physical keyboards and a 50,000-key Keystore cap. Each one is a row in
+  [the targeting table](#apps-targeting-api-37), with what to do.
 
 ## Permissions
 
-- **`ACCESS_LOCAL_NETWORK`.** Apps targeting 37 lose local network access
-  unless they hold this runtime permission or use a system device picker. It
-  belongs to the `NEARBY_DEVICES` group, so users who already granted another
-  nearby devices permission are not asked again.
-- **Contacts.** The contact picker returns only the fields the user picks,
-  without `READ_CONTACTS`. For apps targeting 37, Contacts Provider hides
-  `ACCOUNT_NAME`, `ACCOUNT_TYPE` and `ACCOUNT_TYPE_AND_DATA_SET` in the data
-  view, and queries without `READ_CONTACTS` get strict SQL checks.
-- **Location button.** `USE_LOCATION_BUTTON` lets an app embed the
-  system-rendered button that grants precise location for the session only,
-  with no dialog.
-- **Pinned windows.** `USE_PINNED_WINDOWING_LAYER` lets an app ask for an
-  always-on-top, interactive window in desktop mode.
-- **NPU access.** Apps targeting 37 that use the neural processing unit
-  directly must declare `FEATURE_NEURAL_PROCESSING_UNIT`, or they are blocked.
+Android 17 added one runtime permission, for apps that talk to devices on the
+local network, and a handful of install-time ones for new system features:
+
+| Permission                                | What changed in API 37                                                                                                 | What to declare                                                             | What to remove or limit                                                   |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `ACCESS_LOCAL_NETWORK`                    | New runtime permission in the `NEARBY_DEVICES` group; apps targeting 37 need it for any LAN traffic                    | Declare and request it once you target 37, unless a system picker is enough | Do not declare or request it while you target 36 or lower                 |
+| `INTERNET`                                | Below target 37 it implies local network access; from 37 it no longer does                                             | Keep it                                                                     | Nothing                                                                   |
+| `READ_CONTACTS`                           | The contact picker needs none; without it, `ContactsContract.Data` queries get strict SQL checks for apps targeting 37 | Keep it only if you read the whole address book                             | `android:maxSdkVersion="36"` if the picker covers every use on Android 17 |
+| `USE_LOCATION_BUTTON`                     | New, install-time; embeds the system location button that grants precise location for the session                      | Declare it to show the button                                               | Nothing                                                                   |
+| `USE_PINNED_WINDOWING_LAYER`              | New, install-time; an always-on-top, interactive task in desktop windowing                                             | Declare it to request `WINDOWING_LAYER_PINNED`                              | Nothing                                                                   |
+| `READ_ASSIST_STRUCTURE_SCREEN_CONTENT`    | New, install-time; a `VoiceInteractionService` needs it to receive screen content in `AssistStructure`                 | Assistant apps only                                                         | Nothing; without it the structure holds window data only                  |
+| `REQUEST_COMPANION_PROFILE_MEDICAL`       | New; associates a medical device through `CompanionDeviceManager`                                                      | Companion apps for medical devices                                          | Nothing                                                                   |
+| `SCHEDULE_EXACT_ALARM`, `USE_EXACT_ALARM` | Holding the exact alarm permission waives the while-in-use rule for `USAGE_ALARM` audio                                | Keep it if an alarm plays sound from the background                         | Nothing                                                                   |
+
+Google's local network guide is explicit: an app targeting 36 or lower gets
+local network access through `INTERNET`, and should not add
+`ACCESS_LOCAL_NETWORK` to its manifest or request it. Apps that only cast can
+use the Output Switcher, and `NsdManager` offers a system picker for one mDNS
+device; neither needs the permission.
+
+Direct access to the neural processing unit is a hardware feature, not a
+permission: apps targeting 37 must declare `FEATURE_NEURAL_PROCESSING_UNIT`
+(`android.hardware.npu`). API 37 also adds permissions that only system,
+privileged or role-holding apps get, such as `ACCESS_BIOMETRIC_SENSOR_STRENGTHS`
+and `SHOW_POWER_MENU`.
+
+One manifest for an app with `targetSdk 37` that still runs on Android 16 and
+earlier. Keep only the blocks your app needs:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- LAN devices: required once targetSdk is 37; skip it if a
+         system picker (Output Switcher, NsdManager) is enough -->
+    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
+
+    <!-- Contacts: the picker exists from API 37, so older
+         versions still need the broad permission -->
+    <uses-permission
+        android:name="android.permission.READ_CONTACTS"
+        android:maxSdkVersion="36" />
+
+    <!-- System location button, session-only precise location -->
+    <uses-permission android:name="android.permission.USE_LOCATION_BUTTON" />
+
+    <!-- Direct NPU access; required="false" keeps devices without one -->
+    <uses-feature
+        android:name="android.hardware.npu"
+        android:required="false" />
+</manifest>
+```
 
 ## What changed for your app
 
 ### All apps on Android 17
 
-| Change                                                                                                         | What to do                                                                                                         |
-| -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| A process over its RAM-based memory limit is killed with no stack trace                                        | Read `ApplicationExitInfo` for `"MemoryLimiter:AnonSwap"`; see the [memory part](/notes/android-17/memory-limits/) |
-| Audio playback, focus and volume changes need a visible activity or a foreground service (not `SHORT_SERVICE`) | Start a `mediaPlayback` service while visible; Media3's `MediaSessionService` does it                              |
-| WebOTP SMS are held for three hours from apps that are not the recipient                                       | Use SMS Retriever or SMS User Consent                                                                              |
-| Cross-profile loopback traffic is blocked                                                                      | Do not rely on localhost between work and personal profiles                                                        |
+| Change                                                                                                         | What to do                                                                                                         | How to check                                                                                                   |
+| -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| A process over its RAM-based memory limit is killed with no stack trace                                        | Read `ApplicationExitInfo` for `"MemoryLimiter:AnonSwap"`; see the [memory part](/notes/android-17/memory-limits/) | `adb shell am memory-limiter status`; `am memory-limiter manual <pid> <MB>` sets a lower limit                 |
+| Audio playback, focus and volume changes need a visible activity or a foreground service (not `SHORT_SERVICE`) | Start a `mediaPlayback` service while visible; Media3's `MediaSessionService` does it                              | `adb shell cmd audio set-enable-hardening enable`, then look for `AudioHardening` in `adb shell dumpsys audio` |
+| WebOTP SMS are held for three hours from apps that are not the recipient                                       | Use SMS Retriever or SMS User Consent                                                                              |                                                                                                                |
+| Cross-profile loopback traffic is blocked                                                                      | Do not rely on localhost between work and personal profiles                                                        |                                                                                                                |
+| After an unhandled configuration change, the keyboard is not shown again                                       | Set `stateAlwaysVisible`, or request the keyboard in `onCreate()`                                                  | Rotate a screen with the keyboard open                                                                         |
+| A touchpad under pointer capture sends relative movement, like a mouse                                         | Call `requestPointerCapture(POINTER_CAPTURE_MODE_ABSOLUTE)` if you need finger positions                           |                                                                                                                |
+| Lost Bluetooth bonds are re-paired by the system; `ACTION_KEY_MISSING` only fires if that fails                | Read `EXTRA_PAIRING_CONTEXT` on `ACTION_PAIRING_REQUEST`                                                           | Remove the bond on the peripheral and reconnect                                                                |
+| CameraX before 1.5.2 can crash on Android 17 devices                                                           | Update to CameraX 1.5.2 or 1.6.0 and later                                                                         |                                                                                                                |
 
 ### Apps targeting API 37
 
-| Change                                                                                                    | What to do                                                                         |
-| --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| On `sw600dp` displays, orientation, resizability and aspect ratio limits are ignored; the opt-out is gone | Build for any window size; games declaring `android:appCategory="game"` are exempt |
-| `static final` fields cannot be changed by reflection or JNI                                              | Update libraries that rewrite them; JNI writes crash the process                   |
-| `MessageQueue` is lock-free; its private fields are useless to reflection                                 | Update Espresso and Robolectric; use `TestLooperManager`                           |
-| Local network access is blocked by default                                                                | Use a device picker, or request `ACCESS_LOCAL_NETWORK`                             |
-| Background audio needs a foreground service with while-in-use capability                                  | Start the service from a user action                                               |
-| Standard SMS OTP messages are held for three hours                                                        | Move to SMS Retriever or SMS User Consent                                          |
-| `setContentCaptureEnabled(false)` no longer disables Content Capture                                      | Use `FLAG_SECURE`                                                                  |
-| Widget `RemoteViews` over the bitmap memory limit throw `IllegalArgumentException`                        | Downscale bitmaps and icons in widgets                                             |
+| Change                                                                                                    | What to do                                                                                                                      | How to check                                                                                                                          |
+| --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| On `sw600dp` displays, orientation, resizability and aspect ratio limits are ignored; the opt-out is gone | Build for any window size; games declaring `android:appCategory="game"` are exempt                                              | Lint `LockedOrientationActivity`, `SourceLockedOrientationActivity`, `NonResizeableActivity`; compat `UNIVERSAL_RESIZABLE_BY_DEFAULT` |
+| Local network access is blocked by default                                                                | Use a device picker, or request `ACCESS_LOCAL_NETWORK`                                                                          | Deny the permission on an Android 17 device and run each discovery flow                                                               |
+| Background audio needs a foreground service with while-in-use capability                                  | Start the service from a user action                                                                                            | `adb shell cmd audio set-enable-hardening throw` turns silent failures into exceptions                                                |
+| `static final` fields cannot be changed by reflection or JNI                                              | Update libraries that rewrite them; JNI writes crash the process                                                                |                                                                                                                                       |
+| `MessageQueue` is lock-free; its private fields are useless to reflection                                 | Update to Espresso 3.7.0 and Robolectric 4.17 or later; use `TestLooperManager`                                                 | Compat `USE_NEW_MESSAGEQUEUE`                                                                                                         |
+| `System.load()` throws `UnsatisfiedLinkError` unless the file is read-only                                | Mark native files read-only before loading them, or stop loading code at run time                                               | Lint `UnsafeDynamicallyLoadedCode`                                                                                                    |
+| Standard SMS OTP messages are held for three hours                                                        | Move to SMS Retriever or SMS User Consent                                                                                       |                                                                                                                                       |
+| TLS uses Encrypted Client Hello when the library and server support it                                    | Set `<domainEncryption>` in the network security config to change it per domain                                                 |                                                                                                                                       |
+| Certificate Transparency is on by default                                                                 | Test every host your app connects to                                                                                            |                                                                                                                                       |
+| Background activity launch limits extend to `IntentSender`                                                | Replace `MODE_BACKGROUND_ACTIVITY_START_ALLOWED` with a granular mode such as `MODE_BACKGROUND_ACTIVITY_START_ALLOW_IF_VISIBLE` |                                                                                                                                       |
+| The last typed password character is hidden on physical keyboards                                         | Nothing for platform text fields; Compose `SecureTextField` follows in Compose 1.12                                             |                                                                                                                                       |
+| Contacts' data view hides `ACCOUNT_NAME`, `ACCOUNT_TYPE` and `ACCOUNT_TYPE_AND_DATA_SET`                  | Read them from `RawContacts`, joined on `RAW_CONTACT_ID`                                                                        |                                                                                                                                       |
+| Data queries without `READ_CONTACTS` get `StrictColumns` and `StrictGrammar` checks                       | Simplify queries that fail them; they now throw                                                                                 |                                                                                                                                       |
+| A non-system app can own at most 50,000 Keystore keys                                                     | Reuse keys; handle `KeyStoreException` with `ERROR_TOO_MANY_KEYS`                                                               |                                                                                                                                       |
+| `setContentCaptureEnabled(false)` no longer disables Content Capture                                      | Use `FLAG_SECURE`                                                                                                               |                                                                                                                                       |
+| Widget `RemoteViews` over the bitmap memory limit throw `IllegalArgumentException`                        | Downscale bitmaps and icons in widgets                                                                                          |                                                                                                                                       |
+| Custom notification views can no longer pass their size limit through URIs                                | Keep custom notification content within the limits                                                                              |                                                                                                                                       |
+| RFCOMM `BluetoothSocket` reads return `-1` when the socket closes                                         | End read loops on `-1`, not only on `IOException`                                                                               |                                                                                                                                       |
+| Direct NPU access needs `FEATURE_NEURAL_PROCESSING_UNIT`                                                  | Declare `android.hardware.npu` with `<uses-feature>`                                                                            |                                                                                                                                       |
+
+The widget limit is 1.5 × screen width × screen height × 4 bytes, for bitmaps
+and icons together. Google has not published a compatibility-framework change
+list for Android 17; the two compat names above come from its behaviour-change
+pages, and neither gives a numeric ID.
 
 The reasoning behind each change, and the order to tackle them in, is in
 [Android 17: what breaks on targetSdk 37](/notes/android-17/stable/).
+
+## Migrating to API 37
+
+From `targetSdk 36` to 37, in this order:
+
+1. **Update the toolchain.** Set `compileSdk 37` and use AGP 9.1.1 or later.
+   Skipped, the new constants (`ACCESS_LOCAL_NETWORK`, `ACTION_PICK_CONTACTS`)
+   do not compile. Verify: the project builds and lint runs clean of new
+   errors.
+2. **Update test and camera libraries first.** Espresso 3.7.0, Robolectric
+   4.17 with `@LooperMode(PAUSED)`, CameraX 1.5.2 or 1.6.0. Skipped, UI tests
+   break on the lock-free `MessageQueue` and CameraX can crash. Verify: on a
+   debuggable build still at 36, run the tests after
+   `adb shell am compat enable USE_NEW_MESSAGEQUEUE <package>`.
+3. **Make every screen resizable.** Drop the orientation and aspect ratio
+   locks you relied on, and keep state across rotation. Skipped, layouts
+   stretch and camera previews rotate or crop on tablets and foldables.
+   Verify: the three orientation lint checks, then a tablet or foldable
+   emulator with compat `UNIVERSAL_RESIZABLE_BY_DEFAULT` on.
+4. **Gate local network access.** Use the Output Switcher or the `NsdManager`
+   picker, or declare and request `ACCESS_LOCAL_NETWORK`. Skipped, LAN
+   traffic is blocked and UDP sends fail with `EPERM`. Verify: deny the
+   permission on an Android 17 device and run each discovery flow.
+5. **Tie background audio to a user action.** Use Media3's
+   `MediaSessionService`, or start a `mediaPlayback` foreground service while
+   visible. Skipped, playback and volume calls fail silently. Verify:
+   `adb shell cmd audio set-enable-hardening throw`.
+6. **Remove reflection and writable native code.** No writes to `static final`
+   fields, no reads of `MessageQueue` internals, read-only files for
+   `System.load()`. Skipped, `IllegalAccessException`, JNI crashes and
+   `UnsatisfiedLinkError`. Verify: lint `UnsafeDynamicallyLoadedCode`, and run
+   every path that loads native code.
+7. **Move SMS and contacts reads.** SMS Retriever or SMS User Consent for OTP,
+   the contact picker or `RawContacts` for account columns. Skipped, codes
+   arrive three hours late and contact queries throw. Verify: send a test OTP
+   to an Android 17 device.
+8. **Go through the smaller rows** of the targeting table that apply to you:
+   ECH and Certificate Transparency, `IntentSender` launches, the Keystore
+   cap, Content Capture, widgets, notifications, Bluetooth RFCOMM and the NPU.
+9. **Test the result** on an Android 17 device or emulator with
+   `targetSdk 37`. To isolate the two named changes, toggle them in Developer
+   options > "App Compatibility Changes" on a debuggable build, or with
+   `adb shell am compat disable <name> <package>`.
+
+The memory limits reach every app whatever its target: check
+`adb shell am memory-limiter status` while you test.
+
+Skipping several levels at once: do each version's steps in order, starting
+from [Android 16](/notes/android-16/) if you target 35 or lower.
 
 ## Android 17 QPR1, QPR2 and minor SDKs
 
