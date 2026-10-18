@@ -28,8 +28,8 @@ series:
   id: android-versions
   order: 19
 citations:
-  - title: 'Android 17 wordmark — Wikimedia Commons (PD-textlogo, trademark of Google LLC)'
-    url: https://commons.wikimedia.org/wiki/File:Android-17-wordmark-black.svg
+  - title: 'Android 17 emblem — Wikimedia Commons (AOSP / Android Developers licence, trademark of Google LLC)'
+    url: https://commons.wikimedia.org/wiki/File:Android_17_Developer_Preview_Logo.svg
     accessedAt: 2026-10-17
   - title: Android 17 is here (Android Developers Blog)
     url: https://android-developers.googleblog.com/2026/06/Android-17.html

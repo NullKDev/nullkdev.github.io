@@ -28,6 +28,9 @@ series:
   id: android-versions
   order: 18
 citations:
+  - title: 'Android 16 emblem — Wikimedia Commons (AOSP / Android Developers licence, trademark of Google LLC)'
+    url: https://commons.wikimedia.org/wiki/File:Android_16_Developer_Preview_Logo.svg
+    accessedAt: 2026-10-17
   - title: Android 16 features and APIs
     url: https://developer.android.com/about/versions/16/features
     accessedAt: 2026-10-17
@@ -102,9 +105,6 @@ citations:
     accessedAt: 2026-10-17
   - title: Google confirms the Android 16 code name (Android Faithful)
     url: https://www.androidfaithful.com/android-16-code-name/
-    accessedAt: 2026-10-17
-  - title: 'File:Android 16 Logo (SVG).svg (Wikimedia Commons)'
-    url: https://commons.wikimedia.org/wiki/File:Android_16_Logo_(SVG).svg
     accessedAt: 2026-10-17
   - title: Android Developers content license
     url: https://developer.android.com/license

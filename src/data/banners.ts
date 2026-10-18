@@ -535,7 +535,7 @@ export const banners: readonly BannerSpec[] = [
       },
     },
     art: 'api-locked',
-    logo: 'src/content/notes/android-16/assets/android-16-logo.svg',
+    logo: 'src/content/notes/android-16/assets/android-16-emblem.svg',
     ...PALETTE.android,
   },
   {
@@ -555,7 +555,7 @@ export const banners: readonly BannerSpec[] = [
       },
     },
     art: 'memory-ceiling',
-    logo: 'src/content/notes/android-17/assets/android-17-logo.svg',
+    logo: 'src/content/notes/android-17/assets/android-17-emblem.svg',
     ...PALETTE.android,
   },
   {
