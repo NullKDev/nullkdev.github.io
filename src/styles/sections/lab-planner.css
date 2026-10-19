@@ -42,7 +42,7 @@
    ---------------------------------------------------------------- */
 .planner-range {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-items: end;
   gap: 1rem 0.75rem;
   margin: 0;
@@ -758,10 +758,6 @@
 @media (max-width: 760px) {
   .planner-range {
     grid-template-columns: minmax(0, 1fr);
-  }
-  .planner-range__swap {
-    justify-self: center;
-    transform: rotate(90deg);
   }
   .planner-toolbar {
     grid-template-columns: minmax(0, 1fr);

@@ -1,21 +1,33 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { marked } from 'marked'
-import { describe, expect, it } from 'vitest'
+import { createElement } from 'react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+
+import MigrationPlanner from '@/components/lab/MigrationPlanner'
+import {
+  COPY_FEEDBACK_MS,
+  CopyButton,
+} from '@/components/lab/planner/CopyButton'
+import { getDictionary } from '@/i18n'
 
 import {
   buildPlannerModel,
   fill,
   getDefaultRange,
   getPlanRange,
+  normalizeRange,
   parseInline,
   parsePlannerVersion,
   parseRangeQuery,
+  planFromTarget,
   planToMarkdown,
   PROGRESS_KEY,
   readProgress,
   rowMatches,
   splitStep,
+  stepKey,
   toPlainText,
   writeProgress,
   type PlannerSource,
@@ -408,7 +420,10 @@ describe('planToMarkdown', () => {
       steps: getPlanRange(model, 31, 33),
       from: 31,
       to: 33,
-      done: new Set(['32:0', '33:2']),
+      done: new Set([
+        stepKey(32, model[0].checklist?.steps[0] ?? ''),
+        stepKey(33, model[1].checklist?.steps[2] ?? ''),
+      ]),
       origin: 'https://example.test',
       strings: {
         title: 'Migration plan',
@@ -469,12 +484,95 @@ describe('progress storage', () => {
   })
 })
 
+describe('stepKey', () => {
+  it('keys a step by its level and a hash of its own text', () => {
+    const key = stepKey(33, '**Update the toolchain.** Bump AGP.')
+    expect(key).toMatch(/^33:[0-9a-f]{8}$/)
+    expect(stepKey(33, '**Update the toolchain.** Bump AGP.')).toBe(key)
+    expect(stepKey(34, '**Update the toolchain.** Bump AGP.')).not.toBe(key)
+    expect(stepKey(33, '**Update the toolchain.** Bump AGP 9.')).not.toBe(key)
+  })
+
+  it('stores ticks under a new key, so index-keyed ticks are discarded', () => {
+    expect(PROGRESS_KEY).toBe('nullkdev:migration-planner:v2')
+  })
+})
+
+describe('normalizeRange', () => {
+  const model = buildPlannerModel([31, 32, 33].map((api) => minimalSource(api)))
+
+  it('leaves a valid range alone', () => {
+    expect(normalizeRange(model, { from: 31, to: 33 }, 'from')).toEqual({
+      from: 31,
+      to: 33,
+    })
+  })
+
+  it('moves the new target above a current one picked at or past it', () => {
+    expect(normalizeRange(model, { from: 32, to: 31 }, 'from')).toEqual({
+      from: 32,
+      to: 33,
+    })
+    expect(normalizeRange(model, { from: 32, to: 32 }, 'from')).toEqual({
+      from: 32,
+      to: 33,
+    })
+  })
+
+  it('moves the current level below the newest when the newest is picked', () => {
+    expect(normalizeRange(model, { from: 33, to: 31 }, 'from')).toEqual({
+      from: 32,
+      to: 33,
+    })
+  })
+
+  it('moves the current level below a new target picked at or under it', () => {
+    expect(normalizeRange(model, { from: 33, to: 32 }, 'to')).toEqual({
+      from: 31,
+      to: 32,
+    })
+    expect(normalizeRange(model, { from: 32, to: 31 }, 'to')).toEqual({
+      from: 31,
+      to: 32,
+    })
+  })
+})
+
+describe('planFromTarget', () => {
+  const model = buildPlannerModel([31, 32, 33].map((api) => minimalSource(api)))
+
+  it('starts at the manifest target and keeps a later new target', () => {
+    expect(planFromTarget(model, 31, 33)).toEqual({ from: 31, to: 33 })
+  })
+
+  it('moves the new target to the next level when it is not above', () => {
+    expect(planFromTarget(model, 32, 31)).toEqual({ from: 32, to: 33 })
+    expect(planFromTarget(model, 32, 32)).toEqual({ from: 32, to: 33 })
+  })
+
+  it('offers nothing for the newest level or an undocumented one', () => {
+    expect(planFromTarget(model, 33, 33)).toBeUndefined()
+    expect(planFromTarget(model, 30, 33)).toBeUndefined()
+  })
+})
+
 describe('parseRangeQuery', () => {
   const model = buildPlannerModel([31, 32, 33].map((api) => minimalSource(api)))
 
   it('accepts two documented levels from the query string', () => {
     expect(parseRangeQuery('?from=31&to=33', model)).toEqual({
       from: 31,
+      to: 33,
+    })
+  })
+
+  it('corrects a shared range that does not go up, keeping its start', () => {
+    expect(parseRangeQuery('?from=32&to=31', model)).toEqual({
+      from: 32,
+      to: 33,
+    })
+    expect(parseRangeQuery('?from=33&to=33', model)).toEqual({
+      from: 32,
       to: 33,
     })
   })
@@ -491,5 +589,91 @@ describe('fill', () => {
     expect(fill('API {from} to {to} {other}', { from: 31, to: '33' })).toBe(
       'API 31 to 33 {other}',
     )
+  })
+})
+
+describe('copy feedback', () => {
+  afterEach(() => {
+    cleanup()
+    vi.useRealTimers()
+    vi.restoreAllMocks()
+  })
+
+  const clipboard = (writeText: () => Promise<void>) =>
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    })
+
+  it('shows the tick for two seconds, then reads as idle again', async () => {
+    vi.useFakeTimers()
+    clipboard(() => Promise.resolve())
+    const onCopied = vi.fn()
+    render(createElement(CopyButton, { text: 'adb', label: 'Copy', onCopied }))
+    const button = screen.getByRole('button', { name: 'Copy' })
+    await act(async () => {
+      fireEvent.click(button)
+      await Promise.resolve()
+    })
+    expect(button).toHaveAttribute('data-state', 'done')
+    expect(onCopied).toHaveBeenCalledWith(true)
+    act(() => vi.advanceTimersByTime(COPY_FEEDBACK_MS - 1))
+    expect(button).toHaveAttribute('data-state', 'done')
+    act(() => vi.advanceTimersByTime(1))
+    expect(button).toHaveAttribute('data-state', 'idle')
+  })
+
+  it('clears its timer when it unmounts', async () => {
+    vi.useFakeTimers()
+    clipboard(() => Promise.resolve())
+    const { unmount } = render(
+      createElement(CopyButton, { text: 'adb', label: 'Copy' }),
+    )
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
+      await Promise.resolve()
+    })
+    expect(vi.getTimerCount()).toBe(1)
+    unmount()
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it('announces a second copy of the plan again', async () => {
+    clipboard(() => Promise.resolve())
+    const frames: FrameRequestCallback[] = []
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+      frames.push(callback)
+      return frames.length
+    })
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {})
+    const model = buildPlannerModel([32, 33].map((api) => minimalSource(api)))
+    const strings = getDictionary('en').planner
+    render(
+      createElement(MigrationPlanner, {
+        model,
+        defaultRange: { from: 32, to: 33 },
+        strings,
+        icons: {
+          copy: '',
+          download: '',
+          arrow: '',
+          upload: '',
+          shield: '',
+        },
+        locale: 'en',
+      }),
+    )
+    const status = screen.getAllByRole('status')[0]
+    const copyPlan = screen.getByRole('button', { name: strings.copyPlan })
+    for (let round = 0; round < 2; round += 1) {
+      await act(async () => {
+        fireEvent.click(copyPlan)
+        await Promise.resolve()
+      })
+      // Emptied first, so the same words are a change the reader hears.
+      expect(status).toHaveTextContent(/^$/)
+      act(() => frames.splice(0).forEach((frame) => frame(0)))
+      expect(status).toHaveTextContent(strings.planCopied)
+    }
   })
 })

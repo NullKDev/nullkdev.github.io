@@ -56,6 +56,7 @@ describe('parseManifest', () => {
         kind: 'activity',
         name: '.MainActivity',
         hasIntentFilter: true,
+        actions: ['android.intent.action.MAIN'],
       },
       {
         kind: 'activity',
@@ -73,9 +74,11 @@ describe('parseManifest', () => {
         kind: 'receiver',
         name: '.BootReceiver',
         hasIntentFilter: true,
+        actions: ['android.intent.action.BOOT_COMPLETED'],
       },
     ])
     expect(manifest.hasQueries).toBe(false)
+    expect(manifest.mergeMarkers).toBe(false)
   })
 
   it('keeps maxSdkVersion and usesPermissionFlags', () => {
@@ -95,6 +98,43 @@ describe('parseManifest', () => {
         usesPermissionFlags: 'neverForLocation',
       },
     ])
+  })
+
+  it('reads an empty or placeholder maxSdkVersion as unknown, never as 0', () => {
+    const manifest = facts(
+      wrap(
+        permission('WRITE_EXTERNAL_STORAGE', 'android:maxSdkVersion=""') +
+          permission(
+            'READ_EXTERNAL_STORAGE',
+            'android:maxSdkVersion="${max}"',
+          ) +
+          permission('BLUETOOTH', 'android:maxSdkVersion="thirty"'),
+      ),
+    )
+    expect(
+      manifest.permissions.map(({ maxSdkVersion }) => maxSdkVersion),
+    ).toEqual(['unknown', 'unknown', 'unknown'])
+  })
+
+  it('skips elements a tools:node marker removes and flags the markers', () => {
+    const manifest = facts(
+      `<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+        ${permission('READ_PHONE_STATE', 'tools:node="remove"')}
+        ${permission('BLUETOOTH', 'tools:node="removeAll"')}
+        ${permission('INTERNET', 'tools:node="replace"')}
+        <queries tools:node="remove"><package android:name="com.x" /></queries>
+        <application>
+          <service android:name=".Gone" tools:node="remove" />
+          <service android:name=".Kept" tools:node="replace" />
+        </application>
+      </manifest>`,
+    )
+    expect(manifest.permissions).toEqual([
+      { name: 'android.permission.INTERNET' },
+    ])
+    expect(manifest.components.map(({ name }) => name)).toEqual(['.Kept'])
+    expect(manifest.hasQueries).toBe(false)
+    expect(manifest.mergeMarkers).toBe(true)
   })
 
   it('reports malformed XML with a reason instead of throwing', () => {
@@ -202,8 +242,23 @@ describe('evaluateManifest', () => {
       status: 'detected',
       api: 33,
     })
+    // Nothing in the manifest posts notifications: not this manifest's rule.
     expect(result(wrap(''), 'post-notifications')).toMatchObject({
+      status: 'not-applicable',
+      reason: 'not-present',
+    })
+    // A push messaging service is a sign the app posts notifications.
+    expect(
+      result(
+        wrap(
+          '',
+          '<service android:name=".Push" android:exported="false"><intent-filter><action android:name="com.google.firebase.MESSAGING_EVENT" /></intent-filter></service>',
+        ),
+        'post-notifications',
+      ),
+    ).toMatchObject({
       status: 'check',
+      items: ['.Push'],
       lint: ['NotificationPermission'],
     })
     expect(
@@ -228,6 +283,64 @@ describe('evaluateManifest', () => {
     ).toMatchObject({ status: 'not-applicable' })
   })
 
+  it('6 · names the missing Nearby devices permissions when the legacy ones are already capped', () => {
+    const capped = result(
+      wrap(
+        permission('BLUETOOTH', 'android:maxSdkVersion="30"') +
+          permission('BLUETOOTH_ADMIN', 'android:maxSdkVersion="30"'),
+      ),
+      'bluetooth-permissions',
+    )
+    expect(capped).toMatchObject({
+      status: 'detected',
+      message: 'missingNew',
+      items: [
+        'android.permission.BLUETOOTH_SCAN',
+        'android.permission.BLUETOOTH_CONNECT',
+      ],
+    })
+    expect(
+      result(
+        wrap(permission('BLUETOOTH', 'android:maxSdkVersion=""')),
+        'bluetooth-permissions',
+      ),
+    ).toMatchObject({
+      status: 'check',
+      message: 'unknownCap',
+      items: ['android.permission.BLUETOOTH'],
+    })
+  })
+
+  it('checks, never detects, a permission whose maxSdkVersion is unknown', () => {
+    expect(
+      result(
+        wrap(permission('WRITE_EXTERNAL_STORAGE', 'android:maxSdkVersion=""')),
+        'write-storage-cap',
+      ),
+    ).toMatchObject({
+      status: 'check',
+      message: 'unknownCap',
+      items: ['android.permission.WRITE_EXTERNAL_STORAGE'],
+    })
+    expect(
+      result(
+        wrap(
+          permission('READ_EXTERNAL_STORAGE', 'android:maxSdkVersion="${max}"'),
+        ),
+        'read-storage-cap',
+      ),
+    ).toMatchObject({ status: 'check', message: 'unknownCap' })
+    expect(
+      result(
+        wrap(
+          permission('USE_EXACT_ALARM') +
+            permission('SCHEDULE_EXACT_ALARM', 'android:maxSdkVersion=""'),
+        ),
+        'exact-alarm-both',
+      ),
+    ).toMatchObject({ status: 'check', message: 'unknownCap' })
+  })
+
   it('7 · finds a typed foreground service without FOREGROUND_SERVICE (API 28)', () => {
     expect(
       result(
@@ -241,9 +354,18 @@ describe('evaluateManifest', () => {
     expect(result(fixture, 'foreground-service-permission')).toMatchObject({
       status: 'not-applicable',
     })
+    // No service at all: nothing can call startForeground().
     expect(result(wrap(''), 'foreground-service-permission')).toMatchObject({
-      status: 'check',
+      status: 'not-applicable',
+      reason: 'not-present',
     })
+    // An untyped service might; the manifest cannot tell.
+    expect(
+      result(
+        wrap('', '<service android:name=".U" />'),
+        'foreground-service-permission',
+      ),
+    ).toMatchObject({ status: 'check', items: ['.U'] })
   })
 
   it('8 · finds a foreground service type without its FOREGROUND_SERVICE_* permission (API 34)', () => {
@@ -262,12 +384,44 @@ describe('evaluateManifest', () => {
         'foreground-service-type',
       ),
     ).toMatchObject({ status: 'not-applicable' })
+    // A declared permission is never listed as missing.
     expect(
       result(wrap(permission('FOREGROUND_SERVICE')), 'foreground-service-type'),
-    ).toMatchObject({ status: 'detected', items: ['FOREGROUND_SERVICE'] })
+    ).toMatchObject({ status: 'not-applicable' })
     expect(result(wrap(''), 'foreground-service-type')).toMatchObject({
       status: 'not-applicable',
     })
+    // Untyped services of an app that may run one in the foreground.
+    expect(
+      result(
+        wrap(
+          permission('FOREGROUND_SERVICE'),
+          '<service android:name=".U" /><service android:name=".V" />',
+        ),
+        'foreground-service-type',
+      ),
+    ).toMatchObject({ status: 'check', items: ['.U', '.V'] })
+    // Without FOREGROUND_SERVICE no service can be a foreground one.
+    expect(
+      result(
+        wrap('', '<service android:name=".U" />'),
+        'foreground-service-type',
+      ),
+    ).toMatchObject({ status: 'not-applicable' })
+    // Both: the missing permissions first, then the untyped services.
+    const mixed = result(
+      wrap(
+        permission('FOREGROUND_SERVICE'),
+        '<service android:name=".S" android:foregroundServiceType="location" /><service android:name=".U" />',
+      ),
+      'foreground-service-type',
+    )
+    expect(mixed).toMatchObject({
+      status: 'detected',
+      message: 'mixed',
+      items: ['.S → FOREGROUND_SERVICE_LOCATION', '.U'],
+    })
+    expect(mixed.items).not.toContain('FOREGROUND_SERVICE')
   })
 
   it('9 · checks exact alarms with lint (API 31)', () => {
@@ -312,9 +466,10 @@ describe('evaluateManifest', () => {
       status: 'detected',
       api: 30,
     })
+    // No <queries> and no QUERY_ALL_PACKAGES: nothing here to judge.
     expect(result(wrap(''), 'package-visibility')).toMatchObject({
-      status: 'check',
-      lint: ['QueryPermissionsNeeded'],
+      status: 'not-applicable',
+      reason: 'not-present',
     })
     expect(
       result(
@@ -329,7 +484,12 @@ describe('evaluateManifest', () => {
       status: 'detected',
       api: 28,
     })
+    // No INTERNET permission: the app makes no HTTP requests at all.
     expect(result(wrap(''), 'cleartext')).toMatchObject({
+      status: 'not-applicable',
+      reason: 'not-present',
+    })
+    expect(result(wrap(permission('INTERNET')), 'cleartext')).toMatchObject({
       status: 'check',
       lint: ['InsecureBaseConfiguration'],
     })

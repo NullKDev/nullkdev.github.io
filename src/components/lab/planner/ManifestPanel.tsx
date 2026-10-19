@@ -7,7 +7,12 @@ import {
   type RuleResult,
   type RuleStatus,
 } from '@/lib/manifest-rules'
-import { fill, type PlannerVersion } from '@/lib/migration-planner'
+import {
+  fill,
+  planFromTarget,
+  type PlanRange,
+  type PlannerVersion,
+} from '@/lib/migration-planner'
 
 import { Inline } from './Inline'
 import type { PlannerIcons } from './icons'
@@ -22,12 +27,15 @@ interface Props {
   results: readonly RuleResult[] | undefined
   error: ManifestError | 'read' | undefined
   targetSdk: number | undefined
+  /** The pasted text carries `tools:` merge markers. */
+  mergeMarkers: boolean
   model: readonly PlannerVersion[]
   from: number
+  to: number
   onAnalyze: (xml: string) => void
   onFail: (error: ManifestError) => void
   onClear: () => void
-  onUseTarget: (api: number) => void
+  onUseTarget: (range: PlanRange) => void
 }
 
 const ORDER: readonly RuleStatus[] = ['detected', 'check', 'not-applicable']
@@ -43,8 +51,10 @@ export function ManifestPanel({
   results,
   error,
   targetSdk,
+  mergeMarkers,
   model,
   from,
+  to,
   onAnalyze,
   onFail,
   onClear,
@@ -85,6 +95,22 @@ export function ManifestPanel({
     const version = model.find(({ api }) => api === result.api)
     const anchor = version?.anchors[result.section]
     return version ? `${version.href}${anchor ? `#${anchor}` : ''}` : undefined
+  }
+  // A plan from the manifest's own target, when one with steps exists.
+  const targetPlan =
+    targetSdk === undefined ? undefined : planFromTarget(model, targetSdk, to)
+  const newestTarget =
+    targetSdk !== undefined && targetSdk === model.at(-1)?.api
+  const message = (result: RuleResult): string | undefined => {
+    if (result.message === 'unknownCap') return strings.unknownCap
+    const copy: Readonly<Record<string, string>> | undefined =
+      strings.rules[result.id as RuleId]
+    if (result.message) return copy?.[result.message]
+    if (result.status === 'detected') return copy?.detected
+    if (result.status === 'check') return copy?.check
+    return result.reason === 'out-of-range'
+      ? strings.outOfRange
+      : strings.notPresent
   }
   const counts = Object.fromEntries(
     ORDER.map((status) => [
@@ -198,19 +224,26 @@ export function ManifestPanel({
               na: counts['not-applicable'],
             })}
           </p>
+          {mergeMarkers && (
+            <p className="planner-hint">
+              <Inline markdown={strings.mergeMarkers} />
+            </p>
+          )}
           {targetSdk !== undefined && (
             <p className="planner-results__target">
               {fill(strings.targetSdk, { api: targetSdk })}{' '}
-              {targetSdk !== from &&
-                model.some(({ api }) => api === targetSdk) && (
-                  <button
-                    type="button"
-                    className="planner-link-button"
-                    onClick={() => onUseTarget(targetSdk)}
-                  >
-                    {fill(strings.useTarget, { api: targetSdk })}
-                  </button>
-                )}
+              {newestTarget
+                ? strings.newestTarget
+                : targetPlan &&
+                  (targetPlan.from !== from || targetPlan.to !== to) && (
+                    <button
+                      type="button"
+                      className="planner-link-button"
+                      onClick={() => onUseTarget(targetPlan)}
+                    >
+                      {fill(strings.useTarget, { api: targetSdk })}
+                    </button>
+                  )}
             </p>
           )}
           {ORDER.filter((status) => counts[status] > 0).map((status) => (
@@ -229,14 +262,7 @@ export function ManifestPanel({
                   .filter((result) => result.status === status)
                   .map((result) => {
                     const copy = strings.rules[result.id as RuleId]
-                    const message =
-                      status === 'detected'
-                        ? copy?.detected
-                        : status === 'check'
-                          ? copy?.check
-                          : result.reason === 'out-of-range'
-                            ? strings.outOfRange
-                            : strings.notPresent
+                    const text = message(result)
                     const link = href(result)
                     return (
                       <li key={result.id} className="planner-result">
@@ -252,9 +278,9 @@ export function ManifestPanel({
                             <Inline markdown={copy?.title ?? result.id} />
                           )}
                         </p>
-                        {message && (
+                        {text && (
                           <p>
-                            <Inline markdown={message} />
+                            <Inline markdown={text} />
                           </p>
                         )}
                         {result.items.length > 0 && (

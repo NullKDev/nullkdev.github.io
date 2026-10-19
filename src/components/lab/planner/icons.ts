@@ -6,7 +6,6 @@
 export interface PlannerIcons {
   readonly copy: string
   readonly download: string
-  readonly swap: string
   readonly arrow: string
   readonly upload: string
   readonly shield: string

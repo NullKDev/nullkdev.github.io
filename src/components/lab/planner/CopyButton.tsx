@@ -1,4 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+
+/** How long the tick or cross stays before the button reads as idle again. */
+export const COPY_FEEDBACK_MS = 2000
 
 /** Writes to the clipboard; false when the browser refuses. */
 export const copyText = async (text: string): Promise<boolean> => {
@@ -24,6 +27,8 @@ interface Props {
  */
 export function CopyButton({ text, label, icon, onCopied }: Props) {
   const [state, setState] = useState<'idle' | 'done' | 'failed'>('idle')
+  const timer = useRef<number | undefined>(undefined)
+  useEffect(() => () => window.clearTimeout(timer.current), [])
   return (
     <button
       type="button"
@@ -35,6 +40,11 @@ export function CopyButton({ text, label, icon, onCopied }: Props) {
         const ok = await copyText(text)
         setState(ok ? 'done' : 'failed')
         onCopied?.(ok)
+        window.clearTimeout(timer.current)
+        timer.current = window.setTimeout(
+          () => setState('idle'),
+          COPY_FEEDBACK_MS,
+        )
       }}
     >
       <span

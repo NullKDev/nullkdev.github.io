@@ -93,9 +93,6 @@ export const en = {
     rangeLegend: 'Plan a targetSdk migration',
     from: 'Current targetSdk',
     to: 'New targetSdk',
-    swap: 'Swap current and new',
-    invalidRange:
-      'Pick a new targetSdk above the current one to see the steps between them.',
     levels: 'Levels',
     steps: 'Steps',
     done: 'Done',
@@ -165,6 +162,11 @@ export const en = {
       testDevice: 'Test it on a device: the manifest alone cannot tell.',
       targetSdk: 'This manifest targets API {api}.',
       useTarget: 'Plan from API {api}',
+      newestTarget: 'That is the newest level in the notes.',
+      mergeMarkers:
+        'This manifest has `tools:` merge markers, so it looks like a source manifest. Elements marked `tools:node="remove"` are left out; the merged manifest is more accurate.',
+      unknownCap:
+        'This `android:maxSdkVersion` is empty or not a number, often a placeholder a source manifest still carries. Read the value in the merged manifest to know whether the cap is there:',
       findings: 'Manifest findings at this level',
       errors: {
         empty: 'Paste a manifest or open a file first.',
@@ -188,7 +190,7 @@ export const en = {
           detected:
             'These services declare a foreground service type, but the manifest does not declare `FOREGROUND_SERVICE`:',
           check:
-            'If the app calls `startForeground()`, declare `FOREGROUND_SERVICE`. It is a normal permission, granted at install.',
+            'These services could call `startForeground()`; the manifest cannot tell. If one does, declare `FOREGROUND_SERVICE`. It is a normal permission, granted at install:',
         },
         'background-location': {
           title: 'Background location is its own permission',
@@ -212,8 +214,7 @@ export const en = {
           title: 'Installed apps are filtered from package queries',
           detected:
             '`QUERY_ALL_PACKAGES` is declared. Prefer `<queries>`: Google Play reviews this permission and allows it only when the core function needs every app.',
-          check:
-            'The manifest has no `<queries>`. If the app looks up other apps or sends intents to them, declare those packages or intents in `<queries>`.',
+          check: '',
         },
         'phone-numbers': {
           title: 'Phone numbers need `READ_PHONE_NUMBERS`',
@@ -232,6 +233,8 @@ export const en = {
           detected:
             'Cap `BLUETOOTH` and `BLUETOOTH_ADMIN` at `android:maxSdkVersion="30"`, then declare and request `BLUETOOTH_SCAN`, `BLUETOOTH_CONNECT` or `BLUETOOTH_ADVERTISE`:',
           check: '',
+          missingNew:
+            'The legacy Bluetooth permissions are already capped at `android:maxSdkVersion="30"`, but no Nearby devices permission takes over from API 31. Declare and request the ones the app uses: `BLUETOOTH_SCAN` to find devices, `BLUETOOTH_CONNECT` to talk to paired ones, `BLUETOOTH_ADVERTISE` to be found:',
         },
         'exact-alarm': {
           title: 'Exact alarms need `SCHEDULE_EXACT_ALARM`',
@@ -250,7 +253,7 @@ export const en = {
           detected:
             'A foreground service always posts a notification, but `POST_NOTIFICATIONS` is not declared. Declare it and request it after a user action:',
           check:
-            '`POST_NOTIFICATIONS` is not declared. If the app posts notifications, declare it and request it in context.',
+            '`POST_NOTIFICATIONS` is not declared, and this push messaging service suggests the app posts notifications. If it does, declare it and request it in context:',
         },
         'read-storage-cap': {
           title: '`READ_EXTERNAL_STORAGE` no longer reads others’ media',
@@ -261,8 +264,11 @@ export const en = {
         'foreground-service-type': {
           title: 'Every foreground service declares its type',
           detected:
-            'Declare `android:foregroundServiceType` on each foreground service, and the `FOREGROUND_SERVICE_*` permission for each type. Missing:',
-          check: '',
+            'These typed services lack the `FOREGROUND_SERVICE_*` permission of their type. Declare each one:',
+          check:
+            'These services declare no `android:foregroundServiceType`. The manifest cannot show which call `startForeground()`: give each one that does its type and the matching `FOREGROUND_SERVICE_*` permission:',
+          mixed:
+            'The services shown with an arrow lack the `FOREGROUND_SERVICE_*` permission of their type; declare it. The others declare no `android:foregroundServiceType`: give each one that calls `startForeground()` its type and permission:',
         },
       },
     },

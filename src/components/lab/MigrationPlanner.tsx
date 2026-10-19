@@ -1,4 +1,11 @@
-import { useId, useMemo, useState, useSyncExternalStore } from 'react'
+import {
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react'
 
 import type { Dictionary, Locale } from '@/i18n'
 import {
@@ -10,11 +17,13 @@ import {
 import {
   fill,
   getPlanRange,
+  normalizeRange,
   parseRangeQuery,
   planToMarkdown,
   rowMatches,
   stepKey,
   versionLabel,
+  type PlanRange,
   type PlannerVersion,
 } from '@/lib/migration-planner'
 
@@ -80,6 +89,23 @@ export default function MigrationPlanner({
   const [manifest, setManifest] = useState<ManifestFacts>()
   const [manifestError, setManifestError] = useState<ManifestError>()
   const [announcement, setAnnouncement] = useState('')
+  const frame = useRef<number | undefined>(undefined)
+  useEffect(
+    () => () => {
+      if (frame.current !== undefined) cancelAnimationFrame(frame.current)
+    },
+    [],
+  )
+  // Empty the live region, then fill it on the next frame: the same message
+  // twice in a row (a second copy) is still a change a screen reader reads.
+  const announce = (message: string) => {
+    setAnnouncement('')
+    if (frame.current !== undefined) cancelAnimationFrame(frame.current)
+    frame.current = requestAnimationFrame(() => {
+      frame.current = undefined
+      setAnnouncement(message)
+    })
+  }
 
   const { from, to } = range
   const valid = to > from
@@ -94,8 +120,8 @@ export default function MigrationPlanner({
   const doneSteps = steps.reduce(
     (sum, version) =>
       sum +
-      (version.checklist?.steps.filter((_, index) =>
-        done.has(stepKey(version.api, index)),
+      (version.checklist?.steps.filter((step) =>
+        done.has(stepKey(version.api, step)),
       ).length ?? 0),
     0,
   )
@@ -112,7 +138,7 @@ export default function MigrationPlanner({
     [manifest, from, to],
   )
 
-  const changeRange = (next: { from: number; to: number }) => {
+  const changeRange = (next: PlanRange) => {
     setChosen(next)
     try {
       const url = new URL(window.location.href)
@@ -124,7 +150,7 @@ export default function MigrationPlanner({
     }
     if (next.to > next.from) {
       const crossed = getPlanRange(model, next.from, next.to)
-      setAnnouncement(
+      announce(
         fill(strings.planReady, {
           from: next.from,
           to: next.to,
@@ -163,7 +189,7 @@ export default function MigrationPlanner({
 
   const copyPlan = async () => {
     const ok = await copyText(markdown())
-    setAnnouncement(ok ? strings.planCopied : strings.copyFailed)
+    announce(ok ? strings.planCopied : strings.copyFailed)
   }
 
   const downloadPlan = () => {
@@ -175,7 +201,7 @@ export default function MigrationPlanner({
     link.download = fill(strings.fileName, { from, to })
     link.click()
     window.setTimeout(() => URL.revokeObjectURL(url), 0)
-    setAnnouncement(strings.planDownloaded)
+    announce(strings.planDownloaded)
   }
 
   const analyze = (xml: string) => {
@@ -188,7 +214,7 @@ export default function MigrationPlanner({
     setManifestError(undefined)
     setManifest(parsed.manifest)
     const found = evaluateManifest(parsed.manifest, from, to)
-    setAnnouncement(
+    announce(
       `${strings.manifest.results}: ${fill(strings.manifest.summary, {
         detected: found.filter(({ status }) => status === 'detected').length,
         check: found.filter(({ status }) => status === 'check').length,
@@ -198,7 +224,7 @@ export default function MigrationPlanner({
   }
 
   const announceCopy = (ok: boolean) =>
-    setAnnouncement(ok ? strings.copied : strings.copyFailed)
+    announce(ok ? strings.copied : strings.copyFailed)
 
   const options = model.map((version) => (
     <option key={version.api} value={version.api}>
@@ -224,38 +250,33 @@ export default function MigrationPlanner({
             id={`${id}-from`}
             value={from}
             disabled={!hydrated}
-            aria-invalid={valid ? undefined : true}
-            aria-describedby={valid ? undefined : `${id}-invalid`}
             onChange={(event) =>
-              changeRange({ from: Number(event.target.value), to })
+              changeRange(
+                normalizeRange(
+                  model,
+                  { from: Number(event.target.value), to },
+                  'from',
+                ),
+              )
             }
           >
             {options}
           </select>
         </div>
-        <button
-          type="button"
-          className="planner-icon-button planner-range__swap"
-          aria-label={strings.swap}
-          title={strings.swap}
-          disabled={!hydrated}
-          onClick={() => changeRange({ from: to, to: from })}
-        >
-          <span
-            aria-hidden="true"
-            dangerouslySetInnerHTML={{ __html: icons.swap }}
-          />
-        </button>
         <div className="planner-range__pick">
           <label htmlFor={`${id}-to`}>{strings.to}</label>
           <select
             id={`${id}-to`}
             value={to}
             disabled={!hydrated}
-            aria-invalid={valid ? undefined : true}
-            aria-describedby={valid ? undefined : `${id}-invalid`}
             onChange={(event) =>
-              changeRange({ from, to: Number(event.target.value) })
+              changeRange(
+                normalizeRange(
+                  model,
+                  { from, to: Number(event.target.value) },
+                  'to',
+                ),
+              )
             }
           >
             {options}
@@ -276,12 +297,6 @@ export default function MigrationPlanner({
           </div>
         </dl>
       </fieldset>
-
-      {!valid && (
-        <p id={`${id}-invalid`} className="planner-error" role="alert">
-          {strings.invalidRange}
-        </p>
-      )}
 
       <div className="planner-toolbar">
         <fieldset className="planner-scope">
@@ -365,8 +380,10 @@ export default function MigrationPlanner({
         results={results}
         error={manifestError}
         targetSdk={manifest?.usesSdk?.targetSdkVersion}
+        mergeMarkers={manifest?.mergeMarkers ?? false}
         model={model}
         from={from}
+        to={to}
         onAnalyze={analyze}
         onFail={(error) => {
           setManifest(undefined)
@@ -376,12 +393,7 @@ export default function MigrationPlanner({
           setManifest(undefined)
           setManifestError(undefined)
         }}
-        onUseTarget={(api) =>
-          changeRange({
-            from: api,
-            to: api < to ? to : (model.at(-1)?.api ?? api),
-          })
-        }
+        onUseTarget={changeRange}
       />
 
       {steps.length > 0 && (

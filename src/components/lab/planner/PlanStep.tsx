@@ -96,8 +96,8 @@ export function PlanStep({
   onCopied,
 }: Props) {
   const steps = version.checklist?.steps ?? []
-  const ticked = steps.filter((_, index) =>
-    done.has(stepKey(version.api, index)),
+  const ticked = steps.filter((step) =>
+    done.has(stepKey(version.api, step)),
   ).length
   const headingId = `planner-level-${version.api}`
   const anchor = version.anchors.migrating ?? version.anchors.targeting
@@ -233,11 +233,11 @@ export function PlanStep({
             )}
             <ol className="planner-checklist">
               {steps.map((step, index) => {
-                const key = stepKey(version.api, index)
+                const key = stepKey(version.api, step)
                 const id = `planner-step-${version.api}-${index}`
                 const parts = splitStep(step)
                 return (
-                  <li key={key}>
+                  <li key={`${index}-${key}`}>
                     <input
                       id={id}
                       type="checkbox"

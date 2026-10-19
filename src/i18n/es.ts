@@ -95,9 +95,6 @@ export const es = {
     rangeLegend: 'Planifica una migración de targetSdk',
     from: 'targetSdk actual',
     to: 'targetSdk nuevo',
-    swap: 'Intercambiar actual y nuevo',
-    invalidRange:
-      'Elige un targetSdk nuevo mayor que el actual para ver los pasos entre ambos.',
     levels: 'Niveles',
     steps: 'Pasos',
     done: 'Hechos',
@@ -169,6 +166,11 @@ export const es = {
         'Pruébalo en un dispositivo: el manifiesto por sí solo no lo dice.',
       targetSdk: 'Este manifiesto apunta a API {api}.',
       useTarget: 'Planificar desde API {api}',
+      newestTarget: 'Es el nivel más nuevo de las notas.',
+      mergeMarkers:
+        'Este manifiesto tiene marcadores de fusión `tools:`, así que parece un manifiesto de origen. Los elementos con `tools:node="remove"` quedan fuera; el manifiesto combinado es más preciso.',
+      unknownCap:
+        'Este `android:maxSdkVersion` está vacío o no es un número, a menudo un marcador que un manifiesto de origen todavía conserva. Lee el valor en el manifiesto combinado para saber si el límite está:',
       findings: 'Hallazgos del manifiesto en este nivel',
       errors: {
         empty: 'Primero pega un manifiesto o abre un archivo.',
@@ -193,7 +195,7 @@ export const es = {
           detected:
             'Estos servicios declaran un tipo de servicio en primer plano, pero el manifiesto no declara `FOREGROUND_SERVICE`:',
           check:
-            'Si la app llama a `startForeground()`, declara `FOREGROUND_SERVICE`. Es un permiso normal que se concede al instalar.',
+            'Estos servicios podrían llamar a `startForeground()`; el manifiesto no lo dice. Si alguno lo hace, declara `FOREGROUND_SERVICE`. Es un permiso normal que se concede al instalar:',
         },
         'background-location': {
           title: 'La ubicación en segundo plano es un permiso aparte',
@@ -217,8 +219,7 @@ export const es = {
           title: 'Las apps instaladas se filtran en las consultas de paquetes',
           detected:
             '`QUERY_ALL_PACKAGES` está declarado. Prefiere `<queries>`: Google Play revisa este permiso y lo permite solo cuando la función principal necesita todas las apps.',
-          check:
-            'El manifiesto no tiene `<queries>`. Si la app busca otras apps o les envía intents, declara esos paquetes o intents en `<queries>`.',
+          check: '',
         },
         'phone-numbers': {
           title: 'Los números de teléfono necesitan `READ_PHONE_NUMBERS`',
@@ -238,6 +239,8 @@ export const es = {
           detected:
             'Limita `BLUETOOTH` y `BLUETOOTH_ADMIN` con `android:maxSdkVersion="30"`, y declara y pide `BLUETOOTH_SCAN`, `BLUETOOTH_CONNECT` o `BLUETOOTH_ADVERTISE`:',
           check: '',
+          missingNew:
+            'Los permisos antiguos de Bluetooth ya están limitados con `android:maxSdkVersion="30"`, pero ningún permiso de dispositivos cercanos los reemplaza desde API 31. Declara y pide los que usa la app: `BLUETOOTH_SCAN` para buscar dispositivos, `BLUETOOTH_CONNECT` para comunicarse con los vinculados, `BLUETOOTH_ADVERTISE` para ser visible:',
         },
         'exact-alarm': {
           title: 'Las alarmas exactas necesitan `SCHEDULE_EXACT_ALARM`',
@@ -257,7 +260,7 @@ export const es = {
           detected:
             'Un servicio en primer plano siempre publica una notificación, pero `POST_NOTIFICATIONS` no está declarado. Decláralo y pídelo después de una acción del usuario:',
           check:
-            '`POST_NOTIFICATIONS` no está declarado. Si la app publica notificaciones, decláralo y pídelo en contexto.',
+            '`POST_NOTIFICATIONS` no está declarado, y este servicio de mensajes push indica que la app publica notificaciones. Si lo hace, decláralo y pídelo en contexto:',
         },
         'read-storage-cap': {
           title:
@@ -269,8 +272,11 @@ export const es = {
         'foreground-service-type': {
           title: 'Todo servicio en primer plano declara su tipo',
           detected:
-            'Declara `android:foregroundServiceType` en cada servicio en primer plano, y el permiso `FOREGROUND_SERVICE_*` de cada tipo. Falta:',
-          check: '',
+            'A estos servicios con tipo les falta el permiso `FOREGROUND_SERVICE_*` de su tipo. Declara cada uno:',
+          check:
+            'Estos servicios no declaran `android:foregroundServiceType`. El manifiesto no muestra cuáles llaman a `startForeground()`: a cada uno que lo haga, dale su tipo y el permiso `FOREGROUND_SERVICE_*` correspondiente:',
+          mixed:
+            'A los servicios marcados con una flecha les falta el permiso `FOREGROUND_SERVICE_*` de su tipo; decláralo. Los demás no declaran `android:foregroundServiceType`: a cada uno que llame a `startForeground()`, dale su tipo y su permiso:',
         },
       },
     },

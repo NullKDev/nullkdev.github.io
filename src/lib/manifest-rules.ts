@@ -17,13 +17,18 @@
  */
 
 export const ANDROID_NS = 'http://schemas.android.com/apk/res/android'
+export const TOOLS_NS = 'http://schemas.android.com/tools'
 
 /** A merged manifest is a few hundred kilobytes at most. */
 export const MAX_MANIFEST_BYTES = 2 * 1024 * 1024
 
 export interface ManifestPermission {
   readonly name: string
-  readonly maxSdkVersion?: number
+  /**
+   * `unknown` when the attribute is there but is not a whole number: empty,
+   * or a `${placeholder}` a source manifest has not had filled in yet.
+   */
+  readonly maxSdkVersion?: number | 'unknown'
   readonly usesPermissionFlags?: string
 }
 
@@ -32,6 +37,8 @@ export interface ManifestComponent {
   readonly name: string
   readonly exported?: string
   readonly hasIntentFilter: boolean
+  /** The actions of its intent filters, when it has any. */
+  readonly actions?: readonly string[]
   readonly foregroundServiceType?: string
 }
 
@@ -48,6 +55,11 @@ export interface ManifestFacts {
   }
   readonly components: readonly ManifestComponent[]
   readonly hasQueries: boolean
+  /**
+   * The text carries `tools:` merge markers, which belong to source manifests:
+   * the merged one is the more accurate input.
+   */
+  readonly mergeMarkers: boolean
 }
 
 export type ManifestError = 'empty' | 'too-large' | 'malformed' | 'not-manifest'
@@ -69,10 +81,39 @@ const attribute = (element: Element, name: string): string | undefined =>
   element.getAttribute(`android:${name}`) ??
   undefined
 
-const integer = (value: string | undefined): number | undefined => {
-  const parsed = Number(value)
-  return value !== undefined && Number.isInteger(parsed) ? parsed : undefined
+/** Absent stays undefined; present but not a whole number is `unknown`. */
+const integer = (value: string | undefined): number | 'unknown' | undefined => {
+  if (value === undefined) return undefined
+  return /^\s*-?\d+\s*$/.test(value) ? Number(value) : 'unknown'
 }
+
+/** For `uses-sdk`, where an unreadable level is as good as none. */
+const level = (value: string | undefined): number | undefined => {
+  const parsed = integer(value)
+  return typeof parsed === 'number' ? parsed : undefined
+}
+
+/**
+ * `tools:node="remove"` drops the element from the merge and `removeAll`
+ * drops every element of its kind, so neither is declared. `replace` and
+ * the rest still declare it.
+ */
+const removedByMerge = (element: Element): boolean => {
+  const node =
+    element.getAttributeNS(TOOLS_NS, 'node') ??
+    element.getAttribute('tools:node')
+  return node === 'remove' || node === 'removeAll'
+}
+
+const hasMergeMarkers = (document: Document): boolean =>
+  [...document.getElementsByTagName('*')].some((element) =>
+    [...element.attributes].some(
+      (item) =>
+        item.namespaceURI === TOOLS_NS ||
+        item.name.startsWith('tools:') ||
+        item.value === TOOLS_NS,
+    ),
+  )
 
 const defined = <T extends object>(value: T): T =>
   Object.fromEntries(
@@ -110,7 +151,9 @@ export const parseManifest = (
   }
 
   const children = (parent: Element, name: string) =>
-    [...parent.children].filter((child) => child.localName === name)
+    [...parent.children].filter(
+      (child) => child.localName === name && !removedByMerge(child),
+    )
 
   const usesSdk = children(root, 'uses-sdk')[0]
   const application = children(root, 'application')[0]
@@ -128,18 +171,26 @@ export const parseManifest = (
 
   const components = application
     ? [...application.children]
-        .filter((child): child is Element =>
-          (COMPONENT_KINDS as readonly string[]).includes(child.localName),
+        .filter(
+          (child): child is Element =>
+            (COMPONENT_KINDS as readonly string[]).includes(child.localName) &&
+            !removedByMerge(child),
         )
-        .map((element) =>
-          defined({
+        .map((element) => {
+          const filters = children(element, 'intent-filter')
+          const actions = filters
+            .flatMap((filter) => children(filter, 'action'))
+            .map((action) => attribute(action, 'name') ?? '')
+            .filter(Boolean)
+          return defined({
             kind: element.localName as ManifestComponent['kind'],
             name: attribute(element, 'name') ?? '',
             exported: attribute(element, 'exported'),
-            hasIntentFilter: children(element, 'intent-filter').length > 0,
+            hasIntentFilter: filters.length > 0,
+            actions: actions.length ? actions : undefined,
             foregroundServiceType: attribute(element, 'foregroundServiceType'),
-          }),
-        )
+          })
+        })
     : []
 
   return {
@@ -147,8 +198,8 @@ export const parseManifest = (
     manifest: defined({
       usesSdk: usesSdk
         ? defined({
-            minSdkVersion: integer(attribute(usesSdk, 'minSdkVersion')),
-            targetSdkVersion: integer(attribute(usesSdk, 'targetSdkVersion')),
+            minSdkVersion: level(attribute(usesSdk, 'minSdkVersion')),
+            targetSdkVersion: level(attribute(usesSdk, 'targetSdkVersion')),
           })
         : undefined,
       permissions,
@@ -170,6 +221,7 @@ export const parseManifest = (
         : {},
       components,
       hasQueries: children(root, 'queries').length > 0,
+      mergeMarkers: hasMergeMarkers(document),
     }),
   }
 }
@@ -184,9 +236,17 @@ export type RuleStatus = 'detected' | 'check' | 'not-applicable'
 export type RuleReason =
   'found' | 'cannot-tell' | 'not-present' | 'out-of-range'
 
+/**
+ * Which copy explains a result, when not the rule's own `detected` or `check`:
+ * `unknownCap` is shared by every rule that reads a `maxSdkVersion`; the
+ * others name an extra key of that rule's copy.
+ */
+export type RuleMessage = 'unknownCap' | 'missingNew' | 'mixed'
+
 interface Verdict {
   readonly status: 'detected' | 'check' | 'clear'
   readonly items?: readonly string[]
+  readonly message?: RuleMessage
 }
 
 export interface ManifestRule {
@@ -210,9 +270,12 @@ export interface RuleResult {
   readonly status: RuleStatus
   readonly reason: RuleReason
   readonly items: readonly string[]
+  readonly message?: RuleMessage
 }
 
 const PERMISSION = 'android.permission.'
+
+const clear: Verdict = { status: 'clear' }
 
 const find = (manifest: ManifestFacts, name: string) =>
   manifest.permissions.find(
@@ -222,26 +285,51 @@ const find = (manifest: ManifestFacts, name: string) =>
 const has = (manifest: ManifestFacts, name: string) =>
   find(manifest, name) !== undefined
 
-/** Declared and not capped at or below `cap`. */
-const uncapped = (manifest: ManifestFacts, name: string, cap: number) => {
+type Cap = 'absent' | 'capped' | 'uncapped' | 'unknown'
+
+/** Whether a permission is declared and capped at or below `cap`. */
+const capOf = (manifest: ManifestFacts, name: string, cap: number): Cap => {
   const permission = find(manifest, name)
-  return (
-    permission !== undefined &&
-    (permission.maxSdkVersion === undefined || permission.maxSdkVersion > cap)
-  )
+  if (permission === undefined) return 'absent'
+  const { maxSdkVersion } = permission
+  if (maxSdkVersion === 'unknown') return 'unknown'
+  return maxSdkVersion !== undefined && maxSdkVersion <= cap
+    ? 'capped'
+    : 'uncapped'
 }
 
+/**
+ * One permission that should be capped at `cap`: missing the cap is a finding,
+ * an unreadable cap is a check, anything else is clear.
+ */
+const capVerdict = (
+  manifest: ManifestFacts,
+  name: string,
+  cap: number,
+): Verdict => {
+  const state = capOf(manifest, name, cap)
+  const items = [`${PERMISSION}${name}`]
+  if (state === 'uncapped') return { status: 'detected', items }
+  if (state === 'unknown')
+    return { status: 'check', message: 'unknownCap', items }
+  return clear
+}
+
+const services = (manifest: ManifestFacts) =>
+  manifest.components.filter((component) => component.kind === 'service')
+
 const typedServices = (manifest: ManifestFacts) =>
-  manifest.components.filter(
-    (component) =>
-      component.kind === 'service' && component.foregroundServiceType,
-  )
+  services(manifest).filter((service) => service.foregroundServiceType)
+
+const untypedServices = (manifest: ManifestFacts) =>
+  services(manifest).filter((service) => !service.foregroundServiceType)
+
+/** Firebase Cloud Messaging delivers pushes to a service with this action. */
+const MESSAGING_EVENT = 'com.google.firebase.MESSAGING_EVENT'
 
 /** `dataSync` → `FOREGROUND_SERVICE_DATA_SYNC`, the permission per type. */
 const typePermission = (type: string) =>
   `FOREGROUND_SERVICE_${type.replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase()}`
-
-const clear: Verdict = { status: 'clear' }
 
 /** In API order: the order a reader meets them crossing levels. */
 export const MANIFEST_RULES: readonly ManifestRule[] = [
@@ -251,17 +339,17 @@ export const MANIFEST_RULES: readonly ManifestRule[] = [
     section: 'targeting',
     evidence: ['cleartextTrafficPermitted', 'InsecureBaseConfiguration'],
     lint: ['InsecureBaseConfiguration'],
-    evaluate: ({ application }) => {
+    evaluate: (manifest) => {
+      const { application } = manifest
       if (application.usesCleartextTraffic === 'true') {
         return { status: 'detected', items: ['android:usesCleartextTraffic'] }
       }
       if (application.usesCleartextTraffic === 'false') return clear
-      return {
-        status: 'check',
-        items: application.networkSecurityConfig
-          ? [application.networkSecurityConfig]
-          : [],
+      if (application.networkSecurityConfig) {
+        return { status: 'check', items: [application.networkSecurityConfig] }
       }
+      // Without INTERNET the app opens no sockets, so no HTTP request can fail.
+      return has(manifest, 'INTERNET') ? { status: 'check' } : clear
     },
   },
   {
@@ -271,10 +359,15 @@ export const MANIFEST_RULES: readonly ManifestRule[] = [
     evidence: ['FOREGROUND_SERVICE', 'startForeground()'],
     evaluate: (manifest) => {
       if (has(manifest, 'FOREGROUND_SERVICE')) return clear
-      const services = typedServices(manifest)
-      return services.length
-        ? { status: 'detected', items: services.map(({ name }) => name) }
-        : { status: 'check' }
+      const typed = typedServices(manifest)
+      if (typed.length) {
+        return { status: 'detected', items: typed.map(({ name }) => name) }
+      }
+      // Only a service can call startForeground(); none declared, none can.
+      const untyped = untypedServices(manifest)
+      return untyped.length
+        ? { status: 'check', items: untyped.map(({ name }) => name) }
+        : clear
     },
   },
   {
@@ -305,13 +398,7 @@ export const MANIFEST_RULES: readonly ManifestRule[] = [
     section: 'permissions',
     evidence: ['WRITE_EXTERNAL_STORAGE', 'android:maxSdkVersion="29"'],
     lint: ['ScopedStorage'],
-    evaluate: (manifest) =>
-      uncapped(manifest, 'WRITE_EXTERNAL_STORAGE', 29)
-        ? {
-            status: 'detected',
-            items: [`${PERMISSION}WRITE_EXTERNAL_STORAGE`],
-          }
-        : clear,
+    evaluate: (manifest) => capVerdict(manifest, 'WRITE_EXTERNAL_STORAGE', 29),
   },
   {
     id: 'package-visibility',
@@ -326,7 +413,9 @@ export const MANIFEST_RULES: readonly ManifestRule[] = [
           items: [`${PERMISSION}QUERY_ALL_PACKAGES`],
         }
       }
-      return manifest.hasQueries ? clear : { status: 'check' }
+      // Whether the app looks up other apps is in its code, not its
+      // manifest: without QUERY_ALL_PACKAGES there is nothing here to judge.
+      return clear
     },
   },
   {
@@ -364,25 +453,40 @@ export const MANIFEST_RULES: readonly ManifestRule[] = [
       'android:maxSdkVersion="30"',
     ],
     evaluate: (manifest) => {
-      const legacy = ['BLUETOOTH', 'BLUETOOTH_ADMIN'].filter((name) =>
-        uncapped(manifest, name, 30),
-      )
+      const legacy = ['BLUETOOTH', 'BLUETOOTH_ADMIN']
+      const states = legacy.map((name) => ({
+        name,
+        cap: capOf(manifest, name, 30),
+      }))
+      const named = (cap: Cap) =>
+        states
+          .filter((state) => state.cap === cap)
+          .map(({ name }) => `${PERMISSION}${name}`)
+      if (named('uncapped').length) {
+        return { status: 'detected', items: named('uncapped') }
+      }
+      if (named('unknown').length) {
+        return {
+          status: 'check',
+          message: 'unknownCap',
+          items: named('unknown'),
+        }
+      }
       const declaresNew = [
         'BLUETOOTH_SCAN',
         'BLUETOOTH_CONNECT',
         'BLUETOOTH_ADVERTISE',
       ].some((name) => has(manifest, name))
-      const hasLegacy = ['BLUETOOTH', 'BLUETOOTH_ADMIN'].some((name) =>
-        has(manifest, name),
-      )
-      if (legacy.length) {
-        return {
-          status: 'detected',
-          items: legacy.map((name) => `${PERMISSION}${name}`),
-        }
-      }
-      return hasLegacy && !declaresNew
-        ? { status: 'detected', items: [`${PERMISSION}BLUETOOTH_CONNECT`] }
+      // Capped already, but nothing takes over from API 31: name what is
+      // missing instead of asking for a cap that is there.
+      return named('capped').length && !declaresNew
+        ? {
+            status: 'detected',
+            message: 'missingNew',
+            items: ['BLUETOOTH_SCAN', 'BLUETOOTH_CONNECT'].map(
+              (name) => `${PERMISSION}${name}`,
+            ),
+          }
         : clear
     },
   },
@@ -405,12 +509,8 @@ export const MANIFEST_RULES: readonly ManifestRule[] = [
       'android:maxSdkVersion="32"',
     ],
     evaluate: (manifest) =>
-      has(manifest, 'USE_EXACT_ALARM') &&
-      uncapped(manifest, 'SCHEDULE_EXACT_ALARM', 32)
-        ? {
-            status: 'detected',
-            items: [`${PERMISSION}SCHEDULE_EXACT_ALARM`],
-          }
+      has(manifest, 'USE_EXACT_ALARM')
+        ? capVerdict(manifest, 'SCHEDULE_EXACT_ALARM', 32)
         : clear,
   },
   {
@@ -425,9 +525,20 @@ export const MANIFEST_RULES: readonly ManifestRule[] = [
       // permission it shows only in the Task Manager (Android 13 note).
       const foreground =
         has(manifest, 'FOREGROUND_SERVICE') || typedServices(manifest).length
-      return foreground
-        ? { status: 'detected', items: [`${PERMISSION}POST_NOTIFICATIONS`] }
-        : { status: 'check' }
+      if (foreground) {
+        return {
+          status: 'detected',
+          items: [`${PERMISSION}POST_NOTIFICATIONS`],
+        }
+      }
+      // A push messaging service is the manifest's one sign that the app
+      // posts notifications; without one, the manifest cannot say it does.
+      const push = services(manifest).filter(({ actions }) =>
+        actions?.includes(MESSAGING_EVENT),
+      )
+      return push.length
+        ? { status: 'check', items: push.map(({ name }) => name) }
+        : clear
     },
   },
   {
@@ -436,13 +547,7 @@ export const MANIFEST_RULES: readonly ManifestRule[] = [
     section: 'permissions',
     evidence: ['READ_EXTERNAL_STORAGE', 'android:maxSdkVersion="32"'],
     lint: ['ScopedStorage'],
-    evaluate: (manifest) =>
-      uncapped(manifest, 'READ_EXTERNAL_STORAGE', 32)
-        ? {
-            status: 'detected',
-            items: [`${PERMISSION}READ_EXTERNAL_STORAGE`],
-          }
-        : clear,
+    evaluate: (manifest) => capVerdict(manifest, 'READ_EXTERNAL_STORAGE', 32),
   },
   {
     id: 'foreground-service-type',
@@ -455,23 +560,33 @@ export const MANIFEST_RULES: readonly ManifestRule[] = [
     ],
     lint: ['ForegroundServiceType', 'ForegroundServicePermission'],
     evaluate: (manifest) => {
-      const services = typedServices(manifest)
-      if (services.length === 0) {
-        return has(manifest, 'FOREGROUND_SERVICE')
-          ? { status: 'detected', items: ['FOREGROUND_SERVICE'] }
-          : clear
-      }
       // `shortService` needs no type permission (Android 14 note).
-      const missing = services.flatMap(({ name, foregroundServiceType }) =>
-        (foregroundServiceType ?? '')
-          .split('|')
-          .map((type) => type.trim())
-          .filter((type) => type && type !== 'shortService')
-          .map(typePermission)
-          .filter((permission) => !has(manifest, permission))
-          .map((permission) => `${name} → ${permission}`),
+      const missing = typedServices(manifest).flatMap(
+        ({ name, foregroundServiceType }) =>
+          (foregroundServiceType ?? '')
+            .split('|')
+            .map((type) => type.trim())
+            .filter((type) => type && type !== 'shortService')
+            .map(typePermission)
+            .filter((permission) => !has(manifest, permission))
+            .map((permission) => `${name} → ${permission}`),
       )
-      return missing.length ? { status: 'detected', items: missing } : clear
+      // Without FOREGROUND_SERVICE no service can run in the foreground, so an
+      // untyped one is only a question when the app holds it. Which untyped
+      // service calls startForeground() is in the code, not the manifest.
+      const untyped = has(manifest, 'FOREGROUND_SERVICE')
+        ? untypedServices(manifest).map(({ name }) => name)
+        : []
+      if (missing.length) {
+        return untyped.length
+          ? {
+              status: 'detected',
+              message: 'mixed',
+              items: [...missing, ...untyped],
+            }
+          : { status: 'detected', items: missing }
+      }
+      return untyped.length ? { status: 'check', items: untyped } : clear
     },
   },
 ]
@@ -508,5 +623,6 @@ export const evaluateManifest = (
             ? 'cannot-tell'
             : 'not-present',
       items: verdict.items ?? [],
+      ...(verdict.message ? { message: verdict.message } : {}),
     }
   })

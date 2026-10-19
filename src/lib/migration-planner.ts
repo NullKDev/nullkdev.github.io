@@ -547,8 +547,24 @@ export const rowMatches = (
   return words.every((word) => haystack.includes(word))
 }
 
-/** The key one checklist step is remembered under. */
-export const stepKey = (api: number, index: number): string => `${api}:${index}`
+/** 32-bit FNV-1a of a string, as eight hex digits: short, pure, stable. */
+const fnv1a = (text: string): string => {
+  let hash = 0x811c9dc5
+  for (let index = 0; index < text.length; index += 1) {
+    hash ^= text.charCodeAt(index)
+    hash = Math.imul(hash, 0x01000193)
+  }
+  return (hash >>> 0).toString(16).padStart(8, '0')
+}
+
+/**
+ * The key one checklist step is remembered under: its level and a hash of its
+ * own text. Keyed by content, not position, so a step added, removed or
+ * reordered in a note never moves a tick onto a different step; an edited step
+ * simply starts unticked.
+ */
+export const stepKey = (api: number, step: string): string =>
+  `${api}:${fnv1a(step)}`
 
 // ---------------------------------------------------------------------------
 // Per-viewer state
@@ -556,10 +572,11 @@ export const stepKey = (api: number, index: number): string => `${api}:${index}`
 
 /**
  * Ticked steps, kept in this browser only — a convenience for one reader, not
- * a record. Keyed per locale because the two notes of a level may number their
- * steps differently.
+ * a record. Keyed per locale because the two notes of a level word their steps
+ * differently. v1 keyed steps by position; those ticks are left behind rather
+ * than misapplied to whatever step now sits at that index.
  */
-export const PROGRESS_KEY = 'nullkdev:migration-planner:v1'
+export const PROGRESS_KEY = 'nullkdev:migration-planner:v2'
 
 type ProgressStore = Partial<Record<Locale, readonly string[]>>
 
@@ -604,16 +621,82 @@ export const writeProgress = (
   }
 }
 
-/** A shared link's `?from=31&to=36`, when both are documented levels. */
+export interface PlanRange {
+  readonly from: number
+  readonly to: number
+}
+
+/** The documented level just above `api`, if any. */
+const levelAbove = (
+  model: readonly PlannerVersion[],
+  api: number,
+): number | undefined => model.find((version) => version.api > api)?.api
+
+/** The documented level just below `api`, if any. */
+const levelBelow = (
+  model: readonly PlannerVersion[],
+  api: number,
+): number | undefined => model.findLast((version) => version.api < api)?.api
+
+/**
+ * A range that always goes up. The end the reader just picked stays where they
+ * put it and the other end moves to the nearest level that makes a plan: a
+ * current level at or past the new target pushes the target to the next level
+ * (or, from the newest level, pulls the current level one below it); a new
+ * target at or under the current level pulls the current level below it.
+ */
+export const normalizeRange = (
+  model: readonly PlannerVersion[],
+  range: PlanRange,
+  picked: 'from' | 'to',
+): PlanRange => {
+  const { from, to } = range
+  if (to > from) return { from, to }
+  if (picked === 'from') {
+    const above = levelAbove(model, from)
+    if (above !== undefined) return { from, to: above }
+    const below = levelBelow(model, from)
+    return below === undefined ? { from, to } : { from: below, to: from }
+  }
+  const below = levelBelow(model, to)
+  if (below !== undefined) return { from: below, to }
+  const above = levelAbove(model, to)
+  return above === undefined ? { from, to } : { from: to, to: above }
+}
+
+/**
+ * "Plan from API N" for a manifest that targets N: start there and keep the
+ * new target if it is still ahead, else move it to the next level. Undefined
+ * when N is not a documented level or is already the newest one, so the page
+ * never offers a plan with nothing in it.
+ */
+export const planFromTarget = (
+  model: readonly PlannerVersion[],
+  target: number,
+  to: number,
+): PlanRange | undefined => {
+  if (!model.some(({ api }) => api === target)) return undefined
+  const above = levelAbove(model, target)
+  return above === undefined
+    ? undefined
+    : { from: target, to: Math.max(to, above) }
+}
+
+/**
+ * A shared link's `?from=31&to=36`, when both are documented levels. A pair
+ * that does not go up is corrected the way a picked one is, keeping its start.
+ */
 export const parseRangeQuery = (
   search: string,
   model: readonly PlannerVersion[],
-): { from: number; to: number } | undefined => {
+): PlanRange | undefined => {
   const params = new URLSearchParams(search)
   const from = Number(params.get('from'))
   const to = Number(params.get('to'))
   const known = (api: number) => model.some((version) => version.api === api)
-  return known(from) && known(to) ? { from, to } : undefined
+  return known(from) && known(to)
+    ? normalizeRange(model, { from, to }, 'from')
+    : undefined
 }
 
 // ---------------------------------------------------------------------------
@@ -662,10 +745,10 @@ export const planToMarkdown = ({
       if (version.checklist.intro) {
         lines.push(absolute(version.checklist.intro), '')
       }
-      version.checklist.steps.forEach((step, index) => {
-        const mark = done.has(stepKey(version.api, index)) ? 'x' : ' '
+      for (const step of version.checklist.steps) {
+        const mark = done.has(stepKey(version.api, step)) ? 'x' : ' '
         lines.push(`- [${mark}] ${absolute(step)}`)
-      })
+      }
       for (const paragraph of version.checklist.outro) {
         lines.push('', absolute(paragraph))
       }

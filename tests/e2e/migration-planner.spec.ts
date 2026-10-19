@@ -50,19 +50,43 @@ test('picking a range lists every level crossed, in order', async ({
     'Plan from API 28 to API 31: 3 levels',
   )
 
-  // A target at or below the current level is explained, not left blank.
+  // A target at or below the current level never dead-ends: the current
+  // level moves to the one just below the new target.
   await page.getByLabel('New targetSdk').selectOption('26')
-  await expect(page.getByRole('alert')).toHaveText(
-    'Pick a new targetSdk above the current one to see the steps between them.',
-  )
-  await expect(page.locator('.planner-level')).toHaveCount(0)
-
-  // Swapping puts the ends the right way round: 26 → 28.
-  await page.getByRole('button', { name: 'Swap current and new' }).click()
+  await expect(page.getByLabel('Current targetSdk')).toHaveValue('25')
   await expect(page.locator('.planner-level h3')).toHaveText([
-    'Android 8.1 · API 27',
-    'Android 9 · API 28',
+    'Android 8.0 · API 26',
   ])
+  await expect(page).toHaveURL(/\?from=25&to=26$/)
+  await expect(page.getByRole('alert')).toHaveCount(0)
+
+  // A current level at or past the target moves the target just above it.
+  await page.getByLabel('Current targetSdk').selectOption('30')
+  await expect(page.getByLabel('New targetSdk')).toHaveValue('31')
+  await expect(page.locator('.planner-level h3')).toHaveText([
+    'Android 12 · API 31',
+  ])
+
+  // From the newest level, the current level steps one below it instead.
+  const newest = await page
+    .getByLabel('New targetSdk')
+    .locator('option')
+    .last()
+    .getAttribute('value')
+  await page.getByLabel('Current targetSdk').selectOption(newest ?? '')
+  await expect(page.getByLabel('New targetSdk')).toHaveValue(newest ?? '')
+  await expect(page.locator('.planner-level')).toHaveCount(1)
+
+  // No control is left that could only produce a downgrade.
+  await expect(page.getByRole('button', { name: /swap/i })).toHaveCount(0)
+
+  // A shared link that goes down is corrected the same way, not refused.
+  await open(page, `${PATH}?from=33&to=31`)
+  await expect(page.getByLabel('New targetSdk')).toHaveValue('34')
+  await expect(page.locator('.planner-level h3')).toHaveText([
+    'Android 14 · API 34',
+  ])
+  await expect(page.getByRole('alert')).toHaveCount(0)
 
   // A shared link reopens the same range.
   await open(page, `${PATH}?from=33&to=35`)
@@ -150,6 +174,25 @@ test('a pasted manifest reports what it shows, at the right level', async ({
   await expect(page.locator('.planner-level h3').first()).toHaveText(
     'Android 11 · API 30',
   )
+
+  // A manifest already on the newest level offers no empty plan.
+  const newest = await page
+    .getByLabel('New targetSdk')
+    .locator('option')
+    .last()
+    .getAttribute('value')
+  await page
+    .getByLabel('Merged AndroidManifest.xml')
+    .fill(
+      `<manifest xmlns:android="http://schemas.android.com/apk/res/android"><uses-sdk android:targetSdkVersion="${newest}" /></manifest>`,
+    )
+  await page.getByRole('button', { name: 'Analyze' }).click()
+  await expect(
+    page.getByText('That is the newest level in the notes.'),
+  ).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: /^Plan from API/ }),
+  ).toHaveCount(0)
 
   // Malformed XML is explained, not thrown.
   await page.getByLabel('Merged AndroidManifest.xml').fill('<manifest><oops>')
